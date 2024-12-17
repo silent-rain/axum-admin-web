@@ -1,0 +1,32 @@
+[package]
+name = "service_hub"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "service_hub"
+path = "src/lib.rs"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+
+[dependencies]
+inject = { path = "../core/inject" }
+
+public = { path = "public" }
+template = { path = "template" }
+auth = { path = "auth" }
+user = { path = "user" }
+permission = { path = "permission" }
+organization = { path = "organization" }
+system = { path = "system" }
+schedule = { path = "schedule" }
+log = { path = "log" }
+initialize = { path = "initialize" }
+
+
+[dev-dependencies]
+tokio = { workspace = true, features = [
+    "macros",
+    "rt-multi-thread",
+    "test-util",
+] }

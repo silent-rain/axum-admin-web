@@ -1,0 +1,31 @@
+[package]
+name = "auth"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+database = { path = "../../core/database" }
+entity = { path = "../../core/entity" }
+code = { path = "../../core/code" }
+context = { path = "../../core/context" }
+response = { path = "../../core/response" }
+utils = { path = "../../core/utils" }
+jwt = { path = "../../core/jwt" }
+inject = { path = "../../core/inject" }
+
+user = { path = "../user" }
+system = { path = "../system" }
+log = { path = "../log" }
+
+
+validator = { workspace = true, features = ["derive"] }
+sea-orm = { workspace = true }
+nject = { workspace = true }
+
+tracing = { workspace = true }
+chrono = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+tokio = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

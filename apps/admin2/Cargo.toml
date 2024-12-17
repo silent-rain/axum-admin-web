@@ -1,0 +1,40 @@
+[package]
+name = "admin"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[dependencies]
+database = { path = "../crates/core/database" }
+logger = { path = "../crates/core/logger" }
+code = { path = "../crates/core/code" }
+# context = { path = "../crates/core/context" }
+utils = { path = "../crates/core/utils" }
+
+middleware = { path = "../crates/middleware" }
+timer = { path = "../crates/timer" }
+app_state = { path = "../crates/app_state" }
+service_hub = { path = "../crates/service_hub" }
+# migration = { path = "../core/migration" }
+
+# actix-web-requestid = { workspace = true }
+# actix-request-identifier = { workspace = true }
+# actix-web-validator = { workspace = true }
+# actix-files = { workspace = true }
+listenfd = { workspace = true }
+num_cpus = { workspace = true }
+
+tracing = { workspace = true }
+dotenv = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+rust-embed = { workspace = true, features = [
+    # "debug-embed",
+    "include-exclude",
+    "mime-guess",
+] }
+colored = { workspace = true }
+tokio = { workspace = true }

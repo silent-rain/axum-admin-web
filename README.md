@@ -1,4 +1,4 @@
-# Acrix-Admin-Web
+# Axum-Admin-Web
 
 这个是一个后端接口服务，同时内嵌静态文件服务。
 
@@ -129,4 +129,3 @@
 - [编译与部署](./docs/编译与部署.md)
 - [Sea-Orm 使用指南](./docs/Sea-Orm使用指南.md)
 - [问题答疑](./docs/Q&A.md)
-# axum-admin-web

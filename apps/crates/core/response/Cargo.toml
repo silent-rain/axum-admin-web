@@ -1,0 +1,11 @@
+[package]
+name = "response"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+code = { path = "../code" }
+
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+axum = { workspace = true }

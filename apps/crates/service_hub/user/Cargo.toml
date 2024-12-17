@@ -1,0 +1,33 @@
+[package]
+name = "user"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+database = { path = "../../core/database" }
+entity = { path = "../../core/entity" }
+code = { path = "../../core/code" }
+response = { path = "../../core/response" }
+context = { path = "../../core/context" }
+utils = { path = "../../core/utils" }
+cache = { path = "../../core/cache" }
+inject = { path = "../../core/inject" }
+
+permission = { path = "../permission" }
+
+
+validator = { workspace = true, features = ["derive"] }
+sea-orm = { workspace = true }
+nject = { workspace = true }
+
+tracing = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_repr = { workspace = true }
+serde_json = { workspace = true }
+regex = { workspace = true }
+rust_decimal = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+base64 = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

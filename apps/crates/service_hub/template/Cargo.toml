@@ -1,0 +1,32 @@
+[package]
+name = "template"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+database = { path = "../../core/database" }
+entity = { path = "../../core/entity" }
+code = { path = "../../core/code" }
+response = { path = "../../core/response" }
+inject = { path = "../../core/inject" }
+
+
+validator = { workspace = true, features = ["derive"] }
+sea-orm = { workspace = true }
+nject = { workspace = true }
+
+tracing = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_repr = { workspace = true }
+
+
+[dev-dependencies]
+migration = { path = "../../core/migration" }
+
+mock_request = { path = "../../mock_request" }
+
+tokio = { workspace = true, features = [
+    "macros",
+    "rt-multi-thread",
+    "test-util",
+] }

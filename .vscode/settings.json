@@ -1,0 +1,11 @@
+{
+    // >>> Rust
+    "rust-analyzer.linkedProjects": [
+        "apps/Cargo.toml"
+    ],
+    // <<<
+    // >>> Mysql
+    "Prettier-SQL.SQLFlavourOverride": "mysql",
+    "Prettier-SQL.keywordCase": "upper"
+    // <<<
+}

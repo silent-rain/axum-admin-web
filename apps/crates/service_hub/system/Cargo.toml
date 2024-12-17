@@ -1,0 +1,24 @@
+[package]
+name = "system"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+database = { path = "../../core/database" }
+entity = { path = "../../core/entity" }
+code = { path = "../../core/code" }
+response = { path = "../../core/response" }
+utils = { path = "../../core/utils" }
+inject = { path = "../../core/inject" }
+
+
+# actix-multipart = { workspace = true }
+validator = { workspace = true, features = ["derive"] }
+sea-orm = { workspace = true }
+nject = { workspace = true }
+
+tracing = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+serde = { workspace = true, features = ["derive"] }
+serde_repr = { workspace = true }

@@ -1,0 +1,12 @@
+[package]
+name = "public"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+response = { path = "../../core/response" }
+
+app_state = { path = "../../app_state" }
+
+
+tracing = { workspace = true }
