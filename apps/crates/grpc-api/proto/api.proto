@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package api;
 
+service Users { rpc GetUsers(GetUsersRequest) returns (GetUsersResponse); }
+
 message User {
   uint32 id = 1;
   string email = 2;
@@ -10,5 +12,3 @@ message User {
 message GetUsersRequest {}
 
 message GetUsersResponse { repeated User users = 1; }
-
-service Users { rpc GetUsers(GetUsersRequest) returns (GetUsersResponse); }

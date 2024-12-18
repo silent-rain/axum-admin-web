@@ -4,9 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-
+tokio = { workspace = true, features = ["rt-multi-thread"] }
+tower = { workspace = true }
 tonic = { workspace = true }
 prost = { workspace = true }
+tonic-health = { workspace = true }
+tonic-reflection = { workspace = true }
+tracing = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 
 

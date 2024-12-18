@@ -4,6 +4,10 @@
 
 - [TODO]()
 
+# 数据库配置
+
+- [PostgreSQL安装](./database/PostgreSQL安装.md)
+
 # 后端开发
 
 - [初始化数据库](./table/init_table.md)

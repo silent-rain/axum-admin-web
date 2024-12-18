@@ -16,7 +16,7 @@ cargo install mdbook
 mdbook build
 ```
 
-## 构建并打开书籍
+### 构建并打开书籍
 
 使用命令serve，它将构建书籍并启动本地网络服务器。
 该serve命令监视书籍src目录的更改，重建书籍并为每次更改刷新客户端。
@@ -33,6 +33,18 @@ mdbook serve --open
 mdbook watch --open
 ```
 
+## 部署与访问
+
+### 自动部署
+
+- [workflows](.github/workflows/mdbook.yml)
+
+### 部署地址
+
+- gh-pages 分支下的网页会被部署到 `<Username>`.github.io/`<Reponame>` 域名下
+- [传送门](https://silent-rain.github.io/actix-admin-web)
+
 ## 参考文档
 
 - [mdBook 文档](https://rust-lang.github.io/mdBook/index.html)
+- [自动部署](https://github.com/rust-lang/mdBook/wiki/Automated-Deployment)

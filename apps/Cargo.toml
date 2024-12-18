@@ -24,9 +24,11 @@ axum = "0.7"
 axum-extra = "0.9"
 tower = "0.5"
 tower-http = "0.6"
-reqwest = "0.12"
 tonic = "0.12"
+tonic-health = "0.12"
+tonic-reflection = "0.12"
 tonic-build = "0.12"
+reqwest = "0.12"
 prost = "0.13"
 
 
