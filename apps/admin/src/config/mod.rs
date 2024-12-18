@@ -4,12 +4,12 @@
 use std::fs::read_to_string;
 use std::sync::OnceLock;
 
-pub mod environment;
-pub mod mysql;
+pub mod env;
 pub mod server;
 pub mod sqlite;
 
 use code::Error;
+use database::config::MysqlConfig;
 pub use logger::config::Logger;
 
 use serde::{Deserialize, Serialize};
@@ -56,7 +56,7 @@ pub fn instance() -> &'static AppConfig {
 pub struct AppConfig {
     /// 环境配置
     #[serde(default)]
-    pub environment: environment::Environment,
+    pub env: env::Environment,
     /// 服务配置
     #[serde(default)]
     pub server: server::Server,
@@ -65,7 +65,7 @@ pub struct AppConfig {
     pub sqlite: sqlite::Sqlite,
     /// Mysql 数据库配置
     #[serde(default)]
-    pub mysql: mysql::Mysql,
+    pub mysql: MysqlConfig,
     /// 日志配置
     #[serde(default)]
     pub logger: Logger,

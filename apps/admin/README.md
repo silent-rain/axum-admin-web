@@ -21,7 +21,7 @@ cargo clippy -p admin
 ### 调试模式
 
 ```shell
-cd server/admin
+cd apps/admin
 
 cargo run -p admin
 ```
@@ -29,7 +29,7 @@ cargo run -p admin
 ### 生产模式
 
 ```shell
-cd server/admin
+cd apps/admin
 
 cargo build -p admin
 ```
@@ -37,7 +37,7 @@ cargo build -p admin
 ### 查询依赖
 
 ```shell
-cd server/admin
+cd apps/admin
 
 cargo +nightly udeps -p admin
 
@@ -47,10 +47,16 @@ cargo +nightly udeps --workspace
 ## 开发文档
 
 ```shell
-cd server/admin
+cd apps/admin
 
 cargo doc -p admin
 ```
+
+## 服务
+
+- [前端服务](http://127.0.0.1:8000/)
+- [后端服务](http://127.0.0.1:8000/api/v1/)
+- [ ][swagger-ui](http://127.0.0.1:8000/swagger-ui/)
 
 ## 相关文档
 

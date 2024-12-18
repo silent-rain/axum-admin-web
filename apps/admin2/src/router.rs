@@ -18,20 +18,6 @@ use tracing_actix_web::TracingLogger;
 /// Service Hub Module: [`service_hub`]
 pub fn register() -> impl HttpServiceFactory {
     web::scope("/api/v1")
-        // >>> 中间件 >>>
-        // 注意中间件加载顺序: Last in, first loading
-        .wrap(ApiOperation::default())
-        .wrap(TracingLogger::default())
-        .wrap(middleware::cors::wrap_cors())
-        // 接口鉴权
-        .wrap(CasbinAuth::default())
-        .wrap(SystemApiAuth::default())
-        .wrap(OpenApiAuth::default())
-        // 上下文中间件
-        .wrap(ContextMiddleware::default())
-        // <<< 中间件 <<<
-        // 健康检查
-        .service(HealthRouter::register())
         // 认证管理
         .service(AuthRouter::register())
         // 后台管理接口

@@ -33,7 +33,7 @@ impl EmbedAssetTrait for AssetConfigFile {
 
 /// 后台管理 WEB 静态资源
 #[derive(Debug, Clone, Default, RustEmbed)]
-#[folder = "../../web/dist/"]
+#[folder = "../../admin-web/dist/"]
 pub struct AssetAdminWebDist;
 
 impl EmbedAssetTrait for AssetAdminWebDist {

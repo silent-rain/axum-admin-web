@@ -114,6 +114,27 @@ pub enum Error {
     #[error("数据库初始化失败, 管理员已存在无需重复初始化")]
     DbInitByAdminExistError = 10265,
 
+    // 工具箱
+    #[error("User-Agent解析错误, {0}")]
+    UserAgentParserError(String) = 10281,
+    #[error("Uuid解析失败, {0}")]
+    UuidParseError(String) = 10282,
+    #[error("调度任务移除解析失败, {0}")]
+    ScheduleRemoveError(String) = 10283,
+    #[error("Get Schedule Instance Error")]
+    ScheduleInstance = 10284,
+
+    #[error("未找到资源")]
+    AssetNotFound = 10290,
+    #[error("资源解析错误")]
+    AssetParseError = 10291,
+    #[error("缓存不存在")]
+    CacheNotFound = 10292,
+    #[error("Casbin 策略执行失败, {0}")]
+    CasbinEnforceError(String),
+    #[error("No access permission")]
+    CasbinNoAccessPermission,
+
     // 文件或目录操作
     #[error("获取目录失败")]
     FsReadDirError = 10301,

@@ -1,6 +1,37 @@
 //! 数据库配置
 use serde::{Deserialize, Serialize};
 
+/// Mysql 数据库配置
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+pub struct MysqlConfig {
+    /// db信息唯一标识
+    pub key: String,
+    /// IP或域名
+    pub host: String,
+    /// 端口
+    pub port: i32,
+    /// 账号
+    pub username: String,
+    /// 密码
+    pub password: String,
+    /// 数据库名称
+    pub db_name: String,
+    /// 数据库参数
+    pub options: DbOptions,
+}
+
+impl MysqlConfig {
+    /// 数据库地址
+    pub fn dns(&self) -> String {
+        // 这些参数会导致连接失败: ?charset=utf8mb4&parseTime=false&loc=Asia%2FShanghai
+        // loc=Local
+        format!(
+            "mysql://{}:{}@{}:{}/{}",
+            self.username, self.password, self.host, self.port, self.db_name,
+        )
+    }
+}
+
 /// 参数配置
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DbOptions {

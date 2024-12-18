@@ -19,6 +19,8 @@ use serde_json::json;
 use tokio::signal;
 use tower_http::cors::{Any, CorsLayer};
 
+use middleware::cors::cors_layer;
+
 /// axum handler for any request that fails to match the router routes.
 /// This implementation returns HTTP status code Not Found (404).
 pub async fn fallback(uri: axum::http::Uri) -> impl axum::response::IntoResponse {
@@ -157,27 +159,6 @@ impl LocationRouter {
 #[derive(Debug, Default, Clone, Deserialize)]
 pub struct AppState {}
 
-/// 注册路由
-pub fn register() -> Router {
-    let cors = CorsLayer::new()
-        .allow_credentials(false)
-        .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
-        .allow_headers(vec![ORIGIN, AUTHORIZATION, ACCEPT])
-        .allow_origin(Any);
-
-    // let state = AppState {};
-
-    // let auth_router = Router::new()
-    //     .route("/register", post(register))
-    //     .route("/login", post(login))
-    //     .route("/logout", get(logout))
-    //     .route("/login", post(hello2));
-
-    Router::new()
-        .nest("/v1", LocationRouter::register())
-        .layer(cors)
-}
-
 // go ahead and run "cargo run main.rs"
 // localhost:4000 should now print out your user agent
 // async fn index(TypedHeader(user_agent): TypedHeader<UserAgent>) -> String {
@@ -191,4 +172,25 @@ async fn check_cookie(jar: PrivateCookieJar) -> impl IntoResponse {
     }
 
     StatusCode::OK
+}
+
+/// 注册路由
+pub fn register() -> Router {
+    // let state = AppState {};
+
+    Router::new()
+        // >>> 中间件 >>>
+        // 注意中间件加载顺序: Last in, first loading
+        // .wrap(ApiOperation::default())
+        // .wrap(TracingLogger::default())
+        .layer(cors_layer())
+        // // 接口鉴权
+        // .wrap(CasbinAuth::default())
+        // .wrap(SystemApiAuth::default())
+        // .wrap(OpenApiAuth::default())
+        // // 上下文中间件
+        // .wrap(ContextMiddleware::default())
+        // <<< 中间件 <<<
+        // .merge( HealthRouter::register()) // 健康检查
+        .nest("/v1", LocationRouter::register())
 }
