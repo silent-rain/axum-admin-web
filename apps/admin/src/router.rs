@@ -13,8 +13,6 @@ use axum::{
     Json, Router,
 };
 use axum_extra::extract::{cookie::Cookie, PrivateCookieJar};
-use code::Error;
-use response::Responder;
 use response::Response;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -63,9 +61,23 @@ pub async fn hello2() -> Response<()> {
     Response::<()>::ok()
 }
 
-pub async fn hello3() -> Responder<String> {
-    let x = Some("1".to_string()).ok_or_else(|| Error::Unknown("xxx".to_owned()))?;
-    Ok(Response::data(x))
+// pub fn hello31() -> Responder<String> {
+//     let x = Some("1".to_string()).ok_or_else(|| Error::Unknown("xxx".to_owned()))?;
+//     Ok(Response::data(x))
+// }
+
+pub async fn hello3() -> impl IntoResponse {
+    Response::<()>::ok()
+}
+
+pub async fn hello4() -> impl IntoResponse {
+    Response::data("1")
+}
+
+pub async fn hello5() -> impl IntoResponse {
+    let data_list = vec![1, 2, 3, 4, 5];
+    let total = data_list.len() as u64;
+    Response::data_list(data_list, total)
 }
 
 /// 从路径中提取参数
@@ -128,8 +140,12 @@ impl LocationRouter {
     /// 注册`用户地理位置管理`路由
     pub fn register() -> Router {
         let routes = Router::new()
-            .route("", get(hello))
-            .route("/:id", get(hello).delete(hello).put(hello))
+            .route("/hello2", get(hello2))
+            .route("/hello3", get(hello3))
+            .route("/hello4", get(hello4))
+            .route("/hello5", get(hello5))
+            .route("/x", get(hello))
+            .route("/x/:id", get(hello).delete(hello).put(hello))
             .route("/add", post(hello))
             .route("/status", put(hello));
 
@@ -144,22 +160,21 @@ pub struct AppState {}
 /// 注册路由
 pub fn register() -> Router {
     let cors = CorsLayer::new()
-        .allow_credentials(true)
+        .allow_credentials(false)
         .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
         .allow_headers(vec![ORIGIN, AUTHORIZATION, ACCEPT])
         .allow_origin(Any);
 
-    let state = AppState {};
+    // let state = AppState {};
 
-    let auth_router = Router::new()
-        .route("/register", post(register))
-        .route("/login", post(login))
-        .route("/login", post(hello2))
-        .route("/logout", get(logout));
+    // let auth_router = Router::new()
+    //     .route("/register", post(register))
+    //     .route("/login", post(login))
+    //     .route("/logout", get(logout))
+    //     .route("/login", post(hello2));
 
     Router::new()
         .nest("/v1", LocationRouter::register())
-        .with_state(state)
         .layer(cors)
 }
 

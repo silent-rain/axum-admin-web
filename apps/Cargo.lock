@@ -39,6 +39,7 @@ dependencies = [
  "tower 0.5.2",
  "tower-http",
  "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -4087,6 +4088,7 @@ dependencies = [
 name = "template"
 version = "0.1.0"
 dependencies = [
+ "axum",
  "code",
  "database",
  "entity",
