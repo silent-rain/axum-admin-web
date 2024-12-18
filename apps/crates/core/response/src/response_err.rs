@@ -3,25 +3,33 @@
 use axum::{response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 
-use code::Error;
+use code::{Error, ErrorMsg};
 
 /// 异常响应体
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ResponseErr {
-    /// 返回业务码
-    code: u16,
-    /// 返回信息
-    msg: String,
+    /// Return business code
+    pub(crate) code: u16,
+    /// Return message
+    pub(crate) msg: String,
 }
 
 impl ResponseErr {
-    /// 重置错误信息
+    /// new
+    pub fn new(err: Error) -> Self {
+        ResponseErr {
+            code: err.code(),
+            msg: err.msg(),
+        }
+    }
+
+    ///  Set return msg
     pub fn with_msg(mut self, msg: &str) -> Self {
         self.msg = msg.to_string();
         self
     }
 
-    /// 追加错误信息, 在错误码信息的基础上添加新的信息
+    /// Add msg information and add new information based on the error code information
     pub fn append_msg(mut self, msg: &str) -> Self {
         self.msg = format!("{}, {}", self.msg, msg);
         self
@@ -34,6 +42,16 @@ impl From<Error> for ResponseErr {
         ResponseErr {
             code: err.code(),
             msg: err.msg(),
+        }
+    }
+}
+
+/// 将错误信息转换为响应体
+impl From<ErrorMsg> for ResponseErr {
+    fn from(err: ErrorMsg) -> Self {
+        ResponseErr {
+            code: err.code(),
+            msg: err.msg().to_string(),
         }
     }
 }

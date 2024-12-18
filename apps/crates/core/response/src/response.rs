@@ -1,24 +1,19 @@
 //! 接口响应类型
-use code::Error;
+use code::{Error, ErrorMsg};
 
 use axum::{response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 
+use crate::response_err::ResponseErr;
+
 /// 响应体封装
-pub type Responder<T> = Result<Response<T>, Response<T>>;
+pub type Responder<T> = Result<Response<T>, ResponseErr>;
 
 /// Data list
 #[derive(Debug, Serialize, Deserialize)]
-struct DataList<T: Serialize> {
-    data_list: Vec<T>,
-    total: u64,
-}
-
-/// Data list wrapper
-#[derive(Debug, Serialize, Deserialize)]
-enum DataWrapper<T: Serialize> {
-    Data(T),
-    List(DataList<T>),
+pub struct DataList<T: Serialize> {
+    pub data_list: Vec<T>,
+    pub total: u64,
 }
 
 /// Response structure
@@ -29,7 +24,7 @@ pub struct Response<T: Serialize> {
     /// Return message
     msg: String,
     /// Return data
-    data: Option<DataWrapper<T>>,
+    data: Option<T>,
 }
 
 impl<T: Serialize> Default for Response<T> {
@@ -54,18 +49,18 @@ impl<T: Serialize> Response<T> {
     /// Set return data
     pub fn data(data: T) -> Self {
         Self {
-            data: Some(DataWrapper::Data(data)),
+            data: Some(data),
             ..Default::default()
         }
     }
 
     /// Set return data list
-    pub fn data_list(data_list: Vec<T>, total: u64) -> Self {
-        Self {
-            data: Some(DataWrapper::List(DataList { data_list, total })),
-            ..Default::default()
-        }
-    }
+    // pub fn data_list(data_list: Vec<T>, total: u64) -> Self {
+    //     Self {
+    //         data: Some(DataWrapper::DataList { data_list, total }),
+    //         ..Default::default()
+    //     }
+    // }
 
     ///  Set return msg
     pub fn with_msg(mut self, msg: &str) -> Self {
@@ -77,6 +72,16 @@ impl<T: Serialize> Response<T> {
     pub fn append_msg(mut self, msg: &str) -> Self {
         self.msg = format!("{}, {}", self.msg, msg);
         self
+    }
+}
+
+impl<T: Serialize> Response<DataList<T>> {
+    /// Set return data list
+    pub fn data_list(data_list: Vec<T>, total: u64) -> Self {
+        Self {
+            data: Some(DataList { data_list, total }),
+            ..Default::default()
+        }
     }
 }
 
@@ -93,6 +98,17 @@ impl<T: Serialize> From<Error> for Response<T> {
         Response {
             code: err.code(),
             msg: err.msg(),
+            ..Default::default()
+        }
+    }
+}
+
+/// 将错误信息转换为响应体
+impl<T: Serialize> From<ErrorMsg> for Response<T> {
+    fn from(err: ErrorMsg) -> Self {
+        Response {
+            code: err.code(),
+            msg: err.msg().to_string(),
             ..Default::default()
         }
     }
