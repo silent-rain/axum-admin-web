@@ -11,6 +11,7 @@ response = { path = "../../core/response" }
 inject = { path = "../../core/inject" }
 
 
+axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }
@@ -22,9 +23,7 @@ serde_repr = { workspace = true }
 
 [dev-dependencies]
 migration = { path = "../../core/migration" }
-
 mock_request = { path = "../../mock_request" }
-
 tokio = { workspace = true, features = [
     "macros",
     "rt-multi-thread",

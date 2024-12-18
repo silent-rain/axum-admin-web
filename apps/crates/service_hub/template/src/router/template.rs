@@ -1,27 +1,34 @@
 //! 模板管理
 
-use crate::controller::template::AppTemplateController;
-
-use actix_web::{
-    web::{delete, get, post, put, scope},
-    Scope,
+use axum::{
+    routing::{delete, get, put},
+    Router,
 };
+
+use crate::controller::template::AppTemplateController;
 
 /// 路由器
 pub struct AppTemplateRouter;
 
 impl AppTemplateRouter {
     /// 注册路由
-    pub fn admin_register() -> Scope {
-        scope("/app-templates")
-            .route("/all", get().to(AppTemplateController::all))
-            .route("", get().to(AppTemplateController::list))
-            .route("/{id}", get().to(AppTemplateController::info))
-            .route("", post().to(AppTemplateController::add))
-            .route("/{id}", put().to(AppTemplateController::update))
-            .route("/{id}/status", put().to(AppTemplateController::status))
-            .route("/batch", delete().to(AppTemplateController::batch_delete))
-            .route("/{id}", delete().to(AppTemplateController::delete))
+    pub fn register() -> Router {
+        let router = Router::new()
+            .route("/all", get(AppTemplateController::all))
+            .route(
+                "",
+                get(AppTemplateController::list).post(AppTemplateController::add),
+            )
+            .route(
+                "/:id",
+                get(AppTemplateController::info)
+                    .put(AppTemplateController::update)
+                    .delete(AppTemplateController::delete),
+            )
+            .route("/batch_delete", delete(AppTemplateController::batch_delete))
+            .route("/:id/status", put(AppTemplateController::status));
+
+        Router::new().nest("/app-templates", router)
     }
 }
 

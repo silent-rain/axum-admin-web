@@ -2,9 +2,8 @@
 
 use entity::template::app_template::enums::Status;
 
-use actix_validator::Validate;
-
 use serde::Deserialize;
+use validator::Validate;
 
 /// 查询列表数据 请求体
 #[derive(Default, Deserialize)]
