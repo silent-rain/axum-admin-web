@@ -17,9 +17,9 @@ members = [
 
     # 组件
     "crates/app_state",
-    "crates/mock_request",
+    "crates/axum_mock",
     "crates/middleware",
-    "crates/grpc-api",
+    "crates/grpc_api",
     "crates/plugins",
     "crates/service_hub",
     "crates/timer",
@@ -36,6 +36,7 @@ async-std = "1.13"
 async-trait = "0.1"
 axum = "0.7"
 axum-extra = "0.9"
+axum-test = "16.4"
 tower = "0.5"
 tower-http = "0.6"
 tonic = "0.12"

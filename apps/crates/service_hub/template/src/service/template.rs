@@ -183,11 +183,11 @@ mod tests {
     use super::*;
 
     use database::mock::Mock;
-    use migration::template::app_template::Migration;
+    use entity::template::AppTemplate;
 
     #[tokio::test]
     async fn test_mock_add() -> Result<(), ErrorMsg> {
-        let pool = Mock::from_migration(&Migration)
+        let pool = Mock::from_entity(AppTemplate)
             .await
             .expect("init mock db failed");
 

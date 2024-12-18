@@ -7,6 +7,8 @@ mod asset;
 mod config;
 mod router;
 
+use inject::InjectProvider;
+
 use anyhow::Ok;
 use axum::{
     routing::{get, post},
@@ -48,12 +50,13 @@ pub async fn main() -> anyhow::Result<()> {
         .expect("初始化数据库失败");
 
     // Using an Arc to share the provider across multiple threads.
-    // let provider = InjectProvider::new(Arc::new(db_pool.clone()));
-    // let provider = Arc::new(provider);
+    let provider = InjectProvider::new(Arc::new(db_pool.clone()));
+    let provider = Arc::new(provider);
 
     // Build our application by creating our router.
     let app = Router::new()
         .fallback(router::fallback)
+        .layer(Extension(provider))
         .nest("/api/v1", router::register())
         .route("/", get(router::hello))
         .route("/hello/:name", get(router::json_hello))

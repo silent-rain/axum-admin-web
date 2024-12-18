@@ -35,9 +35,9 @@
   - [ ] 迁移库表
   - [ ] 读写数据库
   - [ ] mock 单元测试
-- [ ] 依赖注入
+- [x] 依赖注入
 - [ ] 中间件
-  - [ ] 跨域
+  - [x] 跨域
   - [ ] Actix Request Identifier
   - [ ] Tracing Logger
   - [ ] 系统接口鉴权

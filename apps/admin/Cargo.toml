@@ -9,6 +9,7 @@ database = { path = "../crates/core/database" }
 response = { path = "../crates/core/response" }
 logger = { path = "../crates/core/logger" }
 utils = { path = "../crates/core/utils" }
+inject = { path = "../crates/core/inject" }
 middleware = { path = "../crates/middleware" }
 
 

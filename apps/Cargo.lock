@@ -34,6 +34,7 @@ dependencies = [
  "colored",
  "database",
  "dotenv",
+ "inject",
  "listenfd",
  "logger",
  "middleware",
@@ -236,6 +237,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 
 [[package]]
+name = "assert-json-diff"
+version = "2.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47e4f2b81832e72834d7518d8487a0396a28cc408186a2e8854c0f98011faf12"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "async-attributes"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -434,6 +445,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "auto-future"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3c1e7e457ea78e524f48639f551fd79703ac3f2237f5ecccdf4708f8a75ad373"
+
+[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -449,7 +466,7 @@ dependencies = [
  "axum-core",
  "bytes",
  "futures-util",
- "http",
+ "http 1.2.0",
  "http-body",
  "http-body-util",
  "hyper",
@@ -482,7 +499,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "futures-util",
- "http",
+ "http 1.2.0",
  "http-body",
  "http-body-util",
  "mime",
@@ -506,7 +523,7 @@ dependencies = [
  "cookie",
  "fastrand",
  "futures-util",
- "http",
+ "http 1.2.0",
  "http-body",
  "http-body-util",
  "mime",
@@ -516,6 +533,57 @@ dependencies = [
  "tower 0.5.2",
  "tower-layer",
  "tower-service",
+]
+
+[[package]]
+name = "axum-test"
+version = "16.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "63e3a443d2608936a02a222da7b746eb412fede7225b3030b64fe9be99eab8dc"
+dependencies = [
+ "anyhow",
+ "assert-json-diff",
+ "auto-future",
+ "axum",
+ "bytes",
+ "bytesize",
+ "cookie",
+ "http 1.2.0",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "mime",
+ "pretty_assertions",
+ "reserve-port",
+ "rust-multipart-rfc7578_2",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "smallvec",
+ "tokio",
+ "tower 0.5.2",
+ "url",
+]
+
+[[package]]
+name = "axum_mock"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum-test",
+ "database",
+ "entity",
+ "inject",
+ "migration",
+ "response",
+ "sea-orm-migration",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "thiserror 2.0.8",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -686,6 +754,12 @@ name = "bytes"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
+
+[[package]]
+name = "bytesize"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3e368af43e418a04d52505cf3dbc23dda4e3407ae2fa99fd0e4f308ce546acc"
 
 [[package]]
 name = "cache"
@@ -1127,6 +1201,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "diff"
+version = "0.1.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56254986775e3233ffa9c4d7d3faaf6d36a2c09d30b20687e9f88bc8bafc16c8"
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1503,7 +1583,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "grpc-api"
+name = "grpc_api"
 version = "0.1.0"
 dependencies = [
  "prost",
@@ -1528,7 +1608,7 @@ dependencies = [
  "fnv",
  "futures-core",
  "futures-sink",
- "http",
+ "http 1.2.0",
  "indexmap 2.7.0",
  "slab",
  "tokio",
@@ -1629,6 +1709,17 @@ dependencies = [
 
 [[package]]
 name = "http"
+version = "0.2.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "601cbb57e577e2f5ef5be8e7b83f0f63994f25aa94d673e54a92d5c516d101f1"
+dependencies = [
+ "bytes",
+ "fnv",
+ "itoa",
+]
+
+[[package]]
+name = "http"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f16ca2af56261c99fba8bac40a10251ce8188205a4c448fbb745a2e4daa76fea"
@@ -1645,7 +1736,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1efedce1fb8e6913f23e0c92de8e62cd5b772a67e7b3946df930a62566c93184"
 dependencies = [
  "bytes",
- "http",
+ "http 1.2.0",
 ]
 
 [[package]]
@@ -1656,7 +1747,7 @@ checksum = "793429d76616a256bcb62c2a2ec2bed781c8307e797e2598c50010f2bee2544f"
 dependencies = [
  "bytes",
  "futures-util",
- "http",
+ "http 1.2.0",
  "http-body",
  "pin-project-lite",
 ]
@@ -1689,7 +1780,7 @@ dependencies = [
  "futures-channel",
  "futures-util",
  "h2",
- "http",
+ "http 1.2.0",
  "http-body",
  "httparse",
  "httpdate",
@@ -1722,7 +1813,7 @@ dependencies = [
  "bytes",
  "futures-channel",
  "futures-util",
- "http",
+ "http 1.2.0",
  "http-body",
  "hyper",
  "pin-project-lite",
@@ -2355,25 +2446,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "mock_request"
-version = "0.1.0"
-dependencies = [
- "database",
- "entity",
- "inject",
- "migration",
- "response",
- "sea-orm-migration",
- "serde",
- "serde_json",
- "serde_repr",
- "thiserror 2.0.8",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "moka"
 version = "0.12.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2406,7 +2478,7 @@ dependencies = [
  "bytes",
  "encoding_rs",
  "futures-util",
- "http",
+ "http 1.2.0",
  "httparse",
  "memchr 2.7.4",
  "mime",
@@ -2926,6 +2998,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "pretty_assertions"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3ae130e2f271fbc2ac3a40fb1d07180839cdbbe443c7a27e1e3c13c5cac0116d"
+dependencies = [
+ "diff",
+ "yansi",
+]
+
+[[package]]
 name = "prettyplease"
 version = "0.2.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3296,6 +3378,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "reserve-port"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9838134a2bfaa8e1f40738fcc972ac799de6e0e06b5157acb95fc2b05a0ea283"
+dependencies = [
+ "lazy_static",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "response"
 version = "0.1.0"
 dependencies = [
@@ -3433,6 +3525,22 @@ dependencies = [
  "mime_guess",
  "sha2",
  "walkdir",
+]
+
+[[package]]
+name = "rust-multipart-rfc7578_2"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03b748410c0afdef2ebbe3685a6a862e2ee937127cdaae623336a459451c8d57"
+dependencies = [
+ "bytes",
+ "futures-core",
+ "futures-util",
+ "http 0.2.12",
+ "mime",
+ "mime_guess",
+ "rand 0.8.5",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -4377,12 +4485,11 @@ name = "template"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum-test",
  "code",
  "database",
  "entity",
  "inject",
- "migration",
- "mock_request",
  "nject",
  "response",
  "sea-orm",
@@ -4645,7 +4752,7 @@ dependencies = [
  "base64 0.22.1",
  "bytes",
  "h2",
- "http",
+ "http 1.2.0",
  "http-body",
  "http-body-util",
  "hyper",
@@ -4748,7 +4855,7 @@ dependencies = [
  "bitflags",
  "bytes",
  "futures-util",
- "http",
+ "http 1.2.0",
  "http-body",
  "http-body-util",
  "http-range-header",

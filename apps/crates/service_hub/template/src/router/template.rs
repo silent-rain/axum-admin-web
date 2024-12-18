@@ -34,17 +34,31 @@ impl AppTemplateRouter {
 
 #[cfg(test)]
 mod tests {
-    use migration::template::app_template::Migration;
-    use mock_request::Error;
-    use mock_request::MockRequest;
+    use axum_test::TestServer;
+    use code::Error;
+    use entity::template::AppTemplate;
+    // use mock_request::Error;
+    // use mock_request::MockRequest;
 
     use super::*;
 
     #[tokio::test]
     async fn test_router_all() -> Result<(), Error> {
-        let request = MockRequest::new(AppTemplateRouter::admin_register)
+        // Build an application with a route.
+        let app = Router::new().merge(AppTemplateRouter::register());
+
+        // Run the application for testing.
+        let server = TestServer::new(app).unwrap();
+
+        // Get the request.
+        let response = server.get("/ping").await;
+
+        // Assertions.
+        response.assert_status_ok();
+
+        let request = MockRequest::new(AppTemplateRouter::register)
             .await
-            .migrations(vec![&Migration])
+            .migrations(vec![&AppTemplate])
             .await?
             .enabled_log(true);
 
