@@ -17,6 +17,8 @@ use axum::{
 use colored::Colorize;
 use database::PoolTrait;
 use dotenv::dotenv;
+use listenfd::ListenFd;
+use tokio::net::TcpListener;
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::{info, warn};
 
@@ -29,7 +31,7 @@ pub async fn main() -> anyhow::Result<()> {
     dotenv().ok();
 
     // 加载配置文件
-    let conf = config::init("config.yaml").expect("配置文件加载失败");
+    let app_config = config::init("config.yaml").expect("配置文件加载失败");
 
     // 初始化日志
     tracing_subscriber::fmt()
@@ -40,23 +42,23 @@ pub async fn main() -> anyhow::Result<()> {
         .init();
 
     // mysql dns
-    let database_url = conf.mysql.dns();
+    let database_url = app_config.mysql.dns();
     // sqlite dns
     // let database_url = conf.sqlite.dns();
 
     // 初始化数据库
-    let db_pool = database::Pool::new(database_url, conf.mysql.options.clone())
+    let db_pool = database::Pool::new(database_url, app_config.mysql.options.clone())
         .await
         .expect("初始化数据库失败");
 
     // Using an Arc to share the provider across multiple threads.
-    let provider = InjectProvider::new(Arc::new(db_pool.clone()));
-    let provider = Arc::new(provider);
+    let inject_provider = Arc::new(InjectProvider::new(Arc::new(db_pool.clone())));
 
     // Build our application by creating our router.
     let app = Router::new()
         .fallback(router::fallback)
-        .layer(Extension(provider))
+        .layer(Extension(app_config))
+        .layer(Extension(inject_provider))
         .nest("/api/v1", router::register())
         .route("/", get(router::hello))
         .route("/hello/:name", get(router::json_hello))
@@ -93,10 +95,24 @@ pub async fn main() -> anyhow::Result<()> {
     // )
 
     // Run our application as a hyper server
-    let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), 3000);
-    info!("listening on {}", addr.to_string().yellow());
-    let listener = tokio::net::TcpListener::bind(addr).await?;
+    let mut listenfd = ListenFd::from_env();
+    let listener = match listenfd.take_tcp_listener(0)? {
+        // if we are given a tcp listener on listen fd 0, we use that one
+        Some(listener) => {
+            listener.set_nonblocking(true)?;
+            TcpListener::from_std(listener)?
+        }
+        // otherwise fall back to local listening
+        None => {
+            let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), 3000);
+            TcpListener::bind(addr).await?
+        }
+    };
 
+    info!(
+        "listening on {}",
+        listener.local_addr()?.to_string().yellow()
+    );
     // Run the server with graceful shutdown
     axum::serve(listener, app.into_make_service())
         .with_graceful_shutdown(router::shutdown_signal())

@@ -24,6 +24,11 @@ cargo clippy -p admin
 cd apps/admin
 
 cargo run -p admin
+
+# 自动重新加载
+# 每当源代码发生更改时，应用程序都会重新编译并重新启动。它用于listenfd将连接从旧版本的应用程序迁移到新编译的版本。
+# cargo install cargo-watch systemfd
+systemfd --no-pid -s http::3000 -- cargo watch -x run -p admin
 ```
 
 ### 生产模式
@@ -61,6 +66,8 @@ cargo doc -p admin
 ## 相关文档
 
 - [axum - 生态系统](https://github.com/tokio-rs/axum/blob/main/ECOSYSTEM.md)
+- [rust axum sse keep_alive](https://www.cnblogs.com/soarowl/p/18320061)
+- [SSE(Server Send Event)服务端推送](https://cloud.tencent.com/developer/article/1988605)
 
 - axum错误处理
   - [自定义 extractor](https://www.cnblogs.com/pythonClub/p/17804708.html)
