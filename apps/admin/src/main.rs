@@ -11,11 +11,17 @@ use config::AppConfig;
 use database::PoolTrait;
 use inject::InjectProvider;
 
-use axum::{Extension, Router};
+use axum::{
+    extract::Request,
+    http::StatusCode,
+    routing::{get, get_service},
+    Extension, Router,
+};
 use colored::Colorize;
 use dotenv::dotenv;
 use listenfd::ListenFd;
 use tokio::net::TcpListener;
+use tower::ServiceExt;
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::{info, warn};
 
@@ -48,40 +54,12 @@ pub async fn main() -> anyhow::Result<()> {
 
     // Build our application by creating our router.
     let app = Router::new()
-        .fallback(router::fallback)
-        .layer(Extension(app_config))
-        .layer(Extension(inject_provider))
-        .nest("/api/v1", router::register());
-    // // 静态生成的文件
-    // .nest_service("/static", ServeDir::new("static"))
-    // .nest_service(
-    //     "/static",
-    //     ServeDir::new("dist").not_found_service(ServeFile::new("dist/index.html")),
-    // );
-    // .layer(Extension(config))
-    // .layer(Extension(pool.clone()))
-    // 构建一个使用此服务的后备服务
-    // .fallback_service(get(|req| async move {
-    //     match ServeDir::new(opt.static_dir).oneshot(req).await {
-    //         Ok(res) => res.map(boxed),
-    //         Err(err) => Response::builder()
-    //             .status(StatusCode::INTERNAL_SERVER_ERROR)
-    //             .body(boxed(Body::from(format!("error: {err}"))))
-    //             .expect("error response"),
-    //         }
-    //     }
-    // ))
-    // .route(
-    //     "/static",
-    //     get_service(ServeFile::new("static/hello.html")).handle_error(
-    //         |error: io::Error| async move {
-    //             (
-    //                 StatusCode::INTERNAL_SERVER_ERROR,
-    //                 format!("Unhandled internal error: {}", error),
-    //             )
-    //         },
-    //     ),
-    // )
+        .nest("/api/v1", router::register()) // API 服务
+        .nest_service("/upload", ServeDir::new("upload")) // 文件服务器, 指定到具体文件才可进行访问
+        .nest_service("/static", ServeFile::new("static/index.html")) // 静态文件服务器
+        .fallback(router::fallback) // 用于处理与路由器路由不匹配的任何请求
+        .layer(Extension(app_config)) // 全局配置文件
+        .layer(Extension(inject_provider)); // 依赖注入
 
     // Run our application as a hyper server
     let mut listenfd = ListenFd::from_env();
