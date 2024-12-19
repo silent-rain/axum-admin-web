@@ -4,10 +4,7 @@ use std::collections::HashMap;
 
 use axum::{
     extract::Path,
-    http::{
-        header::{ACCEPT, AUTHORIZATION, ORIGIN},
-        Method, StatusCode,
-    },
+    http::StatusCode,
     response::IntoResponse,
     routing::{get, post, put},
     Json, Router,
@@ -17,7 +14,6 @@ use response::Response;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::signal;
-use tower_http::cors::{Any, CorsLayer};
 
 use middleware::cors::cors_layer;
 

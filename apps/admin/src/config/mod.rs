@@ -16,42 +16,6 @@ use tracing::error;
 /// 全局配置对象
 static GLOBAL_CONFIG: OnceLock<AppConfig> = OnceLock::new();
 
-/// 初始化, 解析配置文件
-/// # Examples
-///
-/// ```
-/// let config = init("./config.yaml");
-/// assert!(config.is_ok());
-/// ```
-pub fn init(path: &str) -> Result<AppConfig, Error> {
-    let content = read_to_string(path)?;
-    let config: AppConfig = serde_yaml::from_str(&content).map_err(|err| {
-        error!(
-            "{}, err: {err}",
-            Error::ConfigFileParseError(err.to_string())
-        );
-        Error::ConfigFileParseError(err.to_string())
-    })?;
-    GLOBAL_CONFIG.get_or_init(|| config.clone());
-    Ok(config)
-}
-
-/// 获取全局配置
-/// # Examples
-/// ```
-/// config = instance()
-/// assert!(config.is_ok());
-/// ```
-pub fn instance() -> &'static AppConfig {
-    let config = GLOBAL_CONFIG.get();
-    match config {
-        Some(config) => config,
-        None => {
-            panic!("configuration not initialized!")
-        }
-    }
-}
-
 /// 全局配置 结构
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
@@ -75,6 +39,33 @@ pub struct AppConfig {
     pub logger: LoggerConfig,
 }
 
+impl AppConfig {
+    /// 初始化, 解析配置文件
+    /// # Examples
+    ///
+    /// ```
+    /// let config = init("./config.yaml");
+    /// assert!(config.is_ok());
+    /// ```
+    pub fn new(path: &str) -> Result<AppConfig, Error> {
+        let content = read_to_string(path)?;
+        let config: AppConfig = serde_yaml::from_str(&content)
+            .map_err(|err| Error::ConfigFileParseError(err.to_string()))?;
+        GLOBAL_CONFIG.get_or_init(|| config.clone());
+        Ok(config)
+    }
+
+    /// 获取全局配置
+    /// # Examples
+    /// ```
+    /// config = instance()
+    /// assert!(config.is_ok());
+    /// ```
+    pub fn instance() -> Result<&'static AppConfig, Error> {
+        GLOBAL_CONFIG.get().ok_or_else(|| Error::DbNotInit)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -82,7 +73,7 @@ mod tests {
     #[test]
     fn test_init() {
         let path = "config.yaml";
-        let config = init(path);
+        let config = AppConfig::new(path);
         println!("config:\n{:#?}", config);
         assert!(config.is_ok())
     }

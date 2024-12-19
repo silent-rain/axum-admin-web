@@ -7,6 +7,7 @@ mod asset;
 mod config;
 mod router;
 
+use config::AppConfig;
 use inject::InjectProvider;
 
 use anyhow::Ok;
@@ -22,8 +23,6 @@ use tokio::net::TcpListener;
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::{info, warn};
 
-// use service_hub::inject::InjectProvider;
-
 /// 程序入口
 #[tokio::main]
 pub async fn main() -> anyhow::Result<()> {
@@ -31,7 +30,7 @@ pub async fn main() -> anyhow::Result<()> {
     dotenv().ok();
 
     // 加载配置文件
-    let app_config = config::init("config.yaml").expect("配置文件加载失败");
+    let app_config = AppConfig::new("config.yaml")?;
 
     // 初始化日志
     tracing_subscriber::fmt()
@@ -41,15 +40,12 @@ pub async fn main() -> anyhow::Result<()> {
         .with_line_number(true)
         .init();
 
-    // mysql dns
-    let database_url = app_config.postgresql.dns();
-    // sqlite dns
-    // let database_url = conf.sqlite.dns();
-
     // 初始化数据库
-    let db_pool = database::Pool::new(database_url, app_config.postgresql.options.clone())
-        .await
-        .expect("初始化数据库失败");
+    let db_pool = database::Pool::new(
+        app_config.postgresql.dns(),
+        app_config.postgresql.options.clone(),
+    )
+    .await?;
 
     // Using an Arc to share the provider across multiple threads.
     let inject_provider = Arc::new(InjectProvider::new(Arc::new(db_pool.clone())));

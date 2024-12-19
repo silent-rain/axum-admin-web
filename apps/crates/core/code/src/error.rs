@@ -74,6 +74,8 @@ pub enum Error {
     DbDataExistError = 10214,
     #[error("数据已存在子项")]
     DbDataExistChildrenError = 10215,
+    #[error("db not initialized!")]
+    DbNotInit = 10216,
 
     // 验证码
     #[error("未知的验证码")]
