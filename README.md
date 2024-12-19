@@ -39,7 +39,9 @@
 - [ ] 中间件
   - [x] 跨域
   - [ ] Actix Request Identifier
-  - [ ] Tracing Logger
+  - [x] Tracing 高级跟踪/记录
+  - [x] 自动压缩响应
+  - [x] Timeout 超时
   - [ ] 系统接口鉴权
   - [ ] OpenApi 鉴权
   - [ ] 接口权限鉴权

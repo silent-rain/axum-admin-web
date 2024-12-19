@@ -8,15 +8,11 @@ mod config;
 mod router;
 
 use config::AppConfig;
+use database::PoolTrait;
 use inject::InjectProvider;
 
-use anyhow::Ok;
-use axum::{
-    routing::{get, post},
-    Extension, Router,
-};
+use axum::{Extension, Router};
 use colored::Colorize;
-use database::PoolTrait;
 use dotenv::dotenv;
 use listenfd::ListenFd;
 use tokio::net::TcpListener;
@@ -55,10 +51,7 @@ pub async fn main() -> anyhow::Result<()> {
         .fallback(router::fallback)
         .layer(Extension(app_config))
         .layer(Extension(inject_provider))
-        .nest("/api/v1", router::register())
-        .route("/", get(router::hello))
-        .route("/hello/:name", get(router::json_hello))
-        .route("/user", post(router::create_user));
+        .nest("/api/v1", router::register());
     // // 静态生成的文件
     // .nest_service("/static", ServeDir::new("static"))
     // .nest_service(
