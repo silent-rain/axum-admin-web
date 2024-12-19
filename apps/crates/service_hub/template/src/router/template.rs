@@ -16,7 +16,7 @@ impl AppTemplateRouter {
         let router = Router::new()
             .route("/all", get(AppTemplateController::all))
             .route(
-                "",
+                "/",
                 get(AppTemplateController::list).post(AppTemplateController::add),
             )
             .route(
@@ -34,39 +34,26 @@ impl AppTemplateRouter {
 
 #[cfg(test)]
 mod tests {
-    use axum_test::TestServer;
-    use code::Error;
+    use axum_mock::Error;
+    use axum_mock::MockRequest;
+    use entity::template::app_template;
     use entity::template::AppTemplate;
-    // use mock_request::Error;
-    // use mock_request::MockRequest;
+    use response::DataList;
 
     use super::*;
 
     #[tokio::test]
     async fn test_router_all() -> Result<(), Error> {
-        // Build an application with a route.
-        let app = Router::new().merge(AppTemplateRouter::register());
-
-        // Run the application for testing.
-        let server = TestServer::new(app).unwrap();
-
-        // Get the request.
-        let response = server.get("/ping").await;
-
-        // Assertions.
-        response.assert_status_ok();
-
-        let request = MockRequest::new(AppTemplateRouter::register)
-            .await
-            .migrations(vec![&AppTemplate])
+        let mut request = MockRequest::new(AppTemplateRouter::register())
+            .await?
+            .from_entity(vec![AppTemplate])
             .await?
             .enabled_log(true);
 
-        let response = request.assert_get("/app-templates/all", ()).await?;
+        let response = request
+            .get::<(), DataList<app_template::Model>>("/app-templates/all", ())
+            .await?;
         println!("response: {:#?}", response);
-
-        // 判断业务状态码
-        assert!(response.status() == code::Error::OK.code());
 
         Ok(())
     }

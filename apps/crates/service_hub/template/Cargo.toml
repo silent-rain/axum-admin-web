@@ -23,7 +23,7 @@ serde_repr = { workspace = true }
 
 [dev-dependencies]
 axum-test = { workspace = true }
-# mock_request = { path = "../../mock_request" }
+axum_mock = { path = "../../axum_mock" }
 tokio = { workspace = true, features = [
     "macros",
     "rt-multi-thread",

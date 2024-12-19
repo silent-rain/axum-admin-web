@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "t_app_template")]
 pub struct Model {
     /// 模板ID
+    #[serde(default)]
     #[sea_orm(primary_key)]
     pub id: i32,
     /// 用户ID

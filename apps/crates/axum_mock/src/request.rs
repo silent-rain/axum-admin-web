@@ -7,6 +7,7 @@ use response::Response;
 
 use axum::{Extension, Router};
 use axum_test::TestServer;
+use sea_orm::{ConnectionTrait, EntityTrait, Schema};
 use sea_orm_migration::{migrator::MigratorTrait, MigrationTrait, SchemaManager};
 use serde::Serialize;
 use tracing::error;
@@ -36,7 +37,7 @@ impl MockRequest {
         let provider = Arc::new(InjectProvider::new(pool.clone()));
 
         // Build an application with a route.
-        let app = Router::new().layer(Extension(provider)).merge(routes);
+        let app = Router::new().merge(routes).layer(Extension(provider));
 
         // Run the application for testing.
         let server = TestServer::new(app).map_err(|err| Error::InitTestServer(err.to_string()))?;
@@ -80,6 +81,21 @@ impl MockRequest {
         Ok(self)
     }
 
+    /// 从实体创建表
+    pub async fn from_entity<E: EntityTrait>(self, entities: Vec<E>) -> Result<Self, Error> {
+        let builder = self.pool.db().get_database_backend();
+        let schema = Schema::new(builder);
+        for entity in entities {
+            self.pool
+                .db()
+                .execute(builder.build(&schema.create_table_from_entity(entity)))
+                .await
+                .map_err(|err| Error::InitDb(err.to_string()))?;
+        }
+
+        Ok(self)
+    }
+
     /// 迁移所有库表
     pub async fn all_migrations(self) -> Result<Self, Error> {
         Migrator::up(self.pool.db(), None)
@@ -89,10 +105,11 @@ impl MockRequest {
     }
 
     /// Get 请求
-    pub async fn get<T>(&mut self, path: &str, params: T) -> Result<Response<T>, Error>
+    pub async fn get<T, R>(&mut self, path: &str, params: T) -> Result<Response<R>, Error>
     where
         T: Serialize,
-        T: serde::de::DeserializeOwned,
+        R: Serialize,
+        R: serde::de::DeserializeOwned,
     {
         self.server.clear_query_params();
 
@@ -104,8 +121,7 @@ impl MockRequest {
         // Assertions.
         response.assert_status_ok();
 
-        let resp = response.json::<Response<T>>();
-
+        let resp = response.json::<Response<R>>();
         Ok(resp)
     }
 }
@@ -129,7 +145,7 @@ mod tests {
         let routes = Router::new()
             .route("/template/health", get(health))
             .route("/template/hello", get(hello));
-        let response = MockRequest::new(routes)
+        let response: Response<()> = MockRequest::new(routes)
             .await?
             .enabled_log(true)
             .get("/template/health", ())

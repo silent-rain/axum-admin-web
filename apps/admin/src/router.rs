@@ -7,9 +7,11 @@ use axum_extra::extract::{cookie::Cookie, PrivateCookieJar};
 use serde::Deserialize;
 use tokio::signal;
 use tower::ServiceBuilder;
-use tower_http::compression::CompressionLayer;
-use tower_http::timeout::TimeoutLayer;
-use tower_http::trace::TraceLayer;
+use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
+use tower_http::{
+    compression::CompressionLayer, limit::RequestBodyLimitLayer, timeout::TimeoutLayer,
+    trace::TraceLayer,
+};
 
 use middleware::cors::cors_layer;
 
@@ -70,24 +72,37 @@ async fn check_cookie(jar: PrivateCookieJar) -> impl IntoResponse {
 pub fn register() -> Router {
     let state = AppState {};
 
+    // 速率限制
+    //允许每个IP地址最多有五个请求的突发, 每两秒钟补充一种元素
+    let governor_conf = Box::new(
+        GovernorConfigBuilder::default()
+            .per_second(2)
+            .burst_size(5)
+            .finish()
+            .unwrap(),
+    );
+
     Router::new()
         // 注意中间件加载顺序: Last in, first loading
         // .wrap(ApiOperation::default())
         .layer(
             ServiceBuilder::new()
-                // .layer(cors_layer()) // 为CORS添加标头的中间件
                 .layer(CompressionLayer::new()) // 自动压缩响应
                 .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
                 .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
-                .layer(Extension(state)),
+                .layer(Extension(state))
+                .layer(GovernorLayer {
+                    config: governor_conf.into(),
+                }), // 速率限制
         )
-
-    // 接口鉴权
-    // .wrap(CasbinAuth::default())
-    // .wrap(SystemApiAuth::default())
-    // .wrap(OpenApiAuth::default())
-    // .wrap(ContextMiddleware::default())
-    // <<< 中间件 <<<
-    // .merge( HealthRouter::register()) // 健康检查
-    // .nest("/v1", LocationRouter::register())
+        .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
+        .layer(cors_layer()) // 为CORS添加标头的中间件
+                             // 接口鉴权
+                             // .wrap(CasbinAuth::default())
+                             // .wrap(SystemApiAuth::default())
+                             // .wrap(OpenApiAuth::default())
+                             // .wrap(ContextMiddleware::default())
+                             // <<< 中间件 <<<
+                             // .merge( HealthRouter::register()) // 健康检查
+                             // .nest("/v1", LocationRouter::register())
 }

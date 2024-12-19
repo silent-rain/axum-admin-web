@@ -39,6 +39,7 @@ axum-extra = "0.9"
 axum-test = "16.4"
 tower = "0.5"
 tower-http = "0.6"
+tower_governor = "0.5"
 tonic = "0.12"
 tonic-health = "0.12"
 tonic-reflection = "0.12"
@@ -49,7 +50,7 @@ validator = "0.19"
 listenfd = "1.0"
 num_cpus = "1.16"
 
-# 数据库
+# 数据库`
 sea-orm = "1.1"
 sea-orm-migration = "1.1"
 sqlx = "0.8"
