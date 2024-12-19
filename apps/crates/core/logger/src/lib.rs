@@ -34,12 +34,12 @@ type RegistryLayer = Box<dyn Layer<Layered<ErrorLayer<Registry>, Registry>> + Se
 struct LoggerLayer<'a> {
     layers: Vec<RegistryLayer>,
     guards: Vec<WorkerGuard>,
-    config: &'a config::Logger,
+    config: &'a config::LoggerConfig,
 }
 
 impl<'a> LoggerLayer<'a> {
     /// 从配置创建对象
-    fn form_config(config: &'a config::Logger) -> Self {
+    fn form_config(config: &'a config::LoggerConfig) -> Self {
         let layers = Vec::new();
         let guards = Vec::new();
         LoggerLayer {
@@ -96,7 +96,7 @@ impl<'a> LoggerLayer<'a> {
     }
 
     /// 构建对象
-    pub fn build(config: &'a config::Logger) -> (Vec<RegistryLayer>, Vec<WorkerGuard>) {
+    pub fn build(config: &'a config::LoggerConfig) -> (Vec<RegistryLayer>, Vec<WorkerGuard>) {
         let mut binding = Self::form_config(config);
         let layer = binding
             .set_console()
@@ -113,12 +113,12 @@ impl<'a> LoggerLayer<'a> {
 
 /// 日志
 pub struct Logger<'a> {
-    config: &'a config::Logger,
+    config: &'a config::LoggerConfig,
 }
 
 impl<'a> Logger<'a> {
     /// 从配置创建对象
-    fn form_config(config: &'a config::Logger) -> Self {
+    fn form_config(config: &'a config::LoggerConfig) -> Self {
         Logger { config }
     }
 
@@ -158,7 +158,7 @@ impl<'a> Logger<'a> {
     }
 
     /// 构建日志订阅器
-    pub fn build(config: &'a config::Logger) -> Result<Vec<WorkerGuard>, Error> {
+    pub fn build(config: &'a config::LoggerConfig) -> Result<Vec<WorkerGuard>, Error> {
         let (layers, guards) = LoggerLayer::build(config);
 
         Self::form_config(config)

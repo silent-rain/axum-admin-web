@@ -42,12 +42,12 @@ pub async fn main() -> anyhow::Result<()> {
         .init();
 
     // mysql dns
-    let database_url = app_config.mysql.dns();
+    let database_url = app_config.postgresql.dns();
     // sqlite dns
     // let database_url = conf.sqlite.dns();
 
     // 初始化数据库
-    let db_pool = database::Pool::new(database_url, app_config.mysql.options.clone())
+    let db_pool = database::Pool::new(database_url, app_config.postgresql.options.clone())
         .await
         .expect("初始化数据库失败");
 

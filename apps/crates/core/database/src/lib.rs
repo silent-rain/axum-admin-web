@@ -10,7 +10,7 @@ mod pool;
 pub use pool::{Pool, PoolTrait};
 pub use sea_orm::DatabaseConnection;
 
-pub mod config;
-pub use config::DbOptions;
+mod config;
+pub use config::{Config, Options};
 
 pub mod mock;

@@ -1,12 +1,12 @@
 //! 配置
 
-use database::DbOptions;
+use database::Options;
 
 use serde::{Deserialize, Serialize};
 
 /// 日志配置
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct Logger {
+pub struct LoggerConfig {
     /// 彩色日志
     #[serde(default)]
     pub color_eyre: bool,
@@ -96,7 +96,7 @@ pub struct DbConfig {
     /// 是否启用，默认不启用
     pub enable: bool,
     /// 数据库配置
-    pub options: DbOptions,
+    pub options: Options,
 }
 
 impl Default for DbConfig {
@@ -106,7 +106,7 @@ impl Default for DbConfig {
             log_name: "db_layer".to_owned(),
             level: Level::Warn,
             enable: false,
-            options: DbOptions::default(),
+            options: Options::default(),
         }
     }
 }

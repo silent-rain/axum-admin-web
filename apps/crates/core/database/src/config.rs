@@ -1,40 +1,104 @@
 //! 数据库配置
 use serde::{Deserialize, Serialize};
 
-/// Mysql 数据库配置
-#[derive(Debug, Default, Serialize, Deserialize, Clone)]
-pub struct MysqlConfig {
-    /// db信息唯一标识
-    pub key: String,
-    /// IP或域名
-    pub host: String,
-    /// 端口
-    pub port: i32,
-    /// 账号
-    pub username: String,
-    /// 密码
-    pub password: String,
-    /// 数据库名称
-    pub db_name: String,
-    /// 数据库参数
-    pub options: DbOptions,
+/// 数据库类型
+#[derive(Debug, Default, Serialize, Deserialize, Clone, PartialEq)]
+pub enum DbType {
+    #[default]
+    #[serde(rename = "mysql")]
+    Mysql,
+    #[serde(rename = "postgresql")]
+    PostgreSQL,
+    #[serde(rename = "sqlite")]
+    Sqlite,
 }
 
-impl MysqlConfig {
+/// Mysql 数据库配置
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Config {
+    /// 数据库类型
+    #[serde(default)]
+    pub r#type: DbType,
+    /// db信息唯一标识
+    #[serde(default)]
+    pub key: String,
+    /// IP或域名
+    #[serde(default)]
+    pub host: String,
+    /// 端口
+    #[serde(default)]
+    pub port: i32,
+    /// 账号
+    #[serde(default)]
+    pub username: String,
+    /// 密码
+    #[serde(default)]
+    pub password: String,
+    /// 数据库名称
+    #[serde(default)]
+    pub db_name: String,
+    /// Setting default PostgreSQL schema
+    #[serde(default)]
+    pub schema: String,
+    /// sqlite 路径
+    #[serde(default)]
+    pub sqlite_path: Option<String>,
+    /// 数据库参数
+    #[serde(default)]
+    pub options: Options,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            r#type: DbType::Mysql,
+            key: "".to_string(),
+            host: "".to_string(),
+            port: 0,
+            username: "".to_string(),
+            password: "".to_string(),
+            db_name: "".to_string(),
+            schema: "public".to_string(),
+            sqlite_path: None,
+            options: Options::default(),
+        }
+    }
+}
+
+impl Config {
     /// 数据库地址
+    /// 不支持时区
     pub fn dns(&self) -> String {
-        // 这些参数会导致连接失败: ?charset=utf8mb4&parseTime=false&loc=Asia%2FShanghai
-        // loc=Local
-        format!(
-            "mysql://{}:{}@{}:{}/{}",
-            self.username, self.password, self.host, self.port, self.db_name,
-        )
+        match self.r#type {
+            DbType::Mysql => {
+                // 这些参数会导致连接失败: ?charset=utf8mb4&parseTime=false&loc=Asia%2FShanghai
+                // loc=Local
+                format!(
+                    "mysql://{}:{}@{}:{}/{}",
+                    self.username, self.password, self.host, self.port, self.db_name,
+                )
+            }
+            DbType::PostgreSQL => {
+                format!(
+                    "postgres://{}:{}@{}:{}/{}?currentSchema={}",
+                    self.username, self.password, self.host, self.port, self.db_name, self.schema,
+                )
+            }
+            DbType::Sqlite => {
+                // Read only: sqlite://path/to/db.sqlite?mode=ro
+                // Create file if not exists: sqlite://path/to/db.sqlite?mode=rwc
+                // In memory: sqlite::memory:
+                self.sqlite_path
+                    .clone()
+                    .map_or_else(|| "data.dat?mode=rwc".to_string(), |v| v)
+            }
+        }
     }
 }
 
 /// 参数配置
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct DbOptions {
+pub struct Options {
     /// Set the maximum number of connections of the pool
     pub max_connections: u32,
     /// Set the minimum number of connections of the pool
@@ -53,15 +117,15 @@ pub struct DbOptions {
     pub logging_level: Level,
 }
 
-impl Default for DbOptions {
+impl Default for Options {
     fn default() -> Self {
         Self {
-            max_connections: 8,
+            max_connections: 100,
             min_connections: 5,
-            connect_timeout: 10,
-            acquire_timeout: 10,
-            idle_timeout: 10,
-            max_lifetime: 10,
+            connect_timeout: 8,
+            acquire_timeout: 8,
+            idle_timeout: 8,
+            max_lifetime: 8,
             logging_enable: true,
             logging_level: Level::Info,
         }

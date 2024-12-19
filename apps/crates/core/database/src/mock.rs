@@ -5,7 +5,7 @@ use std::sync::Arc;
 use sea_orm::{ConnectionTrait, DbErr, EntityTrait, Schema, Statement};
 use sea_orm_migration::{MigrationTrait, SchemaManager};
 
-use crate::{config::Level, DbOptions, Pool, PoolTrait};
+use crate::{config::Level, Options, Pool, PoolTrait};
 
 #[derive(Debug, Default)]
 pub struct Mock {}
@@ -56,7 +56,7 @@ impl Mock {
     pub async fn connect() -> Arc<dyn PoolTrait> {
         // Connecting SQLite
         let db_url = "sqlite::memory:".to_string();
-        let opt = DbOptions {
+        let opt = Options {
             logging_enable: true,
             logging_level: Level::Info,
             ..Default::default()

@@ -2,7 +2,7 @@
 //! cargo run --package migration --example migration
 use std::env;
 
-use database::DbOptions;
+use database::Options;
 use migration::Migrator;
 
 use colored::Colorize;
@@ -38,7 +38,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 /// 迁移表
 async fn migrator_up(database_url: String) -> Result<(), Box<dyn std::error::Error>> {
-    let options = DbOptions::default();
+    let options = Options::default();
     let db = database::Pool::connect(database_url, options)
         .await
         .expect("初始化数据库失败");

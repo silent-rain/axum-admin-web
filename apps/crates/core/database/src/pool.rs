@@ -1,7 +1,7 @@
 //! 数据库连接池
 use std::{future::Future, pin::Pin, time::Duration};
 
-use crate::config::DbOptions;
+use crate::config::Options;
 
 use sea_orm::{
     ConnectOptions, ConnectionTrait, Database, DatabaseBackend, DatabaseConnection, DbErr,
@@ -25,7 +25,7 @@ pub struct Pool {
 
 impl Pool {
     /// 初始化数据库连接池
-    pub async fn new(db_url: String, options: DbOptions) -> Result<Pool, DbErr> {
+    pub async fn new(db_url: String, options: Options) -> Result<Pool, DbErr> {
         let db = Self::connect(db_url, options.clone()).await?;
         let pool = Pool { db };
         Ok(pool)
@@ -46,7 +46,7 @@ impl Pool {
     /// ```sql
     /// SHOW VARIABLES LIKE 'max_connections';
     /// ```
-    pub async fn connect(db_url: String, options: DbOptions) -> Result<DatabaseConnection, DbErr> {
+    pub async fn connect(db_url: String, options: Options) -> Result<DatabaseConnection, DbErr> {
         let mut opt = ConnectOptions::new(db_url);
         opt.max_connections(options.max_connections)
             .min_connections(options.min_connections)
@@ -61,8 +61,8 @@ impl Pool {
         // 检查连接是否有效
         db.ping().await?;
 
-        // 设置 Time Zone
-        Self::set_time_zone(&db).await?;
+        // 设置 Mysql Time Zone
+        Self::set_mysql_time_zone(&db).await?;
 
         Ok(db)
     }
@@ -72,11 +72,12 @@ impl Pool {
         Pool { db }
     }
 
-    /// 设置 Time Zone
-    /// 不支持SQLite3
+    /// 设置 Mysql Time Zone
+    /// 不支持 SQLite3
+    /// 不支持 PostgreSQL
     #[allow(unused)]
-    async fn set_time_zone(db: &DatabaseConnection) -> Result<(), DbErr> {
-        if db.get_database_backend() == DatabaseBackend::Sqlite {
+    async fn set_mysql_time_zone(db: &DatabaseConnection) -> Result<(), DbErr> {
+        if db.get_database_backend() != DatabaseBackend::MySql {
             return Ok(());
         }
         let stmt = sea_orm::Statement::from_string(
@@ -109,7 +110,7 @@ mod tests {
     #[tokio::test]
     async fn test_new_pool() -> Result<(), DbErr> {
         let db_url = "sqlite::memory:".to_owned();
-        let options = DbOptions::default();
+        let options = Options::default();
         let pool = Pool::new(db_url, options).await?;
         let _ = pool.close().await;
         Ok(())
@@ -118,7 +119,7 @@ mod tests {
     #[tokio::test]
     async fn test_connect() -> Result<(), DbErr> {
         let db_url = "sqlite::memory:".to_owned();
-        let options = DbOptions::default();
+        let options = Options::default();
         let db = Pool::connect(db_url, options).await?;
         let _ = db.close().await;
         Ok(())
@@ -127,7 +128,7 @@ mod tests {
     #[tokio::test]
     async fn test_form_connect() -> Result<(), DbErr> {
         let db_url = "sqlite::memory:".to_owned();
-        let options = DbOptions::default();
+        let options = Options::default();
         let db = Pool::connect(db_url, options).await?;
 
         let pool = Pool::form_connect(db);
@@ -138,7 +139,7 @@ mod tests {
     #[tokio::test]
     async fn test_raw_sql() -> Result<(), DbErr> {
         let db_url = "sqlite::memory:".to_owned();
-        let options = DbOptions::default();
+        let options = Options::default();
         let pool = Pool::new(db_url, options).await?;
 
         // 创建表

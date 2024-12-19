@@ -26,8 +26,8 @@ pub enum Error {
     #[error("invalid request parameter")]
     InvalidParameter = 10105,
     /// config file parse error
-    #[error("config file parse error")]
-    ConfigFileParseError = 10106,
+    #[error("config file parse error, {0}")]
+    ConfigFileParseError(String) = 10106,
 
     // 数据处理异常
     /// Serialize the given data structure as a String of JSON.

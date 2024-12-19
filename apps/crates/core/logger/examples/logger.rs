@@ -1,6 +1,6 @@
 use color_eyre::{eyre::eyre, Result};
 use config::{ConsoleBunyanConfig, ConsoleConfig, DbConfig, FileConfig};
-use database::DbOptions;
+use database::Options;
 use logger::{config, Logger};
 use tracing::{debug, error, info, instrument, span, trace, warn, Level};
 
@@ -29,7 +29,7 @@ fn demo1() {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let conf = config::Logger {
+    let conf = config::LoggerConfig {
         color_eyre: false,
         console: ConsoleConfig {
             level: config::Level::Debug,
@@ -50,7 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             enable: false,
             address: "sqlite://./data.dat?mode=rwc".to_owned(),
             log_name: "db_layer".to_owned(),
-            options: DbOptions::default(),
+            options: Options::default(),
         },
     };
     let _guards = Logger::build(&conf).expect("日志初始化失败");

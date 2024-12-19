@@ -1,13 +1,13 @@
 //! 定时任务管理
 use std::time::Duration;
 
-use database::DbOptions;
+use database::Options;
 use scheduler::{Job, JobScheduler};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let database_url = "mysql://one:pass@127.0.0.1:3306/actix_admin_web".to_owned();
-    let options = DbOptions::default();
+    let options = Options::default();
     let db = database::Pool::new(database_url, options)
         .await
         .expect("初始化数据库失败");

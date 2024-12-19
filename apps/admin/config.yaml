@@ -12,8 +12,30 @@ server:
   upload: # 上传路径配置
     filepath: "./upload" # 上传文件路径
 
-# mysql 数据库配置
+
+# PostgreSQL 数据库配置
+postgresql:
+  type: "postgresql" # 数据库类型
+  key: "db" # db信息唯一标识
+  host: "127.0.0.1" # IP或域名
+  port: 5432 # 端口
+  username: "one" # 账号
+  password: "pass" # 密码
+  db_name: "axum_admin_web" # 数据库名称
+  schema: "public"
+  options: # 参数配置
+    max_connections: 100 # 设置池的最大连接数
+    min_connections: 5 # 设置池的最小连接数
+    connect_timeout: 10 # 设置获取连接时的超时持续时间
+    acquire_timeout: 10 # 设置等待获取连接所花费的最大时间
+    idle_timeout: 10 # 在关闭连接之前设置空闲持续时间
+    max_lifetime: 10 # 设置单个连接的最大使用寿命
+    logging_enable: false # 启用日志记录
+    logging_level: "warn" # 日志记录级别（默认error）off/trace/debug/info/warn/error
+
+# MySQL 数据库配置(示例)
 mysql:
+  type: "mysql" # 数据库类型
   key: "db" # db信息唯一标识
   host: "127.0.0.1" # IP或域名
   port: 3306 # 端口
@@ -30,13 +52,20 @@ mysql:
     logging_enable: false # 启用日志记录
     logging_level: "warn" # 日志记录级别（默认error）off/trace/debug/info/warn/error
 
-
-# sqlite3 数据库配置
+# Sqlite3 数据库配置(示例)
 sqlite:
-  filepath: "data.dat?mode=rwc" # 数据库路径
-  pool_min_idle: 8 # 最小连接数
-  pool_max_open: 32 # 最大连接数
-  timeout_seconds: 15 # 连接超时时间单位秒
+  type: "sqlite" # 数据库类型
+  key: "db" # db信息唯一标识
+  sqlite_path: "sqlite://data.dat?mode=rwc" # sqlite 路径
+  options: # 参数配置
+    max_connections: 100 # 设置池的最大连接数
+    min_connections: 5 # 设置池的最小连接数
+    connect_timeout: 10 # 设置获取连接时的超时持续时间
+    acquire_timeout: 10 # 设置等待获取连接所花费的最大时间
+    idle_timeout: 10 # 在关闭连接之前设置空闲持续时间
+    max_lifetime: 10 # 设置单个连接的最大使用寿命
+    logging_enable: false # 启用日志记录
+    logging_level: "warn" # 日志记录级别（默认error）off/trace/debug/info/warn/error
 
 # 日志
 logger:
