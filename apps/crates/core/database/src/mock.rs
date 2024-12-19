@@ -13,18 +13,6 @@ pub struct Mock {}
 impl Mock {
     /// 从迁移文件创建表
     pub async fn from_migration(
-        migration: &dyn MigrationTrait,
-    ) -> Result<Arc<dyn PoolTrait>, DbErr> {
-        let pool = Self::connect().await;
-
-        let manager = SchemaManager::new(pool.db());
-        migration.up(&manager).await?;
-
-        Ok(pool)
-    }
-
-    /// 从多个迁移文件创建表
-    pub async fn from_migrations(
         migrations: Vec<&dyn MigrationTrait>,
     ) -> Result<Arc<dyn PoolTrait>, DbErr> {
         let pool = Self::connect().await;
@@ -38,14 +26,18 @@ impl Mock {
     }
 
     /// 从实体创建表
-    pub async fn from_entity<E: EntityTrait>(entity: E) -> Result<Arc<dyn PoolTrait>, DbErr> {
+    pub async fn from_entity<E: EntityTrait>(
+        entities: Vec<E>,
+    ) -> Result<Arc<dyn PoolTrait>, DbErr> {
         let pool = Self::connect().await;
 
         let builder = pool.db().get_database_backend();
         let schema = Schema::new(builder);
-        pool.db()
-            .execute(builder.build(&schema.create_table_from_entity(entity)))
-            .await?;
+        for entity in entities {
+            pool.db()
+                .execute(builder.build(&schema.create_table_from_entity(entity)))
+                .await?;
+        }
 
         Ok(pool)
     }

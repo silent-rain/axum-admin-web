@@ -187,7 +187,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_add() -> Result<(), ErrorMsg> {
-        let pool = Mock::from_entity(AppTemplate)
+        let pool = Mock::from_entity(vec![AppTemplate])
             .await
             .expect("init mock db failed");
 

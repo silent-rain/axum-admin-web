@@ -42,7 +42,7 @@ async fn mock_pool() -> Result<(), DbErr> {
 
 async fn mock_entity() -> Result<(), DbErr> {
     // 创建表并返回pool
-    let pool = Mock::from_entity(User).await?;
+    let pool = Mock::from_entity(vec![User]).await?;
 
     // 插入数据
     let sql = r#"INSERT INTO user (id,user_id, status)

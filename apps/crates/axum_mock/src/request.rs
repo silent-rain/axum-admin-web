@@ -33,8 +33,7 @@ impl MockRequest {
     pub async fn new(routes: Router) -> Result<Self, Error> {
         let pool = Mock::connect().await;
 
-        let provider = InjectProvider::new(pool.clone());
-        let provider = Arc::new(provider);
+        let provider = Arc::new(InjectProvider::new(pool.clone()));
 
         // Build an application with a route.
         let app = Router::new().layer(Extension(provider)).merge(routes);

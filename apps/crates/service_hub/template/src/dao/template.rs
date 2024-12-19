@@ -266,7 +266,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_all() -> Result<(), DbErr> {
-        let pool = Mock::from_entity(AppTemplate).await?;
+        let pool = Mock::from_entity(vec![AppTemplate]).await?;
 
         let dao = AppTemplateDao { db: pool };
 
@@ -278,7 +278,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_info() -> Result<(), Box<DbErr>> {
-        let pool = Mock::from_entity(AppTemplate).await?;
+        let pool = Mock::from_entity(vec![AppTemplate]).await?;
 
         let dao = AppTemplateDao { db: pool };
 
@@ -289,7 +289,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_add() -> Result<(), DbErr> {
-        let pool = Mock::from_entity(AppTemplate).await?;
+        let pool = Mock::from_entity(vec![AppTemplate]).await?;
 
         let dao = AppTemplateDao { db: pool };
 
