@@ -1,4 +1,24 @@
 //! 后台管理 WEB 服务
+//!
+//! 前端路由指定前缀路径:
+//! ```js
+//! admin-web/src/routes/index.tsx
+//!
+//!
+//! export default function Router() {
+//!    // 指定前缀访问路径
+//!    const router = createBrowserRouter(rootRouter, { basename: '/admin' });
+//!  
+//!    return <RouterProvider router={router} />;
+//! }
+//!
+//! ```js
+//! admin-web/vite.config.ts
+//!
+//! export default defineConfig({
+//!     base: '/admin',
+//! }
+//! ```
 
 use crate::controller::admin_web_site::AdminWebSiteController;
 
@@ -13,6 +33,7 @@ impl AdminWebSiteRouter {
     pub fn register() -> Router {
         Router::new()
             // 内嵌服务
+            // 对单页面应用支持不好, 直接访问路由会白屏
             // http://0.0.0.0:3000/admin
             .route_service(
                 "/embed-admin",
