@@ -85,7 +85,8 @@ const rootRouter: RouteObject[] = [
 ];
 
 export default function Router() {
-  const router = createBrowserRouter(rootRouter);
+  // 指定前缀访问路径
+  const router = createBrowserRouter(rootRouter, { basename: '/admin' });
 
   return <RouterProvider router={router} />;
 }

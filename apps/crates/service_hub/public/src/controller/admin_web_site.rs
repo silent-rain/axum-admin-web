@@ -1,10 +1,14 @@
 //! 后台管理 WEB 服务
 
-use std::sync::Arc;
+use axum::response::Html;
+use embed_asset::web::AssetAdminWebDist;
+use embed_asset::EmbedAssetTrait;
 
-use app_state::AssetState;
-
-use actix_web::{web::Data, HttpRequest, HttpResponse};
+use axum::body::Body;
+use axum::extract::Path;
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::response::Response;
 use tracing::warn;
 
 /// 控制器
@@ -12,24 +16,72 @@ pub struct AdminWebSiteController;
 
 impl AdminWebSiteController {
     /// 后台管理首页
-    pub async fn index(
-        req: HttpRequest,
-        asset_state: Data<Arc<AssetState>>,
-    ) -> Option<HttpResponse> {
-        let mut filename = req.match_info().query("filename");
+    pub async fn index() -> impl IntoResponse {
+        let filename = "index.html".to_string();
+        warn!("req filename: {filename}");
+
+        let r = AssetAdminWebDist;
+        let asset = r.data(&filename).map_or_else(|| vec![], |v| v);
+        let mimetype = r.mimetype(&filename).map_or_else(|| "".to_string(), |v| v);
+        let content_type = format!("{mimetype}; charset=utf-8");
+
+        Response::builder()
+            .header("Content-Type", content_type)
+            .status(StatusCode::OK)
+            .body(Body::from(asset))
+            .map_err(|e| {
+                (
+                    StatusCode::NOT_FOUND,
+                    format!("Not Found: {}", e.to_string()),
+                )
+            })
+    }
+
+    /// 后台管理静态资源
+    pub async fn static_dir(Path(path): Path<String>) -> impl IntoResponse {
+        let mut filename = path.clone();
+
         if filename.is_empty() || filename == "/" {
-            filename = "index.html"
+            filename = "index.html".to_string()
         }
         warn!("req filename: {filename}");
-        let r = asset_state.admin_web_dist.read().await;
-        let asset = r.data(filename)?;
-        let mimetype = r.mimetype(filename)?;
 
+        let r = AssetAdminWebDist;
+        let asset = r.data(&filename).map_or_else(
+            || vec![],
+            |v| {
+                warn!("not found: {filename}");
+                v
+            },
+        );
+        let mimetype = r.mimetype(&filename).map_or_else(|| "".to_string(), |v| v);
         let content_type = format!("{mimetype}; charset=utf-8");
-        let resp = HttpResponse::Ok()
-            .insert_header(("Content-Type", content_type))
-            .insert_header(("X-Hdr", "sample"))
-            .body(asset);
-        Some(resp)
+
+        Response::builder()
+            .header("Content-Type", content_type)
+            .status(StatusCode::OK)
+            .body(Body::from(asset))
+            .map_err(|e| {
+                (
+                    StatusCode::NOT_FOUND,
+                    format!("Not Found: {}", e.to_string()),
+                )
+            })
+    }
+
+    // 后台服务 - 失败示例
+    pub async fn _index2(Path(path): Path<String>) -> Html<String> {
+        let mut filename = path.clone();
+
+        if filename.is_empty() || filename == "/" {
+            filename = "index.html".to_string()
+        }
+        warn!("req filename: {filename}");
+        let r = AssetAdminWebDist;
+
+        let body = r
+            .to_string(&filename)
+            .map_or_else(|_| "".to_string(), |v| v);
+        Html(body)
     }
 }

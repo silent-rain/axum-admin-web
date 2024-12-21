@@ -1,7 +1,7 @@
 //! 静态资源定义
-use std::io::Write;
+use std::io::Write as _;
 
-use code::Error;
+use crate::error::Error;
 
 use rust_embed::EmbeddedFile;
 
@@ -22,6 +22,7 @@ pub trait EmbedAssetTrait: Send + 'static {
     }
 
     /// 写入文件, 如存在则覆盖文件
+    /// 同步写法
     fn write(&self, file_path: &str) -> Result<(), Error> {
         let data = self
             .get(file_path)
@@ -31,6 +32,26 @@ pub trait EmbedAssetTrait: Send + 'static {
         file.write_all(&data)?;
         Ok(())
     }
+
+    /// 写入文件, 如存在则覆盖文件
+    // fn async_write(
+    //     &self,
+    //     file_path: &str,
+    // ) -> impl std::future::Future<Output = Result<(), Error>> + Send
+    // where
+    //     Self: Sync,
+    // {
+    //     async {
+    //         let data = self
+    //             .get(file_path)
+    //             .map(|asset| asset.data.to_vec())
+    //             .ok_or(Error::AssetNotFound)?;
+
+    //         let mut file = tokio::fs::File::create(Path::new(file_path)).await?;
+    //         file.write_all(&data).await?;
+    //         Ok(())
+    //     }
+    // }
 
     /// 转为字符串
     fn to_string(&self, file_path: &str) -> Result<String, Error> {

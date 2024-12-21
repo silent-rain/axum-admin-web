@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-utils = { path = "../core/utils" }
+embed_asset = { path = "../embed_asset" }
 
 tokio = { workspace = true }

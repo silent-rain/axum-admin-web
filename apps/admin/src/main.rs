@@ -10,9 +10,10 @@ mod router;
 use config::AppConfig;
 use database::PoolTrait;
 use inject::InjectProvider;
+use service_hub::public::AdminWebSiteRouter;
 
 use axum::{
-    extract::Request,
+    extract::{Path, Request},
     http::StatusCode,
     routing::{get, get_service},
     Extension, Router,
@@ -37,7 +38,7 @@ pub async fn main() -> anyhow::Result<()> {
     // 初始化日志
     tracing_subscriber::fmt()
         .compact()
-        .with_max_level(tracing::Level::INFO)
+        .with_max_level(tracing::Level::TRACE)
         .with_level(true)
         .with_line_number(true)
         .init();
@@ -54,9 +55,14 @@ pub async fn main() -> anyhow::Result<()> {
 
     // Build our application by creating our router.
     let app = Router::new()
-        .nest("/api/v1", router::register()) // API 服务
-        .nest_service("/upload", ServeDir::new("upload")) // 文件服务器, 指定到具体文件才可进行访问
-        .nest_service("/static", ServeFile::new("static/index.html")) // 静态文件服务器
+        // .nest("/api/v1", router::register()) // API 服务
+        .merge(AdminWebSiteRouter::register()) // 后台WEB服务
+        // .nest_service("/", ServeFile::new("../../admin-web/dist/index.html")) // 静态文件服务器
+        // .nest("/", axum_static::static_router("../../admin-web/dist/"))
+        // .nest_service(
+        //     "/wb/*key",
+        //     ServeDir::new("../../admin-web/dist").append_index_html_on_directories(true),
+        // ) // 文件服务器, 指定到具体文件才可进行访问
         .fallback(router::fallback) // 用于处理与路由器路由不匹配的任何请求
         .layer(Extension(app_config)) // 全局配置文件
         .layer(Extension(inject_provider)); // 依赖注入

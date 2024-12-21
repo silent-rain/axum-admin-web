@@ -9,12 +9,14 @@ database = { path = "../crates/core/database" }
 response = { path = "../crates/core/response" }
 logger = { path = "../crates/core/logger" }
 utils = { path = "../crates/core/utils" }
+embed_asset = { path = "../crates/embed_asset" }
 inject = { path = "../crates/core/inject" }
 middleware = { path = "../crates/middleware" }
-
+service_hub = { path = "../crates/service_hub" }
 
 axum = { workspace = true }
 axum-extra = { workspace = true, features = ["cookie-private"] }
+axum_static = { workspace = true }
 tokio = { workspace = true, features = ["full"] }
 tower = { workspace = true }
 tower_governor = { workspace = true }

@@ -1,7 +1,7 @@
 //! 静态资源文件
 #![allow(unused)]
 
-use utils::asset::EmbedAssetTrait;
+use embed_asset::EmbedAssetTrait;
 
 use rust_embed::{EmbeddedFile, RustEmbed};
 
@@ -26,17 +26,6 @@ impl EmbedAssetTrait for AssetDbDataFile {
 pub struct AssetConfigFile;
 
 impl EmbedAssetTrait for AssetConfigFile {
-    fn get(&self, file_path: &str) -> Option<EmbeddedFile> {
-        Self::get(file_path)
-    }
-}
-
-/// 后台管理 WEB 静态资源
-#[derive(Debug, Clone, Default, RustEmbed)]
-#[folder = "../../admin-web/dist/"]
-pub struct AssetAdminWebDist;
-
-impl EmbedAssetTrait for AssetAdminWebDist {
     fn get(&self, file_path: &str) -> Option<EmbeddedFile> {
         Self::get(file_path)
     }

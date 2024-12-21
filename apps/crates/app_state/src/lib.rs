@@ -1,6 +1,6 @@
 //! 应用状态
 
-use utils::asset::EmbedAssetTrait;
+use embed_asset::EmbedAssetTrait;
 
 use tokio::sync::RwLock;
 

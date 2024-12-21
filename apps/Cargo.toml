@@ -17,6 +17,7 @@ members = [
 
     # 组件
     "crates/app_state",
+    "crates/embed_asset",
     "crates/axum_mock",
     "crates/middleware",
     "crates/grpc_api",
@@ -37,6 +38,7 @@ async-trait = "0.1"
 axum = "0.7"
 axum-extra = "0.9"
 axum-test = "16.4"
+axum_static = "1.7"
 tower = "0.5"
 tower-http = "0.6"
 tower_governor = "0.5"

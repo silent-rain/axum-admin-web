@@ -2,14 +2,14 @@
 
 use response::Response;
 
-use actix_web::Responder;
+use axum::response::IntoResponse;
 
 /// 控制器
 pub struct HealthController;
 
 impl HealthController {
     /// 健康检查
-    pub async fn health() -> impl Responder {
-        Response::ok().data("ok")
+    pub async fn health() -> impl IntoResponse {
+        Response::data("ok")
     }
 }

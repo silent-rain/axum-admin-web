@@ -14,10 +14,13 @@ use tower_http::{
 };
 
 use middleware::cors::cors_layer;
+use service_hub::public::HealthRouter;
+use tracing::warn;
 
 /// axum handler for any request that fails to match the router routes.
 /// This implementation returns HTTP status code Not Found (404).
 pub async fn fallback(uri: axum::http::Uri) -> impl axum::response::IntoResponse {
+    warn!("No route {}", uri);
     (
         axum::http::StatusCode::NOT_FOUND,
         format!("No route {}", uri),
@@ -97,12 +100,13 @@ pub fn register() -> Router {
         )
         .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(cors_layer()) // 为CORS添加标头的中间件
-                             // 接口鉴权
-                             // .wrap(CasbinAuth::default())
-                             // .wrap(SystemApiAuth::default())
-                             // .wrap(OpenApiAuth::default())
-                             // .wrap(ContextMiddleware::default())
-                             // <<< 中间件 <<<
-                             // .merge( HealthRouter::register()) // 健康检查
-                             // .nest("/v1", LocationRouter::register())
+        .merge(HealthRouter::register()) // 健康检查
+                                         // 接口鉴权
+                                         // .wrap(CasbinAuth::default())
+                                         // .wrap(SystemApiAuth::default())
+                                         // .wrap(OpenApiAuth::default())
+                                         // .wrap(ContextMiddleware::default())
+                                         // <<< 中间件 <<<
+                                         // .merge( HealthRouter::register()) // 健康检查
+                                         // .nest("/v1", LocationRouter::register())
 }

@@ -36,10 +36,12 @@ dependencies = [
  "anyhow",
  "axum",
  "axum-extra",
+ "axum_static",
  "code",
  "colored",
  "database",
  "dotenv",
+ "embed_asset",
  "inject",
  "listenfd",
  "logger",
@@ -50,10 +52,11 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_yaml",
+ "service_hub",
  "thiserror 2.0.8",
  "tokio",
  "tower 0.5.2",
- "tower-http",
+ "tower-http 0.6.2",
  "tower_governor",
  "tracing",
  "tracing-subscriber",
@@ -224,8 +227,8 @@ checksum = "c1fd03a028ef38ba2276dce7e33fcd6369c158a1bca17946c4b1b701891c1ff7"
 name = "app_state"
 version = "0.1.0"
 dependencies = [
+ "embed_asset",
  "tokio",
- "utils",
 ]
 
 [[package]]
@@ -376,7 +379,7 @@ dependencies = [
  "futures-lite",
  "gloo-timers",
  "kv-log-macro",
- "log 0.4.22",
+ "log",
  "memchr 2.7.4",
  "once_cell",
  "pin-project-lite",
@@ -438,31 +441,6 @@ name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
-
-[[package]]
-name = "auth"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "code",
- "context",
- "database",
- "entity",
- "inject",
- "jwt",
- "log 0.1.0",
- "nject",
- "response",
- "sea-orm",
- "serde",
- "serde_json",
- "system",
- "tokio",
- "tracing",
- "user",
- "utils",
- "validator",
-]
 
 [[package]]
 name = "auto-future"
@@ -605,6 +583,16 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "axum_static"
+version = "1.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d134d2aeabd596bc82e44748f999c9b0e535a7b756cb36c62df0de6d2445d6e"
+dependencies = [
+ "axum",
+ "tower-http 0.5.2",
 ]
 
 [[package]]
@@ -801,7 +789,7 @@ dependencies = [
  "base64 0.21.7",
  "image",
  "imageproc",
- "log 0.4.22",
+ "log",
  "rand 0.8.5",
  "rusttype",
 ]
@@ -1214,7 +1202,7 @@ name = "database"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "log 0.4.22",
+ "log",
  "sea-orm",
  "sea-orm-migration",
  "serde",
@@ -1292,6 +1280,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0"
 dependencies = [
  "serde",
+]
+
+[[package]]
+name = "embed_asset"
+version = "0.1.0"
+dependencies = [
+ "rust-embed",
+ "thiserror 2.0.8",
+ "tokio",
 ]
 
 [[package]]
@@ -1635,7 +1632,7 @@ checksum = "15f1ce686646e7f1e19bf7d5533fe443a45dbfb990e00629110797578b42fb19"
 dependencies = [
  "aho-corasick 1.1.3",
  "bstr",
- "log 0.4.22",
+ "log",
  "regex-automata 0.4.9",
  "regex-syntax 0.8.5",
 ]
@@ -2151,26 +2148,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "initialize"
-version = "0.1.0"
-dependencies = [
- "code",
- "database",
- "entity",
- "inject",
- "nject",
- "permission",
- "response",
- "rust-embed",
- "sea-orm",
- "serde",
- "serde_repr",
- "tracing",
- "utils",
- "validator",
-]
-
-[[package]]
 name = "inject"
 version = "0.1.0"
 dependencies = [
@@ -2292,7 +2269,7 @@ version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0de8b303297635ad57c9f5059fd9cee7a47f8e8daa09df0fcd07dd39fb22977f"
 dependencies = [
- "log 0.4.22",
+ "log",
 ]
 
 [[package]]
@@ -2358,25 +2335,6 @@ checksum = "07af8b9cdd281b7915f413fa73f29ebd5d55d0d3f0155584dade1ff18cea1b17"
 dependencies = [
  "autocfg",
  "scopeguard",
-]
-
-[[package]]
-name = "log"
-version = "0.1.0"
-dependencies = [
- "code",
- "database",
- "entity",
- "inject",
- "nject",
- "response",
- "sea-orm",
- "serde",
- "serde_repr",
- "tracing",
- "uap-rust",
- "utils",
- "validator",
 ]
 
 [[package]]
@@ -2473,7 +2431,7 @@ dependencies = [
  "response",
  "serde_json",
  "tokio",
- "tower-http",
+ "tower-http 0.6.2",
  "tracing",
 ]
 
@@ -2829,25 +2787,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "organization"
-version = "0.1.0"
-dependencies = [
- "code",
- "context",
- "database",
- "entity",
- "inject",
- "nject",
- "response",
- "sea-orm",
- "serde",
- "serde_repr",
- "tracing",
- "utils",
- "validator",
-]
-
-[[package]]
 name = "ouroboros"
 version = "0.18.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2952,27 +2891,6 @@ name = "percent-encoding"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
-
-[[package]]
-name = "permission"
-version = "0.1.0"
-dependencies = [
- "code",
- "context",
- "database",
- "entity",
- "inject",
- "nject",
- "response",
- "sea-orm",
- "serde",
- "serde_repr",
- "tokio",
- "tracing",
- "utils",
- "uuid",
- "validator",
-]
 
 [[package]]
 name = "petgraph"
@@ -3200,7 +3118,7 @@ checksum = "d0f3e5beed80eb580c68e2c600937ac2c4eedabdfd5ef1e5b7ea4f3fba84497b"
 dependencies = [
  "heck 0.5.0",
  "itertools 0.13.0",
- "log 0.4.22",
+ "log",
  "multimap",
  "once_cell",
  "petgraph",
@@ -3258,8 +3176,10 @@ dependencies = [
 name = "public"
 version = "0.1.0"
 dependencies = [
- "app_state",
+ "axum",
+ "embed_asset",
  "response",
+ "tower-http 0.6.2",
  "tracing",
 ]
 
@@ -3780,25 +3700,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "schedule"
-version = "0.1.0"
-dependencies = [
- "code",
- "database",
- "entity",
- "inject",
- "nject",
- "response",
- "scheduler",
- "sea-orm",
- "serde",
- "serde_repr",
- "tracing",
- "uuid",
- "validator",
-]
-
-[[package]]
 name = "scheduler"
 version = "0.1.0"
 dependencies = [
@@ -3846,7 +3747,7 @@ dependencies = [
  "bigdecimal",
  "chrono",
  "futures",
- "log 0.4.22",
+ "log",
  "ouroboros",
  "rust_decimal",
  "sea-orm-macros",
@@ -4075,18 +3976,11 @@ dependencies = [
 name = "service_hub"
 version = "0.1.0"
 dependencies = [
- "auth",
- "initialize",
+ "embed_asset",
  "inject",
- "log 0.1.0",
- "organization",
- "permission",
  "public",
- "schedule",
- "system",
  "template",
  "tokio",
- "user",
 ]
 
 [[package]]
@@ -4297,7 +4191,7 @@ dependencies = [
  "hashlink",
  "hex",
  "indexmap 2.7.0",
- "log 0.4.22",
+ "log",
  "memchr 2.7.4",
  "once_cell",
  "paste",
@@ -4385,7 +4279,7 @@ dependencies = [
  "hkdf",
  "hmac",
  "itoa",
- "log 0.4.22",
+ "log",
  "md-5",
  "memchr 2.7.4",
  "once_cell",
@@ -4430,7 +4324,7 @@ dependencies = [
  "hmac",
  "home",
  "itoa",
- "log 0.4.22",
+ "log",
  "md-5",
  "memchr 2.7.4",
  "num-bigint",
@@ -4465,7 +4359,7 @@ dependencies = [
  "futures-intrusive",
  "futures-util",
  "libsqlite3-sys",
- "log 0.4.22",
+ "log",
  "percent-encoding",
  "serde",
  "serde_urlencoded",
@@ -4554,26 +4448,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.90",
-]
-
-[[package]]
-name = "system"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "code",
- "database",
- "entity",
- "inject",
- "nject",
- "response",
- "sea-orm",
- "serde",
- "serde_repr",
- "tracing",
- "utils",
- "uuid",
- "validator",
 ]
 
 [[package]]
@@ -4970,6 +4844,31 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e9cd434a998747dd2c4276bc96ee2e0c7a2eadf3cae88e52be55a05fa9053f5"
+dependencies = [
+ "bitflags",
+ "bytes",
+ "futures-util",
+ "http 1.2.0",
+ "http-body",
+ "http-body-util",
+ "http-range-header",
+ "httpdate",
+ "mime",
+ "mime_guess",
+ "percent-encoding",
+ "pin-project-lite",
+ "tokio",
+ "tokio-util",
+ "tower-layer",
+ "tower-service",
+ "tracing",
+]
+
+[[package]]
+name = "tower-http"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "403fa3b783d4b626a8ad51d766ab03cb6d2dbfc46b1c5d4448395e6628dc9697"
@@ -5029,7 +4928,7 @@ version = "0.1.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "784e0ac535deb450455cbfa28a6f0df145ea1bb7ae51b821cf5e7927fdcfbdd0"
 dependencies = [
- "log 0.4.22",
+ "log",
  "pin-project-lite",
  "tracing-attributes",
  "tracing-core",
@@ -5066,7 +4965,7 @@ checksum = "2d637245a0d8774bd48df6482e086c59a8b5348a910c3b0579354045a9d82411"
 dependencies = [
  "ahash 0.8.11",
  "gethostname",
- "log 0.4.22",
+ "log",
  "serde",
  "serde_json",
  "time",
@@ -5102,7 +5001,7 @@ version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f751112709b4e791d8ce53e32c4ed2d353565a795ce84da2285393f41557bdf2"
 dependencies = [
- "log 0.4.22",
+ "log",
  "once_cell",
  "tracing-core",
 ]
@@ -5113,7 +5012,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee855f1f400bd0e5c02d150ae5de3840039a3f54b025156404e34c23c03f47c3"
 dependencies = [
- "log 0.4.22",
+ "log",
  "once_cell",
  "tracing-core",
 ]
@@ -5241,32 +5140,6 @@ dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
-]
-
-[[package]]
-name = "user"
-version = "0.1.0"
-dependencies = [
- "base64 0.22.1",
- "cache",
- "code",
- "context",
- "database",
- "entity",
- "inject",
- "nject",
- "permission",
- "regex 1.11.1",
- "response",
- "rust_decimal",
- "sea-orm",
- "serde",
- "serde_json",
- "serde_repr",
- "tracing",
- "utils",
- "uuid",
- "validator",
 ]
 
 [[package]]
@@ -5429,7 +5302,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f89bb38646b4f81674e8f5c3fb81b562be1fd936d84320f3264486418519c79"
 dependencies = [
  "bumpalo",
- "log 0.4.22",
+ "log",
  "proc-macro2",
  "quote",
  "syn 2.0.90",

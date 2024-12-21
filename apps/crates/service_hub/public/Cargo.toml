@@ -6,7 +6,9 @@ edition = "2021"
 [dependencies]
 response = { path = "../../core/response" }
 
-app_state = { path = "../../app_state" }
+# app_state = { path = "../../app_state" }
+embed_asset = { path = "../../embed_asset" }
 
-
+axum = { workspace = true }
+tower-http = { workspace = true, features = ["fs"] }
 tracing = { workspace = true }

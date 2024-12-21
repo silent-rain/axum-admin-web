@@ -1,0 +1,13 @@
+[package]
+name = "embed_asset"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { workspace = true }
+thiserror = { workspace = true }
+rust-embed = { workspace = true, features = [
+    "debug-embed",
+    "include-exclude",
+    "mime-guess",
+] }

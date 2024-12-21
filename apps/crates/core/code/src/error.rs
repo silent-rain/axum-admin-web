@@ -126,10 +126,6 @@ pub enum Error {
     #[error("Get Schedule Instance Error")]
     ScheduleInstance = 10284,
 
-    #[error("未找到资源")]
-    AssetNotFound = 10290,
-    #[error("资源解析错误")]
-    AssetParseError = 10291,
     #[error("缓存不存在")]
     CacheNotFound = 10292,
     #[error("Casbin 策略执行失败, {0}")]

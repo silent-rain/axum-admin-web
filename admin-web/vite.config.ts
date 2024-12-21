@@ -1,7 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -20,19 +19,17 @@ export default defineConfig({
       },
     },
   },
-  plugins: [
-    react(),
-  ],
-  base: './',
+  plugins: [react()],
+  base: '/admin',
   publicDir: 'public',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
   build: {
     target: 'modules', // 浏览器兼容目标
-    outDir: 'dist', // 打包输出路径
+    outDir: '../apps/admin/dist', // 打包输出路径
     assetsDir: 'assets', // 静态资源存放路径
     cssCodeSplit: true, // 允许 css 代码拆分
     sourcemap: false, // 不生成 sourceMap 文件
@@ -44,4 +41,4 @@ export default defineConfig({
       },
     },
   },
-})
+});
