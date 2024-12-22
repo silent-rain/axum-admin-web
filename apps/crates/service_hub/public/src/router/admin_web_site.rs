@@ -35,14 +35,14 @@ impl AdminWebSiteRouter {
             // 内嵌服务
             // 对单页面应用支持不好, 直接访问路由会白屏
             // http://0.0.0.0:3000/admin
-            .route_service(
-                "/embed-admin",
-                get(AdminWebSiteController::index), // 后台 WEB 静态资源服务-首页
-            )
-            .route_service(
-                "/embed-admin/*path",
-                get(AdminWebSiteController::static_dir), // 后台 WEB 静态资源服务-静态资源
-            )
+            // .route_service(
+            //     "/admin",
+            //     get(AdminWebSiteController::index), // 后台 WEB 静态资源服务-首页
+            // )
+            // .route_service(
+            //     "/admin/*path",
+            //     get(AdminWebSiteController::static_dir), // 后台 WEB 静态资源服务-静态资源
+            // )
             // http://0.0.0.0:3000/admin/
             .nest_service(
                 "/admin",

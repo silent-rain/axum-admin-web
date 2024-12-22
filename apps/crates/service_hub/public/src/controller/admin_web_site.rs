@@ -9,6 +9,7 @@ use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::response::Response;
+use tracing::info;
 use tracing::warn;
 
 /// 控制器
@@ -18,7 +19,7 @@ impl AdminWebSiteController {
     /// 后台管理首页
     pub async fn index() -> impl IntoResponse {
         let filename = "index.html".to_string();
-        warn!("req filename: {filename}");
+        info!("req filename: {filename}");
 
         let r = AssetAdminWebDist;
         let asset = r.data(&filename).map_or_else(|| vec![], |v| v);
@@ -44,23 +45,30 @@ impl AdminWebSiteController {
         if filename.is_empty() || filename == "/" {
             filename = "index.html".to_string()
         }
-        warn!("req filename: {filename}");
+        info!("req filename: {filename}");
 
         let r = AssetAdminWebDist;
-        let asset = r.data(&filename).map_or_else(
-            || vec![],
-            |v| {
-                warn!("not found: {filename}");
-                v
-            },
-        );
+        let data = match r.data(&filename) {
+            Some(v) => v,
+            None => {
+                warn!("Not Found: {}", &filename);
+
+                match r.data("index.html") {
+                    Some(v) => v,
+                    None => {
+                        return Err((StatusCode::NOT_FOUND, format!("Not Found: index.html")));
+                    }
+                }
+            }
+        };
+
         let mimetype = r.mimetype(&filename).map_or_else(|| "".to_string(), |v| v);
         let content_type = format!("{mimetype}; charset=utf-8");
 
         Response::builder()
             .header("Content-Type", content_type)
             .status(StatusCode::OK)
-            .body(Body::from(asset))
+            .body(Body::from(data))
             .map_err(|e| {
                 (
                     StatusCode::NOT_FOUND,
