@@ -13,6 +13,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 
+use axum_context::ContextLayer;
 use middleware::cors::cors_layer;
 use service_hub::public::HealthRouter;
 use tracing::warn;
@@ -90,13 +91,14 @@ pub fn register() -> Router {
         // .wrap(ApiOperation::default())
         .layer(
             ServiceBuilder::new()
+                .layer(ContextLayer::new()) // 上下文
                 .layer(CompressionLayer::new()) // 自动压缩响应
                 .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
                 .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
-                .layer(Extension(state))
                 .layer(GovernorLayer {
                     config: governor_conf.into(),
-                }), // 速率限制
+                }) // 速率限制
+                .layer(Extension(state)),
         )
         .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(cors_layer()) // 为CORS添加标头的中间件

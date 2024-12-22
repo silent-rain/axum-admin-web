@@ -12,6 +12,7 @@ utils = { path = "../crates/core/utils" }
 embed_asset = { path = "../crates/embed_asset" }
 inject = { path = "../crates/core/inject" }
 middleware = { path = "../crates/middleware" }
+axum_context = { path = "../crates/axum_context" }
 service_hub = { path = "../crates/service_hub" }
 
 axum = { workspace = true }

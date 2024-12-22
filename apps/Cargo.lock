@@ -36,6 +36,7 @@ dependencies = [
  "anyhow",
  "axum",
  "axum-extra",
+ "axum_context",
  "axum_static",
  "code",
  "colored",
@@ -564,6 +565,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum_context"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "futures",
+ "pin-project-lite",
+ "tokio",
+ "tower 0.5.2",
+]
+
+[[package]]
 name = "axum_mock"
 version = "0.1.0"
 dependencies = [
@@ -992,13 +1004,6 @@ dependencies = [
  "getrandom 0.2.15",
  "once_cell",
  "tiny-keccak",
-]
-
-[[package]]
-name = "context"
-version = "0.1.0"
-dependencies = [
- "futures",
 ]
 
 [[package]]

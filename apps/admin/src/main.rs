@@ -55,7 +55,7 @@ pub async fn main() -> anyhow::Result<()> {
 
     // Build our application by creating our router.
     let app = Router::new()
-        // .nest("/api/v1", router::register()) // API 服务
+        .nest("/api/v1", router::register()) // API 服务
         .merge(AdminWebSiteRouter::register()) // 后台WEB服务
         // .nest_service("/", ServeFile::new("../../admin-web/dist/index.html")) // 静态文件服务器
         // .nest("/", axum_static::static_router("../../admin-web/dist/"))

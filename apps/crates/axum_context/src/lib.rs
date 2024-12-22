@@ -3,6 +3,6 @@ mod context;
 pub use context::{ApiAuthType, Context};
 
 mod middleware;
-pub use middleware::ContextMiddleware;
+pub use middleware::ContextLayer;
 
 pub mod extractor;

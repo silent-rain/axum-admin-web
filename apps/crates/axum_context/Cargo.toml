@@ -1,0 +1,12 @@
+[package]
+name = "axum_context"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+axum = { workspace = true }
+tower = { workspace = true }
+tokio = { workspace = true }
+futures = { workspace = true }
+pin-project-lite = "0.2"
