@@ -20,9 +20,7 @@
 //! }
 //! ```
 
-use crate::controller::admin_web_site::AdminWebSiteController;
-
-use axum::{routing::get, Router};
+use axum::Router;
 use tower_http::services::{ServeDir, ServeFile};
 
 /// 路由
