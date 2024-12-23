@@ -3432,6 +3432,7 @@ dependencies = [
  "code",
  "serde",
  "serde_json",
+ "tonic",
 ]
 
 [[package]]
@@ -4490,6 +4491,7 @@ dependencies = [
  "code",
  "database",
  "entity",
+ "grpc_api",
  "inject",
  "nject",
  "response",
@@ -4497,6 +4499,7 @@ dependencies = [
  "serde",
  "serde_repr",
  "tokio",
+ "tonic",
  "tracing",
  "validator",
 ]

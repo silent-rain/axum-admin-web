@@ -73,6 +73,21 @@ impl<T: Serialize> Response<T> {
         self.msg = format!("{}, {}", self.msg, msg);
         self
     }
+
+    /// 返回 PB 结构
+    pub fn to_pb<PB>(&self) -> Result<tonic::Response<PB>, Error>
+    where
+        PB: for<'de> Deserialize<'de>,
+    {
+        // 转换为JSON字符串
+        let data =
+            serde_json::to_string(self).map_err(|err| Error::JsonSerialization(err.to_string()))?;
+
+        // 将JSON字符串反序列化为结构体
+        let target: PB = serde_json::from_str(&data)
+            .map_err(|err| Error::JsonDeserialization(err.to_string()))?;
+        Ok(tonic::Response::new(target))
+    }
 }
 
 impl<T: Serialize> Response<DataList<T>> {

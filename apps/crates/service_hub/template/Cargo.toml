@@ -9,11 +9,13 @@ entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
 response = { path = "../../core/response" }
 inject = { path = "../../core/inject" }
+grpc_api = { path = "../../grpc_api" }
 
 
 axum = { workspace = true }
-validator = { workspace = true, features = ["derive"] }
+tonic = { workspace = true }
 sea-orm = { workspace = true }
+validator = { workspace = true, features = ["derive"] }
 nject = { workspace = true }
 
 tracing = { workspace = true }
