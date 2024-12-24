@@ -22,8 +22,8 @@ pub struct AppTemplateController;
 impl AppTemplateController {
     /// 获取所有{{InterfaceName}}
     pub async fn all(Extension(provider): Extension<AInjectProvider>) -> impl IntoResponse {
-        let perm_user_service: AppTemplateService = provider.provide();
-        let resp = perm_user_service.all().await;
+        let app_template_service: AppTemplateService = provider.provide();
+        let resp = app_template_service.all().await;
         match resp {
             Ok((results, total)) => Response::data_list(results, total),
             Err(err) => err.into(),

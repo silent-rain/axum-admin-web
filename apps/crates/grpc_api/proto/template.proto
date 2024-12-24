@@ -1,0 +1,133 @@
+// 模板
+
+syntax = "proto3";
+
+package template;
+
+import "google/api/annotations.proto";
+
+// App Template Management Service
+service AppTemplateService {
+  rpc LisAppTemplates(LisAppTemplatesReq) returns (LisAppTemplatesResp) {
+    option (google.api.http) = {
+      get : "/api/v1/app-templates"
+    };
+  }
+  rpc GeAppTemplate(GetAppTemplateReq) returns (GetAppTemplateResp) {
+    option (google.api.http) = {
+      get : "/api/v1/app-templates/{id}"
+    };
+  }
+  rpc CreateAppTemplate(CreateAppTemplateReq) returns (CreateAppTemplateResp) {
+    option (google.api.http) = {
+      post : "/api/v1/app-templates"
+      body : "*"
+    };
+  }
+  rpc UpdateAppTemplate(UpdateAppTemplateReq) returns (UpdateAppTemplateResp) {
+    option (google.api.http) = {
+      put : "/api/v1/app-templates/{id}"
+      body : "*"
+    };
+  }
+  rpc UpdateAppTemplateStatus(UpdateAppTemplateStatusReq)
+      returns (UpdateAppTemplateStatusResp) {
+    option (google.api.http) = {
+      put : "/api/v1/app-templates/{id}/status"
+      body : "*"
+    };
+  }
+  rpc DeleteAppTemplate(DeleteAppTemplateReq) returns (DeleteAppTemplateResp) {
+    option (google.api.http) = {
+      delete : "/api/v1/app-templates/{id}"
+    };
+  }
+  rpc BatchDeleteAppTemplate(BatchDeleteAppTemplateReq)
+      returns (BatchDeleteAppTemplateResp) {
+    option (google.api.http) = {
+      delete : "/api/v1/app-templates/batch_delete"
+    };
+  }
+}
+
+// 模板 Model
+message AppTemplate {}
+
+message LisAppTemplatesReq {
+  uint32 page = 1;       // 当前分页
+  uint32 page_size = 2;  // 页面大小
+  string start_time = 3; // 开始时间
+  string end_time = 4;   // 结束时间
+  string order_by = 5;   // 排序字段
+  bool is_all = 6;       // 返回有所有数据
+}
+
+message LisAppTemplatesResp {
+  message DataList {
+    repeated AppTemplate data_list = 1; // 模板列表
+    int32 total = 2;                    // 总数量
+  }
+
+  int32 code = 1;
+  string msg = 2;
+  DataList data = 3;
+}
+
+message GetAppTemplateReq {
+  int32 id = 1; // 模板ID
+}
+
+message GetAppTemplateResp {
+  int32 code = 1;
+  string msg = 2;
+  AppTemplate data = 3;
+}
+
+message CreateAppTemplateReq {
+  int32 user_id = 1; // 用户ID
+  string desc = 2;   // 描述信息
+  int32 status = 3;  // 状态(0:停用,1:正常)
+}
+
+message CreateAppTemplateResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message UpdateAppTemplateReq {
+  int32 user_id = 1; // 用户ID
+  string desc = 2;   // 描述信息
+  int32 status = 3;  // 状态(0:停用,1:正常)
+}
+
+message UpdateAppTemplateResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message UpdateAppTemplateStatusReq {
+  int32 id = 1; // 模板ID
+}
+
+message UpdateAppTemplateStatusResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message DeleteAppTemplateReq {
+  repeated int32 id = 1; // 模板ID
+}
+
+message DeleteAppTemplateResp {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message BatchDeleteAppTemplateReq {
+  repeated int32 id = 1; // 模板ID列表
+}
+
+message BatchDeleteAppTemplateResp {
+  int32 code = 1;
+  string msg = 2;
+}
