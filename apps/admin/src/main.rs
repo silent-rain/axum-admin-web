@@ -12,18 +12,11 @@ use database::PoolTrait;
 use inject::InjectProvider;
 use service_hub::public::AdminWebSiteRouter;
 
-use axum::{
-    extract::{Path, Request},
-    http::StatusCode,
-    routing::{get, get_service},
-    Extension, Router,
-};
+use axum::{Extension, Router};
 use colored::Colorize;
 use dotenv::dotenv;
 use listenfd::ListenFd;
 use tokio::net::TcpListener;
-use tower::ServiceExt;
-use tower_http::services::{ServeDir, ServeFile};
 use tracing::{info, warn};
 
 /// 程序入口
