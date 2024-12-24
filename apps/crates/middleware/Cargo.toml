@@ -6,7 +6,7 @@ edition = "2021"
 [lib]
 name = "middleware"
 path = "src/lib.rs"
-crate-type = ["staticlib", "cdylib", "rlib"]
+crate-type = ["staticlib", "rlib"]
 
 [dependencies]
 code = { path = "../core/code" }

@@ -20,30 +20,28 @@ pub struct AppTemplateService {
 }
 
 impl AppTemplateService {
-    /// 获取所有{{InterfaceName}}数据
-    pub async fn all(&self) -> Result<(Vec<app_template::Model>, u64), ErrorMsg> {
-        let (results, total) = self.app_template_dao.all().await.map_err(|err| {
-            error!("查询{{InterfaceName}}列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询{{InterfaceName}}列表失败")
-        })?;
-
-        Ok((results, total))
-    }
-
     /// 获取{{InterfaceName}}列表
     pub async fn list(
         &self,
         req: GetAppTemplateListReq,
     ) -> Result<(Vec<app_template::Model>, u64), ErrorMsg> {
+        if req.is_all {
+            let (results, total) = self.app_template_dao.all().await.map_err(|err| {
+                error!("查询{{InterfaceName}}列表失败, err: {:#?}", err);
+                Error::DbQueryError
+                    .into_msg()
+                    .with_msg("查询{{InterfaceName}}列表失败")
+            })?;
+
+            return Ok((results, total));
+        }
+
         let (results, total) = self.app_template_dao.list(req).await.map_err(|err| {
             error!("查询{{InterfaceName}}列表失败, err: {:#?}", err);
             Error::DbQueryError
                 .into_msg()
                 .with_msg("查询{{InterfaceName}}列表失败")
         })?;
-
         Ok((results, total))
     }
 
@@ -116,9 +114,9 @@ impl AppTemplateService {
     }
 
     /// 更新{{InterfaceName}}
-    pub async fn update(&self, id: i32, data: UpdateAppTemplateReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, data: UpdateAppTemplateReq) -> Result<u64, ErrorMsg> {
         let model = app_template::ActiveModel {
-            id: Set(id),
+            id: Set(data.id),
             desc: Set(data.desc),
             status: Set(data.status as i8),
             ..Default::default()
@@ -223,7 +221,11 @@ mod tests {
         assert!(result.user_id == 1);
 
         // 查询所有的模板
-        let (results, total) = service.all().await?;
+        let query = GetAppTemplateListReq {
+            is_all: true,
+            ..Default::default()
+        };
+        let (results, total) = service.list(query).await?;
         println!("all results: {results:#?}");
         assert!(!results.is_empty());
         assert!(total == 2);
