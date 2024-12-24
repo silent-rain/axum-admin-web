@@ -2,7 +2,10 @@
 
 use std::time::Duration;
 
-use axum::{http::StatusCode, response::IntoResponse, Extension, Router};
+use axum::{
+    error_handling::HandleErrorLayer, http::StatusCode, response::IntoResponse, BoxError,
+    Extension, Router,
+};
 use axum_extra::extract::{cookie::Cookie, PrivateCookieJar};
 use serde::Deserialize;
 use tokio::signal;
@@ -15,6 +18,7 @@ use tower_http::{
 
 use axum_context::ContextLayer;
 use middleware::cors::cors_layer;
+use middleware::demo::TimeoutLayer2;
 use service_hub::public::HealthRouter;
 use tracing::warn;
 
@@ -91,6 +95,11 @@ pub fn register() -> Router {
         // .wrap(ApiOperation::default())
         .layer(
             ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|_: BoxError| async {
+                    // because Axum uses infallible errors, you must handle your custom error type from your middleware here
+                    StatusCode::BAD_REQUEST
+                }))
+                .layer(TimeoutLayer2::new()) // 上下文
                 .layer(ContextLayer::new()) // 上下文
                 .layer(CompressionLayer::new()) // 自动压缩响应
                 .layer(TraceLayer::new_for_http()) // 高级跟踪/记录

@@ -2433,9 +2433,11 @@ dependencies = [
  "entity",
  "futures",
  "jwt",
+ "pin-project",
  "response",
  "serde_json",
  "tokio",
+ "tower 0.5.2",
  "tower-http 0.6.2",
  "tracing",
 ]

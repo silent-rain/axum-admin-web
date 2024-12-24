@@ -18,11 +18,14 @@ jwt = { path = "../core/jwt" }
 
 
 axum = { workspace = true }
+tokio = { workspace = true }
+tower = { workspace = true }
 tower-http = { workspace = true, features = ["cors"] }
 casbin = { workspace = true }
 futures = { workspace = true }
 tracing = { workspace = true }
 serde_json = { workspace = true }
+pin-project = "1.1.7"
 
 
 [dev-dependencies]
