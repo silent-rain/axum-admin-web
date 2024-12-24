@@ -6,10 +6,10 @@ Grpc 接口定义组件
 
 ```shell
 # 服务端
-cargo run -p grpc-api --example server
+cargo run -p grpc_api --example server
 
 # 客户端
-cargo run -p grpc-api --example client
+cargo run -p grpc_api --example client
 ```
 
 ## 相关文档

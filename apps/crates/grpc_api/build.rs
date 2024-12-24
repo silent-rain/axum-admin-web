@@ -21,8 +21,7 @@ fn main() -> Result<()> {
         .file_descriptor_set_path(out_dir.join("getting_descriptor.bin"))
         // 输出目录
         .out_dir(out_dir)
-        // .server_attribute("AppTemplateService", "#[derive(serde::Deserialize)]")
-        .type_attribute(".", "#[derive(serde::Deserialize)]")
+        .type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]")
         .build_transport(true)
         .compile_protos(
             &["proto/helloworld.proto", "proto/template.proto"], // Update the path to the .proto file
