@@ -64,7 +64,7 @@ pub struct AppState {}
 // }
 
 async fn check_cookie(jar: PrivateCookieJar) -> impl IntoResponse {
-    if let None = jar.get("hello") {
+    if jar.get("hello").is_none() {
         jar.add(Cookie::new("hello", "world"));
         // jar.remove(Cookie::from("foo"));
     }

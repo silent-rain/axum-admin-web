@@ -11,6 +11,12 @@ use tower::{Layer, Service};
 #[derive(Debug, Clone)]
 pub struct ContextLayer {}
 
+impl Default for ContextLayer {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ContextLayer {
     pub fn new() -> Self {
         ContextLayer {}

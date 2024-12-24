@@ -22,7 +22,7 @@ where
         let context = req
             .extensions()
             .get::<Arc<Mutex<Context>>>()
-            .ok_or_else(|| (StatusCode::INTERNAL_SERVER_ERROR, "Failed to get context"))?;
+            .ok_or((StatusCode::INTERNAL_SERVER_ERROR, "Failed to get context"))?;
 
         let context = context.lock().await; // 异步获取锁并解引用
         Ok(context.clone()) // 克隆内部的数据

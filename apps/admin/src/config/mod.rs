@@ -62,7 +62,7 @@ impl AppConfig {
     /// assert!(config.is_ok());
     /// ```
     pub fn instance() -> Result<&'static AppConfig, Error> {
-        GLOBAL_CONFIG.get().ok_or_else(|| Error::DbNotInit)
+        GLOBAL_CONFIG.get().ok_or(Error::DbNotInit)
     }
 }
 

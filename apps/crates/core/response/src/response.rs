@@ -54,14 +54,6 @@ impl<T: Serialize> Response<T> {
         }
     }
 
-    /// Set return data list
-    // pub fn data_list(data_list: Vec<T>, total: u64) -> Self {
-    //     Self {
-    //         data: Some(DataWrapper::DataList { data_list, total }),
-    //         ..Default::default()
-    //     }
-    // }
-
     ///  Set return msg
     pub fn with_msg(mut self, msg: &str) -> Self {
         self.msg = msg.to_string();
