@@ -22,7 +22,7 @@ impl AdminWebSiteController {
         info!("req filename: {filename}");
 
         let r = AssetAdminWebDist;
-        let asset = r.data(&filename).map_or_else(std::vec::Vec::new, |v| v);
+        let asset = r.data(&filename).map_or_else(Vec::new, |v| v);
         let mimetype = r.mimetype(&filename).map_or_else(|| "".to_string(), |v| v);
         let content_type = format!("{mimetype}; charset=utf-8");
 
@@ -30,12 +30,7 @@ impl AdminWebSiteController {
             .header("Content-Type", content_type)
             .status(StatusCode::OK)
             .body(Body::from(asset))
-            .map_err(|e| {
-                (
-                    StatusCode::NOT_FOUND,
-                    format!("Not Found: {}", e),
-                )
-            })
+            .map_err(|e| (StatusCode::NOT_FOUND, format!("Not Found: {}", e)))
     }
 
     /// 后台管理静态资源
@@ -69,12 +64,7 @@ impl AdminWebSiteController {
             .header("Content-Type", content_type)
             .status(StatusCode::OK)
             .body(Body::from(data))
-            .map_err(|e| {
-                (
-                    StatusCode::NOT_FOUND,
-                    format!("Not Found: {}", e),
-                )
-            })
+            .map_err(|e| (StatusCode::NOT_FOUND, format!("Not Found: {}", e)))
     }
 
     // 后台服务 - 失败示例
@@ -87,8 +77,7 @@ impl AdminWebSiteController {
         warn!("req filename: {filename}");
         let r = AssetAdminWebDist;
 
-        let body = r
-            .to_string(&filename).unwrap_or_else(|_| "".to_string());
+        let body = r.to_string(&filename).unwrap_or_else(|_| "".to_string());
         Html(body)
     }
 }

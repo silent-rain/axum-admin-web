@@ -37,8 +37,8 @@ impl Entry {
     /// 检查条目是否已过期。
     pub fn is_expired(&self) -> bool {
         match self.expires_at {
-            Some(expiry) => Instant::now() > expiry, // 如果当前时间超过过期时间，则过期。
-            None => false,                           // 永不过期。
+            Some(expiry) => expiry.elapsed().as_secs() > 0, // 如果当前时间超过过期时间，则过期。
+            None => false,                                  // 永不过期。
         }
     }
 }
@@ -177,20 +177,64 @@ mod tests {
         let cache = Cache::default();
 
         cache
-            .set_with_expiry("silent", "rain".to_string(), time::Duration::from_secs(3))
+            .set_with_expiry("silent", "rain".to_string(), time::Duration::from_secs(2))
             .await;
 
-        tokio::time::sleep(time::Duration::from_secs(2)).await;
+        tokio::time::sleep(time::Duration::from_secs(1)).await;
 
         assert!(cache.get("silent").await == Some(json!("rain")));
 
         let result = cache.get_with_expiry("silent").await.expect("获取缓存失败");
         assert!(!result.is_expired());
-        // println!("result: {:#?}", result);
+        println!("result: {:#?}", result);
+
+        tokio::time::sleep(time::Duration::from_secs(2)).await;
+
+        let result = cache.get_with_expiry("silent").await.expect("获取缓存失败");
+        assert!(result.is_expired());
+        println!("result: {:#?}", result);
 
         tokio::time::sleep(time::Duration::from_secs(5)).await;
 
         assert!((cache.get_with_expiry("silent").await).is_none());
+    }
+
+    #[tokio::test]
+    async fn test_instant() {
+        let t1 = Instant::now()
+            .checked_add(time::Duration::from_secs(2))
+            .unwrap();
+        println!("t1 {:#?}", t1.elapsed().as_secs());
+        tokio::time::sleep(time::Duration::from_secs(1)).await;
+        println!("t1 {:#?}", t1.elapsed().as_secs());
+        tokio::time::sleep(time::Duration::from_secs(1)).await;
+        println!("t1 {:#?}", t1.elapsed().as_secs());
+        tokio::time::sleep(time::Duration::from_secs(1)).await;
+        println!("t1 {:#?}", t1.elapsed().as_secs());
+        tokio::time::sleep(time::Duration::from_secs(1)).await;
+
+        let t2 = Instant::now();
+        println!("t1 {:#?}", t1.elapsed().as_secs());
+        println!("t2 {:#?}", t2.elapsed().as_secs());
+
+        println!("{}", t1 > t2);
+        println!("{}", t2 > t1)
+    }
+
+    #[tokio::test]
+    async fn test_instant2() {
+        let t2 = Instant::now();
+        println!("t1 {:#?}", t2.elapsed());
+        let t2 = t2.checked_sub(time::Duration::from_secs(2));
+        println!("t1 {:#?}", t2.unwrap().elapsed());
+    }
+
+    #[tokio::test]
+    async fn test_instant3() {
+        let t2 = Instant::now();
+        println!("t1 {:#?}", t2.elapsed());
+        let t2 = t2.checked_add(time::Duration::from_secs(2));
+        println!("t1 {:#?}", t2.unwrap().elapsed());
     }
 
     #[tokio::test]

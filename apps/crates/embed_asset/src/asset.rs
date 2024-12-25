@@ -33,7 +33,7 @@ pub trait EmbedAssetTrait: Send + 'static {
         Ok(())
     }
 
-    /// 写入文件, 如存在则覆盖文件
+    // 写入文件, 如存在则覆盖文件
     // fn async_write(
     //     &self,
     //     file_path: &str,

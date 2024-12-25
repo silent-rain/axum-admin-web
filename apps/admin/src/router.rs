@@ -2,9 +2,7 @@
 
 use std::time::Duration;
 
-use axum::{http::StatusCode, response::IntoResponse, Extension, Router};
-use axum_extra::extract::{cookie::Cookie, PrivateCookieJar};
-use serde::Deserialize;
+use axum::{error_handling::HandleErrorLayer, http::StatusCode, BoxError, Extension, Router};
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -12,11 +10,13 @@ use tower_http::{
     compression::CompressionLayer, limit::RequestBodyLimitLayer, timeout::TimeoutLayer,
     trace::TraceLayer,
 };
+use tracing::warn;
 
+use app_state::AppState;
 use axum_context::ContextLayer;
 use middleware::cors::cors_layer;
+use middleware::demo::TimeoutLayer2;
 use service_hub::public::HealthRouter;
-use tracing::warn;
 
 /// axum handler for any request that fails to match the router routes.
 /// This implementation returns HTTP status code Not Found (404).
@@ -53,25 +53,6 @@ pub async fn shutdown_signal() {
     }
 }
 
-/// 全局应用状态
-#[derive(Debug, Default, Clone, Deserialize)]
-pub struct AppState {}
-
-// go ahead and run "cargo run main.rs"
-// localhost:4000 should now print out your user agent
-// async fn index(TypedHeader(user_agent): TypedHeader<UserAgent>) -> String {
-//     String::from(user_agent.as_str())
-// }
-
-async fn check_cookie(jar: PrivateCookieJar) -> impl IntoResponse {
-    if jar.get("hello").is_none() {
-        jar.add(Cookie::new("hello", "world"));
-        // jar.remove(Cookie::from("foo"));
-    }
-
-    StatusCode::OK
-}
-
 /// 注册路由
 pub fn register() -> Router {
     let state = AppState {};
@@ -91,6 +72,11 @@ pub fn register() -> Router {
         // .wrap(ApiOperation::default())
         .layer(
             ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|_: BoxError| async {
+                    // because Axum uses infallible errors, you must handle your custom error type from your middleware here
+                    StatusCode::BAD_REQUEST
+                }))
+                .layer(TimeoutLayer2::new(std::time::Duration::from_secs(5))) // demo
                 .layer(ContextLayer::new()) // 上下文
                 .layer(CompressionLayer::new()) // 自动压缩响应
                 .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
