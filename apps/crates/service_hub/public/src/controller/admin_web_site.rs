@@ -22,7 +22,7 @@ impl AdminWebSiteController {
         info!("req filename: {filename}");
 
         let r = AssetAdminWebDist;
-        let asset = r.data(&filename).map_or_else(|| vec![], |v| v);
+        let asset = r.data(&filename).map_or_else(Vec::new, |v| v);
         let mimetype = r.mimetype(&filename).map_or_else(|| "".to_string(), |v| v);
         let content_type = format!("{mimetype}; charset=utf-8");
 
@@ -33,7 +33,7 @@ impl AdminWebSiteController {
             .map_err(|e| {
                 (
                     StatusCode::NOT_FOUND,
-                    format!("Not Found: {}", e.to_string()),
+                    format!("Not Found: {}", e),
                 )
             })
     }
@@ -56,7 +56,7 @@ impl AdminWebSiteController {
                 match r.data("index.html") {
                     Some(v) => v,
                     None => {
-                        return Err((StatusCode::NOT_FOUND, format!("Not Found: index.html")));
+                        return Err((StatusCode::NOT_FOUND, "Not Found: index.html".to_string()));
                     }
                 }
             }
@@ -72,7 +72,7 @@ impl AdminWebSiteController {
             .map_err(|e| {
                 (
                     StatusCode::NOT_FOUND,
-                    format!("Not Found: {}", e.to_string()),
+                    format!("Not Found: {}", e),
                 )
             })
     }
@@ -88,8 +88,7 @@ impl AdminWebSiteController {
         let r = AssetAdminWebDist;
 
         let body = r
-            .to_string(&filename)
-            .map_or_else(|_| "".to_string(), |v| v);
+            .to_string(&filename).unwrap_or_else(|_| "".to_string());
         Html(body)
     }
 }
