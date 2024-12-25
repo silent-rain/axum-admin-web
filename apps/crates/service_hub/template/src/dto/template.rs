@@ -18,6 +18,8 @@ pub struct GetAppTemplateListReq {
     pub end_time: Option<String>,
     /// 排序字段
     pub order_by: Option<String>,
+    /// 返回有所有数据
+    pub is_all: bool,
 }
 
 /// 添加数据 请求体
@@ -52,6 +54,8 @@ pub struct BatchAddAppTemplateReq {
 /// 更新数据 请求体
 #[derive(Deserialize)]
 pub struct UpdateAppTemplateReq {
+    /// 模板ID
+    pub id: i32,
     /// 用户ID
     pub user_id: i32,
     /// 描述信息

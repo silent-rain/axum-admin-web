@@ -9,6 +9,7 @@ entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
 response = { path = "../../core/response" }
 inject = { path = "../../core/inject" }
+utils = { path = "../../core/utils" }
 grpc_api = { path = "../../grpc_api" }
 
 

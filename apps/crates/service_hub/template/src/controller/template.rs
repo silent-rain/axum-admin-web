@@ -21,16 +21,6 @@ pub struct AppTemplateController;
 
 impl AppTemplateController {
     /// 获取所有{{InterfaceName}}
-    pub async fn all(Extension(provider): Extension<AInjectProvider>) -> impl IntoResponse {
-        let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.all().await;
-        match resp {
-            Ok((results, total)) => Response::data_list(results, total),
-            Err(err) => err.into(),
-        }
-    }
-
-    /// 获取所有{{InterfaceName}}
     pub async fn list(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetAppTemplateListReq>,
@@ -72,11 +62,10 @@ impl AppTemplateController {
     /// 更新{{InterfaceName}}
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
-        Path(id): Path<i32>,
         Json(data): Json<UpdateAppTemplateReq>,
     ) -> impl IntoResponse {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.update(id, data).await;
+        let resp = app_template_service.update(data).await;
         match resp {
             Ok(_v) => Response::<()>::ok(),
             Err(err) => err.into(),

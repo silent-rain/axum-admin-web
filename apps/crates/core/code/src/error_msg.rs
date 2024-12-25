@@ -45,6 +45,12 @@ impl ErrorMsg {
     }
 }
 
+impl Error {
+    pub fn into_msg(self) -> ErrorMsg {
+        ErrorMsg::from(self)
+    }
+}
+
 /// 将错误枚举转换为响应体
 impl From<Error> for ErrorMsg {
     fn from(err: Error) -> Self {
@@ -52,11 +58,5 @@ impl From<Error> for ErrorMsg {
             code: err.code(),
             msg: err.msg(),
         }
-    }
-}
-
-impl Error {
-    pub fn into_msg(self) -> ErrorMsg {
-        ErrorMsg::from(self)
     }
 }

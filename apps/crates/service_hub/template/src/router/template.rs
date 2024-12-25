@@ -14,7 +14,6 @@ impl AppTemplateRouter {
     /// 注册路由
     pub fn register() -> Router {
         let router = Router::new()
-            .route("/all", get(AppTemplateController::all))
             .route(
                 "/",
                 get(AppTemplateController::list).post(AppTemplateController::add),
