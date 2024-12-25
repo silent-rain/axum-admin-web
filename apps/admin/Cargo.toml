@@ -14,6 +14,7 @@ inject = { path = "../crates/core/inject" }
 middleware = { path = "../crates/middleware" }
 axum_context = { path = "../crates/axum_context" }
 service_hub = { path = "../crates/service_hub" }
+app_state = { path = "../crates/app_state" }
 
 axum = { workspace = true }
 axum-extra = { workspace = true, features = ["cookie-private"] }

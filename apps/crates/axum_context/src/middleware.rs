@@ -8,7 +8,7 @@ use std::task::Poll;
 use tower::{Layer, Service};
 
 /// 上下文中间件
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct ContextLayer {}
 
 impl ContextLayer {

@@ -1,26 +1,21 @@
-use std::convert::Infallible;
 use std::fmt;
 use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
-use std::time::{self, Duration};
+use std::time::Duration;
 
-use axum::http::StatusCode;
-use code::Error;
 use pin_project::pin_project;
 use tokio::time::Sleep;
 use tower::{BoxError, Layer, Service};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct TimeoutLayer2 {
     timeout: Duration,
 }
 
 impl TimeoutLayer2 {
-    pub fn new() -> Self {
-        TimeoutLayer2 {
-            timeout: time::Duration::from_secs(10),
-        }
+    pub fn new(timeout: Duration) -> Self {
+        TimeoutLayer2 { timeout }
     }
 }
 
@@ -39,12 +34,6 @@ impl<S> Layer<S> for TimeoutLayer2 {
 pub struct Timeout<S> {
     inner: S,
     timeout: Duration,
-}
-
-impl<S> Timeout<S> {
-    fn new(inner: S, timeout: Duration) -> Self {
-        Timeout { inner, timeout }
-    }
 }
 
 impl<S, Request> Service<Request> for Timeout<S>
