@@ -2,7 +2,7 @@
 
 use std::{str::FromStr, sync::Arc};
 
-use crate::dto::template::GetAppTemplateListReq;
+use crate::dto::template::GetAppTemplatesReq;
 
 use database::{Pagination, PoolTrait};
 use entity::template::{app_template, AppTemplate};
@@ -33,7 +33,7 @@ impl AppTemplateDao {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetAppTemplateListReq,
+        req: GetAppTemplatesReq,
     ) -> Result<(Vec<app_template::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -71,7 +71,7 @@ impl AppTemplateDao {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: app_template::ActiveModel,
     ) -> Result<app_template::Model, DbErr> {
@@ -79,7 +79,7 @@ impl AppTemplateDao {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(
+    pub async fn batch_create(
         &self,
         active_models: Vec<app_template::ActiveModel>,
     ) -> Result<i32, DbErr> {
@@ -102,14 +102,14 @@ impl AppTemplateDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn status(&self, id: i32, status: i8) -> Result<app_template::Model, DbErr> {
         let active_model = app_template::ActiveModel {
             id: Set(id),
             status: Set(status),
             ..Default::default()
         };
-        let _ = active_model.update(self.db.db()).await?;
-        Ok(())
+        let result = active_model.update(self.db.db()).await?;
+        Ok(result)
     }
 
     /// 删除数据
@@ -300,7 +300,7 @@ mod tests {
             status: Set(1),
             ..Default::default()
         };
-        let result = dao.add(active_model).await?;
+        let result = dao.create(active_model).await?;
         println!("add result1: {result:#?}");
         assert!(result.user_id == 1);
 
@@ -311,7 +311,7 @@ mod tests {
             status: Set(0),
             ..Default::default()
         };
-        let result = dao.add(active_model).await?;
+        let result = dao.create(active_model).await?;
         println!("add result2: {result:#?}");
         assert!(result.user_id == 2);
 

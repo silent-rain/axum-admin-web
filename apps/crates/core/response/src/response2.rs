@@ -1,4 +1,5 @@
 //! 接口响应类型
+//! 泛型版本
 use code::Error;
 
 use axum::{response::IntoResponse, Json};

@@ -8,12 +8,12 @@ import "google/api/annotations.proto";
 
 // App Template Management Service
 service AppTemplateService {
-  rpc LisAppTemplates(LisAppTemplatesReq) returns (LisAppTemplatesResp) {
+  rpc GetAppTemplates(GetAppTemplatesReq) returns (GetAppTemplatesResp) {
     option (google.api.http) = {
       get : "/api/v1/app-templates"
     };
   }
-  rpc GeAppTemplate(GetAppTemplateReq) returns (GetAppTemplateResp) {
+  rpc GetAppTemplate(GetAppTemplateReq) returns (GetAppTemplateResp) {
     option (google.api.http) = {
       get : "/api/v1/app-templates/{id}"
     };
@@ -53,7 +53,7 @@ service AppTemplateService {
 // 模板 Model
 message AppTemplate {}
 
-message LisAppTemplatesReq {
+message GetAppTemplatesReq {
   uint32 page = 1;       // 当前分页
   uint32 page_size = 2;  // 页面大小
   string start_time = 3; // 开始时间
@@ -62,7 +62,7 @@ message LisAppTemplatesReq {
   bool is_all = 6;       // 返回有所有数据
 }
 
-message LisAppTemplatesResp {
+message GetAppTemplatesResp {
   message DataList {
     repeated AppTemplate data_list = 1; // 模板列表
     int32 total = 2;                    // 总数量

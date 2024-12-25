@@ -2,7 +2,8 @@
 use crate::{
     dao::template::AppTemplateDao,
     dto::template::{
-        AddAppTemplateReq, BatchAddAppTemplateReq, GetAppTemplateListReq, UpdateAppTemplateReq,
+        BatchCreateAppTemplateReq, CreateAppTemplateReq, DeleteAppTemplateReq, GetAppTemplateReq,
+        GetAppTemplatesReq, UpdateAppTemplateReq, UpdateAppTemplateStatusReq,
     },
 };
 
@@ -23,7 +24,7 @@ impl AppTemplateService {
     /// 获取{{InterfaceName}}列表
     pub async fn list(
         &self,
-        req: GetAppTemplateListReq,
+        req: GetAppTemplatesReq,
     ) -> Result<(Vec<app_template::Model>, u64), ErrorMsg> {
         if req.is_all {
             let (results, total) = self.app_template_dao.all().await.map_err(|err| {
@@ -46,10 +47,10 @@ impl AppTemplateService {
     }
 
     /// 获取{{InterfaceName}}详情
-    pub async fn info(&self, id: i32) -> Result<app_template::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetAppTemplateReq) -> Result<app_template::Model, ErrorMsg> {
         let result = self
             .app_template_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询{{InterfaceName}}信息失败, err: {:#?}", err);
@@ -68,7 +69,10 @@ impl AppTemplateService {
     }
 
     /// 添加{{InterfaceName}}
-    pub async fn add(&self, data: AddAppTemplateReq) -> Result<app_template::Model, ErrorMsg> {
+    pub async fn create(
+        &self,
+        data: CreateAppTemplateReq,
+    ) -> Result<app_template::Model, ErrorMsg> {
         let model = app_template::ActiveModel {
             user_id: Set(data.user_id),
             desc: Set(data.desc),
@@ -76,7 +80,7 @@ impl AppTemplateService {
             ..Default::default()
         };
 
-        let result = self.app_template_dao.add(model).await.map_err(|err| {
+        let result = self.app_template_dao.create(model).await.map_err(|err| {
             error!("添加{{InterfaceName}}失败, err: {:#?}", err);
             Error::DbAddError
                 .into_msg()
@@ -87,7 +91,7 @@ impl AppTemplateService {
     }
 
     /// 批量添加{{InterfaceName}}
-    pub async fn batch_add(&self, data: BatchAddAppTemplateReq) -> Result<i32, ErrorMsg> {
+    pub async fn batch_create(&self, data: BatchCreateAppTemplateReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for item in data.data {
             let model = app_template::ActiveModel {
@@ -101,7 +105,7 @@ impl AppTemplateService {
 
         let result = self
             .app_template_dao
-            .batch_add(models)
+            .batch_create(models)
             .await
             .map_err(|err| {
                 error!("批量添加{{InterfaceName}}失败, err: {:#?}", err);
@@ -133,9 +137,13 @@ impl AppTemplateService {
     }
 
     /// 更新{{InterfaceName}}状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.app_template_dao
-            .status(id, status)
+    pub async fn status(
+        &self,
+        req: UpdateAppTemplateStatusReq,
+    ) -> Result<app_template::Model, ErrorMsg> {
+        let result = self
+            .app_template_dao
+            .status(req.id, req.status as i8)
             .await
             .map_err(|err| {
                 error!("更新{{InterfaceName}}状态失败, err: {:#?}", err);
@@ -144,12 +152,12 @@ impl AppTemplateService {
                     .with_msg("更新{{InterfaceName}}状态失败")
             })?;
 
-        Ok(())
+        Ok(result)
     }
 
     /// 删除{{InterfaceName}}
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.app_template_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteAppTemplateReq) -> Result<u64, ErrorMsg> {
+        let result = self.app_template_dao.delete(req.id).await.map_err(|err| {
             error!("删除{{InterfaceName}}失败, err: {:#?}", err);
             Error::DbDeleteError
                 .into_msg()
@@ -196,32 +204,32 @@ mod tests {
         };
 
         // 添加模板1
-        let data = AddAppTemplateReq {
+        let data = CreateAppTemplateReq {
             user_id: 1,
             desc: Some("desc".to_string()),
             status: app_template::enums::Status::Enabled,
         };
-        let result = service.add(data).await?;
+        let result = service.create(data).await?;
         println!("add result1: {result:#?}");
         assert!(result.user_id == 1);
 
         // 添加模板2
-        let data = AddAppTemplateReq {
+        let data = CreateAppTemplateReq {
             user_id: 2,
             desc: Some("desc".to_string()),
             status: app_template::enums::Status::Enabled,
         };
-        let result = service.add(data).await?;
+        let result = service.create(data).await?;
         println!("add result2: {result:#?}");
         assert!(result.user_id == 2);
 
         // 查询模板1
-        let result = service.info(1).await?;
+        let result = service.info(GetAppTemplateReq { id: 1 }).await?;
         println!("info result: {result:#?}");
         assert!(result.user_id == 1);
 
         // 查询所有的模板
-        let query = GetAppTemplateListReq {
+        let query = GetAppTemplatesReq {
             is_all: true,
             ..Default::default()
         };

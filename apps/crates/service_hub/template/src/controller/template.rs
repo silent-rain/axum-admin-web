@@ -2,19 +2,18 @@
 
 use crate::{
     dto::template::{
-        AddAppTemplateReq, BatchDeleteAppTemplateReq, GetAppTemplateListReq, UpdateAppTemplateReq,
-        UpdateAppTemplateStatusReq,
+        BatchCreateAppTemplateReq, BatchCreateAppTemplateResp, BatchDeleteAppTemplateReq,
+        BatchDeleteAppTemplateResp, CreateAppTemplateReq, CreateAppTemplateResp,
+        DeleteAppTemplateReq, DeleteAppTemplateResp, GetAppTemplateReq, GetAppTemplateResp,
+        GetAppTemplatesReq, GetAppTemplatesResp, UpdateAppTemplateReq, UpdateAppTemplateResp,
+        UpdateAppTemplateStatusReq, UpdateAppTemplateStatusResp,
     },
     service::template::AppTemplateService,
 };
 
-use axum::{
-    extract::{Path, Query},
-    response::IntoResponse,
-    Extension, Json,
-};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
+use response::{Responder, Response};
 
 /// 控制器
 pub struct AppTemplateController;
@@ -23,94 +22,96 @@ impl AppTemplateController {
     /// 获取所有{{InterfaceName}}
     pub async fn list(
         Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<GetAppTemplateListReq>,
-    ) -> impl IntoResponse {
+        Query(req): Query<GetAppTemplatesReq>,
+    ) -> Responder<GetAppTemplatesResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.list(req).await;
-        match resp {
-            Ok((results, total)) => Response::data_list(results, total),
-            Err(err) => err.into(),
-        }
+        let (results, total) = app_template_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json::<GetAppTemplatesResp>()?;
+        Ok(resp)
     }
 
     /// 获取单个{{InterfaceName}}信息
     pub async fn info(
         Extension(provider): Extension<AInjectProvider>,
-        Path(id): Path<i32>,
-    ) -> impl IntoResponse {
+        Query(req): Query<GetAppTemplateReq>,
+    ) -> Responder<GetAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.info(id).await;
-        match resp {
-            Ok(v) => Response::data(v),
-            Err(err) => err.into(),
-        }
+        let result = app_template_service.info(req).await?;
+
+        let resp = Response::data(result).to_json::<GetAppTemplateResp>()?;
+        Ok(resp)
     }
 
     /// 添加{{InterfaceName}}
-    pub async fn add(
+    pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
-        Json(data): Json<AddAppTemplateReq>,
-    ) -> impl IntoResponse {
+        Json(data): Json<CreateAppTemplateReq>,
+    ) -> Responder<CreateAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.add(data).await;
-        match resp {
-            Ok(_v) => Response::<()>::ok(),
-            Err(err) => err.into(),
-        }
+        let _result = app_template_service.create(data).await?;
+
+        let resp = Response::<()>::ok().to_json::<CreateAppTemplateResp>()?;
+        Ok(resp)
+    }
+
+    /// 批量添加{{InterfaceName}}
+    pub async fn batch_create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(data): Json<BatchCreateAppTemplateReq>,
+    ) -> Responder<BatchCreateAppTemplateResp> {
+        let app_template_service: AppTemplateService = provider.provide();
+        let _result = app_template_service.batch_create(data).await?;
+
+        let resp = Response::<()>::ok().to_json::<BatchCreateAppTemplateResp>()?;
+        Ok(resp)
     }
 
     /// 更新{{InterfaceName}}
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<UpdateAppTemplateReq>,
-    ) -> impl IntoResponse {
+    ) -> Responder<UpdateAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.update(data).await;
-        match resp {
-            Ok(_v) => Response::<()>::ok(),
-            Err(err) => err.into(),
-        }
+        let _result = app_template_service.update(data).await?;
+
+        let resp = Response::<()>::ok().to_json::<UpdateAppTemplateResp>()?;
+        Ok(resp)
     }
 
     /// 更新{{InterfaceName}}状态
     pub async fn status(
         Extension(provider): Extension<AInjectProvider>,
-        Path(id): Path<i32>,
-        Json(data): Json<UpdateAppTemplateStatusReq>,
-    ) -> impl IntoResponse {
+        Json(req): Json<UpdateAppTemplateStatusReq>,
+    ) -> Responder<UpdateAppTemplateStatusResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service
-            .status(id, data.status.clone() as i8)
-            .await;
-        match resp {
-            Ok(_v) => Response::<()>::ok(),
-            Err(err) => err.into(),
-        }
+        let _result = app_template_service.status(req).await?;
+
+        let resp = Response::<()>::ok().to_json::<UpdateAppTemplateStatusResp>()?;
+        Ok(resp)
     }
 
     /// 删除{{InterfaceName}}
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
-        Path(id): Path<i32>,
-    ) -> impl IntoResponse {
+        Json(req): Json<DeleteAppTemplateReq>,
+    ) -> Responder<DeleteAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.delete(id).await;
-        match resp {
-            Ok(_v) => Response::<()>::ok(),
-            Err(err) => err.into(),
-        }
+        let _result = app_template_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json::<DeleteAppTemplateResp>()?;
+        Ok(resp)
     }
 
     /// 批量删除{{InterfaceName}}
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<BatchDeleteAppTemplateReq>,
-    ) -> impl IntoResponse {
+    ) -> Responder<BatchDeleteAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let resp = app_template_service.batch_delete(data.ids.clone()).await;
-        match resp {
-            Ok(_v) => Response::<()>::ok(),
-            Err(err) => err.into(),
-        }
+        let _result = app_template_service.batch_delete(data.ids.clone()).await?;
+
+        let resp = Response::<()>::ok().to_json::<BatchDeleteAppTemplateResp>()?;
+        Ok(resp)
     }
 }

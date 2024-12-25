@@ -45,10 +45,11 @@ pub mod enums {
     use serde_repr::{Deserialize_repr, Serialize_repr};
 
     /// 状态
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
+    #[derive(Debug, Default, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum Status {
         /// 停用
+        #[default]
         Disabled = 0,
         /// 正常
         Enabled = 1,

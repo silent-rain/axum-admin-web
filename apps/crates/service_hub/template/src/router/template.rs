@@ -16,7 +16,7 @@ impl AppTemplateRouter {
         let router = Router::new()
             .route(
                 "/",
-                get(AppTemplateController::list).post(AppTemplateController::add),
+                get(AppTemplateController::list).post(AppTemplateController::create),
             )
             .route(
                 "/:id",
@@ -35,9 +35,9 @@ impl AppTemplateRouter {
 mod tests {
     use axum_mock::Error;
     use axum_mock::MockRequest;
-    use entity::template::app_template;
     use entity::template::AppTemplate;
-    use response::DataList;
+
+    use crate::dto::template::GetAppTemplatesResp;
 
     use super::*;
 
@@ -50,7 +50,7 @@ mod tests {
             .enabled_log(true);
 
         let response = request
-            .get::<(), DataList<app_template::Model>>("/app-templates/all", ())
+            .get::<(), GetAppTemplatesResp>("/app-templates/list", ())
             .await?;
         println!("response: {:#?}", response);
 

@@ -5,7 +5,7 @@
 pub struct AppTemplate {}
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct LisAppTemplatesReq {
+pub struct GetAppTemplatesReq {
     /// 当前分页
     #[prost(uint32, tag = "1")]
     pub page: u32,
@@ -27,16 +27,16 @@ pub struct LisAppTemplatesReq {
 }
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct LisAppTemplatesResp {
+pub struct GetAppTemplatesResp {
     #[prost(int32, tag = "1")]
     pub code: i32,
     #[prost(string, tag = "2")]
     pub msg: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "3")]
-    pub data: ::core::option::Option<lis_app_templates_resp::DataList>,
+    pub data: ::core::option::Option<get_app_templates_resp::DataList>,
 }
-/// Nested message and enum types in `LisAppTemplatesResp`.
-pub mod lis_app_templates_resp {
+/// Nested message and enum types in `GetAppTemplatesResp`.
+pub mod get_app_templates_resp {
     #[derive(serde::Serialize, serde::Deserialize)]
     #[derive(Clone, PartialEq, ::prost::Message)]
     pub struct DataList {
@@ -250,11 +250,11 @@ pub mod app_template_service_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        pub async fn lis_app_templates(
+        pub async fn get_app_templates(
             &mut self,
-            request: impl tonic::IntoRequest<super::LisAppTemplatesReq>,
+            request: impl tonic::IntoRequest<super::GetAppTemplatesReq>,
         ) -> std::result::Result<
-            tonic::Response<super::LisAppTemplatesResp>,
+            tonic::Response<super::GetAppTemplatesResp>,
             tonic::Status,
         > {
             self.inner
@@ -267,16 +267,16 @@ pub mod app_template_service_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/template.AppTemplateService/LisAppTemplates",
+                "/template.AppTemplateService/GetAppTemplates",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("template.AppTemplateService", "LisAppTemplates"),
+                    GrpcMethod::new("template.AppTemplateService", "GetAppTemplates"),
                 );
             self.inner.unary(req, path, codec).await
         }
-        pub async fn ge_app_template(
+        pub async fn get_app_template(
             &mut self,
             request: impl tonic::IntoRequest<super::GetAppTemplateReq>,
         ) -> std::result::Result<
@@ -293,11 +293,13 @@ pub mod app_template_service_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/template.AppTemplateService/GeAppTemplate",
+                "/template.AppTemplateService/GetAppTemplate",
             );
             let mut req = request.into_request();
             req.extensions_mut()
-                .insert(GrpcMethod::new("template.AppTemplateService", "GeAppTemplate"));
+                .insert(
+                    GrpcMethod::new("template.AppTemplateService", "GetAppTemplate"),
+                );
             self.inner.unary(req, path, codec).await
         }
         pub async fn create_app_template(
@@ -451,14 +453,14 @@ pub mod app_template_service_server {
     /// Generated trait containing gRPC methods that should be implemented for use with AppTemplateServiceServer.
     #[async_trait]
     pub trait AppTemplateService: std::marker::Send + std::marker::Sync + 'static {
-        async fn lis_app_templates(
+        async fn get_app_templates(
             &self,
-            request: tonic::Request<super::LisAppTemplatesReq>,
+            request: tonic::Request<super::GetAppTemplatesReq>,
         ) -> std::result::Result<
-            tonic::Response<super::LisAppTemplatesResp>,
+            tonic::Response<super::GetAppTemplatesResp>,
             tonic::Status,
         >;
-        async fn ge_app_template(
+        async fn get_app_template(
             &self,
             request: tonic::Request<super::GetAppTemplateReq>,
         ) -> std::result::Result<
@@ -578,25 +580,25 @@ pub mod app_template_service_server {
         }
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             match req.uri().path() {
-                "/template.AppTemplateService/LisAppTemplates" => {
+                "/template.AppTemplateService/GetAppTemplates" => {
                     #[allow(non_camel_case_types)]
-                    struct LisAppTemplatesSvc<T: AppTemplateService>(pub Arc<T>);
+                    struct GetAppTemplatesSvc<T: AppTemplateService>(pub Arc<T>);
                     impl<
                         T: AppTemplateService,
-                    > tonic::server::UnaryService<super::LisAppTemplatesReq>
-                    for LisAppTemplatesSvc<T> {
-                        type Response = super::LisAppTemplatesResp;
+                    > tonic::server::UnaryService<super::GetAppTemplatesReq>
+                    for GetAppTemplatesSvc<T> {
+                        type Response = super::GetAppTemplatesResp;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::LisAppTemplatesReq>,
+                            request: tonic::Request<super::GetAppTemplatesReq>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as AppTemplateService>::lis_app_templates(
+                                <T as AppTemplateService>::get_app_templates(
                                         &inner,
                                         request,
                                     )
@@ -611,7 +613,7 @@ pub mod app_template_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = LisAppTemplatesSvc(inner);
+                        let method = GetAppTemplatesSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -627,13 +629,13 @@ pub mod app_template_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/template.AppTemplateService/GeAppTemplate" => {
+                "/template.AppTemplateService/GetAppTemplate" => {
                     #[allow(non_camel_case_types)]
-                    struct GeAppTemplateSvc<T: AppTemplateService>(pub Arc<T>);
+                    struct GetAppTemplateSvc<T: AppTemplateService>(pub Arc<T>);
                     impl<
                         T: AppTemplateService,
                     > tonic::server::UnaryService<super::GetAppTemplateReq>
-                    for GeAppTemplateSvc<T> {
+                    for GetAppTemplateSvc<T> {
                         type Response = super::GetAppTemplateResp;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -645,7 +647,7 @@ pub mod app_template_service_server {
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as AppTemplateService>::ge_app_template(&inner, request)
+                                <T as AppTemplateService>::get_app_template(&inner, request)
                                     .await
                             };
                             Box::pin(fut)
@@ -657,7 +659,7 @@ pub mod app_template_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = GeAppTemplateSvc(inner);
+                        let method = GetAppTemplateSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

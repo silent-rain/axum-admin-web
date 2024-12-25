@@ -6,11 +6,11 @@ use grpc_api::template::{
     app_template_service_server::AppTemplateService as AppTemplateGrpcService,
     BatchDeleteAppTemplateReq, BatchDeleteAppTemplateResp, CreateAppTemplateReq,
     CreateAppTemplateResp, DeleteAppTemplateReq, DeleteAppTemplateResp, GetAppTemplateReq,
-    GetAppTemplateResp, LisAppTemplatesReq, LisAppTemplatesResp, UpdateAppTemplateReq,
+    GetAppTemplateResp, GetAppTemplatesReq, GetAppTemplatesResp, UpdateAppTemplateReq,
     UpdateAppTemplateResp, UpdateAppTemplateStatusReq, UpdateAppTemplateStatusResp,
 };
 use nject::injectable;
-use response::Response;
+use response::response3::Response;
 use tonic::{Request, Status};
 use utils::json::struct_to_struct;
 
@@ -22,27 +22,28 @@ pub struct AppTemplateController {
 
 #[tonic::async_trait]
 impl AppTemplateGrpcService for AppTemplateController {
-    async fn lis_app_templates(
+    async fn get_app_templates(
         &self,
-        req: Request<LisAppTemplatesReq>,
-    ) -> Result<tonic::Response<LisAppTemplatesResp>, Status> {
+        req: Request<GetAppTemplatesReq>,
+    ) -> Result<tonic::Response<GetAppTemplatesResp>, Status> {
         let req = struct_to_struct(&req.into_inner())
             .map_err(|err| tonic::Status::aborted(err.to_string()))?;
         let resp = self.app_template_service.list(req).await;
         match resp {
             Ok((results, total)) => Ok(Response::data_list(results, total)
-                .to_pb::<LisAppTemplatesResp>()
+                .to_pb::<GetAppTemplatesResp>()
                 .unwrap()),
             Err(err) => Err(tonic::Status::aborted(err.msg())),
         }
     }
 
-    async fn ge_app_template(
+    async fn get_app_template(
         &self,
         req: Request<GetAppTemplateReq>,
     ) -> Result<tonic::Response<GetAppTemplateResp>, Status> {
-        let id = req.into_inner().id;
-        let resp = self.app_template_service.info(id).await;
+        let req = struct_to_struct(&req.into_inner())
+            .map_err(|err| tonic::Status::aborted(err.to_string()))?;
+        let resp = self.app_template_service.info(req).await;
         match resp {
             Ok(results) => Ok(Response::data(results)
                 .to_pb::<GetAppTemplateResp>()
@@ -58,7 +59,7 @@ impl AppTemplateGrpcService for AppTemplateController {
         let data = struct_to_struct(&req.into_inner())
             .map_err(|err| tonic::Status::aborted(err.to_string()))?;
 
-        let resp = self.app_template_service.add(data).await;
+        let resp = self.app_template_service.create(data).await;
         match resp {
             Ok(_v) => Ok(Response::<()>::ok()
                 .to_pb::<CreateAppTemplateResp>()
@@ -87,13 +88,11 @@ impl AppTemplateGrpcService for AppTemplateController {
         &self,
         req: Request<UpdateAppTemplateStatusReq>,
     ) -> Result<tonic::Response<UpdateAppTemplateStatusResp>, Status> {
-        let data: crate::dto::template::UpdateAppTemplateReq = struct_to_struct(&req.into_inner())
-            .map_err(|err| tonic::Status::aborted(err.to_string()))?;
+        let data: crate::dto::template::UpdateAppTemplateStatusReq =
+            struct_to_struct(&req.into_inner())
+                .map_err(|err| tonic::Status::aborted(err.to_string()))?;
 
-        let resp = self
-            .app_template_service
-            .status(data.id, data.status as i8)
-            .await;
+        let resp = self.app_template_service.status(data).await;
 
         match resp {
             Ok(_v) => Ok(Response::<()>::ok()
@@ -107,8 +106,10 @@ impl AppTemplateGrpcService for AppTemplateController {
         &self,
         req: Request<DeleteAppTemplateReq>,
     ) -> Result<tonic::Response<DeleteAppTemplateResp>, Status> {
-        let id = req.into_inner().id;
-        let resp = self.app_template_service.delete(id).await;
+        let data: crate::dto::template::DeleteAppTemplateReq = struct_to_struct(&req.into_inner())
+            .map_err(|err| tonic::Status::aborted(err.to_string()))?;
+
+        let resp = self.app_template_service.delete(data).await;
         match resp {
             Ok(_v) => Ok(Response::<()>::ok()
                 .to_pb::<DeleteAppTemplateResp>()

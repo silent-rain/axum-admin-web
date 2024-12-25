@@ -1,13 +1,13 @@
 //! 模板管理
 
-use entity::template::app_template::enums::Status;
+use entity::template::app_template::{self, enums::Status};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 /// 查询列表数据 请求体
-#[derive(Default, Deserialize)]
-pub struct GetAppTemplateListReq {
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetAppTemplatesReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -22,9 +22,28 @@ pub struct GetAppTemplateListReq {
     pub is_all: bool,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetAppTemplatesResp {
+    pub data_list: Vec<app_template::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetAppTemplateReq {
+    /// 模板ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetAppTemplateResp {
+    #[serde(flatten)]
+    data: app_template::Model,
+}
+
 /// 添加数据 请求体
-#[derive(Deserialize)]
-pub struct AddAppTemplateReq {
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct CreateAppTemplateReq {
     /// 用户ID
     pub user_id: i32,
     /// 描述信息
@@ -33,9 +52,12 @@ pub struct AddAppTemplateReq {
     pub status: Status,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateAppTemplateResp {}
+
 /// 批量添加数据结点
-#[derive(Deserialize)]
-pub struct BatchAddAppTemplateNode {
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct BatchCreateAppTemplateItem {
     /// 用户ID
     pub user_id: i32,
     /// 描述信息
@@ -45,14 +67,17 @@ pub struct BatchAddAppTemplateNode {
 }
 
 /// 批量添加数据 请求体
-#[derive(Default, Deserialize)]
-pub struct BatchAddAppTemplateReq {
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct BatchCreateAppTemplateReq {
     /// 数据列表
-    pub data: Vec<BatchAddAppTemplateNode>,
+    pub data: Vec<BatchCreateAppTemplateItem>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchCreateAppTemplateResp {}
+
 /// 更新数据 请求体
-#[derive(Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UpdateAppTemplateReq {
     /// 模板ID
     pub id: i32,
@@ -64,16 +89,37 @@ pub struct UpdateAppTemplateReq {
     pub status: Status,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateAppTemplateResp {}
+
 /// 更新数据状态 请求体
-#[derive(Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UpdateAppTemplateStatusReq {
+    /// 模板ID
+    pub id: i32,
     /// 状态(0:停用,1:正常)
     pub status: Status,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateAppTemplateStatusResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteAppTemplateReq {
+    /// 模板ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteAppTemplateResp {}
+
 /// 批量删除数据 请求体
-#[derive(Default, Deserialize, Validate)]
+#[derive(Debug, Default, Deserialize, Validate)]
 pub struct BatchDeleteAppTemplateReq {
-    /// ID列表
+    /// 模板ID列表
     pub ids: Vec<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchDeleteAppTemplateResp {}
