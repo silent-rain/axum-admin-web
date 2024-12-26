@@ -131,7 +131,6 @@ impl<T: Serialize> IntoResponse for Response<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use anyhow;
 
     #[derive(Debug, Serialize, Deserialize)]
     struct Book {
