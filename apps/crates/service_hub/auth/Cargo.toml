@@ -7,11 +7,11 @@ edition = "2021"
 database = { path = "../../core/database" }
 entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
-context = { path = "../../core/context" }
 response = { path = "../../core/response" }
 utils = { path = "../../core/utils" }
 jwt = { path = "../../core/jwt" }
 inject = { path = "../../core/inject" }
+axum_context = { path = "../../axum_context" }
 
 user = { path = "../user" }
 system = { path = "../system" }

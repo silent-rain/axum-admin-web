@@ -381,7 +381,7 @@ dependencies = [
  "futures-lite",
  "gloo-timers",
  "kv-log-macro",
- "log",
+ "log 0.4.22",
  "memchr 2.7.4",
  "once_cell",
  "pin-project-lite",
@@ -443,6 +443,31 @@ name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
+
+[[package]]
+name = "auth"
+version = "0.1.0"
+dependencies = [
+ "axum_context",
+ "chrono",
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "jwt",
+ "log 0.1.0",
+ "nject",
+ "response",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "system",
+ "tokio",
+ "tracing",
+ "user",
+ "utils",
+ "validator",
+]
 
 [[package]]
 name = "auto-future"
@@ -825,7 +850,7 @@ dependencies = [
  "base64 0.21.7",
  "image",
  "imageproc",
- "log",
+ "log 0.4.22",
  "rand 0.8.5",
  "rusttype",
 ]
@@ -1231,7 +1256,7 @@ name = "database"
 version = "0.1.0"
 dependencies = [
  "async-trait",
- "log",
+ "log 0.4.22",
  "sea-orm",
  "sea-orm-migration",
  "serde",
@@ -1661,7 +1686,7 @@ checksum = "15f1ce686646e7f1e19bf7d5533fe443a45dbfb990e00629110797578b42fb19"
 dependencies = [
  "aho-corasick 1.1.3",
  "bstr",
- "log",
+ "log 0.4.22",
  "regex-automata 0.4.9",
  "regex-syntax 0.8.5",
 ]
@@ -2201,6 +2226,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "initialize"
+version = "0.1.0"
+dependencies = [
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "nject",
+ "permission",
+ "response",
+ "rust-embed",
+ "sea-orm",
+ "serde",
+ "serde_repr",
+ "tracing",
+ "utils",
+ "validator",
+]
+
+[[package]]
 name = "inject"
 version = "0.1.0"
 dependencies = [
@@ -2322,7 +2367,7 @@ version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0de8b303297635ad57c9f5059fd9cee7a47f8e8daa09df0fcd07dd39fb22977f"
 dependencies = [
- "log",
+ "log 0.4.22",
 ]
 
 [[package]]
@@ -2388,6 +2433,25 @@ checksum = "07af8b9cdd281b7915f413fa73f29ebd5d55d0d3f0155584dade1ff18cea1b17"
 dependencies = [
  "autocfg",
  "scopeguard",
+]
+
+[[package]]
+name = "log"
+version = "0.1.0"
+dependencies = [
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "nject",
+ "response",
+ "sea-orm",
+ "serde",
+ "serde_repr",
+ "tracing",
+ "uap-rust",
+ "utils",
+ "validator",
 ]
 
 [[package]]
@@ -2823,6 +2887,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "organization"
+version = "0.1.0"
+dependencies = [
+ "axum_context",
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "nject",
+ "response",
+ "sea-orm",
+ "serde",
+ "serde_repr",
+ "tracing",
+ "utils",
+ "validator",
+]
+
+[[package]]
 name = "ouroboros"
 version = "0.18.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2927,6 +3010,27 @@ name = "percent-encoding"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
+
+[[package]]
+name = "permission"
+version = "0.1.0"
+dependencies = [
+ "axum_context",
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "nject",
+ "response",
+ "sea-orm",
+ "serde",
+ "serde_repr",
+ "tokio",
+ "tracing",
+ "utils",
+ "uuid",
+ "validator",
+]
 
 [[package]]
 name = "petgraph"
@@ -3154,7 +3258,7 @@ checksum = "d0f3e5beed80eb580c68e2c600937ac2c4eedabdfd5ef1e5b7ea4f3fba84497b"
 dependencies = [
  "heck 0.5.0",
  "itertools 0.13.0",
- "log",
+ "log 0.4.22",
  "multimap",
  "once_cell",
  "petgraph",
@@ -3738,6 +3842,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "schedule"
+version = "0.1.0"
+dependencies = [
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "nject",
+ "response",
+ "scheduler",
+ "sea-orm",
+ "serde",
+ "serde_repr",
+ "tracing",
+ "uuid",
+ "validator",
+]
+
+[[package]]
 name = "scheduler"
 version = "0.1.0"
 dependencies = [
@@ -3785,7 +3908,7 @@ dependencies = [
  "bigdecimal",
  "chrono",
  "futures",
- "log",
+ "log 0.4.22",
  "ouroboros",
  "rust_decimal",
  "sea-orm-macros",
@@ -4014,11 +4137,19 @@ dependencies = [
 name = "service_hub"
 version = "0.1.0"
 dependencies = [
+ "auth",
  "embed_asset",
+ "initialize",
  "inject",
+ "log 0.1.0",
+ "organization",
+ "permission",
  "public",
+ "schedule",
+ "system",
  "template",
  "tokio",
+ "user",
 ]
 
 [[package]]
@@ -4229,7 +4360,7 @@ dependencies = [
  "hashlink",
  "hex",
  "indexmap 2.7.0",
- "log",
+ "log 0.4.22",
  "memchr 2.7.4",
  "once_cell",
  "paste",
@@ -4317,7 +4448,7 @@ dependencies = [
  "hkdf",
  "hmac",
  "itoa",
- "log",
+ "log 0.4.22",
  "md-5",
  "memchr 2.7.4",
  "once_cell",
@@ -4362,7 +4493,7 @@ dependencies = [
  "hmac",
  "home",
  "itoa",
- "log",
+ "log 0.4.22",
  "md-5",
  "memchr 2.7.4",
  "num-bigint",
@@ -4397,7 +4528,7 @@ dependencies = [
  "futures-intrusive",
  "futures-util",
  "libsqlite3-sys",
- "log",
+ "log 0.4.22",
  "percent-encoding",
  "serde",
  "serde_urlencoded",
@@ -4486,6 +4617,26 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.92",
+]
+
+[[package]]
+name = "system"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "nject",
+ "response",
+ "sea-orm",
+ "serde",
+ "serde_repr",
+ "tracing",
+ "utils",
+ "uuid",
+ "validator",
 ]
 
 [[package]]
@@ -4970,7 +5121,7 @@ version = "0.1.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "784e0ac535deb450455cbfa28a6f0df145ea1bb7ae51b821cf5e7927fdcfbdd0"
 dependencies = [
- "log",
+ "log 0.4.22",
  "pin-project-lite",
  "tracing-attributes",
  "tracing-core",
@@ -5007,7 +5158,7 @@ checksum = "2d637245a0d8774bd48df6482e086c59a8b5348a910c3b0579354045a9d82411"
 dependencies = [
  "ahash 0.8.11",
  "gethostname",
- "log",
+ "log 0.4.22",
  "serde",
  "serde_json",
  "time",
@@ -5043,7 +5194,7 @@ version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f751112709b4e791d8ce53e32c4ed2d353565a795ce84da2285393f41557bdf2"
 dependencies = [
- "log",
+ "log 0.4.22",
  "once_cell",
  "tracing-core",
 ]
@@ -5054,7 +5205,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee855f1f400bd0e5c02d150ae5de3840039a3f54b025156404e34c23c03f47c3"
 dependencies = [
- "log",
+ "log 0.4.22",
  "once_cell",
  "tracing-core",
 ]
@@ -5182,6 +5333,32 @@ dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
+]
+
+[[package]]
+name = "user"
+version = "0.1.0"
+dependencies = [
+ "axum_context",
+ "base64 0.22.1",
+ "cache",
+ "code",
+ "database",
+ "entity",
+ "inject",
+ "nject",
+ "permission",
+ "regex 1.11.1",
+ "response",
+ "rust_decimal",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "tracing",
+ "utils",
+ "uuid",
+ "validator",
 ]
 
 [[package]]
@@ -5344,7 +5521,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f89bb38646b4f81674e8f5c3fb81b562be1fd936d84320f3264486418519c79"
 dependencies = [
  "bumpalo",
- "log",
+ "log 0.4.22",
  "proc-macro2",
  "quote",
  "syn 2.0.92",

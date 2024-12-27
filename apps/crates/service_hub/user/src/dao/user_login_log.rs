@@ -15,13 +15,13 @@ use sea_orm::{
 
 /// 数据访问
 #[injectable]
-pub struct UserLoginDao {
+pub struct UserLoginLogDao {
     db: Arc<dyn PoolTrait>,
 }
 
-impl UserLoginDao {
+impl UserLoginLogDao {
     pub fn new(db: Arc<dyn PoolTrait>) -> Self {
-        UserLoginDao { db }
+        UserLoginLogDao { db }
     }
 
     /// 获取数据列表

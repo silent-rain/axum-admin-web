@@ -16,9 +16,9 @@ use actix_web::{
 };
 
 /// 控制器
-pub struct UserLoginController;
+pub struct UserLoginLogController;
 
-impl UserLoginController {
+impl UserLoginLogController {
     /// 获取登录日志列表
     pub async fn list(
         provider: Data<AInjectProvider>,

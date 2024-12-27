@@ -7,6 +7,7 @@ pub mod member_level;
 pub mod phone;
 pub mod role;
 pub mod user_base;
+pub mod user_login_log;
 pub mod user_role_rel;
 
 use actix_web::{web, Scope};
@@ -32,5 +33,7 @@ impl UserRouter {
             .service(member_level::MemberLevelRouter::admin_register())
             // 用户地理位置管理
             .service(location::LocationRouter::admin_register())
+            // 登陆日志管理
+            .service(user_login::UserLoginRouter::admin_register())
     }
 }

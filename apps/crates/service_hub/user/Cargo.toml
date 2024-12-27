@@ -8,10 +8,10 @@ database = { path = "../../core/database" }
 entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
 response = { path = "../../core/response" }
-context = { path = "../../core/context" }
 utils = { path = "../../core/utils" }
 cache = { path = "../../core/cache" }
 inject = { path = "../../core/inject" }
+axum_context = { path = "../../axum_context" }
 
 permission = { path = "../permission" }
 

@@ -5,9 +5,9 @@ use crate::controller::user_login::UserLoginController;
 use actix_web::{web, Scope};
 
 /// 路由器
-pub struct UserLoginRouter;
+pub struct UserLoginLogRouter;
 
-impl UserLoginRouter {
+impl UserLoginLogRouter {
     /// 注册`登陆日志管理`路由
     pub fn admin_register() -> Scope {
         web::scope("/user-logins")
