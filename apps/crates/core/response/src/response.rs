@@ -99,6 +99,8 @@ impl<T: Serialize> std::fmt::Display for Response<T> {
     }
 }
 
+impl<T: Serialize + std::fmt::Debug> std::error::Error for Response<T> {}
+
 /// 将错误枚举转换为响应体
 impl<T: Serialize> From<Error> for Response<T> {
     fn from(err: Error) -> Self {

@@ -1,4 +1,5 @@
 //! 中间件模板
+//! Infallible 是一个特殊的错误类型，表示永远不会发生的错误。它通常用于函数的返回类型，以表明该函数不会返回一个错误。
 use std::{
     boxed::Box,
     convert::Infallible,
@@ -53,7 +54,10 @@ where
 
         Box::pin(async move {
             req.extensions_mut().insert(());
-            inner.call(req).await
+
+            let future = inner.call(req);
+            let response = future.await?;
+            Ok(response)
         })
     }
 }

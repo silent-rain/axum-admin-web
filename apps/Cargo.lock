@@ -2454,6 +2454,7 @@ name = "middleware"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum_context",
  "bytes",
  "casbin",
  "code",
@@ -2463,6 +2464,7 @@ dependencies = [
  "pin-project",
  "response",
  "serde_json",
+ "service_hub",
  "tokio",
  "tower 0.5.2",
  "tower-http 0.6.2",

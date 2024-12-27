@@ -3,18 +3,14 @@ name = "middleware"
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-name = "middleware"
-path = "src/lib.rs"
-crate-type = ["staticlib", "rlib"]
 
 [dependencies]
 code = { path = "../core/code" }
 response = { path = "../core/response" }
-# context = { path = "../core/context" }
 entity = { path = "../core/entity" }
 jwt = { path = "../core/jwt" }
-# service_hub = { path = "../service_hub" }
+axum_context = { path = "../axum_context" }
+service_hub = { path = "../service_hub" }
 
 
 axum = { workspace = true }
@@ -26,7 +22,7 @@ futures = { workspace = true }
 tracing = { workspace = true }
 serde_json = { workspace = true }
 bytes = { workspace = true }
-pin-project = "1.1.7"
+pin-project = { workspace = true }
 
 
 [dev-dependencies]

@@ -1,112 +1,101 @@
 //! 系统接口权限中间件
-use std::{
-    future::{ready, Ready},
-    pin::Pin,
-    rc::Rc,
+use std::{boxed::Box, convert::Infallible, task::Poll};
+
+use axum::{
+    body::{Body, HttpBody},
+    http::Request,
+    BoxError, Extension,
+};
+use axum_context::{ApiAuthType, Context};
+use bytes::Bytes;
+use futures::future::BoxFuture;
+use tower::{Layer, Service};
+use tracing::{error, info};
+
+use code::Error;
+use entity::user::user_login_log;
+use jwt::decode_token_with_verify;
+use response::ResponseErr;
+use service_hub::inject::{
+    log::UserLoginService,
+    user::{cached::UserCached, dto::user_base::UserPermission, UserBaseService},
+    AInjectProvider,
 };
 
 use crate::constant::{AUTH_WHITE_LIST, SYSTEM_API_AUTHORIZATION, SYSTEM_API_AUTHORIZATION_BEARER};
 
-use entity::user::user_login_log;
-use service_hub::{
-    inject::AInjectProvider,
-    log::UserLoginService,
-    user::{cached::UserCached, dto::user_base::UserPermission, UserBaseService},
-};
+/// 系统接口权限中间件
+#[derive(Clone)]
+pub struct SystemApiAuthLayer;
 
-use context::{ApiAuthType, Context};
-use jwt::decode_token_with_verify;
-use response::Response;
+impl<S> Layer<S> for SystemApiAuthLayer {
+    type Service = SystemApiAuthService<S>;
 
-use actix_web::{
-    dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    web::Data,
-    Error, HttpMessage, HttpRequest,
-};
-use futures::Future;
-use tracing::{error, info};
-
-// There are two steps in middleware processing.
-// 1. Middleware initialization, middleware factory gets called with
-//    next service in chain as parameter.
-// 2. Middleware's call method gets called with normal request.
-
-/// 接口鉴权
-#[derive(Default)]
-pub struct SystemApiAuth {}
-
-// Middleware factory is `Transform` trait
-// `S` - type of the next service
-// `B` - type of response's body
-impl<S, B> Transform<S, ServiceRequest> for SystemApiAuth
-where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    S::Future: 'static,
-    B: 'static,
-{
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type InitError = ();
-    type Transform = SystemApiAuthService<S>;
-    type Future = Ready<Result<Self::Transform, Self::InitError>>;
-
-    fn new_transform(&self, service: S) -> Self::Future {
-        ready(Ok(SystemApiAuthService {
-            service: Rc::new(service),
-        }))
+    fn layer(&self, inner: S) -> Self::Service {
+        SystemApiAuthService { inner }
     }
 }
 
+#[derive(Clone)]
 pub struct SystemApiAuthService<S> {
-    service: Rc<S>,
+    inner: S,
 }
 
-impl<S, B> Service<ServiceRequest> for SystemApiAuthService<S>
+impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for SystemApiAuthService<S>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    S::Future: 'static,
-    B: 'static,
+    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>, Error = Infallible>
+        + Clone
+        + Send
+        + 'static,
+    S::Future: Send + 'static,
+    ReqBody: Send + 'static,
+    Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
+    ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
+    ResBody::Error: Into<BoxError>,
+    S::Error: Into<BoxError>,
 {
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>>>>;
+    type Response = S::Response;
+    type Error = BoxError;
+    // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
+    type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
-    forward_ready!(service);
+    fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
+        self.inner.poll_ready(cx).map_err(Into::into)
+    }
 
-    fn call(&self, req: ServiceRequest) -> Self::Future {
-        let service = Rc::clone(&self.service);
+    fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
+        let not_ready_inner = self.inner.clone();
+        let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
-        let provider = match req.app_data::<Data<AInjectProvider>>() {
-            Some(v) => v.as_ref().clone(),
-            None => {
-                return Box::pin(async move {
-                    error!("获取服务实例失败");
-                    Err(Response::code(code::Error::InjectAproviderObj).into())
-                })
-            }
-        };
         Box::pin(async move {
-            let inner_req = req.request();
+            // 全局依赖
+            let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
+                Some(v) => v.0,
+                None => {
+                    return Err(Box::new(ResponseErr::new(Error::InjectAproviderObj)))
+                        .map_err(Into::into)
+                }
+            };
 
             // 白名单放行
-            let path = req.path();
+            let path = req.uri().path();
             if AUTH_WHITE_LIST.contains(&path) {
-                let resp = service.call(req).await?;
+                let resp = inner.call(req).await?;
                 return Ok(resp);
             }
 
             // 不存在系统鉴权标识时, 则直接通过
             if req.headers().get(SYSTEM_API_AUTHORIZATION).is_none() {
-                let resp = service.call(req).await?;
+                let resp = inner.call(req).await?;
                 return Ok(resp);
             }
 
             // 获取系统鉴权标识Token
-            let system_token = match Self::get_system_api_token(inner_req) {
+            let system_token = match Self::get_system_api_token(&req) {
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取系统鉴权标识 Token 失败, err: {:#?}", err);
-                    return Err(Response::err(err).into());
+                    return Err(Box::new(err.into())).map_err(Into::into);
                 }
             };
             // 解析系统接口Token
@@ -114,7 +103,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("检查系统鉴权异常, err: {:#?}", err);
-                    return Err(Response::code(err).into());
+                    return Err(Box::new(err.into())).map_err(Into::into);
                 }
             };
             // 获取缓存
@@ -131,22 +120,22 @@ where
                     permission.user_id,
                     permission.username
                 );
-                let resp = service.call(req).await?;
+                let resp = inner.call(req).await?;
                 return Ok(resp);
             }
 
             // 验证登陆状态
-            let user_login_id = match Self::verify_user_login(provider.clone(), system_token).await
-            {
-                Ok(v) => v,
-                Err(err) => return Err(Response::err(err).into()),
-            };
+            let user_login_id =
+                match Self::verify_user_login(inject_provider.clone(), system_token).await {
+                    Ok(v) => v,
+                    Err(err) => return Err(Box::new(err.into())).map_err(Into::into),
+                };
             // 获取用户权限
-            let permission = match Self::user_permission(provider, user_id).await {
+            let permission = match Self::user_permission(inject_provider, user_id).await {
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取权限失败, err: {:#?}", err);
-                    return Err(Response::err(err).into());
+                    return Err(Box::new(err.into())).map_err(Into::into);
                 }
             };
 
@@ -167,7 +156,7 @@ where
             );
 
             // 响应
-            let resp = service.call(req).await?;
+            let resp = inner.call(req).await?;
             Ok(resp)
         })
     }
@@ -183,7 +172,7 @@ impl<S> SystemApiAuthService<S> {
     }
 
     /// 获取系统接口鉴权Token
-    fn get_system_api_token(req: &HttpRequest) -> Result<String, code::ErrorMsg> {
+    fn get_system_api_token<ReqBody>(req: &Request<ReqBody>) -> Result<String, code::ErrorMsg> {
         let authorization = req
             .headers()
             .get(SYSTEM_API_AUTHORIZATION)

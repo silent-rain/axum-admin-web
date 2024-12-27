@@ -99,7 +99,7 @@ pub enum Error {
     HeadersNotAuthorization = 10258,
     #[error("获取鉴权前缀失败")]
     HeadersNotAuthorizationBearer = 10259,
-    #[error("获取服务实例失败")]
+    #[error("获取inject provider实例失败")]
     InjectAproviderObj = 10260,
     #[error("当前登陆态已失效, 请重新登陆")]
     LoginStatusDisabled = 10261,

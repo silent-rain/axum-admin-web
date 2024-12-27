@@ -36,6 +36,14 @@ impl ResponseErr {
     }
 }
 
+impl std::fmt::Display for ResponseErr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.pad("response err")
+    }
+}
+
+impl std::error::Error for ResponseErr {}
+
 /// 将错误枚举转换为响应体
 impl From<Error> for ResponseErr {
     fn from(err: Error) -> Self {
