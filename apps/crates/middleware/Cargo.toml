@@ -25,6 +25,7 @@ casbin = { workspace = true }
 futures = { workspace = true }
 tracing = { workspace = true }
 serde_json = { workspace = true }
+bytes = { workspace = true }
 pin-project = "1.1.7"
 
 

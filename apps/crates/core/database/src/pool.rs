@@ -55,14 +55,15 @@ impl Pool {
             .idle_timeout(Duration::from_secs(options.idle_timeout))
             .max_lifetime(Duration::from_secs(options.max_lifetime))
             .sqlx_logging(options.logging_enable)
-            .sqlx_logging_level(options.logging_level.into());
+            .sqlx_logging_level(options.logging_level.into())
+            .set_schema_search_path("public");
         let db = Database::connect(opt).await?;
 
         // 检查连接是否有效
         db.ping().await?;
 
         // 设置 Mysql Time Zone
-        Self::set_mysql_time_zone(&db).await?;
+        Self::set_time_zone(&db).await?;
 
         Ok(db)
     }
@@ -72,19 +73,25 @@ impl Pool {
         Pool { db }
     }
 
-    /// 设置 Mysql Time Zone
-    /// 不支持 SQLite3
-    /// 不支持 PostgreSQL
+    /// 设置 Time Zone
     #[allow(unused)]
-    async fn set_mysql_time_zone(db: &DatabaseConnection) -> Result<(), DbErr> {
-        if db.get_database_backend() != DatabaseBackend::MySql {
-            return Ok(());
+    async fn set_time_zone(db: &DatabaseConnection) -> Result<(), DbErr> {
+        if db.get_database_backend() == DatabaseBackend::MySql {
+            let stmt = sea_orm::Statement::from_string(
+                db.get_database_backend(),
+                "SET time_zone = '+08:00';".to_owned(),
+            );
+            db.execute(stmt).await?;
         }
-        let stmt = sea_orm::Statement::from_string(
-            db.get_database_backend(),
-            "SET time_zone = '+08:00'".to_owned(),
-        );
-        db.execute(stmt).await?;
+
+        if db.get_database_backend() == DatabaseBackend::Postgres {
+            let stmt = sea_orm::Statement::from_string(
+                db.get_database_backend(),
+                "SET TIME ZONE 'Asia/Shanghai';".to_owned(),
+            );
+            db.execute(stmt).await?;
+        }
+
         Ok(())
     }
 }

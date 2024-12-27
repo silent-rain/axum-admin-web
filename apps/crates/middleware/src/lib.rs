@@ -5,5 +5,6 @@ pub mod constant;
 // pub mod casbin_auth;
 pub mod cors;
 pub mod demo;
+pub mod demo2;
 // pub mod openapi_auth;
 // pub mod system_api_auth;

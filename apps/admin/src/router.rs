@@ -3,6 +3,7 @@
 use std::time::Duration;
 
 use axum::{error_handling::HandleErrorLayer, http::StatusCode, BoxError, Extension, Router};
+use middleware::demo2::FakeAuthLayer;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -66,33 +67,35 @@ pub fn register() -> Router {
             .finish()
             .unwrap(),
     );
+    let governor = GovernorLayer {
+        config: governor_conf.into(),
+    };
+
+    // 注意中间件加载顺序: Last in, first loading
+    let layers = ServiceBuilder::new()
+        // .layer(HandleErrorLayer::new(|_: BoxError| async {
+        //     // because Axum uses infallible errors, you must handle your custom error type from your middleware here
+        //     StatusCode::BAD_REQUEST
+        // })) // 自定义错误类型需要添加该中间件
+        .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
+        // .layer(TimeoutLayer2::new(std::time::Duration::from_secs(5))) // demo
+        .layer(FakeAuthLayer) // demo
+        .layer(ContextLayer::new()) // 上下文
+        .layer(CompressionLayer::new()) // 自动压缩响应
+        .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
+        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
+        .layer(governor) // 速率限制
+        .layer(cors_layer()) // 为CORS添加标头的中间件
+        .layer(Extension(state)); // 扩展
 
     Router::new()
-        // 注意中间件加载顺序: Last in, first loading
-        // .wrap(ApiOperation::default())
-        .layer(
-            ServiceBuilder::new()
-                .layer(HandleErrorLayer::new(|_: BoxError| async {
-                    // because Axum uses infallible errors, you must handle your custom error type from your middleware here
-                    StatusCode::BAD_REQUEST
-                }))
-                .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
-                .layer(TimeoutLayer2::new(std::time::Duration::from_secs(5))) // demo
-                .layer(ContextLayer::new()) // 上下文
-                .layer(CompressionLayer::new()) // 自动压缩响应
-                .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
-                .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
-                .layer(GovernorLayer {
-                    config: governor_conf.into(),
-                }) // 速率限制
-                .layer(Extension(state)),
-        )
-        .layer(cors_layer()) // 为CORS添加标头的中间件
         // 接口鉴权
+        // .wrap(ApiOperation::default())
         // .wrap(CasbinAuth::default())
         // .wrap(SystemApiAuth::default())
         // .wrap(OpenApiAuth::default())
         // .wrap(ContextMiddleware::default())
         // .nest("/v1", LocationRouter::register())
         .merge(HealthRouter::register()) // 健康检查
+        .layer(layers)
 }

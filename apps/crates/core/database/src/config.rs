@@ -79,6 +79,7 @@ impl Config {
                 )
             }
             DbType::PostgreSQL => {
+                // 参数: ?currentSchema=public
                 format!(
                     "postgres://{}:{}@{}:{}/{}?currentSchema={}",
                     self.username, self.password, self.host, self.port, self.db_name, self.schema,
