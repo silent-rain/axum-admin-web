@@ -65,7 +65,7 @@ pub fn register() -> Router {
             .finish()
             .unwrap(),
     );
-    let governor = GovernorLayer {
+    let governor_layer = GovernorLayer {
         config: governor_conf.into(),
     };
 
@@ -78,7 +78,7 @@ pub fn register() -> Router {
         .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
         .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(CompressionLayer::new()) // 自动压缩响应
-        .layer(governor) // 速率限制
+        .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(ContextLayer::new()) // 上下文
