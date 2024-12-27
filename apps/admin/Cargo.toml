@@ -11,7 +11,7 @@ logger = { path = "../crates/core/logger" }
 utils = { path = "../crates/core/utils" }
 embed_asset = { path = "../crates/embed_asset" }
 inject = { path = "../crates/core/inject" }
-middleware = { path = "../crates/middleware" }
+axum_middleware = { path = "../crates/axum_middleware" }
 axum_context = { path = "../crates/axum_context" }
 service_hub = { path = "../crates/service_hub" }
 app_state = { path = "../crates/app_state" }

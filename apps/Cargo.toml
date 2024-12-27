@@ -19,7 +19,7 @@ members = [
     "crates/embed_asset",
     "crates/axum_mock",
     "crates/axum_context",
-    "crates/middleware",
+    "crates/axum_middleware",
     "crates/grpc_api",
     "crates/plugins",
     "crates/service_hub",

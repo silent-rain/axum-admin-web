@@ -14,7 +14,7 @@ use tracing::warn;
 
 use app_state::AppState;
 use axum_context::ContextLayer;
-use middleware::cors::cors_layer;
+use axum_middleware::cors::cors_layer;
 use service_hub::public::HealthRouter;
 
 /// axum handler for any request that fails to match the router routes.
@@ -75,13 +75,13 @@ pub fn register() -> Router {
         //     // because Axum uses infallible errors, you must handle your custom error type from your middleware here
         //     StatusCode::BAD_REQUEST
         // })) // 自定义错误类型需要添加该中间件
-        .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
-        .layer(ContextLayer::new()) // 上下文
-        .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
-        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
+        .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
+        .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(governor) // 速率限制
+        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
+        .layer(ContextLayer::new()) // 上下文
         .layer(Extension(state)); // 扩展
 
     Router::new()

@@ -38,6 +38,7 @@ dependencies = [
  "axum",
  "axum-extra",
  "axum_context",
+ "axum_middleware",
  "axum_static",
  "code",
  "colored",
@@ -47,7 +48,6 @@ dependencies = [
  "inject",
  "listenfd",
  "logger",
- "middleware",
  "num_cpus",
  "response",
  "rust-embed",
@@ -578,6 +578,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum_middleware"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_context",
+ "bytes",
+ "casbin",
+ "code",
+ "entity",
+ "futures",
+ "jwt",
+ "pin-project",
+ "response",
+ "serde_json",
+ "service_hub",
+ "tokio",
+ "tower 0.5.2",
+ "tower-http 0.6.2",
+ "tracing",
+]
+
+[[package]]
 name = "axum_mock"
 version = "0.1.0"
 dependencies = [
@@ -831,9 +853,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.5"
+version = "1.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c31a0499c1dc64f458ad13872de75c0eb7e3fdb0e67964610c914b034fc5956e"
+checksum = "8d6dbb628b8f8555f86d0323c2eb39e3ec81901f4b83e091db8a6a76d316a333"
 dependencies = [
  "shlex",
 ]
@@ -2448,28 +2470,6 @@ name = "memchr"
 version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
-
-[[package]]
-name = "middleware"
-version = "0.1.0"
-dependencies = [
- "axum",
- "axum_context",
- "bytes",
- "casbin",
- "code",
- "entity",
- "futures",
- "jwt",
- "pin-project",
- "response",
- "serde_json",
- "service_hub",
- "tokio",
- "tower 0.5.2",
- "tower-http 0.6.2",
- "tracing",
-]
 
 [[package]]
 name = "migration"
