@@ -1,31 +1,32 @@
-use axum::{body::HttpBody, http::Request, response::Response, BoxError};
-use futures::future::BoxFuture;
-
-use bytes::Bytes;
+//! 中间件模板
 use std::{
     boxed::Box,
     convert::Infallible,
     task::{Context, Poll},
 };
+
+use axum::{body::HttpBody, http::Request, response::Response, BoxError};
+use bytes::Bytes;
+use futures::future::BoxFuture;
 use tower::{Layer, Service};
 
 #[derive(Clone)]
-pub struct FakeAuthLayer;
+pub struct TemplateLayer;
 
-impl<S> Layer<S> for FakeAuthLayer {
-    type Service = FakeAuthMiddleware<S>;
+impl<S> Layer<S> for TemplateLayer {
+    type Service = TemplateService<S>;
 
     fn layer(&self, inner: S) -> Self::Service {
-        FakeAuthMiddleware { inner }
+        TemplateService { inner }
     }
 }
 
 #[derive(Clone)]
-pub struct FakeAuthMiddleware<S> {
+pub struct TemplateService<S> {
     inner: S,
 }
 
-impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for FakeAuthMiddleware<S>
+impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for TemplateService<S>
 where
     S: Service<Request<ReqBody>, Response = Response<ResBody>, Error = Infallible>
         + Clone

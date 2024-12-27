@@ -3,7 +3,6 @@
 use std::time::Duration;
 
 use axum::{error_handling::HandleErrorLayer, http::StatusCode, BoxError, Extension, Router};
-use middleware::demo2::FakeAuthLayer;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -16,7 +15,6 @@ use tracing::warn;
 use app_state::AppState;
 use axum_context::ContextLayer;
 use middleware::cors::cors_layer;
-use middleware::demo::TimeoutLayer2;
 use service_hub::public::HealthRouter;
 
 /// axum handler for any request that fails to match the router routes.
@@ -78,8 +76,6 @@ pub fn register() -> Router {
         //     StatusCode::BAD_REQUEST
         // })) // 自定义错误类型需要添加该中间件
         .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
-        // .layer(TimeoutLayer2::new(std::time::Duration::from_secs(5))) // demo
-        .layer(FakeAuthLayer) // demo
         .layer(ContextLayer::new()) // 上下文
         .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
