@@ -1,13 +1,14 @@
 //! 用户地理位置管理
 
-use actix_validator::Validate;
-
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
+
+use entity::user::location;
 
 /// 查询用户地理位置列表
 #[derive(Default, Deserialize, Validate)]
-pub struct GetLocationListReq {
+pub struct GetLocationsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -20,9 +21,28 @@ pub struct GetLocationListReq {
     pub user_id: Option<i32>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetLocationsResp {
+    pub data_list: Vec<location::Model>,
+    pub total: u64,
+}
+
+/// 查询用户地理位置信息 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetLocationReq {
+    /// 位置ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetLocationResp {
+    #[serde(flatten)]
+    data: location::Model,
+}
+
 /// 添加用户地理位置
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddLocationReq {
+pub struct CreateLocationReq {
     /// 用户ID
     pub user_id: i32,
     /// 省份
@@ -43,9 +63,14 @@ pub struct AddLocationReq {
     pub desc: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateLocationResp {}
+
 /// 更新数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateLocationReq {
+    /// 位置ID
+    pub id: i32,
     /// 省份
     pub province: String,
     /// 城市
@@ -63,3 +88,16 @@ pub struct UpdateLocationReq {
     /// 描述信息
     pub desc: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateLocationResp {}
+
+/// 删除用户地理位置 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteLocationReq {
+    /// 位置ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteLocationResp {}

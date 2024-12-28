@@ -1,7 +1,7 @@
 //! 用户邮箱管理
 use std::sync::Arc;
 
-use crate::dto::email::GetEmailListReq;
+use crate::dto::email::GetEmailsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::user::{email, Email};
@@ -20,7 +20,7 @@ pub struct EmailDao {
 
 impl EmailDao {
     /// 获取数据列表
-    pub async fn list(&self, req: GetEmailListReq) -> Result<(Vec<email::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetEmailsReq) -> Result<(Vec<email::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Email::find()
@@ -66,7 +66,7 @@ impl EmailDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: email::ActiveModel) -> Result<email::Model, DbErr> {
+    pub async fn create(&self, active_model: email::ActiveModel) -> Result<email::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 

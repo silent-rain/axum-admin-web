@@ -1,7 +1,7 @@
 //! 角色管理
 use std::sync::Arc;
 
-use crate::dto::role::GetRoleListReq;
+use crate::dto::role::GetRolesReq;
 
 use database::{Pagination, PoolTrait};
 use entity::user::{role, Role};
@@ -30,7 +30,7 @@ impl RoleDao {
     }
 
     /// 获取数据列表
-    pub async fn list(&self, req: GetRoleListReq) -> Result<(Vec<role::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetRolesReq) -> Result<(Vec<role::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Role::find()
@@ -73,7 +73,7 @@ impl RoleDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: role::ActiveModel) -> Result<role::Model, DbErr> {
+    pub async fn create(&self, active_model: role::ActiveModel) -> Result<role::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
@@ -90,7 +90,7 @@ impl RoleDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = role::ActiveModel {
             id: Set(id),
             status: Set(status),

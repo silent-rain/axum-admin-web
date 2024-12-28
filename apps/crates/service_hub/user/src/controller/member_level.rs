@@ -2,19 +2,17 @@
 
 use crate::{
     dto::member_level::{
-        AddMemberLevelReq, GetMemberLevelListReq, UpdateMemberLevelReq, UpdateMemberLevelStatusReq,
+        CreateMemberLevelReq, CreateMemberLevelResp, DeleteMemberLevelReq, DeleteMemberLevelResp,
+        GetMemberLevelReq, GetMemberLevelResp, GetMemberLevelsReq, GetMemberLevelsResp,
+        UpdateMemberLevelReq, UpdateMemberLevelResp, UpdateMemberLevelStatusReq,
+        UpdateMemberLevelStatusResp,
     },
     service::member_level::MemberLevelService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct MemberLevelController;
@@ -22,77 +20,73 @@ pub struct MemberLevelController;
 impl MemberLevelController {
     /// 获取会员等级列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetMemberLevelListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetMemberLevelsReq>,
+    ) -> Responder<GetMemberLevelsResp> {
         let member_level_service: MemberLevelService = provider.provide();
-        let resp = member_level_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = member_level_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取会员等级信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetMemberLevelReq>,
+    ) -> Responder<GetMemberLevelResp> {
         let member_level_service: MemberLevelService = provider.provide();
-        let resp = member_level_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = member_level_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加会员等级
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<AddMemberLevelReq>,
-    ) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(data): Json<CreateMemberLevelReq>,
+    ) -> Responder<CreateMemberLevelResp> {
         let member_level_service: MemberLevelService = provider.provide();
-        let resp = member_level_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = member_level_service.create(data).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新会员等级
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateMemberLevelReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateMemberLevelReq>,
+    ) -> Responder<UpdateMemberLevelResp> {
         let member_level_service: MemberLevelService = provider.provide();
-        let resp = member_level_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = member_level_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新会员等级状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateMemberLevelStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateMemberLevelStatusReq>,
+    ) -> Responder<UpdateMemberLevelStatusResp> {
         let member_level_service: MemberLevelService = provider.provide();
-        let resp = member_level_service
-            .status(*id, data.status.clone() as i8)
-            .await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        member_level_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除会员等级
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteMemberLevelReq>,
+    ) -> Responder<DeleteMemberLevelResp> {
         let member_level_service: MemberLevelService = provider.provide();
-        let resp = member_level_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = member_level_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

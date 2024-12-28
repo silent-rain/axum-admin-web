@@ -1,7 +1,7 @@
 //! 用户信息管理
 use std::sync::Arc;
 
-use crate::dto::user_base::GetUserBaserListReq;
+use crate::dto::user_base::GetUserBasesReq;
 
 use database::{Pagination, PoolTrait};
 use entity::user::{role, user_base, user_role_rel, Role, UserBase, UserRoleRel};
@@ -30,10 +30,7 @@ impl UserBaseDao {
     }
 
     /// 获取数据列表
-    pub async fn list(
-        &self,
-        req: GetUserBaserListReq,
-    ) -> Result<(Vec<user_base::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetUserBasesReq) -> Result<(Vec<user_base::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = UserBase::find()
@@ -90,7 +87,7 @@ impl UserBaseDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: user_base::ActiveModel,
     ) -> Result<user_base::Model, DbErr> {
@@ -121,7 +118,7 @@ impl UserBaseDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = user_base::ActiveModel {
             id: Set(id),
             status: Set(status),

@@ -2,7 +2,8 @@
 use crate::{
     dao::blockchain_wallet::BlockchainWalletDao,
     dto::blockchain_wallet::{
-        AddBlockchainWalletReq, GetBlockchainWalletListReq, UpdateBlockchainWalletReq,
+        CreateBlockchainWalletReq, DeleteBlockchainWalletReq, GetBlockchainWalletReq,
+        GetBlockchainWalletsReq, UpdateBlockchainWalletReq,
     },
 };
 
@@ -23,7 +24,7 @@ impl BlockchainWalletService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetBlockchainWalletListReq,
+        req: GetBlockchainWalletsReq,
     ) -> Result<(Vec<blockchain_wallet::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.blockchain_wallet_dao.list(req).await.map_err(|err| {
             error!("查询用户区块链钱包列表失败, err: {:#?}", err);
@@ -42,10 +43,13 @@ impl BlockchainWalletService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<blockchain_wallet::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        req: GetBlockchainWalletReq,
+    ) -> Result<blockchain_wallet::Model, ErrorMsg> {
         let mut result = self
             .blockchain_wallet_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询用户区块链钱包信息失败, err: {:#?}", err);
@@ -67,9 +71,9 @@ impl BlockchainWalletService {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
-        req: AddBlockchainWalletReq,
+        req: CreateBlockchainWalletReq,
     ) -> Result<blockchain_wallet::Model, ErrorMsg> {
         // 查询用户区块链钱包是否已存在
         self.check_wallet_address_exist(req.wallet_address.clone(), None)
@@ -84,20 +88,24 @@ impl BlockchainWalletService {
             desc: Set(req.desc),
             ..Default::default()
         };
-        let result = self.blockchain_wallet_dao.add(model).await.map_err(|err| {
-            error!("添加用户区块链钱包信息失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加用户区块链钱包信息失败")
-        })?;
+        let result = self
+            .blockchain_wallet_dao
+            .create(model)
+            .await
+            .map_err(|err| {
+                error!("添加用户区块链钱包信息失败, err: {:#?}", err);
+                Error::DbAddError
+                    .into_msg()
+                    .with_msg("添加用户区块链钱包信息失败")
+            })?;
 
         Ok(result)
     }
 
     /// 更新用户区块链钱包
-    pub async fn update(&self, id: i32, req: UpdateBlockchainWalletReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateBlockchainWalletReq) -> Result<u64, ErrorMsg> {
         let model = blockchain_wallet::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             desc: Set(req.desc),
             ..Default::default()
         };
@@ -148,13 +156,17 @@ impl BlockchainWalletService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.blockchain_wallet_dao.delete(id).await.map_err(|err| {
-            error!("删除用户区块链钱包信息失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除用户区块链钱包信息失败")
-        })?;
+    pub async fn delete(&self, req: DeleteBlockchainWalletReq) -> Result<u64, ErrorMsg> {
+        let result = self
+            .blockchain_wallet_dao
+            .delete(req.id)
+            .await
+            .map_err(|err| {
+                error!("删除用户区块链钱包信息失败, err: {:#?}", err);
+                Error::DbDeleteError
+                    .into_msg()
+                    .with_msg("删除用户区块链钱包信息失败")
+            })?;
 
         Ok(result)
     }

@@ -1,7 +1,7 @@
 //! 用户邮箱管理
 use crate::{
     dao::email::EmailDao,
-    dto::email::{AddEmailReq, GetEmailListReq, UpdateEmailReq},
+    dto::email::{CreateEmailReq, DeleteEmailReq, GetEmailReq, GetEmailsReq, UpdateEmailReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -19,7 +19,7 @@ pub struct EmailService {
 
 impl EmailService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetEmailListReq) -> Result<(Vec<email::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetEmailsReq) -> Result<(Vec<email::Model>, u64), ErrorMsg> {
         let (results, total) = self.email_dao.list(req).await.map_err(|err| {
             error!("查询邮箱列表失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("查询邮箱列表失败")
@@ -29,10 +29,10 @@ impl EmailService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<email::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetEmailReq) -> Result<email::Model, ErrorMsg> {
         let result = self
             .email_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询邮箱信息失败, err: {:#?}", err);
@@ -47,7 +47,7 @@ impl EmailService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddEmailReq) -> Result<email::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateEmailReq) -> Result<email::Model, ErrorMsg> {
         // 查询邮箱是否已存在
         let email = self
             .email_dao
@@ -71,7 +71,7 @@ impl EmailService {
             desc: Set(req.desc),
             ..Default::default()
         };
-        let result = self.email_dao.add(model).await.map_err(|err| {
+        let result = self.email_dao.create(model).await.map_err(|err| {
             error!("添加邮箱信息失败, err: {:#?}", err);
             Error::DbAddError.into_msg().with_msg("添加邮箱信息失败")
         })?;
@@ -80,12 +80,13 @@ impl EmailService {
     }
 
     /// 更新邮箱
-    pub async fn update(&self, id: i32, req: UpdateEmailReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateEmailReq) -> Result<u64, ErrorMsg> {
         // 检查邮箱是否已存在且不属于当前ID
-        self.check_email_exist(req.email.clone(), Some(id)).await?;
+        self.check_email_exist(req.email.clone(), Some(req.id))
+            .await?;
 
         let model = email::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             email: Set(req.email),
             desc: Set(req.desc),
             ..Default::default()
@@ -123,8 +124,8 @@ impl EmailService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.email_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteEmailReq) -> Result<u64, ErrorMsg> {
+        let result = self.email_dao.delete(req.id).await.map_err(|err| {
             error!("删除邮箱失败, err: {:#?}", err);
             Error::DbDeleteError.into_msg().with_msg("删除邮箱失败")
         })?;

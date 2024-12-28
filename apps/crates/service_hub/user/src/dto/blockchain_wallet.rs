@@ -1,12 +1,13 @@
 //! 用户区块链钱包管理
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询用户区块链钱包列表
+use entity::user::blockchain_wallet;
+
+/// 查询用户区块链钱包列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetBlockchainWalletListReq {
+pub struct GetBlockchainWalletsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -21,9 +22,28 @@ pub struct GetBlockchainWalletListReq {
     pub wallet_address: Option<String>,
 }
 
-/// 添加用户区块链钱包
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetBlockchainWalletsResp {
+    pub data_list: Vec<blockchain_wallet::Model>,
+    pub total: u64,
+}
+
+/// 查询用户区块链钱包信息 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetBlockchainWalletReq {
+    /// 钱包ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetBlockchainWalletResp {
+    #[serde(flatten)]
+    data: blockchain_wallet::Model,
+}
+
+/// 添加用户区块链钱包 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddBlockchainWalletReq {
+pub struct CreateBlockchainWalletReq {
     /// 用户ID
     pub user_id: i32,
     /// 钱包地址
@@ -38,11 +58,29 @@ pub struct AddBlockchainWalletReq {
     pub desc: Option<String>,
 }
 
-/// 更新数据 请求体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateBlockchainWalletResp {}
+
+/// 更新用户区块链钱包数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateBlockchainWalletReq {
+    /// 钱包ID
+    pub id: i32,
     /// 区块链ID
     pub chain_id: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateBlockchainWalletResp {}
+
+/// 删除用户区块链钱包 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteBlockchainWalletReq {
+    /// 钱包ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteBlockchainWalletResp {}

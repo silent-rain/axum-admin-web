@@ -1,7 +1,7 @@
 //! 用户手机号管理
 use std::sync::Arc;
 
-use crate::dto::phone::GetPhoneListReq;
+use crate::dto::phone::GetPhonesReq;
 
 use database::{Pagination, PoolTrait};
 use entity::user::{phone, Phone};
@@ -20,7 +20,7 @@ pub struct PhoneDao {
 
 impl PhoneDao {
     /// 获取数据列表
-    pub async fn list(&self, req: GetPhoneListReq) -> Result<(Vec<phone::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetPhonesReq) -> Result<(Vec<phone::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Phone::find()
@@ -66,7 +66,7 @@ impl PhoneDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: phone::ActiveModel) -> Result<phone::Model, DbErr> {
+    pub async fn create(&self, active_model: phone::ActiveModel) -> Result<phone::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 

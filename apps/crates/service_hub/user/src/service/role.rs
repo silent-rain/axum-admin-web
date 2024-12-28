@@ -1,7 +1,9 @@
 //! 角色管理
 use crate::{
     dao::role::RoleDao,
-    dto::role::{AddRoleReq, GetRoleListReq, UpdateRoleReq},
+    dto::role::{
+        CreateRoleReq, DeleteRoleReq, GetRoleReq, GetRolesReq, UpdateRoleReq, UpdateRoleStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -19,7 +21,7 @@ pub struct RoleService {
 
 impl RoleService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetRoleListReq) -> Result<(Vec<role::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetRolesReq) -> Result<(Vec<role::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
             return self.role_dao.all().await.map_err(|err| {
@@ -37,10 +39,10 @@ impl RoleService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<role::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetRoleReq) -> Result<role::Model, ErrorMsg> {
         let result = self
             .role_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询角色信息失败, err: {:#?}", err);
@@ -55,7 +57,7 @@ impl RoleService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddRoleReq) -> Result<role::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateRoleReq) -> Result<role::Model, ErrorMsg> {
         // 检查角色名称是否已存在
         self.check_name_exist(req.name.clone(), None).await?;
 
@@ -66,7 +68,7 @@ impl RoleService {
             status: Set(role::enums::Status::Enabled as i8),
             ..Default::default()
         };
-        let result = self.role_dao.add(model).await.map_err(|err| {
+        let result = self.role_dao.create(model).await.map_err(|err| {
             error!("添加角色信息失败, err: {:#?}", err);
             Error::DbAddError.into_msg().with_msg("添加角色信息失败")
         })?;
@@ -75,12 +77,13 @@ impl RoleService {
     }
 
     /// 更新角色
-    pub async fn update(&self, id: i32, req: UpdateRoleReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateRoleReq) -> Result<u64, ErrorMsg> {
         // 检查角色名称是否已存在且不属于当前ID
-        self.check_name_exist(req.name.clone(), Some(id)).await?;
+        self.check_name_exist(req.name.clone(), Some(req.id))
+            .await?;
 
         let model = role::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             name: Set(req.name),
             sort: Set(req.sort),
             desc: Set(req.desc),
@@ -122,24 +125,27 @@ impl RoleService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.role_dao.status(id, status).await.map_err(|err| {
-            if err == RecordNotUpdated {
-                error!("更新角色状态失败, 该角色不存在");
-                return Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新角色状态失败, 该角色不存在");
-            }
-            error!("更新角色状态失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新角色状态失败")
-        })?;
+    pub async fn update_status(&self, req: UpdateRoleStatusReq) -> Result<(), ErrorMsg> {
+        self.role_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                if err == RecordNotUpdated {
+                    error!("更新角色状态失败, 该角色不存在");
+                    return Error::DbUpdateError
+                        .into_msg()
+                        .with_msg("更新角色状态失败, 该角色不存在");
+                }
+                error!("更新角色状态失败, err: {:#?}", err);
+                Error::DbUpdateError.into_msg().with_msg("更新角色状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.role_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteRoleReq) -> Result<u64, ErrorMsg> {
+        let result = self.role_dao.delete(req.id).await.map_err(|err| {
             error!("删除角色信息失败, err: {:#?}", err);
             Error::DbDeleteError.into_msg().with_msg("删除角色信息失败")
         })?;

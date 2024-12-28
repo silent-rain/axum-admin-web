@@ -1,7 +1,10 @@
 //! 登陆日志管理
 use crate::{
-    dao::user_login::UserLoginDao,
-    dto::user_login::{AddUserLoginInfoReq, GetUserLoginListReq, UpdateUserLoginInfoReq},
+    dao::user_login_log::UserLoginLogDao,
+    dto::user_login_log::{
+        CreateUserLoginLogReq, GetUserLoginLogReq, GetUserLoginLogsReq, UpdateUserLoginLogReq,
+        UpdateUserLoginLogStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -15,14 +18,14 @@ use tracing::error;
 /// 服务层
 #[injectable]
 pub struct UserLoginLogService {
-    user_login_dao: UserLoginDao,
+    user_login_dao: UserLoginLogDao,
 }
 
 impl UserLoginLogService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetUserLoginListReq,
+        req: GetUserLoginLogsReq,
     ) -> Result<(Vec<user_login_log::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.user_login_dao.list(req).await.map_err(|err| {
             error!("查询登陆日志列表失败, err: {:#?}", err);
@@ -40,10 +43,10 @@ impl UserLoginLogService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<user_login_log::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetUserLoginLogReq) -> Result<user_login_log::Model, ErrorMsg> {
         let mut result = self
             .user_login_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询登陆日志信息失败, err: {:#?}", err);
@@ -85,7 +88,10 @@ impl UserLoginLogService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddUserLoginInfoReq) -> Result<user_login_log::Model, ErrorMsg> {
+    pub async fn create(
+        &self,
+        req: CreateUserLoginLogReq,
+    ) -> Result<user_login_log::Model, ErrorMsg> {
         let (device, system, browser) = parse_user_agent_async(req.user_agent.clone())
             .await
             .map_err(|err| {
@@ -106,7 +112,7 @@ impl UserLoginLogService {
             status: Set(req.status as i8),
             ..Default::default()
         };
-        let result = self.user_login_dao.add(model).await.map_err(|err| {
+        let result = self.user_login_dao.create(model).await.map_err(|err| {
             error!("添加登陆日志信息失败, err: {:#?}", err);
             Error::DbAddError
                 .into_msg()
@@ -117,9 +123,9 @@ impl UserLoginLogService {
     }
 
     /// 更新数据
-    pub async fn update(&self, id: i32, req: UpdateUserLoginInfoReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateUserLoginLogReq) -> Result<u64, ErrorMsg> {
         let model = user_login_log::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             desc: Set(req.desc),
             status: Set(req.status as i8),
             ..Default::default()
@@ -136,9 +142,9 @@ impl UserLoginLogService {
     }
 
     /// 更新登录日志状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
+    pub async fn update_status(&self, req: UpdateUserLoginLogStatusReq) -> Result<(), ErrorMsg> {
         self.user_login_dao
-            .status(id, status)
+            .update_status(req.id, req.status as i8)
             .await
             .map_err(|err| {
                 error!("更新登录日志状态失败, err: {:#?}", err);

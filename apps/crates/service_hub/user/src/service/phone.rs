@@ -1,7 +1,7 @@
 //! 用户手机号管理
 use crate::{
     dao::phone::PhoneDao,
-    dto::phone::{AddPhoneReq, GetPhoneListReq, UpdatePhoneReq},
+    dto::phone::{CreatePhoneReq, DeletePhoneReq, GetPhoneReq, GetPhonesReq, UpdatePhoneReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -19,7 +19,7 @@ pub struct PhoneService {
 
 impl PhoneService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetPhoneListReq) -> Result<(Vec<phone::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetPhonesReq) -> Result<(Vec<phone::Model>, u64), ErrorMsg> {
         let (results, total) = self.phone_dao.list(req).await.map_err(|err| {
             error!("查询用户手机号列表失败, err: {:#?}", err);
             Error::DbQueryError
@@ -31,10 +31,10 @@ impl PhoneService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<phone::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetPhoneReq) -> Result<phone::Model, ErrorMsg> {
         let result = self
             .phone_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询用户手机号信息失败, err: {:#?}", err);
@@ -53,7 +53,7 @@ impl PhoneService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddPhoneReq) -> Result<phone::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreatePhoneReq) -> Result<phone::Model, ErrorMsg> {
         // 检查用户手机号是否已存在
         self.check_phone_exist(req.phone.clone(), None).await?;
 
@@ -63,7 +63,7 @@ impl PhoneService {
             desc: Set(req.desc),
             ..Default::default()
         };
-        let result = self.phone_dao.add(model).await.map_err(|err| {
+        let result = self.phone_dao.create(model).await.map_err(|err| {
             error!("添加用户手机号信息失败, err: {:#?}", err);
             Error::DbAddError
                 .into_msg()
@@ -74,12 +74,13 @@ impl PhoneService {
     }
 
     /// 更新用户手机号
-    pub async fn update(&self, id: i32, req: UpdatePhoneReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdatePhoneReq) -> Result<u64, ErrorMsg> {
         // 检查用户手机号是否已存在且不属于当前ID
-        self.check_phone_exist(req.phone.clone(), Some(id)).await?;
+        self.check_phone_exist(req.phone.clone(), Some(req.id))
+            .await?;
 
         let model = phone::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             phone: Set(req.phone),
             desc: Set(req.desc),
             ..Default::default()
@@ -123,8 +124,8 @@ impl PhoneService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.phone_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeletePhoneReq) -> Result<u64, ErrorMsg> {
+        let result = self.phone_dao.delete(req.id).await.map_err(|err| {
             error!("删除用户手机号失败, err: {:#?}", err);
             Error::DbDeleteError
                 .into_msg()

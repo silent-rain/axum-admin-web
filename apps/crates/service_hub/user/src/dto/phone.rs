@@ -1,14 +1,15 @@
 //! 用户手机号管理
 
-use actix_validator::Validate;
+use entity::user::phone;
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 use validator::ValidationError;
 
-/// 查询用户手机号列表
+/// 查询用户手机号列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetPhoneListReq {
+pub struct GetPhonesReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -23,9 +24,28 @@ pub struct GetPhoneListReq {
     pub phone: Option<String>,
 }
 
-/// 添加用户手机号
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetPhonesResp {
+    pub data_list: Vec<phone::Model>,
+    pub total: u64,
+}
+
+/// 查询用户手机号信息 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetPhoneReq {
+    /// 手机号ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetPhoneResp {
+    #[serde(flatten)]
+    data: phone::Model,
+}
+
+/// 添加用户手机号 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddPhoneReq {
+pub struct CreatePhoneReq {
     /// 用户ID
     pub user_id: i32,
     /// 手机号码
@@ -35,15 +55,23 @@ pub struct AddPhoneReq {
     pub desc: Option<String>,
 }
 
-/// 更新用户手机号
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreatePhoneResp {}
+
+/// 更新用户手机号 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdatePhoneReq {
+    /// 手机号ID
+    pub id: i32,
     /// 手机号码
     #[validate(custom(function = "validate_phone"))]
     pub phone: String,
     /// 描述信息
     pub desc: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdatePhoneResp {}
 
 // 自定义电话号码验证函数
 fn validate_phone(phone: &str) -> Result<(), ValidationError> {
@@ -55,3 +83,13 @@ fn validate_phone(phone: &str) -> Result<(), ValidationError> {
     }
     Ok(())
 }
+
+/// 删除用户手机号 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeletePhoneReq {
+    /// 手机号ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeletePhoneResp {}

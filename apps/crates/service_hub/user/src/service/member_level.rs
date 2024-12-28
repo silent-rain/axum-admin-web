@@ -1,7 +1,10 @@
 //! 会员等级管理
 use crate::{
     dao::member_level::MemberLevelDao,
-    dto::member_level::{AddMemberLevelReq, GetMemberLevelListReq, UpdateMemberLevelReq},
+    dto::member_level::{
+        CreateMemberLevelReq, DeleteMemberLevelReq, GetMemberLevelReq, GetMemberLevelsReq,
+        UpdateMemberLevelReq, UpdateMemberLevelStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +24,7 @@ impl MemberLevelService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetMemberLevelListReq,
+        req: GetMemberLevelsReq,
     ) -> Result<(Vec<member_level::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
@@ -44,10 +47,10 @@ impl MemberLevelService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<member_level::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetMemberLevelReq) -> Result<member_level::Model, ErrorMsg> {
         let result = self
             .member_level_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询会员等级信息失败, err: {:#?}", err);
@@ -66,7 +69,7 @@ impl MemberLevelService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddMemberLevelReq) -> Result<member_level::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateMemberLevelReq) -> Result<member_level::Model, ErrorMsg> {
         // 查询会员等级名称是否已存在
         self.check_name_exist(req.name.clone(), None).await?;
         // 检查会员等级是否已存在且不属于当前ID
@@ -82,7 +85,7 @@ impl MemberLevelService {
         };
         let member_level =
             self.member_level_dao
-                .add(model)
+                .create(model)
                 .await
                 .map_err(|err: sea_orm::prelude::DbErr| {
                     error!("添加会员等级信息失败, err: {:#?}", err);
@@ -95,14 +98,15 @@ impl MemberLevelService {
     }
 
     /// 更新数据
-    pub async fn update(&self, id: i32, req: UpdateMemberLevelReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateMemberLevelReq) -> Result<u64, ErrorMsg> {
         // 查询会员等级名称是否已存在且不属于当前ID
-        self.check_name_exist(req.name.clone(), Some(id)).await?;
+        self.check_name_exist(req.name.clone(), Some(req.id))
+            .await?;
         // 检查会员等级是否已存在且不属于当前ID
-        self.check_level_exist(req.level, Some(id)).await?;
+        self.check_level_exist(req.level, Some(req.id)).await?;
 
         let model = member_level::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             name: Set(req.name),
             sort: Set(req.sort),
             desc: Set(req.desc),
@@ -176,9 +180,9 @@ impl MemberLevelService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
+    pub async fn update_status(&self, req: UpdateMemberLevelStatusReq) -> Result<(), ErrorMsg> {
         self.member_level_dao
-            .status(id, status)
+            .update_status(req.id, req.status as i8)
             .await
             .map_err(|err| {
                 error!("更新会员等级状态失败, err: {:#?}", err);
@@ -191,8 +195,8 @@ impl MemberLevelService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.member_level_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteMemberLevelReq) -> Result<u64, ErrorMsg> {
+        let result = self.member_level_dao.delete(req.id).await.map_err(|err| {
             error!("删除会员等级信息失败, err: {:#?}", err);
             Error::DbDeleteError
                 .into_msg()

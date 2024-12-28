@@ -1,7 +1,7 @@
 //! 用户角色关系管理
 use crate::{
     dao::user_role_rel::UserRoleRelDao,
-    dto::user_role_rel::{BatchAddUserRoleRelReq, GetUserRoleRelListReq},
+    dto::user_role_rel::{BatchCreateUserRoleRelReq, GetUserRoleRelsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -33,7 +33,7 @@ impl UserRoleRelService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetUserRoleRelListReq,
+        req: GetUserRoleRelsReq,
     ) -> Result<(Vec<user_role_rel::Model>, u64), ErrorMsg> {
         let (results, total) = self.user_role_rel_dao.list(req).await.map_err(|err| {
             error!("查询用户角色关系列表失败, err: {:#?}", err);
@@ -46,7 +46,7 @@ impl UserRoleRelService {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(&self, req: BatchAddUserRoleRelReq) -> Result<i32, ErrorMsg> {
+    pub async fn batch_create(&self, req: BatchCreateUserRoleRelReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for role_id in req.role_ids {
             let model = user_role_rel::ActiveModel {
@@ -59,7 +59,7 @@ impl UserRoleRelService {
 
         let result = self
             .user_role_rel_dao
-            .batch_add(models)
+            .batch_create(models)
             .await
             .map_err(|err| {
                 error!("批量添加用户角色关系失败, err: {:#?}", err);

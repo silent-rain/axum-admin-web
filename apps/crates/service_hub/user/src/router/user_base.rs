@@ -2,26 +2,37 @@
 
 use crate::controller::user_base::UserBaseController;
 
-use actix_web::{web, Scope};
+use axum::{
+    routing::{get, put},
+    Router,
+};
 
 /// 路由器
 pub struct UserBaseRouter;
 
 impl UserBaseRouter {
     /// 注册`用户信息管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/base")
-            .route("/profile", web::get().to(UserBaseController::profile))
-            .route("", web::get().to(UserBaseController::list))
-            .route("/{id}", web::get().to(UserBaseController::info))
-            .route("", web::post().to(UserBaseController::add))
-            .route("/{id}", web::put().to(UserBaseController::update))
-            .route(
-                "/{id}/share-code",
-                web::put().to(UserBaseController::update_share_code),
-            )
-            .route("/{id}/status", web::put().to(UserBaseController::status))
-            .route("/{id}", web::delete().to(UserBaseController::delete))
-            .route("/{id}/roles", web::get().to(UserBaseController::roles))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/base",
+            Router::new()
+                .route(
+                    "/",
+                    get(UserBaseController::list).post(UserBaseController::create),
+                )
+                .route(
+                    "/:id",
+                    get(UserBaseController::info)
+                        .put(UserBaseController::update)
+                        .delete(UserBaseController::delete),
+                )
+                .route("/:id/status", put(UserBaseController::update_status))
+                .route(
+                    "/:id/share-code",
+                    put(UserBaseController::update_share_code),
+                )
+                .route("/:id/profile", get(UserBaseController::profile))
+                .route("/:id/roles", get(UserBaseController::roles)),
+        )
     }
 }

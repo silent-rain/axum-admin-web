@@ -1,7 +1,7 @@
 //! 用户区块链钱包管理
 use std::sync::Arc;
 
-use crate::dto::blockchain_wallet::GetBlockchainWalletListReq;
+use crate::dto::blockchain_wallet::GetBlockchainWalletsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::user::{blockchain_wallet, BlockchainWallet};
@@ -22,7 +22,7 @@ impl BlockchainWalletDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetBlockchainWalletListReq,
+        req: GetBlockchainWalletsReq,
     ) -> Result<(Vec<blockchain_wallet::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -72,7 +72,7 @@ impl BlockchainWalletDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: blockchain_wallet::ActiveModel,
     ) -> Result<blockchain_wallet::Model, DbErr> {

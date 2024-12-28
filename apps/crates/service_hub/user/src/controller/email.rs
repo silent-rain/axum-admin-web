@@ -1,18 +1,16 @@
 //! 用户邮箱管理
 
 use crate::{
-    dto::email::{AddEmailReq, GetEmailListReq, UpdateEmailReq},
+    dto::email::{
+        CreateEmailReq, CreateEmailResp, DeleteEmailReq, DeleteEmailResp, GetEmailReq,
+        GetEmailResp, GetEmailsReq, GetEmailsResp, UpdateEmailReq, UpdateEmailResp,
+    },
     service::email::EmailService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct EmailController;
@@ -20,58 +18,61 @@ pub struct EmailController;
 impl EmailController {
     /// 获取用户邮箱列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetEmailListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetEmailsReq>,
+    ) -> Responder<GetEmailsResp> {
         let email_service: EmailService = provider.provide();
-        let resp = email_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = email_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取用户邮箱信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetEmailReq>,
+    ) -> Responder<GetEmailResp> {
         let email_service: EmailService = provider.provide();
-        let resp = email_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = email_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加用户邮箱
-    pub async fn add(provider: Data<AInjectProvider>, data: Json<AddEmailReq>) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(data): Json<CreateEmailReq>,
+    ) -> Responder<CreateEmailResp> {
         let email_service: EmailService = provider.provide();
-        let resp = email_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = email_service.create(data).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新用户邮箱
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateEmailReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateEmailReq>,
+    ) -> Responder<UpdateEmailResp> {
         let email_service: EmailService = provider.provide();
-        let resp = email_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = email_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除用户邮箱
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteEmailReq>,
+    ) -> Responder<DeleteEmailResp> {
         let email_service: EmailService = provider.provide();
-        let resp = email_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = email_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

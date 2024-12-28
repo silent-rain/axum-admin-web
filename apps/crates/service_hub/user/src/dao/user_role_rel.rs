@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::user_role_rel::GetUserRoleRelListReq;
+use crate::dto::user_role_rel::GetUserRoleRelsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::user::{user_role_rel, UserRoleRel};
@@ -33,7 +33,7 @@ impl UserRoleRelDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetUserRoleRelListReq,
+        req: GetUserRoleRelsReq,
     ) -> Result<(Vec<user_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -64,7 +64,7 @@ impl UserRoleRelDao {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: user_role_rel::ActiveModel,
     ) -> Result<user_role_rel::Model, DbErr> {
@@ -72,7 +72,7 @@ impl UserRoleRelDao {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(
+    pub async fn batch_create(
         &self,
         active_models: Vec<user_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {

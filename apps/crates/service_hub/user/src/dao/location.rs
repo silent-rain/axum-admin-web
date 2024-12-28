@@ -1,7 +1,7 @@
 //! 用户地理位置管理
 use std::sync::Arc;
 
-use crate::dto::location::GetLocationListReq;
+use crate::dto::location::GetLocationsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::user::{location, Location};
@@ -20,10 +20,7 @@ pub struct LocationDao {
 
 impl LocationDao {
     /// 获取数据列表
-    pub async fn list(
-        &self,
-        req: GetLocationListReq,
-    ) -> Result<(Vec<location::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetLocationsReq) -> Result<(Vec<location::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Location::find()
@@ -66,7 +63,10 @@ impl LocationDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: location::ActiveModel) -> Result<location::Model, DbErr> {
+    pub async fn create(
+        &self,
+        active_model: location::ActiveModel,
+    ) -> Result<location::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 

@@ -2,16 +2,15 @@
 
 use crate::{
     dto::user_role_rel::{
-        BatchAddUserRoleRelReq, BatchDeleteUserRoleRelReq, GetUserRoleRelListReq,
+        BatchCreateUserRoleRelReq, BatchCreateUserRoleRelResp, BatchDeleteUserRoleRelReq,
+        BatchDeleteUserRoleRelResp, GetUserRoleRelsReq, GetUserRoleRelsResp,
     },
     service::user_role_rel::UserRoleRelService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{web::Data, Responder};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct UserRoleRelController;
@@ -19,42 +18,37 @@ pub struct UserRoleRelController;
 impl UserRoleRelController {
     /// 获取用户角色关系列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetUserRoleRelListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetUserRoleRelsReq>,
+    ) -> Responder<GetUserRoleRelsResp> {
         let user_role_rel_service: UserRoleRelService = provider.provide();
-        let resp = user_role_rel_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = user_role_rel_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 批量创建用户角色关系
-    pub async fn batch_add(
-        provider: Data<AInjectProvider>,
-        data: Json<BatchAddUserRoleRelReq>,
-    ) -> impl Responder {
-        let data = data.into_inner();
+    pub async fn batch_create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(data): Json<BatchCreateUserRoleRelReq>,
+    ) -> Responder<BatchCreateUserRoleRelResp> {
         let user_role_rel_service: UserRoleRelService = provider.provide();
-        let resp = user_role_rel_service.batch_add(data).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = user_role_rel_service.batch_create(data).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 批量删除用户角色关系
     pub async fn batch_delete(
-        provider: Data<AInjectProvider>,
-        data: Json<BatchDeleteUserRoleRelReq>,
-    ) -> impl Responder {
-        let data = data.into_inner();
+        Extension(provider): Extension<AInjectProvider>,
+        Json(data): Json<BatchDeleteUserRoleRelReq>,
+    ) -> Responder<BatchDeleteUserRoleRelResp> {
         let user_role_rel_service: UserRoleRelService = provider.provide();
-        let resp = user_role_rel_service.batch_delete(data.ids).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = user_role_rel_service.batch_delete(data.ids.clone()).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

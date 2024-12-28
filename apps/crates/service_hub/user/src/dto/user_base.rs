@@ -2,13 +2,12 @@
 
 use entity::user::user_base;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询用户列表
+/// 查询用户列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetUserBaserListReq {
+pub struct GetUserBasesReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -21,9 +20,28 @@ pub struct GetUserBaserListReq {
     pub username: Option<String>,
 }
 
-/// 添加用户
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetUserBasesResp {
+    pub data_list: Vec<user_base::Model>,
+    pub total: u64,
+}
+
+/// 查询用户信息 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetUserBaseReq {
+    /// 用户ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetUserBaseResp {
+    #[serde(flatten)]
+    data: user_base::Model,
+}
+
+/// 添加用户 请求体
 #[derive(Clone, Serialize, Deserialize, Validate)]
-pub struct AddUserBaseReq {
+pub struct CreateUserBaseReq {
     /// 用户名称
     pub username: String,
     /// 真实姓名
@@ -60,9 +78,14 @@ pub struct AddUserBaseReq {
     pub role_ids: Vec<i32>,
 }
 
-/// 更新用户
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateUserBaseResp {}
+
+/// 更新用户 请求体
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateUserBaseReq {
+    /// 用户ID
+    pub id: i32,
     /// 用户名称
     pub username: String,
     /// 真实姓名
@@ -97,16 +120,50 @@ pub struct UpdateUserBaseReq {
     pub role_ids: Vec<i32>,
 }
 
-/// 更新数据状态
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateUserBaseResp {}
+
+/// 更新用户状态 请求体
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateUserBaseStatusReq {
+    /// 用户ID
+    pub id: i32,
     /// 用户状态
     pub status: user_base::enums::Status,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateUserBaseStatusResp {}
+
+/// 删除用户 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteUserBaseReq {
+    /// 用户ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteUserBaseResp {}
+
+/// 更新用户分享码 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct UpdateShareCodeReq {
+    /// 用户ID
+    pub id: i32,
+}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateShareCodeResp {}
+
+/// 更新用户分享码 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct ProfileReq {
+    /// 用户ID
+    pub user_id: i32,
+}
+
 /// 获取用户个人信息
 #[derive(Clone, Serialize, Deserialize)]
-pub struct ProfileRsp {
+pub struct ProfileResp {
     /// 用户ID
     pub id: i32,
     /// 用户名称
@@ -120,6 +177,16 @@ pub struct ProfileRsp {
     /// 头像URL
     pub avatar: Option<String>,
 }
+
+/// 通过用户信息ID获角色色列表 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct RolesReq {
+    /// 用户ID
+    pub user_id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RolesResp {}
 
 /// 用户接口权限权限
 #[derive(Clone, Serialize, Deserialize)]

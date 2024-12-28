@@ -2,10 +2,11 @@
 use entity::user::user_login_log;
 
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询登陆日志列表
+/// 查询登陆日志列表 请求体
 #[derive(Default, Deserialize, Serialize)]
-pub struct GetUserLoginListReq {
+pub struct GetUserLoginLogsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -20,8 +21,28 @@ pub struct GetUserLoginListReq {
     pub username: Option<String>,
 }
 
-/// 添加登陆日志信息
-pub struct AddUserLoginInfoReq {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetUserLoginLogsResp {
+    pub data_list: Vec<user_login_log::Model>,
+    pub total: u64,
+}
+
+/// 查询登陆日志信息 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetUserLoginLogReq {
+    /// 钱包ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetUserLoginLogResp {
+    #[serde(flatten)]
+    data: user_login_log::Model,
+}
+
+/// 添加登陆日志信息 请求体
+#[derive(Deserialize)]
+pub struct CreateUserLoginLogReq {
     /// 用户ID
     pub user_id: i32,
     /// 用户名称
@@ -38,20 +59,31 @@ pub struct AddUserLoginInfoReq {
     pub status: user_login_log::enums::Status,
 }
 
-/// 更新登陆日志信息
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateUserLoginLogResp {}
+
+/// 更新登陆日志信息 请求体
 #[derive(Deserialize)]
-pub struct UpdateUserLoginInfoReq {
+pub struct UpdateUserLoginLogReq {
+    /// ID
+    pub id: i32,
     /// 描述信息
     pub desc: Option<String>,
     /// 登录状态
     pub status: user_login_log::enums::Status,
 }
 
-/// 更新登录日志状态
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateUserLoginLogResp {}
+
+/// 更新登录日志状态 请求体
 #[derive(Deserialize)]
-pub struct UpdateUserLoginStatusReq {
+pub struct UpdateUserLoginLogStatusReq {
     /// ID
     pub id: i32,
     /// 登录状态
     pub status: user_login_log::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateUserLoginLogStatusResp {}

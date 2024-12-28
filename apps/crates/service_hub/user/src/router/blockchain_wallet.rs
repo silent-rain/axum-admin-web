@@ -2,22 +2,27 @@
 
 use crate::controller::blockchain_wallet::BlockchainWalletController;
 
-use actix_web::{web, Scope};
+use axum::{routing::get, Router};
 
 /// 路由器
 pub struct BlockchainWalletRouter;
 
 impl BlockchainWalletRouter {
     /// 注册`用户区块链钱包管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/blockchain-wallets")
-            .route("", web::get().to(BlockchainWalletController::list))
-            .route("/{id}", web::get().to(BlockchainWalletController::info))
-            .route("", web::post().to(BlockchainWalletController::add))
-            .route("/{id}", web::put().to(BlockchainWalletController::update))
-            .route(
-                "/{id}",
-                web::delete().to(BlockchainWalletController::delete),
-            )
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/blockchain-wallets",
+            Router::new()
+                .route(
+                    "/",
+                    get(BlockchainWalletController::list).post(BlockchainWalletController::create),
+                )
+                .route(
+                    "/:id",
+                    get(BlockchainWalletController::info)
+                        .put(BlockchainWalletController::update)
+                        .delete(BlockchainWalletController::delete),
+                ),
+        )
     }
 }

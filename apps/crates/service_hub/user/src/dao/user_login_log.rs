@@ -2,8 +2,6 @@
 
 use std::sync::Arc;
 
-use crate::dto::user_login::GetUserLoginListReq;
-
 use database::{Pagination, PoolTrait};
 use entity::user::{user_login_log, UserLoginLog};
 
@@ -12,6 +10,8 @@ use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait, Set,
 };
+
+use crate::dto::user_login_log::GetUserLoginLogsReq;
 
 /// 数据访问
 #[injectable]
@@ -27,7 +27,7 @@ impl UserLoginLogDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetUserLoginListReq,
+        req: GetUserLoginLogsReq,
     ) -> Result<(Vec<user_login_log::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -78,7 +78,7 @@ impl UserLoginLogDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: user_login_log::ActiveModel,
     ) -> Result<user_login_log::Model, DbErr> {
@@ -98,7 +98,7 @@ impl UserLoginLogDao {
     }
 
     /// 更新禁用状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = user_login_log::ActiveModel {
             id: Set(id),
             status: Set(status),
