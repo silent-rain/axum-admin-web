@@ -137,7 +137,7 @@ impl AppTemplateService {
     }
 
     /// 更新{{InterfaceName}}状态
-    pub async fn status(
+    pub async fn update_status(
         &self,
         req: UpdateAppTemplateStatusReq,
     ) -> Result<app_template::Model, ErrorMsg> {
@@ -210,7 +210,7 @@ mod tests {
             status: app_template::enums::Status::Enabled,
         };
         let result = service.create(data).await?;
-        println!("add result1: {result:#?}");
+        println!("create result1: {result:#?}");
         assert!(result.user_id == 1);
 
         // 添加模板2
@@ -220,7 +220,7 @@ mod tests {
             status: app_template::enums::Status::Enabled,
         };
         let result = service.create(data).await?;
-        println!("add result2: {result:#?}");
+        println!("create result2: {result:#?}");
         assert!(result.user_id == 2);
 
         // 查询模板1

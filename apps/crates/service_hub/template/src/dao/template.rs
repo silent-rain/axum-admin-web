@@ -301,7 +301,7 @@ mod tests {
             ..Default::default()
         };
         let result = dao.create(active_model).await?;
-        println!("add result1: {result:#?}");
+        println!("create result1: {result:#?}");
         assert!(result.user_id == 1);
 
         // 添加模板2
@@ -312,7 +312,7 @@ mod tests {
             ..Default::default()
         };
         let result = dao.create(active_model).await?;
-        println!("add result2: {result:#?}");
+        println!("create result2: {result:#?}");
         assert!(result.user_id == 2);
 
         // 查询模板1

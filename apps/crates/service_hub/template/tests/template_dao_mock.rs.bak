@@ -95,7 +95,7 @@ async fn test_add() -> Result<(), DbErr> {
         department_id: Set(3),
         created_at: Set(Local::now()),
     };
-    let result = dao.add(model).await?;
+    let result = dao.create(model).await?;
     println!("result: \n{:#?}", result);
 
     Ok(())

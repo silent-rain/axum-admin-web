@@ -1,7 +1,7 @@
 //! 模板管理
 
 use axum::{
-    routing::{delete, get, put},
+    routing::{delete, get, post, put},
     Router,
 };
 
@@ -13,21 +13,23 @@ pub struct AppTemplateRouter;
 impl AppTemplateRouter {
     /// 注册路由
     pub fn register() -> Router {
-        let router = Router::new()
-            .route(
-                "/",
-                get(AppTemplateController::list).post(AppTemplateController::create),
-            )
-            .route(
-                "/:id",
-                get(AppTemplateController::info)
-                    .put(AppTemplateController::update)
-                    .delete(AppTemplateController::delete),
-            )
-            .route("/batch_delete", delete(AppTemplateController::batch_delete))
-            .route("/:id/status", put(AppTemplateController::status));
-
-        Router::new().nest("/app-templates", router)
+        Router::new().nest(
+            "/app-templates",
+            Router::new()
+                .route(
+                    "/",
+                    get(AppTemplateController::list).post(AppTemplateController::create),
+                )
+                .route(
+                    "/:id",
+                    get(AppTemplateController::info)
+                        .put(AppTemplateController::update)
+                        .delete(AppTemplateController::delete),
+                )
+                .route("/batch_create", post(AppTemplateController::batch_create))
+                .route("/batch_delete", delete(AppTemplateController::batch_delete))
+                .route("/:id/status", put(AppTemplateController::update_status)),
+        )
     }
 }
 

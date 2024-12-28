@@ -92,7 +92,7 @@ impl AppTemplateGrpcService for AppTemplateController {
             struct_to_struct(&req.into_inner())
                 .map_err(|err| tonic::Status::aborted(err.to_string()))?;
 
-        let resp = self.app_template_service.status(data).await;
+        let resp = self.app_template_service.update_status(data).await;
 
         match resp {
             Ok(_v) => Ok(Response::<()>::ok()

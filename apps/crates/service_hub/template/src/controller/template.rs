@@ -27,7 +27,7 @@ impl AppTemplateController {
         let app_template_service: AppTemplateService = provider.provide();
         let (results, total) = app_template_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json::<GetAppTemplatesResp>()?;
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -39,7 +39,7 @@ impl AppTemplateController {
         let app_template_service: AppTemplateService = provider.provide();
         let result = app_template_service.info(req).await?;
 
-        let resp = Response::data(result).to_json::<GetAppTemplateResp>()?;
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -51,7 +51,7 @@ impl AppTemplateController {
         let app_template_service: AppTemplateService = provider.provide();
         let _result = app_template_service.create(data).await?;
 
-        let resp = Response::<()>::ok().to_json::<CreateAppTemplateResp>()?;
+        let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
     }
 
@@ -63,7 +63,7 @@ impl AppTemplateController {
         let app_template_service: AppTemplateService = provider.provide();
         let _result = app_template_service.batch_create(data).await?;
 
-        let resp = Response::<()>::ok().to_json::<BatchCreateAppTemplateResp>()?;
+        let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
     }
 
@@ -75,19 +75,19 @@ impl AppTemplateController {
         let app_template_service: AppTemplateService = provider.provide();
         let _result = app_template_service.update(data).await?;
 
-        let resp = Response::<()>::ok().to_json::<UpdateAppTemplateResp>()?;
+        let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
     }
 
     /// 更新{{InterfaceName}}状态
-    pub async fn status(
+    pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateAppTemplateStatusReq>,
     ) -> Responder<UpdateAppTemplateStatusResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let _result = app_template_service.status(req).await?;
+        let _result = app_template_service.update_status(req).await?;
 
-        let resp = Response::<()>::ok().to_json::<UpdateAppTemplateStatusResp>()?;
+        let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
     }
 
@@ -99,7 +99,7 @@ impl AppTemplateController {
         let app_template_service: AppTemplateService = provider.provide();
         let _result = app_template_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json::<DeleteAppTemplateResp>()?;
+        let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
     }
 
@@ -111,7 +111,7 @@ impl AppTemplateController {
         let app_template_service: AppTemplateService = provider.provide();
         let _result = app_template_service.batch_delete(data.ids.clone()).await?;
 
-        let resp = Response::<()>::ok().to_json::<BatchDeleteAppTemplateResp>()?;
+        let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
     }
 }
