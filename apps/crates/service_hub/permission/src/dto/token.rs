@@ -2,15 +2,15 @@
 
 use entity::permission::token;
 
-use actix_validator::Validate;
 use utils::time::{default_local_date_time, str_to_local_date_time};
 
 use sea_orm::prelude::DateTimeLocal;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 /// 查询令牌列表
 #[derive(Default, Deserialize, Validate)]
-pub struct GetTokenListReq {
+pub struct GetTokensReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -25,9 +25,28 @@ pub struct GetTokenListReq {
     pub token: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetTokensResp {
+    pub data_list: Vec<token::Model>,
+    pub total: u64,
+}
+
+/// 查询令牌详情 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetTokenReq {
+    /// 令牌ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetTokenResp {
+    #[serde(flatten)]
+    data: token::Model,
+}
+
 /// 添加令牌
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddTokenReq {
+pub struct CreateTokenReq {
     /// 用户ID
     pub user_id: i32,
     /// 权限范围:GET,POST,PUT,DELETE
@@ -46,9 +65,14 @@ pub struct AddTokenReq {
     pub desc: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateTokenResp {}
+
 /// 更新数据
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateTokenReq {
+    /// 令牌ID
+    pub id: i32,
     /// 用户ID
     pub user_id: i32,
     /// 权限范围:GET,POST,PUT,DELETE
@@ -67,9 +91,27 @@ pub struct UpdateTokenReq {
     pub desc: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateTokenResp {}
+
 /// 更新令牌状态
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateTokenStatusReq {
+    /// 令牌ID
+    pub id: i32,
     /// 状态(0:停用,1:正常)
     pub status: token::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateTokenStatusResp {}
+
+/// 删除令牌 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteTokenReq {
+    /// 令牌ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteTokenResp {}

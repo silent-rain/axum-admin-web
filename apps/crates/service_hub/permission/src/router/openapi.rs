@@ -2,21 +2,32 @@
 
 use crate::controller::openapi::OpenapiController;
 
-use actix_web::{web, Scope};
+use axum::{
+    routing::{get, put},
+    Router,
+};
 
 /// 路由器
 pub struct OpenapiRouter;
 
 impl OpenapiRouter {
     /// 注册`OpenApi接口管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/openapi")
-            .route("", web::get().to(OpenapiController::list))
-            .route("/tree", web::get().to(OpenapiController::tree))
-            .route("/{id}", web::get().to(OpenapiController::info))
-            .route("", web::post().to(OpenapiController::add))
-            .route("/{id}", web::put().to(OpenapiController::update))
-            .route("/{id}/status", web::put().to(OpenapiController::status))
-            .route("/{id}", web::delete().to(OpenapiController::delete))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/openapis",
+            Router::new()
+                .route(
+                    "/",
+                    get(OpenapiController::list).post(OpenapiController::create),
+                )
+                .route(
+                    "/:id",
+                    get(OpenapiController::info)
+                        .put(OpenapiController::update)
+                        .delete(OpenapiController::delete),
+                )
+                .route("/tree", get(OpenapiController::tree))
+                .route("/:id/status", put(OpenapiController::update_status)),
+        )
     }
 }

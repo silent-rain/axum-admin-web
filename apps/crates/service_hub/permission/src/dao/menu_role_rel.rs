@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::menu_role_rel::GetMenuRoleRelListReq;
+use crate::dto::menu_role_rel::GetMenuRoleRelsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::{permission::menu_role_rel, permission::MenuRoleRel};
@@ -23,7 +23,7 @@ impl MenuRoleRelDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetMenuRoleRelListReq,
+        req: GetMenuRoleRelsReq,
     ) -> Result<(Vec<menu_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -54,7 +54,7 @@ impl MenuRoleRelDao {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: menu_role_rel::ActiveModel,
     ) -> Result<menu_role_rel::Model, DbErr> {
@@ -62,7 +62,7 @@ impl MenuRoleRelDao {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(
+    pub async fn batch_create(
         &self,
         active_models: Vec<menu_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {

@@ -1,18 +1,17 @@
 //! 令牌管理
 
 use crate::{
-    dto::token::{AddTokenReq, GetTokenListReq, UpdateTokenReq, UpdateTokenStatusReq},
+    dto::token::{
+        CreateTokenReq, CreateTokenResp, DeleteTokenReq, DeleteTokenResp, GetTokenReq,
+        GetTokenResp, GetTokensReq, GetTokensResp, UpdateTokenReq, UpdateTokenResp,
+        UpdateTokenStatusReq, UpdateTokenStatusResp,
+    },
     service::token::TokenService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct TokenController;
@@ -20,72 +19,73 @@ pub struct TokenController;
 impl TokenController {
     /// 获取令牌列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetTokenListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetTokensReq>,
+    ) -> Responder<GetTokensResp> {
         let token_service: TokenService = provider.provide();
-        let resp = token_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = token_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取令牌信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetTokenReq>,
+    ) -> Responder<GetTokenResp> {
         let token_service: TokenService = provider.provide();
-        let resp = token_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = token_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加令牌
-    pub async fn add(provider: Data<AInjectProvider>, data: Json<AddTokenReq>) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(data): Json<CreateTokenReq>,
+    ) -> Responder<CreateTokenResp> {
         let token_service: TokenService = provider.provide();
-        let resp = token_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = token_service.create(data).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新令牌
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateTokenReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateTokenReq>,
+    ) -> Responder<UpdateTokenResp> {
         let token_service: TokenService = provider.provide();
-        let resp = token_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = token_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新令牌状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateTokenStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateTokenStatusReq>,
+    ) -> Responder<UpdateTokenStatusResp> {
         let token_service: TokenService = provider.provide();
-        let resp = token_service.status(*id, data.status.clone() as i8).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        token_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除令牌
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteTokenReq>,
+    ) -> Responder<DeleteTokenResp> {
         let token_service: TokenService = provider.provide();
-        let resp = token_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = token_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

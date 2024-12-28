@@ -1,7 +1,7 @@
 //! OpenApi接口管理
 use std::sync::Arc;
 
-use crate::dto::openapi::{GetOpenapiListReq, RoleOpenapiPermission};
+use crate::dto::openapi::{GetOpenapisReq, RoleOpenapiPermission};
 
 use database::{Pagination, PoolTrait};
 use entity::{permission::openapi, permission::openapi_role_rel, permission::Openapi};
@@ -30,7 +30,7 @@ impl OpenapiDao {
     }
 
     /// 获取数据列表
-    pub async fn list(&self, req: GetOpenapiListReq) -> Result<(Vec<openapi::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetOpenapisReq) -> Result<(Vec<openapi::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Openapi::find()
@@ -86,7 +86,10 @@ impl OpenapiDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: openapi::ActiveModel) -> Result<openapi::Model, DbErr> {
+    pub async fn create(
+        &self,
+        active_model: openapi::ActiveModel,
+    ) -> Result<openapi::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
@@ -103,7 +106,7 @@ impl OpenapiDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = openapi::ActiveModel {
             id: Set(id),
             status: Set(status),

@@ -2,20 +2,26 @@
 
 use crate::controller::token_role_rel::TokenRoleRelController;
 
-use actix_web::{web, Scope};
+use axum::{
+    routing::{delete, get, post},
+    Router,
+};
 
 /// 路由器
 pub struct TokenRoleRelRouter;
 
 impl TokenRoleRelRouter {
     /// 注册`令牌角色关系管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/token-role-rels")
-            .route("", web::get().to(TokenRoleRelController::list))
-            .route("/batch", web::post().to(TokenRoleRelController::batch_add))
-            .route(
-                "/batch",
-                web::delete().to(TokenRoleRelController::batch_delete),
-            )
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/token-role-rels",
+            Router::new()
+                .route("/", get(TokenRoleRelController::list))
+                .route("/batch_create", post(TokenRoleRelController::batch_create))
+                .route(
+                    "/batch_delete",
+                    delete(TokenRoleRelController::batch_delete),
+                ),
+        )
     }
 }

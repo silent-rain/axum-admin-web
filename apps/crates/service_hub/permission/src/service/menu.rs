@@ -1,7 +1,9 @@
 //! 菜单管理
 use crate::{
     dao::menu::MenuDao,
-    dto::menu::{AddMenuReq, GetMenuListReq, UpdateMenuReq},
+    dto::menu::{
+        CreateMenuReq, DeleteMenuReq, GetMenuReq, GetMenusReq, UpdateMenuReq, UpdateMenuStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -20,7 +22,7 @@ pub struct MenuService {
 
 impl MenuService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetMenuListReq) -> Result<(Vec<menu::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetMenusReq) -> Result<(Vec<menu::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
             return self.menu_dao.all().await.map_err(|err| {
@@ -62,10 +64,10 @@ impl MenuService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<menu::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetMenuReq) -> Result<menu::Model, ErrorMsg> {
         let result = self
             .menu_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询菜单信息失败, err: {:#?}", err);
@@ -80,7 +82,7 @@ impl MenuService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddMenuReq) -> Result<menu::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateMenuReq) -> Result<menu::Model, ErrorMsg> {
         let model = menu::ActiveModel {
             pid: Set(req.pid),
             title: Set(req.title),
@@ -100,22 +102,22 @@ impl MenuService {
             status: Set(menu::enums::Status::Enabled as i8),
             ..Default::default()
         };
-        let result = self
-            .menu_dao
-            .add(model)
-            .await
-            .map_err(|err: sea_orm::prelude::DbErr| {
-                error!("添加菜单信息失败, err: {:#?}", err);
-                Error::DbAddError.into_msg().with_msg("添加菜单信息失败")
-            })?;
+        let result =
+            self.menu_dao
+                .create(model)
+                .await
+                .map_err(|err: sea_orm::prelude::DbErr| {
+                    error!("添加菜单信息失败, err: {:#?}", err);
+                    Error::DbAddError.into_msg().with_msg("添加菜单信息失败")
+                })?;
 
         Ok(result)
     }
 
     /// 更新数据
-    pub async fn update(&self, id: i32, req: UpdateMenuReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateMenuReq) -> Result<u64, ErrorMsg> {
         let model = menu::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             pid: Set(req.pid),
             title: Set(req.title),
             icon_class: Set(req.icon_class),
@@ -144,18 +146,21 @@ impl MenuService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.menu_dao.status(id, status).await.map_err(|err| {
-            error!("更新菜单状态失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新菜单状态失败")
-        })?;
+    pub async fn update_status(&self, req: UpdateMenuStatusReq) -> Result<(), ErrorMsg> {
+        self.menu_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                error!("更新菜单状态失败, err: {:#?}", err);
+                Error::DbUpdateError.into_msg().with_msg("更新菜单状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let children = self.menu_dao.children(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteMenuReq) -> Result<u64, ErrorMsg> {
+        let children = self.menu_dao.children(req.id).await.map_err(|err| {
             error!("获取所有子列表失败, err: {:#?}", err);
             Error::DbQueryError
                 .into_msg()
@@ -168,7 +173,7 @@ impl MenuService {
                 .with_msg("请先删除子列表"));
         }
 
-        let result = self.menu_dao.delete(id).await.map_err(|err| {
+        let result = self.menu_dao.delete(req.id).await.map_err(|err| {
             error!("删除菜单信息失败, err: {:#?}", err);
             Error::DbDeleteError.into_msg().with_msg("删除菜单信息失败")
         })?;

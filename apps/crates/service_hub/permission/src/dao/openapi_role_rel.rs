@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::openapi_role_rel::GetOpenapiRoleRelListReq;
+use crate::dto::openapi_role_rel::GetOpenapiRoleRelsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::{permission::openapi_role_rel, permission::OpenapiRoleRel};
@@ -23,7 +23,7 @@ impl OpenapiRoleRelDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetOpenapiRoleRelListReq,
+        req: GetOpenapiRoleRelsReq,
     ) -> Result<(Vec<openapi_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -54,7 +54,7 @@ impl OpenapiRoleRelDao {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: openapi_role_rel::ActiveModel,
     ) -> Result<openapi_role_rel::Model, DbErr> {
@@ -62,7 +62,7 @@ impl OpenapiRoleRelDao {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(
+    pub async fn batch_create(
         &self,
         active_models: Vec<openapi_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {

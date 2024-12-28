@@ -1,7 +1,7 @@
 //! 菜单角色关系管理
 use crate::{
     dao::menu_role_rel::MenuRoleRelDao,
-    dto::menu_role_rel::{BatchAddMenuRoleRelReq, GetMenuRoleRelListReq},
+    dto::menu_role_rel::{BatchCreateMenuRoleRelReq, GetMenuRoleRelsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +21,7 @@ impl MenuRoleRelService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetMenuRoleRelListReq,
+        req: GetMenuRoleRelsReq,
     ) -> Result<(Vec<menu_role_rel::Model>, u64), ErrorMsg> {
         let (results, total) = self.menu_role_rel_dao.list(req).await.map_err(|err| {
             error!("查询菜单角色关系列表失败, err: {:#?}", err);
@@ -34,7 +34,7 @@ impl MenuRoleRelService {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(&self, req: BatchAddMenuRoleRelReq) -> Result<i32, ErrorMsg> {
+    pub async fn batch_create(&self, req: BatchCreateMenuRoleRelReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for role_id in req.role_ids {
             let model = menu_role_rel::ActiveModel {
@@ -47,7 +47,7 @@ impl MenuRoleRelService {
 
         let result = self
             .menu_role_rel_dao
-            .batch_add(models)
+            .batch_create(models)
             .await
             .map_err(|err| {
                 error!("批量添加菜单角色关系失败, err: {:#?}", err);

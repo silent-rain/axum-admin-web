@@ -1,18 +1,17 @@
 //! OpenApi接口管理
 
 use crate::{
-    dto::openapi::{AddOpenapiReq, GetOpenapiListReq, UpdateOpenapiReq, UpdateOpenapiStatusReq},
+    dto::openapi::{
+        CreateOpenapiReq, CreateOpenapiResp, DeleteOpenapiReq, DeleteOpenapiResp, GetOpenapiReq,
+        GetOpenapiResp, GetOpenapiTreeReq, GetOpenapiTreeResp, GetOpenapisReq, GetOpenapisResp,
+        UpdateOpenapiReq, UpdateOpenapiResp, UpdateOpenapiStatusReq, UpdateOpenapiStatusResp,
+    },
     service::openapi::OpenapiService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct OpenapiController;
@@ -20,82 +19,85 @@ pub struct OpenapiController;
 impl OpenapiController {
     /// 获取OpenApi接口列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetOpenapiListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetOpenapisReq>,
+    ) -> Responder<GetOpenapisResp> {
         let openapi_service: OpenapiService = provider.provide();
-        let resp = openapi_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = openapi_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取OpenApi接口树列表
-    pub async fn tree(provider: Data<AInjectProvider>) -> impl Responder {
+    pub async fn tree(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(_req): Query<GetOpenapiTreeReq>,
+    ) -> Responder<GetOpenapiTreeResp> {
         let openapi_service: OpenapiService = provider.provide();
-        let resp = openapi_service.tree().await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = openapi_service.tree().await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 获取OpenApi接口信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetOpenapiReq>,
+    ) -> Responder<GetOpenapiResp> {
         let openapi_service: OpenapiService = provider.provide();
-        let resp = openapi_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = openapi_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加OpenApi接口
-    pub async fn add(provider: Data<AInjectProvider>, data: Json<AddOpenapiReq>) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(data): Json<CreateOpenapiReq>,
+    ) -> Responder<CreateOpenapiResp> {
         let openapi_service: OpenapiService = provider.provide();
-        let resp = openapi_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = openapi_service.create(data).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新OpenApi接口
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateOpenapiReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateOpenapiReq>,
+    ) -> Responder<UpdateOpenapiResp> {
         let openapi_service: OpenapiService = provider.provide();
-        let resp = openapi_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = openapi_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新OpenApi接口状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateOpenapiStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateOpenapiStatusReq>,
+    ) -> Responder<UpdateOpenapiStatusResp> {
         let openapi_service: OpenapiService = provider.provide();
-        let resp = openapi_service.status(*id, data.status.clone() as i8).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        openapi_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除OpenApi接口
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteOpenapiReq>,
+    ) -> Responder<DeleteOpenapiResp> {
         let openapi_service: OpenapiService = provider.provide();
-        let resp = openapi_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = openapi_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

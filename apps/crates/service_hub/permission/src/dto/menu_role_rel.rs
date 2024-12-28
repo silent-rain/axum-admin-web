@@ -1,11 +1,12 @@
 //! 菜单角色关系管理
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询菜单角色关系列表
+use entity::permission::menu_role_rel;
+
+/// 查询菜单角色关系列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetMenuRoleRelListReq {
+pub struct GetMenuRoleRelsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -18,18 +19,30 @@ pub struct GetMenuRoleRelListReq {
     pub menu_id: Option<i32>,
 }
 
-/// 批量添加菜单角色关系
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetMenuRoleRelsResp {
+    pub data_list: Vec<menu_role_rel::Model>,
+    pub total: u64,
+}
+
+/// 批量添加菜单角色关系 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct BatchAddMenuRoleRelReq {
+pub struct BatchCreateMenuRoleRelReq {
     /// 菜单ID
     pub menu_id: i32,
     /// 角色ID列表
     pub role_ids: Vec<i32>,
 }
 
-/// 批量删除菜单角色关系
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchCreateMenuRoleRelResp {}
+
+/// 批量删除菜单角色关系 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct BatchDeleteMenuRoleRelReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchDeleteMenuRoleRelResp {}

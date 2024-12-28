@@ -1,7 +1,10 @@
 //! OpenApi接口管理
 use crate::{
     dao::openapi::OpenapiDao,
-    dto::openapi::{AddOpenapiReq, GetOpenapiListReq, RoleOpenapiPermission, UpdateOpenapiReq},
+    dto::openapi::{
+        CreateOpenapiReq, DeleteOpenapiReq, GetOpenapiReq, GetOpenapisReq, RoleOpenapiPermission,
+        UpdateOpenapiReq, UpdateOpenapiStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -20,10 +23,7 @@ pub struct OpenapiService {
 
 impl OpenapiService {
     /// 获取列表数据
-    pub async fn list(
-        &self,
-        req: GetOpenapiListReq,
-    ) -> Result<(Vec<openapi::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetOpenapisReq) -> Result<(Vec<openapi::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
             return self.openapi_dao.all().await.map_err(|err| {
@@ -59,10 +59,10 @@ impl OpenapiService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<openapi::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetOpenapiReq) -> Result<openapi::Model, ErrorMsg> {
         let result = self
             .openapi_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询OpenApi接口信息失败, err: {:#?}", err);
@@ -81,7 +81,7 @@ impl OpenapiService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddOpenapiReq) -> Result<openapi::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateOpenapiReq) -> Result<openapi::Model, ErrorMsg> {
         // 查询OpenApi接口是否已存在
         let open_api = self
             .openapi_dao
@@ -113,7 +113,7 @@ impl OpenapiService {
         };
         let result =
             self.openapi_dao
-                .add(model)
+                .create(model)
                 .await
                 .map_err(|err: sea_orm::prelude::DbErr| {
                     error!("添加OpenApi接口信息失败, err: {:#?}", err);
@@ -126,9 +126,9 @@ impl OpenapiService {
     }
 
     /// 更新数据
-    pub async fn update(&self, id: i32, req: UpdateOpenapiReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateOpenapiReq) -> Result<u64, ErrorMsg> {
         let model = openapi::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             pid: Set(req.pid),
             category: Set(req.category as i8),
             name: Set(req.name),
@@ -151,20 +151,23 @@ impl OpenapiService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.openapi_dao.status(id, status).await.map_err(|err| {
-            error!("更新OpenApi接口状态失败, err: {:#?}", err);
-            Error::DbUpdateError
-                .into_msg()
-                .with_msg("更新OpenApi接口状态失败")
-        })?;
+    pub async fn update_status(&self, req: UpdateOpenapiStatusReq) -> Result<(), ErrorMsg> {
+        self.openapi_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                error!("更新OpenApi接口状态失败, err: {:#?}", err);
+                Error::DbUpdateError
+                    .into_msg()
+                    .with_msg("更新OpenApi接口状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let children = self.openapi_dao.children(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteOpenapiReq) -> Result<u64, ErrorMsg> {
+        let children = self.openapi_dao.children(req.id).await.map_err(|err| {
             error!("获取所有子列表失败, err: {:#?}", err);
             Error::DbQueryError
                 .into_msg()
@@ -177,7 +180,7 @@ impl OpenapiService {
                 .with_msg("请先删除子列表"));
         }
 
-        let result = self.openapi_dao.delete(id).await.map_err(|err| {
+        let result = self.openapi_dao.delete(req.id).await.map_err(|err| {
             error!("删除OpenApi接口信息失败, err: {:#?}", err);
             Error::DbDeleteError
                 .into_msg()

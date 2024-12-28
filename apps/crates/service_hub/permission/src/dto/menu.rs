@@ -2,13 +2,12 @@
 
 use entity::permission::menu;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 /// 查询菜单列表
 #[derive(Default, Deserialize, Validate)]
-pub struct GetMenuListReq {
+pub struct GetMenusReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -23,9 +22,28 @@ pub struct GetMenuListReq {
     pub all: Option<bool>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetMenusResp {
+    pub data_list: Vec<menu::Model>,
+    pub total: u64,
+}
+
+/// 查询菜单详情 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetMenuReq {
+    /// 菜单ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetMenuResp {
+    #[serde(flatten)]
+    data: menu::Model,
+}
+
 /// 添加菜单
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddMenuReq {
+pub struct CreateMenuReq {
     /// 父菜单ID
     pub pid: Option<i32>,
     /// 菜单名称
@@ -60,10 +78,15 @@ pub struct AddMenuReq {
     /// 状态(0:停用,1:正常)
     pub status: menu::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateMenuResp {}
 
 /// 更新数据
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateMenuReq {
+    /// 菜单ID
+    pub id: i32,
     /// 父菜单ID
     pub pid: Option<i32>,
     /// 菜单名称
@@ -99,9 +122,56 @@ pub struct UpdateMenuReq {
     pub status: menu::enums::Status,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateMenuResp {}
+
 /// 更新数据状态
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateMenuStatusReq {
+    /// 菜单ID
+    pub id: i32,
     /// 状态(0:停用,1:正常)
     pub status: menu::enums::Status,
+}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateMenuStatusResp {}
+
+/// 删除菜单 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteMenuReq {
+    /// 菜单ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteMenuResp {}
+
+/// 获取子菜单列表 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct GetMenuChildrenReq {
+    /// 父菜单ID
+    pub pid: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetMenuChildrenResp {
+    pub data_list: Vec<menu::Model>,
+    pub total: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MenuTreeItem {
+    #[serde(flatten)]
+    pub data: menu::Model,
+    pub children: Vec<MenuTreeItem>,
+}
+
+/// 菜单数列表 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct GetMenuTreeReq {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetMenuTreeResp {
+    #[serde(flatten)]
+    pub data: MenuTreeItem,
 }

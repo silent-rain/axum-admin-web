@@ -1,7 +1,7 @@
 //! 令牌管理
 use std::sync::Arc;
 
-use crate::dto::token::GetTokenListReq;
+use crate::dto::token::GetTokensReq;
 
 use database::{Pagination, PoolTrait};
 use entity::{permission::token, permission::Token};
@@ -20,7 +20,7 @@ pub struct TokenDao {
 
 impl TokenDao {
     /// 获取数据列表
-    pub async fn list(&self, req: GetTokenListReq) -> Result<(Vec<token::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetTokensReq) -> Result<(Vec<token::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Token::find()
@@ -71,7 +71,7 @@ impl TokenDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: token::ActiveModel) -> Result<token::Model, DbErr> {
+    pub async fn create(&self, active_model: token::ActiveModel) -> Result<token::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
@@ -88,7 +88,7 @@ impl TokenDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = token::ActiveModel {
             id: Set(id),
             status: Set(status),

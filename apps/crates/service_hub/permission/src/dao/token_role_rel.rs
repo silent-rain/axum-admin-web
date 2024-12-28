@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::token_role_rel::GetTokenRoleRelListReq;
+use crate::dto::token_role_rel::GetTokenRoleRelsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::{permission::token_role_rel, permission::TokenRoleRel};
@@ -23,7 +23,7 @@ impl TokenRoleRelDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetTokenRoleRelListReq,
+        req: GetTokenRoleRelsReq,
     ) -> Result<(Vec<token_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -68,7 +68,7 @@ impl TokenRoleRelDao {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: token_role_rel::ActiveModel,
     ) -> Result<token_role_rel::Model, DbErr> {
@@ -76,7 +76,7 @@ impl TokenRoleRelDao {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(
+    pub async fn batch_create(
         &self,
         active_models: Vec<token_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {

@@ -1,7 +1,10 @@
 //! 令牌管理
 use crate::{
     dao::token::TokenDao,
-    dto::token::{AddTokenReq, GetTokenListReq, UpdateTokenReq},
+    dto::token::{
+        CreateTokenReq, DeleteTokenReq, GetTokenReq, GetTokensReq, UpdateTokenReq,
+        UpdateTokenStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -20,7 +23,7 @@ pub struct TokenService {
 
 impl TokenService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetTokenListReq) -> Result<(Vec<token::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetTokensReq) -> Result<(Vec<token::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.token_dao.list(req).await.map_err(|err| {
             error!("查询令牌列表失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("查询令牌列表失败")
@@ -35,10 +38,10 @@ impl TokenService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<token::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetTokenReq) -> Result<token::Model, ErrorMsg> {
         let mut result = self
             .token_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询令牌信息失败, err: {:#?}", err);
@@ -79,7 +82,7 @@ impl TokenService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddTokenReq) -> Result<token::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateTokenReq) -> Result<token::Model, ErrorMsg> {
         let token = Uuid::new_v4().to_string();
         let passphrase = Uuid::new_v4().to_string().replace('-', "");
         let model = token::ActiveModel {
@@ -92,23 +95,23 @@ impl TokenService {
             status: Set(token::enums::Status::Enabled as i8),
             ..Default::default()
         };
-        let result = self
-            .token_dao
-            .add(model)
-            .await
-            .map_err(|err: sea_orm::prelude::DbErr| {
-                error!("添加令牌信息失败, err: {:#?}", err);
-                Error::DbAddError.into_msg().with_msg("添加令牌信息失败")
-            })?;
+        let result =
+            self.token_dao
+                .create(model)
+                .await
+                .map_err(|err: sea_orm::prelude::DbErr| {
+                    error!("添加令牌信息失败, err: {:#?}", err);
+                    Error::DbAddError.into_msg().with_msg("添加令牌信息失败")
+                })?;
 
         Ok(result)
     }
 
     /// 更新数据
-    pub async fn update(&self, id: i32, req: UpdateTokenReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateTokenReq) -> Result<u64, ErrorMsg> {
         let passphrase = Uuid::new_v4().to_string();
         let model = token::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             user_id: Set(req.user_id),
             passphrase: Set(passphrase),
             permission: Set(req.permission),
@@ -127,18 +130,21 @@ impl TokenService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.token_dao.status(id, status).await.map_err(|err| {
-            error!("更新令牌状态失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新令牌状态失败")
-        })?;
+    pub async fn update_status(&self, req: UpdateTokenStatusReq) -> Result<(), ErrorMsg> {
+        self.token_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                error!("更新令牌状态失败, err: {:#?}", err);
+                Error::DbUpdateError.into_msg().with_msg("更新令牌状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.token_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteTokenReq) -> Result<u64, ErrorMsg> {
+        let result = self.token_dao.delete(req.id).await.map_err(|err| {
             error!("删除令牌信息失败, err: {:#?}", err);
             Error::DbDeleteError.into_msg().with_msg("删除令牌信息失败")
         })?;

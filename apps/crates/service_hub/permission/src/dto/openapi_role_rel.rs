@@ -1,11 +1,11 @@
 //! OpenApi接口角色关系管理
-use actix_validator::Validate;
-
+use entity::permission::openapi_role_rel;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 /// 查询OpenApi接口角色关系列表
 #[derive(Default, Deserialize, Validate)]
-pub struct GetOpenapiRoleRelListReq {
+pub struct GetOpenapiRoleRelsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -18,14 +18,23 @@ pub struct GetOpenapiRoleRelListReq {
     pub openapi_id: Option<i32>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetOpenapiRoleRelsResp {
+    pub data_list: Vec<openapi_role_rel::Model>,
+    pub total: u64,
+}
+
 /// 批量添加OpenApi接口角色关系
 #[derive(Serialize, Deserialize, Validate)]
-pub struct BatchAddOpenapiRoleRelReq {
+pub struct BatchCreateOpenapiRoleRelReq {
     /// 接口ID
     pub openapi_id: i32,
     /// 角色ID列表
     pub role_ids: Vec<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchCreateOpenapiRoleRelResp {}
 
 /// 批量删除OpenApi接口角色关系
 #[derive(Default, Deserialize, Validate)]
@@ -33,3 +42,6 @@ pub struct BatchDeleteOpenapiRoleRelReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchDeleteOpenapiRoleRelResp {}

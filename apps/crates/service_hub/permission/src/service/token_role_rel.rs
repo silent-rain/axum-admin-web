@@ -1,7 +1,7 @@
 //! 令牌角色关系管理
 use crate::{
     dao::token_role_rel::TokenRoleRelDao,
-    dto::token_role_rel::{BatchAddTokenRoleRelReq, GetTokenRoleRelListReq},
+    dto::token_role_rel::{BatchCreateTokenRoleRelReq, GetTokenRoleRelsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +21,7 @@ impl TokenRoleRelService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetTokenRoleRelListReq,
+        req: GetTokenRoleRelsReq,
     ) -> Result<(Vec<token_role_rel::Model>, u64), ErrorMsg> {
         let (results, total) = self.token_role_rel_dao.list(req).await.map_err(|err| {
             error!("查询令牌角色关系列表失败, err: {:#?}", err);
@@ -34,7 +34,7 @@ impl TokenRoleRelService {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(&self, req: BatchAddTokenRoleRelReq) -> Result<i32, ErrorMsg> {
+    pub async fn batch_create(&self, req: BatchCreateTokenRoleRelReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for role_id in req.role_ids {
             let model = token_role_rel::ActiveModel {
@@ -47,7 +47,7 @@ impl TokenRoleRelService {
 
         let result = self
             .token_role_rel_dao
-            .batch_add(models)
+            .batch_create(models)
             .await
             .map_err(|err| {
                 error!("批量添加令牌角色关系失败, err: {:#?}", err);

@@ -1,11 +1,12 @@
 //! 令牌角色关系管理
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
+
+use entity::permission::token_role_rel;
 
 /// 查询令牌角色关系列表
 #[derive(Default, Deserialize, Validate)]
-pub struct GetTokenRoleRelListReq {
+pub struct GetTokenRoleRelsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -18,14 +19,23 @@ pub struct GetTokenRoleRelListReq {
     pub token_id: Option<i32>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetTokenRoleRelsResp {
+    pub data_list: Vec<token_role_rel::Model>,
+    pub total: u64,
+}
+
 /// 批量添加令牌角色关系
 #[derive(Serialize, Deserialize, Validate)]
-pub struct BatchAddTokenRoleRelReq {
+pub struct BatchCreateTokenRoleRelReq {
     /// 令牌ID
     pub token_id: i32,
     /// 角色ID列表
     pub role_ids: Vec<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchCreateTokenRoleRelResp {}
 
 /// 批量删除令牌角色关系
 #[derive(Default, Deserialize, Validate)]
@@ -33,3 +43,6 @@ pub struct BatchDeleteTokenRoleRelReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchDeleteTokenRoleRelResp {}

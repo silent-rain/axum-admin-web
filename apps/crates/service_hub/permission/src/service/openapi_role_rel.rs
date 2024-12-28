@@ -1,7 +1,7 @@
 //! OpenApi接口角色关系管理
 use crate::{
     dao::openapi_role_rel::OpenapiRoleRelDao,
-    dto::openapi_role_rel::{BatchAddOpenapiRoleRelReq, GetOpenapiRoleRelListReq},
+    dto::openapi_role_rel::{BatchCreateOpenapiRoleRelReq, GetOpenapiRoleRelsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +21,7 @@ impl OpenapiRoleRelService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetOpenapiRoleRelListReq,
+        req: GetOpenapiRoleRelsReq,
     ) -> Result<(Vec<openapi_role_rel::Model>, u64), ErrorMsg> {
         let (results, total) = self.openapi_role_rel_dao.list(req).await.map_err(|err| {
             error!("查询OpenApi接口角色关系列表失败, err: {:#?}", err);
@@ -34,7 +34,7 @@ impl OpenapiRoleRelService {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(&self, req: BatchAddOpenapiRoleRelReq) -> Result<i32, ErrorMsg> {
+    pub async fn batch_create(&self, req: BatchCreateOpenapiRoleRelReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for role_id in req.role_ids {
             let model = openapi_role_rel::ActiveModel {
@@ -47,7 +47,7 @@ impl OpenapiRoleRelService {
 
         let result = self
             .openapi_role_rel_dao
-            .batch_add(models)
+            .batch_create(models)
             .await
             .map_err(|err| {
                 error!("批量添加OpenApi接口角色关系失败, err: {:#?}", err);

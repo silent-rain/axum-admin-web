@@ -1,23 +1,31 @@
 //! 菜单管理
 
-use crate::controller::menu::MenuController;
+use axum::{
+    routing::{get, put},
+    Router,
+};
 
-use actix_web::{web, Scope};
+use crate::controller::menu::MenuController;
 
 /// 路由器
 pub struct MenuRouter;
 
 impl MenuRouter {
     /// 注册`菜单管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/menus")
-            .route("", web::get().to(MenuController::list))
-            .route("/tree", web::get().to(MenuController::tree))
-            .route("/{id}/children", web::get().to(MenuController::children))
-            .route("/{id}", web::get().to(MenuController::info))
-            .route("", web::post().to(MenuController::add))
-            .route("/{id}", web::put().to(MenuController::update))
-            .route("/{id}/status", web::put().to(MenuController::status))
-            .route("/{id}", web::delete().to(MenuController::delete))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/menus",
+            Router::new()
+                .route("/", get(MenuController::list).post(MenuController::create))
+                .route("/tree", get(MenuController::tree))
+                .route("/children", get(MenuController::children))
+                .route(
+                    "/:id",
+                    get(MenuController::info)
+                        .put(MenuController::update)
+                        .delete(MenuController::delete),
+                )
+                .route("/:id/status", put(MenuController::update_status)),
+        )
     }
 }

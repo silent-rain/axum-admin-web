@@ -1,21 +1,24 @@
 //! 菜单角色关系管理
 
-use crate::controller::menu_role_rel::MenuRoleRelController;
+use axum::{
+    routing::{delete, get, post},
+    Router,
+};
 
-use actix_web::{web, Scope};
+use crate::controller::menu_role_rel::MenuRoleRelController;
 
 /// 路由器
 pub struct MenuRoleRelRouter;
 
 impl MenuRoleRelRouter {
     /// 注册`菜单角色关系管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/menu-role-rels")
-            .route("", web::get().to(MenuRoleRelController::list))
-            .route("/batch", web::post().to(MenuRoleRelController::batch_add))
-            .route(
-                "/batch",
-                web::delete().to(MenuRoleRelController::batch_delete),
-            )
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/menu-role-rels",
+            Router::new()
+                .route("/", get(MenuRoleRelController::list))
+                .route("/batch_create", post(MenuRoleRelController::batch_create))
+                .route("/batch_delete", delete(MenuRoleRelController::batch_delete)),
+        )
     }
 }

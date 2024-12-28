@@ -1,17 +1,16 @@
 //! 菜单管理
 
-use crate::{
-    dto::menu::{AddMenuReq, GetMenuListReq, UpdateMenuReq, UpdateMenuStatusReq},
-    service::menu::MenuService,
-};
-
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
+use response::{Responder, Response};
 
-use actix_web::{
-    web::{Data, Path},
-    Responder,
+use crate::{
+    dto::menu::{
+        CreateMenuReq, CreateMenuResp, DeleteMenuReq, DeleteMenuResp, GetMenuChildrenReq,
+        GetMenuChildrenResp, GetMenuReq, GetMenuResp, GetMenuTreeReq, GetMenuTreeResp, GetMenusReq,
+        GetMenusResp, UpdateMenuReq, UpdateMenuResp, UpdateMenuStatusReq, UpdateMenuStatusResp,
+    },
+    service::menu::MenuService,
 };
 
 /// 控制器
@@ -20,92 +19,97 @@ pub struct MenuController;
 impl MenuController {
     /// 获取菜单列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetMenuListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetMenusReq>,
+    ) -> Responder<GetMenusResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = menu_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取菜单树列表
-    pub async fn tree(provider: Data<AInjectProvider>) -> impl Responder {
+    pub async fn tree(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(_req): Query<GetMenuTreeReq>,
+    ) -> Responder<GetMenuTreeResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.tree().await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = menu_service.tree().await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 获取子菜单树列表
-    pub async fn children(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn children(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetMenuChildrenReq>,
+    ) -> Responder<GetMenuChildrenResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.children(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = menu_service.children(req.pid).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取菜单信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetMenuReq>,
+    ) -> Responder<GetMenuResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = menu_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加菜单
-    pub async fn add(provider: Data<AInjectProvider>, data: Json<AddMenuReq>) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateMenuReq>,
+    ) -> Responder<CreateMenuResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = menu_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新菜单
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateMenuReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateMenuReq>,
+    ) -> Responder<UpdateMenuResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = menu_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新菜单状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateMenuStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateMenuStatusReq>,
+    ) -> Responder<UpdateMenuStatusResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.status(*id, data.status.clone() as i8).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        menu_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除菜单
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteMenuReq>,
+    ) -> Responder<DeleteMenuResp> {
         let menu_service: MenuService = provider.provide();
-        let resp = menu_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = menu_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }
