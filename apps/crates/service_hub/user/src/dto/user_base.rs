@@ -1,5 +1,6 @@
 //! 用户信息管理
 
+use entity::user::role;
 use entity::user::user_base;
 
 use serde::{Deserialize, Serialize};
@@ -186,7 +187,10 @@ pub struct RolesReq {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct RolesResp {}
+pub struct RolesResp {
+    pub data_list: Vec<role::Model>,
+    pub total: u64,
+}
 
 /// 用户接口权限权限
 #[derive(Clone, Serialize, Deserialize)]
