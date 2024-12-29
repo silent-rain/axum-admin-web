@@ -2,20 +2,31 @@
 
 use crate::controller::position::PositionController;
 
-use actix_web::{web, Scope};
+use axum::{
+    routing::{get, put},
+    Router,
+};
 
 /// 路由器
 pub struct PositionRouter;
 
 impl PositionRouter {
     /// 注册`岗位管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/positions")
-            .route("", web::get().to(PositionController::list))
-            .route("/{id}", web::get().to(PositionController::info))
-            .route("", web::post().to(PositionController::add))
-            .route("/{id}", web::put().to(PositionController::update))
-            .route("/{id}/status", web::put().to(PositionController::status))
-            .route("/{id}", web::delete().to(PositionController::delete))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/positions",
+            Router::new()
+                .route(
+                    "/",
+                    get(PositionController::list).post(PositionController::create),
+                )
+                .route(
+                    "/:id",
+                    get(PositionController::info)
+                        .put(PositionController::update)
+                        .delete(PositionController::delete),
+                )
+                .route("/:id/status", put(PositionController::update_status)),
+        )
     }
 }

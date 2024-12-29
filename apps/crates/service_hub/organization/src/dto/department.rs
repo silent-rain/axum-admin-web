@@ -2,13 +2,12 @@
 
 use entity::organization::department;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询部门列表
+/// 查询部门列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetDepartmentListReq {
+pub struct GetDepartmentsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -23,9 +22,28 @@ pub struct GetDepartmentListReq {
     pub all: Option<bool>,
 }
 
-/// 添加部门
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetDepartmentsResp {
+    pub data_list: Vec<department::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetDepartmentReq {
+    /// 模板ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetDepartmentResp {
+    #[serde(flatten)]
+    data: department::Model,
+}
+
+/// 添加部门 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddDepartmentReq {
+pub struct CreateDepartmentReq {
     /// 上级部门ID
     pub pid: Option<i32>,
     /// 所有上级部门ID, 用逗号分开
@@ -41,9 +59,14 @@ pub struct AddDepartmentReq {
     pub status: department::enums::Status,
 }
 
-/// 更新数据
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateDepartmentResp {}
+
+/// 更新数据 请求体
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateDepartmentReq {
+    /// 部门ID
+    pub id: i32,
     /// 上级部门ID
     pub pid: Option<i32>,
     /// 所有上级部门ID, 用逗号分开
@@ -58,9 +81,44 @@ pub struct UpdateDepartmentReq {
     pub status: department::enums::Status,
 }
 
-/// 更新数据状态
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateDepartmentResp {}
+
+/// 更新数据状态 请求体
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateDepartmentStatusReq {
+    /// 部门ID
+    pub id: i32,
     /// 状态(0:停用,1:正常)
     pub status: department::enums::Status,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateDepartmentStatusResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteDepartmentReq {
+    /// 部门ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteDepartmentResp {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DepartmentTreeItem {
+    #[serde(flatten)]
+    pub data: department::Model,
+    pub children: Vec<DepartmentTreeItem>,
+}
+
+/// 菜单数列表 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct GetDepartmentTreeReq {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetDepartmentTreeResp {
+    #[serde(flatten)]
+    pub data: DepartmentTreeItem,
 }

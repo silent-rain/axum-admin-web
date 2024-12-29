@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::department_role_rel::GetDepartmentRoleRelListReq;
+use crate::dto::department_role_rel::GetDepartmentRoleRelsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::organization::{department_role_rel, DepartmentRoleRel};
@@ -26,7 +26,7 @@ impl DepartmentRoleRelDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetDepartmentRoleRelListReq,
+        req: GetDepartmentRoleRelsReq,
     ) -> Result<(Vec<department_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -57,7 +57,7 @@ impl DepartmentRoleRelDao {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: department_role_rel::ActiveModel,
     ) -> Result<department_role_rel::Model, DbErr> {
@@ -65,7 +65,7 @@ impl DepartmentRoleRelDao {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(
+    pub async fn batch_create(
         &self,
         active_models: Vec<department_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {

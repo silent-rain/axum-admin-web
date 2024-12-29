@@ -1,7 +1,7 @@
 //! 部门角色关系管理
 use crate::{
     dao::department_role_rel::DepartmentRoleRelDao,
-    dto::department_role_rel::{BatchAddDepartmentRoleRelReq, GetDepartmentRoleRelListReq},
+    dto::department_role_rel::{BatchCreateDepartmentRoleRelReq, GetDepartmentRoleRelsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +21,7 @@ impl DepartmentRoleRelService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetDepartmentRoleRelListReq,
+        req: GetDepartmentRoleRelsReq,
     ) -> Result<(Vec<department_role_rel::Model>, u64), ErrorMsg> {
         let (results, total) = self
             .department_role_rel_dao
@@ -38,7 +38,10 @@ impl DepartmentRoleRelService {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(&self, req: BatchAddDepartmentRoleRelReq) -> Result<i32, ErrorMsg> {
+    pub async fn batch_create(
+        &self,
+        req: BatchCreateDepartmentRoleRelReq,
+    ) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for role_id in req.role_ids {
             let model = department_role_rel::ActiveModel {
@@ -51,7 +54,7 @@ impl DepartmentRoleRelService {
 
         let result = self
             .department_role_rel_dao
-            .batch_add(models)
+            .batch_create(models)
             .await
             .map_err(|err| {
                 error!("批量添加部门角色关系失败, err: {:#?}", err);

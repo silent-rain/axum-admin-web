@@ -1,7 +1,9 @@
 //! 职级管理
 use crate::{
     dao::rank::RankDao,
-    dto::rank::{AddRankReq, GetRankListReq, UpdateRankReq},
+    dto::rank::{
+        CreateRankReq, DeleteRankReq, GetRankReq, GetRanksReq, UpdateRankReq, UpdateRankStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -19,7 +21,7 @@ pub struct RankService {
 
 impl RankService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetRankListReq) -> Result<(Vec<rank::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetRanksReq) -> Result<(Vec<rank::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
             return self.rank_dao.all().await.map_err(|err| {
@@ -37,10 +39,10 @@ impl RankService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<rank::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetRankReq) -> Result<rank::Model, ErrorMsg> {
         let result = self
             .rank_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询职级信息失败, err: {:#?}", err);
@@ -55,7 +57,7 @@ impl RankService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddRankReq) -> Result<rank::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateRankReq) -> Result<rank::Model, ErrorMsg> {
         // 检查职级名称是否已存在
         self.check_name_exist(req.name.clone(), None).await?;
         // 检查职级等级是否已存在
@@ -71,7 +73,7 @@ impl RankService {
         };
         let rank = self
             .rank_dao
-            .add(model)
+            .create(model)
             .await
             .map_err(|err: sea_orm::prelude::DbErr| {
                 error!("添加职级信息失败, err: {:#?}", err);
@@ -82,14 +84,15 @@ impl RankService {
     }
 
     /// 更新数据
-    pub async fn update(&self, id: i32, req: UpdateRankReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateRankReq) -> Result<u64, ErrorMsg> {
         // 检查职级名称是否已存在且不属于当前ID
-        self.check_name_exist(req.name.clone(), Some(id)).await?;
+        self.check_name_exist(req.name.clone(), Some(req.id))
+            .await?;
         // 检查职级等级是否已存在且不属于当前ID
-        self.check_level_exist(req.level, Some(id)).await?;
+        self.check_level_exist(req.level, Some(req.id)).await?;
 
         let model = rank::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             name: Set(req.name),
             level: Set(req.level),
             sort: Set(req.sort),
@@ -153,18 +156,21 @@ impl RankService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.rank_dao.status(id, status).await.map_err(|err| {
-            error!("更新职级状态失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新职级状态失败")
-        })?;
+    pub async fn update_status(&self, req: UpdateRankStatusReq) -> Result<(), ErrorMsg> {
+        self.rank_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                error!("更新职级状态失败, err: {:#?}", err);
+                Error::DbUpdateError.into_msg().with_msg("更新职级状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.rank_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteRankReq) -> Result<u64, ErrorMsg> {
+        let result = self.rank_dao.delete(req.id).await.map_err(|err| {
             error!("删除职级信息失败, err: {:#?}", err);
             Error::DbDeleteError.into_msg().with_msg("删除职级信息失败")
         })?;

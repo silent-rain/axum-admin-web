@@ -1,7 +1,7 @@
 //! 部门管理
 use std::sync::Arc;
 
-use crate::dto::department::GetDepartmentListReq;
+use crate::dto::department::GetDepartmentsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::organization::{department, Department};
@@ -32,7 +32,7 @@ impl DepartmentDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetDepartmentListReq,
+        req: GetDepartmentsReq,
     ) -> Result<(Vec<department::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -84,7 +84,7 @@ impl DepartmentDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: department::ActiveModel,
     ) -> Result<department::Model, DbErr> {
@@ -104,7 +104,7 @@ impl DepartmentDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = department::ActiveModel {
             id: Set(id),
             status: Set(status),

@@ -2,13 +2,12 @@
 
 use entity::organization::rank;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询职级列表
+/// 查询职级列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetRankListReq {
+pub struct GetRanksReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -23,9 +22,28 @@ pub struct GetRankListReq {
     pub all: Option<bool>,
 }
 
-/// 添加职级
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetRanksResp {
+    pub data_list: Vec<rank::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetRankReq {
+    /// 职级ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetRankResp {
+    #[serde(flatten)]
+    data: rank::Model,
+}
+
+/// 添加职级 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddRankReq {
+pub struct CreateRankReq {
     /// 职级名称
     #[validate(length(min = 2, message = "至少输入两个字符"))]
     pub name: String,
@@ -39,9 +57,14 @@ pub struct AddRankReq {
     pub status: rank::enums::Status,
 }
 
-/// 更新数据
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateRankResp {}
+
+/// 更新数据 请求体
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateRankReq {
+    /// 职级ID
+    pub id: i32,
     /// 职级名称
     #[validate(length(min = 2, message = "至少输入两个字符"))]
     pub name: String,
@@ -55,9 +78,27 @@ pub struct UpdateRankReq {
     pub status: rank::enums::Status,
 }
 
-/// 更新数据状态
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateRankResp {}
+
+/// 更新数据状态 请求体
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateRankStatusReq {
+    /// 职级ID
+    pub id: i32,
     /// 状态(0:停用,1:正常)
     pub status: rank::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateRankStatusResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteRankReq {
+    /// 职级ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteRankResp {}

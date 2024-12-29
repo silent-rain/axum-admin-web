@@ -1,7 +1,10 @@
 //! 岗位管理
 use crate::{
     dao::position::PositionDao,
-    dto::position::{AddPositionReq, GetPositionListReq, UpdatePositionReq},
+    dto::position::{
+        CreatePositionReq, DeletePositionReq, GetPositionReq, GetPositionsReq, UpdatePositionReq,
+        UpdatePositionStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +24,7 @@ impl PositionService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetPositionListReq,
+        req: GetPositionsReq,
     ) -> Result<(Vec<position::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
@@ -40,10 +43,10 @@ impl PositionService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<position::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetPositionReq) -> Result<position::Model, ErrorMsg> {
         let result = self
             .position_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询岗位信息失败, err: {:#?}", err);
@@ -58,7 +61,7 @@ impl PositionService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddPositionReq) -> Result<position::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreatePositionReq) -> Result<position::Model, ErrorMsg> {
         // 检查岗位名称是否已存在
         self.check_name_exist(req.name.clone(), None).await?;
 
@@ -72,7 +75,7 @@ impl PositionService {
         };
         let position =
             self.position_dao
-                .add(model)
+                .create(model)
                 .await
                 .map_err(|err: sea_orm::prelude::DbErr| {
                     error!("添加岗位信息失败, err: {:#?}", err);
@@ -83,12 +86,13 @@ impl PositionService {
     }
 
     /// 更新数据
-    pub async fn update(&self, id: i32, req: UpdatePositionReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdatePositionReq) -> Result<u64, ErrorMsg> {
         // 检查岗位名称是否已存在且不属于当前ID
-        self.check_name_exist(req.name.clone(), Some(id)).await?;
+        self.check_name_exist(req.name.clone(), Some(req.id))
+            .await?;
 
         let model = position::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             name: Set(req.name),
             sort: Set(req.sort),
             desc: Set(req.desc),
@@ -131,18 +135,21 @@ impl PositionService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.position_dao.status(id, status).await.map_err(|err| {
-            error!("更新岗位状态失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新岗位状态失败")
-        })?;
+    pub async fn update_status(&self, req: UpdatePositionStatusReq) -> Result<(), ErrorMsg> {
+        self.position_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                error!("更新岗位状态失败, err: {:#?}", err);
+                Error::DbUpdateError.into_msg().with_msg("更新岗位状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.position_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeletePositionReq) -> Result<u64, ErrorMsg> {
+        let result = self.position_dao.delete(req.id).await.map_err(|err| {
             error!("删除岗位信息失败, err: {:#?}", err);
             Error::DbDeleteError.into_msg().with_msg("删除岗位信息失败")
         })?;

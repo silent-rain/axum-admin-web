@@ -1,7 +1,7 @@
 //! 职级管理
 use std::sync::Arc;
 
-use crate::dto::rank::GetRankListReq;
+use crate::dto::rank::GetRanksReq;
 
 use database::{Pagination, PoolTrait};
 use entity::organization::{rank, Rank};
@@ -30,7 +30,7 @@ impl RankDao {
     }
 
     /// 获取数据列表
-    pub async fn list(&self, req: GetRankListReq) -> Result<(Vec<rank::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetRanksReq) -> Result<(Vec<rank::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Rank::find()
@@ -81,7 +81,7 @@ impl RankDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: rank::ActiveModel) -> Result<rank::Model, DbErr> {
+    pub async fn create(&self, active_model: rank::ActiveModel) -> Result<rank::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
@@ -98,7 +98,7 @@ impl RankDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = rank::ActiveModel {
             id: Set(id),
             status: Set(status),

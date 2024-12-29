@@ -2,23 +2,28 @@
 
 use crate::controller::department_role_rel::DepartmentRoleRelController;
 
-use actix_web::{web, Scope};
-
+use axum::{
+    routing::{delete, get, post},
+    Router,
+};
 /// 路由器
 pub struct DepartmentRoleRelRouter;
 
 impl DepartmentRoleRelRouter {
     /// 注册`部门角色关系管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/department-role-rels")
-            .route("", web::get().to(DepartmentRoleRelController::list))
-            .route(
-                "/batch",
-                web::post().to(DepartmentRoleRelController::batch_add),
-            )
-            .route(
-                "/batch",
-                web::delete().to(DepartmentRoleRelController::batch_delete),
-            )
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/department-role-rels",
+            Router::new()
+                .route("/", get(DepartmentRoleRelController::list))
+                .route(
+                    "/batch_create",
+                    post(DepartmentRoleRelController::batch_create),
+                )
+                .route(
+                    "/batch_delete",
+                    delete(DepartmentRoleRelController::batch_delete),
+                ),
+        )
     }
 }

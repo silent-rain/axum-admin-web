@@ -2,19 +2,17 @@
 
 use crate::{
     dto::department::{
-        AddDepartmentReq, GetDepartmentListReq, UpdateDepartmentReq, UpdateDepartmentStatusReq,
+        CreateDepartmentReq, CreateDepartmentResp, DeleteDepartmentReq, DeleteDepartmentResp,
+        GetDepartmentReq, GetDepartmentResp, GetDepartmentTreeReq, GetDepartmentTreeResp,
+        GetDepartmentsReq, GetDepartmentsResp, UpdateDepartmentReq, UpdateDepartmentResp,
+        UpdateDepartmentStatusReq, UpdateDepartmentStatusResp,
     },
     service::department::DepartmentService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct DepartmentController;
@@ -22,87 +20,85 @@ pub struct DepartmentController;
 impl DepartmentController {
     /// 获取部门列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetDepartmentListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetDepartmentsReq>,
+    ) -> Responder<GetDepartmentsResp> {
         let department_service: DepartmentService = provider.provide();
-        let resp = department_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = department_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取部门树列表
-    pub async fn tree(provider: Data<AInjectProvider>) -> impl Responder {
+    pub async fn tree(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(_req): Query<GetDepartmentTreeReq>,
+    ) -> Responder<GetDepartmentTreeResp> {
         let department_service: DepartmentService = provider.provide();
-        let resp = department_service.tree().await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = department_service.tree().await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 获取部门信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetDepartmentReq>,
+    ) -> Responder<GetDepartmentResp> {
         let department_service: DepartmentService = provider.provide();
-        let resp = department_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = department_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加部门
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<AddDepartmentReq>,
-    ) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateDepartmentReq>,
+    ) -> Responder<CreateDepartmentResp> {
         let department_service: DepartmentService = provider.provide();
-        let resp = department_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = department_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新部门
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateDepartmentReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateDepartmentReq>,
+    ) -> Responder<UpdateDepartmentResp> {
         let department_service: DepartmentService = provider.provide();
-        let resp = department_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = department_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新部门状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateDepartmentStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateDepartmentStatusReq>,
+    ) -> Responder<UpdateDepartmentStatusResp> {
         let department_service: DepartmentService = provider.provide();
-        let resp = department_service
-            .status(*id, data.status.clone() as i8)
-            .await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        department_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除部门
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteDepartmentReq>,
+    ) -> Responder<DeleteDepartmentResp> {
         let department_service: DepartmentService = provider.provide();
-        let resp = department_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = department_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

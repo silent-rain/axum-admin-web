@@ -1,7 +1,7 @@
 //! 岗位管理
 use std::sync::Arc;
 
-use crate::dto::position::GetPositionListReq;
+use crate::dto::position::GetPositionsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::organization::{position, Position};
@@ -30,10 +30,7 @@ impl PositionDao {
     }
 
     /// 获取数据列表
-    pub async fn list(
-        &self,
-        req: GetPositionListReq,
-    ) -> Result<(Vec<position::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetPositionsReq) -> Result<(Vec<position::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = Position::find()
@@ -76,7 +73,10 @@ impl PositionDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: position::ActiveModel) -> Result<position::Model, DbErr> {
+    pub async fn create(
+        &self,
+        active_model: position::ActiveModel,
+    ) -> Result<position::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
@@ -93,7 +93,7 @@ impl PositionDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = position::ActiveModel {
             id: Set(id),
             status: Set(status),

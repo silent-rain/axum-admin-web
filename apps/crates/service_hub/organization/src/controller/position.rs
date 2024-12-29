@@ -2,19 +2,16 @@
 
 use crate::{
     dto::position::{
-        AddPositionReq, GetPositionListReq, UpdatePositionReq, UpdatePositionStatusReq,
+        CreatePositionReq, CreatePositionResp, DeletePositionReq, DeletePositionResp,
+        GetPositionReq, GetPositionResp, GetPositionsReq, GetPositionsResp, UpdatePositionReq,
+        UpdatePositionResp, UpdatePositionStatusReq, UpdatePositionStatusResp,
     },
     service::position::PositionService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct PositionController;
@@ -22,77 +19,73 @@ pub struct PositionController;
 impl PositionController {
     /// 获取岗位列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetPositionListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetPositionsReq>,
+    ) -> Responder<GetPositionsResp> {
         let position_service: PositionService = provider.provide();
-        let resp = position_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = position_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取岗位信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetPositionReq>,
+    ) -> Responder<GetPositionResp> {
         let position_service: PositionService = provider.provide();
-        let resp = position_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = position_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加岗位
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<AddPositionReq>,
-    ) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreatePositionReq>,
+    ) -> Responder<CreatePositionResp> {
         let position_service: PositionService = provider.provide();
-        let resp = position_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = position_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新岗位
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdatePositionReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdatePositionReq>,
+    ) -> Responder<UpdatePositionResp> {
         let position_service: PositionService = provider.provide();
-        let resp = position_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = position_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新岗位状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdatePositionStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdatePositionStatusReq>,
+    ) -> Responder<UpdatePositionStatusResp> {
         let position_service: PositionService = provider.provide();
-        let resp = position_service
-            .status(*id, data.status.clone() as i8)
-            .await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        position_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除岗位
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeletePositionReq>,
+    ) -> Responder<DeletePositionResp> {
         let position_service: PositionService = provider.provide();
-        let resp = position_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = position_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }
