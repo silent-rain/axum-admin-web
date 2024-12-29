@@ -10,7 +10,7 @@ use grpc_api::template::{
     UpdateAppTemplateResp, UpdateAppTemplateStatusReq, UpdateAppTemplateStatusResp,
 };
 use nject::injectable;
-use response::response3::Response;
+use response::Response;
 use tonic::{Request, Status};
 use utils::json::struct_to_struct;
 
