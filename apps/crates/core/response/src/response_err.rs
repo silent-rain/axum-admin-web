@@ -38,7 +38,7 @@ impl ResponseErr {
 
 impl std::fmt::Display for ResponseErr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.pad("response err")
+        write!(f, "(response err, code: {}, msg: {})", self.code, self.msg)
     }
 }
 

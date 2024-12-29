@@ -60,3 +60,11 @@ impl From<Error> for ErrorMsg {
         }
     }
 }
+
+impl std::fmt::Display for ErrorMsg {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(error msg, code: {}, msg: {})", self.code, self.msg)
+    }
+}
+
+impl std::error::Error for ErrorMsg {}

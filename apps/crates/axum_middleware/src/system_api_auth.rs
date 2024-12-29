@@ -16,10 +16,11 @@ use code::Error;
 use entity::user::user_login_log;
 use jwt::decode_token_with_verify;
 use response::ResponseErr;
-use service_hub::inject::{
-    log::UserLoginService,
-    user::{cached::UserCached, dto::user_base::UserPermission, UserBaseService},
-    AInjectProvider,
+use service_hub::{
+    inject::AInjectProvider,
+    user::{
+        cached::UserCached, dto::user_base::UserPermission, UserBaseService, UserLoginLogService,
+    },
 };
 
 use crate::constant::{AUTH_WHITE_LIST, SYSTEM_API_AUTHORIZATION, SYSTEM_API_AUTHORIZATION_BEARER};
@@ -70,7 +71,7 @@ where
         Box::pin(async move {
             // 全局依赖
             let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => v.0,
+                Some(v) => &v.0,
                 None => {
                     return Err(Box::new(ResponseErr::new(Error::InjectAproviderObj)))
                         .map_err(Into::into)
@@ -95,7 +96,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取系统鉴权标识 Token 失败, err: {:#?}", err);
-                    return Err(Box::new(err.into())).map_err(Into::into);
+                    return Err(Box::new(err)).map_err(Into::into);
                 }
             };
             // 解析系统接口Token
@@ -103,7 +104,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("检查系统鉴权异常, err: {:#?}", err);
-                    return Err(Box::new(err.into())).map_err(Into::into);
+                    return Err(Box::new(err)).map_err(Into::into);
                 }
             };
             // 获取缓存
@@ -128,14 +129,14 @@ where
             let user_login_id =
                 match Self::verify_user_login(inject_provider.clone(), system_token).await {
                     Ok(v) => v,
-                    Err(err) => return Err(Box::new(err.into())).map_err(Into::into),
+                    Err(err) => return Err(Box::new(err)).map_err(Into::into),
                 };
             // 获取用户权限
-            let permission = match Self::user_permission(inject_provider, user_id).await {
+            let permission = match Self::user_permission(inject_provider.clone(), user_id).await {
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取权限失败, err: {:#?}", err);
-                    return Err(Box::new(err.into())).map_err(Into::into);
+                    return Err(Box::new(err)).map_err(Into::into);
                 }
             };
 
@@ -214,7 +215,7 @@ impl<S> SystemApiAuthService<S> {
         provider: AInjectProvider,
         token: String,
     ) -> Result<i32, code::ErrorMsg> {
-        let user_login_service: UserLoginService = provider.provide();
+        let user_login_service: UserLoginLogService = provider.provide();
         let user = user_login_service.info_by_token(token.clone()).await?;
         if user.status == user_login_log::enums::Status::Disabled as i8 {
             error!("user_id: {} token: {}, 当前登陆态已被禁用", user.id, token);
