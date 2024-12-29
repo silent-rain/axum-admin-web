@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::schedule_event_log::GetScheduleEventLogListReq;
+use crate::dto::schedule_event_log::GetScheduleEventLogsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::schedule::{schedule_event_log, ScheduleEventLog};
@@ -23,7 +23,7 @@ impl ScheduleEventLogDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetScheduleEventLogListReq,
+        req: GetScheduleEventLogsReq,
     ) -> Result<(Vec<schedule_event_log::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -59,7 +59,7 @@ impl ScheduleEventLogDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: schedule_event_log::ActiveModel,
     ) -> Result<schedule_event_log::Model, DbErr> {

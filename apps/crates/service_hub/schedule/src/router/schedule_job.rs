@@ -1,21 +1,32 @@
 //! 任务调度作业管理
 
-use crate::controller::schedule_job::ScheduleJobController;
+use axum::{
+    routing::{get, put},
+    Router,
+};
 
-use actix_web::{web, Scope};
+use crate::controller::schedule_job::ScheduleJobController;
 
 /// 路由器
 pub struct ScheduleJobRouter;
 
 impl ScheduleJobRouter {
     /// 注册`任务调度作业管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/jobs")
-            .route("", web::get().to(ScheduleJobController::list))
-            .route("/{id}", web::get().to(ScheduleJobController::info))
-            .route("", web::post().to(ScheduleJobController::add))
-            .route("/{id}", web::put().to(ScheduleJobController::update))
-            .route("/{id}/status", web::put().to(ScheduleJobController::status))
-            .route("/{id}", web::delete().to(ScheduleJobController::delete))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/jobs",
+            Router::new()
+                .route(
+                    "/",
+                    get(ScheduleJobController::list).post(ScheduleJobController::create),
+                )
+                .route(
+                    "/:id",
+                    get(ScheduleJobController::info)
+                        .put(ScheduleJobController::update)
+                        .delete(ScheduleJobController::delete),
+                )
+                .route("/:id/status", put(ScheduleJobController::update_status)),
+        )
     }
 }

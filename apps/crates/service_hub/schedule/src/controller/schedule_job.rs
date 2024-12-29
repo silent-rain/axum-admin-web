@@ -2,19 +2,17 @@
 
 use crate::{
     dto::schedule_job::{
-        AddcheduleJobReq, GetScheduleJobReq, UpdatecheduleJobReq, UpdatecheduleJobStatusReq,
+        CreateScheduleJobReq, CreateScheduleJobResp, DeleteScheduleJobReq, DeleteScheduleJobResp,
+        GetScheduleJobReq, GetScheduleJobResp, GetScheduleJobsReq, GetScheduleJobsResp,
+        UpdateScheduleJobReq, UpdateScheduleJobResp, UpdateScheduleJobStatusReq,
+        UpdateScheduleJobStatusResp,
     },
     service::schedule_job::ScheduleJobService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct ScheduleJobController;
@@ -22,77 +20,72 @@ pub struct ScheduleJobController;
 impl ScheduleJobController {
     /// 获取任务调度列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetScheduleJobReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetScheduleJobsReq>,
+    ) -> Responder<GetScheduleJobsResp> {
         let schedule_job_service: ScheduleJobService = provider.provide();
-        let resp = schedule_job_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = schedule_job_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
-    /// 获取任务调度作业
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    /// 获取任务调度信息
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetScheduleJobReq>,
+    ) -> Responder<GetScheduleJobResp> {
         let schedule_job_service: ScheduleJobService = provider.provide();
-        let resp = schedule_job_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = schedule_job_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加任务调度
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<AddcheduleJobReq>,
-    ) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateScheduleJobReq>,
+    ) -> Responder<CreateScheduleJobResp> {
         let schedule_job_service: ScheduleJobService = provider.provide();
-        let resp = schedule_job_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = schedule_job_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新任务调度
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdatecheduleJobReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateScheduleJobReq>,
+    ) -> Responder<UpdateScheduleJobResp> {
         let schedule_job_service: ScheduleJobService = provider.provide();
-        let resp = schedule_job_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
-    }
+        let _result = schedule_job_service.update(req).await?;
 
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
+    }
     /// 更新任务调度状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdatecheduleJobStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateScheduleJobStatusReq>,
+    ) -> Responder<UpdateScheduleJobStatusResp> {
         let schedule_job_service: ScheduleJobService = provider.provide();
-        let resp = schedule_job_service
-            .status(*id, data.status.clone() as i8)
-            .await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        schedule_job_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除任务调度
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteScheduleJobReq>,
+    ) -> Responder<DeleteScheduleJobResp> {
         let schedule_job_service: ScheduleJobService = provider.provide();
-        let resp = schedule_job_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = schedule_job_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

@@ -2,13 +2,12 @@
 
 use entity::schedule::schedule_status_log;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 /// 查询任务调度状态日志列表
 #[derive(Default, Deserialize)]
-pub struct GetScheduleStatusLogListLogReq {
+pub struct GetScheduleStatusLogsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -22,19 +21,42 @@ pub struct GetScheduleStatusLogListLogReq {
     /// 任务状态
     pub status: Option<i8>,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetScheduleStatusLogsResp {
+    pub data_list: Vec<schedule_status_log::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetScheduleStatusLogReq {
+    /// 状态日志ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetScheduleStatusLogResp {
+    #[serde(flatten)]
+    data: schedule_status_log::Model,
+}
 
 /// 添加任务调度状态日志
 #[derive(Clone, Serialize, Deserialize, Validate)]
-pub struct AddScheduleStatusLogReq {
+pub struct CreateScheduleStatusLogReq {
     /// 任务ID
     pub job_id: i32,
     /// 任务调度ID
     pub uuid: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateScheduleStatusLogResp {}
+
 /// 更新任务调度状态日志
 #[derive(Clone, Serialize, Deserialize, Validate)]
 pub struct UpdateScheduleStatusLogReq {
+    /// 状态日志ID
+    pub id: i32,
     /// 任务ID
     pub job_id: i32,
     /// 任务调度ID
@@ -47,9 +69,27 @@ pub struct UpdateScheduleStatusLogReq {
     pub status: schedule_status_log::enums::Status,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateScheduleStatusLogResp {}
+
 /// 更新数据状态
 #[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateScheduleStatusLogSatausReq {
+    /// 状态日志ID
+    pub id: i32,
     /// 任务状态,0:失败,1:成功
     pub status: schedule_status_log::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateScheduleStatusLogSatausResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteScheduleStatusLogReq {
+    /// 状态日志ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteScheduleStatusLogResp {}

@@ -1,17 +1,17 @@
 //! 任务调度事件日志管理
 
 use crate::{
-    dto::schedule_event_log::{AddScheduleEventLogReq, GetScheduleEventLogListReq},
+    dto::schedule_event_log::{
+        CreateScheduleEventLogReq, CreateScheduleEventLogResp, DeleteScheduleEventLogReq,
+        DeleteScheduleEventLogResp, GetScheduleEventLogReq, GetScheduleEventLogResp,
+        GetScheduleEventLogsReq, GetScheduleEventLogsResp,
+    },
     service::schedule_event_log::ScheduleEventLogService,
 };
 
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Json, Path, Query},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct ScheduleEventLogController;
@@ -19,48 +19,49 @@ pub struct ScheduleEventLogController;
 impl ScheduleEventLogController {
     /// 获取任务调度事件日志列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetScheduleEventLogListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetScheduleEventLogsReq>,
+    ) -> Responder<GetScheduleEventLogsResp> {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
-        let resp = schedule_event_log_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = schedule_event_log_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取任务调度事件日志的详细信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetScheduleEventLogReq>,
+    ) -> Responder<GetScheduleEventLogResp> {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
-        let resp = schedule_event_log_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = schedule_event_log_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加任务调度事件日志
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<AddScheduleEventLogReq>,
-    ) -> impl Responder {
-        let data = data.into_inner();
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateScheduleEventLogReq>,
+    ) -> Responder<CreateScheduleEventLogResp> {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
-        let resp = schedule_event_log_service.add(data).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = schedule_event_log_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除任务调度事件日志
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteScheduleEventLogReq>,
+    ) -> Responder<DeleteScheduleEventLogResp> {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
-        let resp = schedule_event_log_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = schedule_event_log_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

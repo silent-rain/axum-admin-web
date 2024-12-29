@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::schedule_status_log::GetScheduleStatusLogListLogReq;
+use crate::dto::schedule_status_log::GetScheduleStatusLogsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::schedule::{schedule_status_log, ScheduleStatusLog};
@@ -23,7 +23,7 @@ impl ScheduleStatusLogDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetScheduleStatusLogListLogReq,
+        req: GetScheduleStatusLogsReq,
     ) -> Result<(Vec<schedule_status_log::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -77,7 +77,7 @@ impl ScheduleStatusLogDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: schedule_status_log::ActiveModel,
     ) -> Result<schedule_status_log::Model, DbErr> {
@@ -100,7 +100,7 @@ impl ScheduleStatusLogDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = schedule_status_log::ActiveModel {
             id: Set(id),
             status: Set(status),

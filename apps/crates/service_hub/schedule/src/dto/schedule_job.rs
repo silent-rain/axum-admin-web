@@ -2,13 +2,12 @@
 
 use entity::schedule::schedule_job;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询任务调度列表
+/// 查询任务调度列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetScheduleJobReq {
+pub struct GetScheduleJobsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -25,9 +24,28 @@ pub struct GetScheduleJobReq {
     pub status: Option<i8>,
 }
 
-/// 添加任务调度
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetScheduleJobsResp {
+    pub data_list: Vec<schedule_job::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetScheduleJobReq {
+    /// 任务调度ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetScheduleJobResp {
+    #[serde(flatten)]
+    data: schedule_job::Model,
+}
+
+/// 添加任务调度 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddcheduleJobReq {
+pub struct CreateScheduleJobReq {
     /// 任务名称
     pub name: String,
     /// 任务来源(0:用户定义,1:系统内部)
@@ -44,9 +62,14 @@ pub struct AddcheduleJobReq {
     pub desc: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateScheduleJobResp {}
+
 /// 更新数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
-pub struct UpdatecheduleJobReq {
+pub struct UpdateScheduleJobReq {
+    /// 任务调度ID
+    pub id: i32,
     /// 任务名称
     pub name: String,
     /// cron表达式
@@ -57,9 +80,27 @@ pub struct UpdatecheduleJobReq {
     pub desc: Option<String>,
 }
 
-/// 更新数据状态
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateScheduleJobResp {}
+
+/// 更新数据状态 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
-pub struct UpdatecheduleJobStatusReq {
+pub struct UpdateScheduleJobStatusReq {
+    /// 任务调度ID
+    pub id: i32,
     /// 任务状态(0:下线,1:上线)
     pub status: schedule_job::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateScheduleJobStatusResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteScheduleJobReq {
+    /// 任务调度ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteScheduleJobResp {}

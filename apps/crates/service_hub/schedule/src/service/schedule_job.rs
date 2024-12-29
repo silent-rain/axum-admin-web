@@ -1,7 +1,10 @@
 //! 任务调度作业管理
 use crate::{
     dao::schedule_job::ScheduleJobDao,
-    dto::schedule_job::{AddcheduleJobReq, GetScheduleJobReq, UpdatecheduleJobReq},
+    dto::schedule_job::{
+        CreateScheduleJobReq, DeleteScheduleJobReq, GetScheduleJobReq, GetScheduleJobsReq,
+        UpdateScheduleJobReq, UpdateScheduleJobStatusReq,
+    },
     ScheduleStatusLogDao,
 };
 
@@ -25,7 +28,7 @@ impl ScheduleJobService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetScheduleJobReq,
+        req: GetScheduleJobsReq,
     ) -> Result<(Vec<schedule_job::Model>, u64), ErrorMsg> {
         let (results, total) = self.schedule_job_dao.list(req).await.map_err(|err| {
             error!("查询调度任务列表失败, err: {:#?}", err);
@@ -38,10 +41,10 @@ impl ScheduleJobService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<schedule_job::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetScheduleJobReq) -> Result<schedule_job::Model, ErrorMsg> {
         let result = self
             .schedule_job_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询调度任务作业失败, err: {:#?}", err);
@@ -60,7 +63,7 @@ impl ScheduleJobService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddcheduleJobReq) -> Result<schedule_job::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateScheduleJobReq) -> Result<schedule_job::Model, ErrorMsg> {
         // 检查任务名称是否已存在
         self.check_name_exist(req.name.clone(), None).await?;
 
@@ -76,7 +79,7 @@ impl ScheduleJobService {
             desc: Set(req.desc),
             ..Default::default()
         };
-        let result = self.schedule_job_dao.add(model).await.map_err(|err| {
+        let result = self.schedule_job_dao.create(model).await.map_err(|err| {
             error!("添加调度任务作业失败, err: {:#?}", err);
             Error::DbAddError
                 .into_msg()
@@ -87,12 +90,13 @@ impl ScheduleJobService {
     }
 
     /// 更新调度任务
-    pub async fn update(&self, id: i32, req: UpdatecheduleJobReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateScheduleJobReq) -> Result<u64, ErrorMsg> {
         // 检查任务名称是否已存在且不属于当前ID
-        self.check_name_exist(req.name.clone(), Some(id)).await?;
+        self.check_name_exist(req.name.clone(), Some(req.id))
+            .await?;
 
         let model = schedule_job::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             name: Set(req.name),
             expression: Set(req.expression),
             interval: Set(req.interval),
@@ -138,9 +142,9 @@ impl ScheduleJobService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
+    pub async fn update_status(&self, req: UpdateScheduleJobStatusReq) -> Result<(), ErrorMsg> {
         self.schedule_job_dao
-            .status(id, status)
+            .update_status(req.id, req.status as i8)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {
@@ -183,8 +187,8 @@ impl ScheduleJobService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let job = self.info(id).await?;
+    pub async fn delete(&self, req: DeleteScheduleJobReq) -> Result<u64, ErrorMsg> {
+        let job = self.info(GetScheduleJobReq { id: req.id }).await?;
         if job.source == schedule_job::enums::Source::System as i8 {
             error!("系统任务不允许删除");
             return Err(Error::DbDeleteError
@@ -195,7 +199,7 @@ impl ScheduleJobService {
         // 调度任务下线
         let status_model = self
             .schedule_status_log_dao
-            .last_by_job_id(id)
+            .last_by_job_id(req.id)
             .await
             .map_err(|err| {
                 error!("查询最新的调度任务作业失败, err: {:#?}", err);
@@ -211,7 +215,7 @@ impl ScheduleJobService {
             })?;
         self.schedule_offline(status_model.uuid).await?;
 
-        let result = self.schedule_job_dao.delete(id).await.map_err(|err| {
+        let result = self.schedule_job_dao.delete(req.id).await.map_err(|err| {
             error!("删除调度任务作业失败, err: {:#?}", err);
             Error::DbDeleteError
                 .into_msg()

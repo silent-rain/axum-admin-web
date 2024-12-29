@@ -1,7 +1,10 @@
 //! 任务调度事件日志管理
 use crate::{
     dao::schedule_event_log::ScheduleEventLogDao,
-    dto::schedule_event_log::{AddScheduleEventLogReq, GetScheduleEventLogListReq},
+    dto::schedule_event_log::{
+        CreateScheduleEventLogReq, DeleteScheduleEventLogReq, GetScheduleEventLogReq,
+        GetScheduleEventLogsReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +24,7 @@ impl ScheduleEventLogService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetScheduleEventLogListReq,
+        req: GetScheduleEventLogsReq,
     ) -> Result<(Vec<schedule_event_log::Model>, u64), ErrorMsg> {
         let (results, total) = self.schedule_event_log_dao.list(req).await.map_err(|err| {
             error!("查询任务调度事件日志列表失败, err: {:#?}", err);
@@ -34,10 +37,13 @@ impl ScheduleEventLogService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<schedule_event_log::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        req: GetScheduleEventLogReq,
+    ) -> Result<schedule_event_log::Model, ErrorMsg> {
         let result = self
             .schedule_event_log_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询任务调度事件日志失败, err: {:#?}", err);
@@ -56,9 +62,9 @@ impl ScheduleEventLogService {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
-        req: AddScheduleEventLogReq,
+        req: CreateScheduleEventLogReq,
     ) -> Result<schedule_event_log::Model, ErrorMsg> {
         let data = schedule_event_log::ActiveModel {
             job_id: Set(req.job_id),
@@ -66,21 +72,25 @@ impl ScheduleEventLogService {
             status: Set(req.status as i8),
             ..Default::default()
         };
-        let result = self.schedule_event_log_dao.add(data).await.map_err(|err| {
-            error!("添加任务调度事件日志失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("添加任务调度事件日志失败")
-        })?;
+        let result = self
+            .schedule_event_log_dao
+            .create(data)
+            .await
+            .map_err(|err| {
+                error!("添加任务调度事件日志失败, err: {:#?}", err);
+                Error::DbQueryError
+                    .into_msg()
+                    .with_msg("添加任务调度事件日志失败")
+            })?;
 
         Ok(result)
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
+    pub async fn delete(&self, req: DeleteScheduleEventLogReq) -> Result<u64, ErrorMsg> {
         let result = self
             .schedule_event_log_dao
-            .delete(id)
+            .delete(req.id)
             .await
             .map_err(|err| {
                 error!("删除任务调度事件日志失败, err: {:#?}", err);
