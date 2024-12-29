@@ -1,8 +1,12 @@
 //! 系统日志
-use crate::{dao::system::SystemDao, dto::system::GetSystemListReq};
+use crate::{
+    dao::system::SystemDao,
+    dto::system::{CreateSystemReq, DeleteSystemReq, GetSystemReq, GetSystemsReq},
+};
 
 use code::{Error, ErrorMsg};
 use entity::log::log_system;
+use utils::json::struct_to_struct;
 
 use nject::injectable;
 use tracing::error;
@@ -17,7 +21,7 @@ impl SystemService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetSystemListReq,
+        req: GetSystemsReq,
     ) -> Result<(Vec<log_system::Model>, u64), ErrorMsg> {
         let (results, total) = self.system_dao.list(req).await.map_err(|err| {
             error!("查询系统日志列表失败, err: {:#?}", err);
@@ -30,10 +34,10 @@ impl SystemService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<log_system::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetSystemReq) -> Result<log_system::Model, ErrorMsg> {
         let result = self
             .system_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询系统日志失败, err: {:#?}", err);
@@ -50,8 +54,13 @@ impl SystemService {
     }
 
     /// 添加数据
-    pub async fn add(&self, data: log_system::Model) -> Result<log_system::Model, ErrorMsg> {
-        let result = self.system_dao.add(data).await.map_err(|err| {
+    pub async fn create(&self, req: CreateSystemReq) -> Result<log_system::Model, ErrorMsg> {
+        let data: log_system::Model = struct_to_struct(&req).map_err(|err| {
+            error!("JSON转换错误失败, err: {:#?}", err);
+            Error::JsonConvert.into_msg().with_msg("JSON转换错误失败")
+        })?;
+
+        let result = self.system_dao.create(data).await.map_err(|err| {
             error!("添加系统日志失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("添加系统日志失败")
         })?;
@@ -60,8 +69,8 @@ impl SystemService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.system_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteSystemReq) -> Result<u64, ErrorMsg> {
+        let result = self.system_dao.delete(req.id).await.map_err(|err| {
             error!("删除系统日志失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("删除系统日志失败")
         })?;

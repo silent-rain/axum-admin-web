@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::system::GetSystemListReq;
+use crate::dto::system::GetSystemsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::log::{log_system, LogSystem};
@@ -21,10 +21,7 @@ pub struct SystemDao {
 
 impl SystemDao {
     /// 获取数据列表
-    pub async fn list(
-        &self,
-        req: GetSystemListReq,
-    ) -> Result<(Vec<log_system::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetSystemsReq) -> Result<(Vec<log_system::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = LogSystem::find()
@@ -56,7 +53,7 @@ impl SystemDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, data: log_system::Model) -> Result<log_system::Model, DbErr> {
+    pub async fn create(&self, data: log_system::Model) -> Result<log_system::Model, DbErr> {
         let mut active_model: log_system::ActiveModel = data.into();
         active_model.id = NotSet;
         active_model.insert(self.db.db()).await

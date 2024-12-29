@@ -1,7 +1,7 @@
 //! WEB日志管理
 use crate::{
     dao::web_log::WebLogDao,
-    dto::web_log::{AddWebLogInfoReq, GetWebLogListReq},
+    dto::web_log::{CreateWebLogReq, GetWebLogReq, GetWebLogsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -19,10 +19,7 @@ pub struct WebLogService {
 
 impl WebLogService {
     /// 获取列表数据
-    pub async fn list(
-        &self,
-        req: GetWebLogListReq,
-    ) -> Result<(Vec<log_web::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetWebLogsReq) -> Result<(Vec<log_web::Model>, u64), ErrorMsg> {
         let (results, total) = self.log_web_dao.list(req).await.map_err(|err| {
             error!("查询WEB日志列表失败, err: {:#?}", err);
             Error::DbQueryError
@@ -34,10 +31,10 @@ impl WebLogService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<log_web::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetWebLogReq) -> Result<log_web::Model, ErrorMsg> {
         let result = self
             .log_web_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询WEB日志信息失败, err: {:#?}", err);
@@ -56,7 +53,7 @@ impl WebLogService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddWebLogInfoReq) -> Result<log_web::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateWebLogReq) -> Result<log_web::Model, ErrorMsg> {
         let model = log_web::ActiveModel {
             user_id: Set(req.user_id),
             username: Set(req.username),
@@ -71,7 +68,7 @@ impl WebLogService {
             desc: Set(req.desc),
             ..Default::default()
         };
-        let result = self.log_web_dao.add(model).await.map_err(|err| {
+        let result = self.log_web_dao.create(model).await.map_err(|err| {
             error!("添加WEB日志信息失败, err: {:#?}", err);
             Error::DbAddError.into_msg().with_msg("添加WEB日志信息失败")
         })?;

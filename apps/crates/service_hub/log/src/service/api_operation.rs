@@ -1,7 +1,9 @@
 //! API操作日志
 use crate::{
     dao::api_operation::ApiOperationDao,
-    dto::api_operation::{AddApiOperationReq, GetApiOperationListReq},
+    dto::api_operation::{
+        CreateApiOperationReq, DeleteApiOperationReq, GetApiOperationReq, GetApiOperationsReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +23,7 @@ impl ApiOperationService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetApiOperationListReq,
+        req: GetApiOperationsReq,
     ) -> Result<(Vec<log_api_operation::Model>, u64), ErrorMsg> {
         let (results, total) = self.system_dao.list(req).await.map_err(|err| {
             error!("查询操作日志列表失败, err: {:#?}", err);
@@ -34,10 +36,13 @@ impl ApiOperationService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<log_api_operation::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        req: GetApiOperationReq,
+    ) -> Result<log_api_operation::Model, ErrorMsg> {
         let result = self
             .system_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询操作日志失败, err: {:#?}", err);
@@ -54,7 +59,10 @@ impl ApiOperationService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddApiOperationReq) -> Result<log_api_operation::Model, ErrorMsg> {
+    pub async fn create(
+        &self,
+        req: CreateApiOperationReq,
+    ) -> Result<log_api_operation::Model, ErrorMsg> {
         let data = log_api_operation::ActiveModel {
             user_id: Set(req.user_id),
             username: Set(req.username),
@@ -71,7 +79,7 @@ impl ApiOperationService {
             desc: Set(req.desc),
             ..Default::default()
         };
-        let result = self.system_dao.add(data).await.map_err(|err| {
+        let result = self.system_dao.create(data).await.map_err(|err| {
             error!("添加操作日志失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("添加操作日志失败")
         })?;
@@ -80,8 +88,8 @@ impl ApiOperationService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.system_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteApiOperationReq) -> Result<u64, ErrorMsg> {
+        let result = self.system_dao.delete(req.id).await.map_err(|err| {
             error!("删除操作日志失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("删除操作日志失败")
         })?;

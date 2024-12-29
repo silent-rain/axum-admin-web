@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::api_operation::GetApiOperationListReq;
+use crate::dto::api_operation::GetApiOperationsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::log::{log_api_operation, LogApiOperation};
@@ -23,7 +23,7 @@ impl ApiOperationDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetApiOperationListReq,
+        req: GetApiOperationsReq,
     ) -> Result<(Vec<log_api_operation::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -56,7 +56,7 @@ impl ApiOperationDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: log_api_operation::ActiveModel,
     ) -> Result<log_api_operation::Model, DbErr> {

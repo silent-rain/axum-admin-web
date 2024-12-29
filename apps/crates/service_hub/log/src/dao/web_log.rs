@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::web_log::GetWebLogListReq;
+use crate::dto::web_log::GetWebLogsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::log::{log_web, LogWeb};
@@ -21,7 +21,7 @@ pub struct WebLogDao {
 
 impl WebLogDao {
     /// 获取数据列表
-    pub async fn list(&self, req: GetWebLogListReq) -> Result<(Vec<log_web::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetWebLogsReq) -> Result<(Vec<log_web::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = LogWeb::find()
@@ -59,7 +59,10 @@ impl WebLogDao {
     }
 
     /// 添加详情信息
-    pub async fn add(&self, active_model: log_web::ActiveModel) -> Result<log_web::Model, DbErr> {
+    pub async fn create(
+        &self,
+        active_model: log_web::ActiveModel,
+    ) -> Result<log_web::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 

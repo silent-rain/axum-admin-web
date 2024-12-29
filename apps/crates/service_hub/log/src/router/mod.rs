@@ -1,23 +1,23 @@
 //! 路由层
 
+use axum::Router;
+
 pub mod api_operation;
 pub mod system;
 pub mod web_log;
-
-use actix_web::{web, Scope};
 
 /// 路由器
 pub struct LogRouter;
 
 impl LogRouter {
     /// 注册`日志管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/log")
-            // 系统日志管理
-            .service(system::SystemRouter::admin_register())
-            // 操作日志管理
-            .service(api_operation::ApiOperationRouter::admin_register())
-            // WEB日志管理
-            .service(web_log::WebLogRouter::admin_register())
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/log",
+            Router::new()
+                .merge(system::SystemRouter::register()) // 系统日志管理
+                .merge(api_operation::ApiOperationRouter::register()) // 操作日志管理
+                .merge(web_log::WebLogRouter::register()), // WEB日志管理
+        )
     }
 }

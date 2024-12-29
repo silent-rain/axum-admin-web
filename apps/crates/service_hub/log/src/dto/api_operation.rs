@@ -2,13 +2,12 @@
 
 use entity::log::log_api_operation;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询API操作日志列表
+/// 查询API操作日志列表 请求体
 #[derive(Default, Deserialize)]
-pub struct GetApiOperationListReq {
+pub struct GetApiOperationsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -19,9 +18,28 @@ pub struct GetApiOperationListReq {
     pub end_time: Option<String>,
 }
 
-/// 添加API操作日志
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetApiOperationsResp {
+    pub data_list: Vec<log_api_operation::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetApiOperationReq {
+    /// 字典数据ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetApiOperationResp {
+    #[serde(flatten)]
+    data: log_api_operation::Model,
+}
+
+/// 添加API操作日志 请求体
 #[derive(Debug, Clone, Serialize, Deserialize, Validate)]
-pub struct AddApiOperationReq {
+pub struct CreateApiOperationReq {
     /// 用户ID
     pub user_id: Option<i32>,
     /// 用户名称
@@ -49,3 +67,16 @@ pub struct AddApiOperationReq {
     /// 描述信息
     pub desc: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateApiOperationResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteApiOperationReq {
+    /// 字典数据ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteApiOperationResp {}

@@ -1,15 +1,16 @@
 //! 系统日志
 
-use crate::{dto::system::GetSystemListReq, service::system::SystemService};
-
-use entity::log::log_system;
-use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Json, Path, Query},
-    Responder,
+use crate::{
+    dto::system::{
+        CreateSystemReq, CreateSystemResp, DeleteSystemReq, DeleteSystemResp, GetSystemReq,
+        GetSystemResp, GetSystemsReq, GetSystemsResp,
+    },
+    service::system::SystemService,
 };
+
+use axum::{extract::Query, Extension, Json};
+use inject::AInjectProvider;
+use response::{Responder, Response};
 
 /// 控制器
 pub struct SystemController;
@@ -17,48 +18,49 @@ pub struct SystemController;
 impl SystemController {
     /// 获取系统日志列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetSystemListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetSystemsReq>,
+    ) -> Responder<GetSystemsResp> {
         let system_service: SystemService = provider.provide();
-        let resp = system_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = system_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取系统日志的详细信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetSystemReq>,
+    ) -> Responder<GetSystemResp> {
         let system_service: SystemService = provider.provide();
-        let resp = system_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = system_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加新的系统日志
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<log_system::Model>,
-    ) -> impl Responder {
-        let data = data.into_inner();
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateSystemReq>,
+    ) -> Responder<CreateSystemResp> {
         let system_service: SystemService = provider.provide();
-        let resp = system_service.add(data).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = system_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除系统日志
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteSystemReq>,
+    ) -> Responder<DeleteSystemResp> {
         let system_service: SystemService = provider.provide();
-        let resp = system_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = system_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

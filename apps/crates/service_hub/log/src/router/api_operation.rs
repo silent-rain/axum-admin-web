@@ -2,18 +2,25 @@
 
 use crate::controller::api_operation::ApiOperationController;
 
-use actix_web::{web, Scope};
+use axum::{routing::get, Router};
 
 /// 路由器
 pub struct ApiOperationRouter;
 
 impl ApiOperationRouter {
     /// 注册`API操作日志管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/api-operations")
-            .route("", web::get().to(ApiOperationController::list))
-            .route("/{id}", web::get().to(ApiOperationController::info))
-        // .route("", web::post().to(ApiOperationController::add))
-        // .route("/{id}", web::delete().to(ApiOperationController::delete))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/api-operation-logs",
+            Router::new()
+                .route(
+                    "/",
+                    get(ApiOperationController::list).post(ApiOperationController::create),
+                )
+                .route(
+                    "/:id",
+                    get(ApiOperationController::info).delete(ApiOperationController::delete),
+                ),
+        )
     }
 }

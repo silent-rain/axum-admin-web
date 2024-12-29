@@ -1,17 +1,17 @@
 //! API操作日志
 
 use crate::{
-    dto::api_operation::{AddApiOperationReq, GetApiOperationListReq},
+    dto::api_operation::{
+        CreateApiOperationReq, CreateApiOperationResp, DeleteApiOperationReq,
+        DeleteApiOperationResp, GetApiOperationReq, GetApiOperationResp, GetApiOperationsReq,
+        GetApiOperationsResp,
+    },
     service::api_operation::ApiOperationService,
 };
 
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Json, Path, Query},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct ApiOperationController;
@@ -19,48 +19,49 @@ pub struct ApiOperationController;
 impl ApiOperationController {
     /// 获取API操作日志列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetApiOperationListReq>,
-    ) -> impl Responder {
-        let system_service: ApiOperationService = provider.provide();
-        let resp = system_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetApiOperationsReq>,
+    ) -> Responder<GetApiOperationsResp> {
+        let api_operation_service: ApiOperationService = provider.provide();
+        let (results, total) = api_operation_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
-    /// 获取API操作日志的详细信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
-        let system_service: ApiOperationService = provider.provide();
-        let resp = system_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+    /// 获取字典数据信息
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetApiOperationReq>,
+    ) -> Responder<GetApiOperationResp> {
+        let api_operation_service: ApiOperationService = provider.provide();
+        let result = api_operation_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
-    /// 添加API操作日志
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<AddApiOperationReq>,
-    ) -> impl Responder {
-        let data = data.into_inner();
-        let system_service: ApiOperationService = provider.provide();
-        let resp = system_service.add(data).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+    /// 添加字典数据
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateApiOperationReq>,
+    ) -> Responder<CreateApiOperationResp> {
+        let api_operation_service: ApiOperationService = provider.provide();
+        let _result = api_operation_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除API操作日志
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
-        let system_service: ApiOperationService = provider.provide();
-        let resp = system_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteApiOperationReq>,
+    ) -> Responder<DeleteApiOperationResp> {
+        let api_operation_service: ApiOperationService = provider.provide();
+        let _result = api_operation_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

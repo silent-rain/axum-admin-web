@@ -11,7 +11,7 @@ response = { path = "../../core/response" }
 utils = { path = "../../core/utils" }
 inject = { path = "../../core/inject" }
 
-
+axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }
