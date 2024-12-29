@@ -166,7 +166,7 @@ pub struct MenuTreeItem {
     pub children: Vec<MenuTreeItem>,
 }
 
-/// 菜单数列表 请求体
+/// 菜单树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetMenuTreeReq {}
 

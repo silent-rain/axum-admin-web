@@ -131,7 +131,7 @@ pub struct OpenapiTreeItem {
     pub children: Vec<OpenapiTreeItem>,
 }
 
-/// 菜单数列表 请求体
+/// 接口树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetOpenapiTreeReq {}
 
