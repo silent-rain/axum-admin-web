@@ -1,7 +1,7 @@
 //! 图片资源管理
 use std::sync::Arc;
 
-use crate::dto::image_resource::GetImageResourceListReq;
+use crate::dto::image_resource::GetImageResourcesReq;
 
 use database::{Pagination, PoolTrait};
 use entity::system::{sys_image_resource, SysImageResource};
@@ -22,7 +22,7 @@ impl ImageResourceDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetImageResourceListReq,
+        req: GetImageResourcesReq,
     ) -> Result<(Vec<sys_image_resource::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -71,7 +71,7 @@ impl ImageResourceDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: sys_image_resource::ActiveModel,
     ) -> Result<sys_image_resource::Model, DbErr> {
@@ -79,7 +79,7 @@ impl ImageResourceDao {
     }
 
     /// 批量添加数据
-    pub async fn batch_add(
+    pub async fn batch_create(
         &self,
         active_models: Vec<sys_image_resource::ActiveModel>,
     ) -> Result<i32, DbErr> {

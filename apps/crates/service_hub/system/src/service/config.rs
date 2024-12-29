@@ -1,7 +1,10 @@
 //! 配置管理
 use crate::{
     dao::config::ConfigDao,
-    dto::config::{AddConfigReq, GetConfigListReq, UpdateConfigReq},
+    dto::config::{
+        CreateConfigReq, DeleteConfigReq, GetConfigReq, GetConfigsReq, UpdateConfigReq,
+        UpdateConfigStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -22,7 +25,7 @@ impl ConfigService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetConfigListReq,
+        req: GetConfigsReq,
     ) -> Result<(Vec<sys_config::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
@@ -54,10 +57,10 @@ impl ConfigService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<sys_config::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetConfigReq) -> Result<sys_config::Model, ErrorMsg> {
         let result = self
             .config_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询配置信息失败, err: {:#?}", err);
@@ -72,7 +75,7 @@ impl ConfigService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddConfigReq) -> Result<sys_config::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateConfigReq) -> Result<sys_config::Model, ErrorMsg> {
         // 查询配置编码是否存在
         self.check_code_exist(req.code.clone(), None).await?;
 
@@ -86,7 +89,7 @@ impl ConfigService {
             status: Set(sys_config::enums::Status::Enabled as i8),
             ..Default::default()
         };
-        let result = self.config_dao.add(model).await.map_err(|err| {
+        let result = self.config_dao.create(model).await.map_err(|err| {
             error!("添加配置信息失败, err: {:#?}", err);
             Error::DbAddError.into_msg().with_msg("添加配置信息失败")
         })?;
@@ -95,12 +98,13 @@ impl ConfigService {
     }
 
     /// 更新配置
-    pub async fn update(&self, id: i32, req: UpdateConfigReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateConfigReq) -> Result<u64, ErrorMsg> {
         // 查询配置编码是否存在且不属于当前ID
-        self.check_code_exist(req.code.clone(), Some(id)).await?;
+        self.check_code_exist(req.code.clone(), Some(req.id))
+            .await?;
 
         let model = sys_config::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             pid: Set(req.pid),
             name: Set(req.name),
             code: Set(req.code),
@@ -145,24 +149,27 @@ impl ConfigService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.config_dao.status(id, status).await.map_err(|err| {
-            if err == RecordNotUpdated {
-                error!("更新配置状态失败, 该配置不存在");
-                return Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新配置状态失败, 该配置不存在");
-            }
-            error!("更新配置状态失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新配置状态失败")
-        })?;
+    pub async fn update_status(&self, req: UpdateConfigStatusReq) -> Result<(), ErrorMsg> {
+        self.config_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                if err == RecordNotUpdated {
+                    error!("更新配置状态失败, 该配置不存在");
+                    return Error::DbUpdateError
+                        .into_msg()
+                        .with_msg("更新配置状态失败, 该配置不存在");
+                }
+                error!("更新配置状态失败, err: {:#?}", err);
+                Error::DbUpdateError.into_msg().with_msg("更新配置状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let config_children = self.config_dao.children(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteConfigReq) -> Result<u64, ErrorMsg> {
+        let config_children = self.config_dao.children(req.id).await.map_err(|err| {
             error!("获取所有子列表失败, err: {:#?}", err);
             Error::DbQueryError
                 .into_msg()
@@ -178,7 +185,7 @@ impl ConfigService {
                 .with_msg("请先删除子列表"));
         }
 
-        let result = self.config_dao.delete(id).await.map_err(|err| {
+        let result = self.config_dao.delete(req.id).await.map_err(|err| {
             error!("删除配置信息失败, err: {:#?}", err);
             Error::DbDeleteError.into_msg().with_msg("删除配置信息失败")
         })?;

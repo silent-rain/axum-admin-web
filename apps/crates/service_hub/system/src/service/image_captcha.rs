@@ -2,9 +2,10 @@
 
 use crate::{
     constant::CAPTCHA_EXPIRE,
-    {
-        dao::image_captcha::ImageCaptchaDao,
-        dto::image_captcha::{AddImageCaptchaResp, GetImageCaptchaListReq},
+    dao::image_captcha::ImageCaptchaDao,
+    dto::image_captcha::{
+        CreateImageCaptchaReq, CreateImageCaptchaResp, DeleteImageCaptchaReq, GetImageCaptchaReq,
+        GetImageCaptchasReq, GetInfoByCaptchaIdReq,
     },
 };
 
@@ -27,7 +28,7 @@ impl ImageCaptchaService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetImageCaptchaListReq,
+        req: GetImageCaptchasReq,
     ) -> Result<(Vec<sys_image_captcha::Model>, u64), ErrorMsg> {
         let (results, total) = self.image_captcha_dao.list(req).await.map_err(|err| {
             error!("查询验证码列表失败, err: {:#?}", err);
@@ -40,10 +41,13 @@ impl ImageCaptchaService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<sys_image_captcha::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        req: GetImageCaptchaReq,
+    ) -> Result<sys_image_captcha::Model, ErrorMsg> {
         let result = self
             .image_captcha_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询验证码信息失败, err: {:#?}", err);
@@ -62,11 +66,11 @@ impl ImageCaptchaService {
     /// 通过captcha_id获取详情信息
     pub async fn info_by_captcha_id(
         &self,
-        captcha_id: String,
+        req: GetInfoByCaptchaIdReq,
     ) -> Result<sys_image_captcha::Model, ErrorMsg> {
         let result = self
             .image_captcha_dao
-            .info_by_captcha_id(captcha_id)
+            .info_by_captcha_id(req.captcha_id)
             .await
             .map_err(|err| {
                 error!("查询验证码信息失败, err: {:#?}", err);
@@ -81,7 +85,7 @@ impl ImageCaptchaService {
 
         // 验证码在使用后将其状态更新为无效
         self.image_captcha_dao
-            .status(result.id, sys_image_captcha::enums::Status::Invalid as i8)
+            .update_status(result.id, sys_image_captcha::enums::Status::Invalid as i8)
             .await
             .map_err(|err| {
                 error!("更新验证码状态失败, err: {:#?}", err);
@@ -94,7 +98,10 @@ impl ImageCaptchaService {
     }
 
     /// 添加数据
-    pub async fn add(&self) -> Result<AddImageCaptchaResp, ErrorMsg> {
+    pub async fn create(
+        &self,
+        _req: CreateImageCaptchaReq,
+    ) -> Result<CreateImageCaptchaResp, ErrorMsg> {
         // 生成验证码
         let (captcha, base_img) = generate_captcha();
         let captcha_id = Uuid::new_v4().to_string();
@@ -107,12 +114,12 @@ impl ImageCaptchaService {
             expire: Set(expire),
             ..Default::default()
         };
-        let result = self.image_captcha_dao.add(model).await.map_err(|err| {
+        let result = self.image_captcha_dao.create(model).await.map_err(|err| {
             error!("添加验证码信息失败, err: {:#?}", err);
             Error::DbAddError.into_msg().with_msg("添加验证码信息失败")
         })?;
 
-        let result = AddImageCaptchaResp {
+        let result = CreateImageCaptchaResp {
             captcha_id: result.captcha_id,
             data: base_img,
             expire: result.expire,
@@ -127,8 +134,8 @@ impl ImageCaptchaService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.image_captcha_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteImageCaptchaReq) -> Result<u64, ErrorMsg> {
+        let result = self.image_captcha_dao.delete(req.id).await.map_err(|err| {
             error!("删除验证码信息失败, err: {:#?}", err);
             Error::DbDeleteError
                 .into_msg()

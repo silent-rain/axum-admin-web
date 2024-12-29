@@ -1,7 +1,10 @@
 //! 字典数据管理
 use crate::{
     dao::dict_data::DictDataDao,
-    dto::dict_data::{AddDictDataReq, GetDictDataListReq, UpdateDictDataReq},
+    dto::dict_data::{
+        CreateDictDataReq, DeleteDictDataReq, GetDictDataReq, GetDictDatasReq, UpdateDictDataReq,
+        UpdateDictDataStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +24,7 @@ impl DictDataService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetDictDataListReq,
+        req: GetDictDatasReq,
     ) -> Result<(Vec<sys_dict_data::Model>, u64), ErrorMsg> {
         let (results, total) = self.dict_data_dao.list(req).await.map_err(|err| {
             error!("查询字典数据列表失败, err: {:#?}", err);
@@ -34,10 +37,10 @@ impl DictDataService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<sys_dict_data::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetDictDataReq) -> Result<sys_dict_data::Model, ErrorMsg> {
         let result = self
             .dict_data_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询字典数据信息失败, err: {:#?}", err);
@@ -56,7 +59,7 @@ impl DictDataService {
     }
 
     /// 添加数据
-    pub async fn add(&self, req: AddDictDataReq) -> Result<sys_dict_data::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateDictDataReq) -> Result<sys_dict_data::Model, ErrorMsg> {
         // 查询字典数据是否已存在
         let dict_data = self
             .dict_data_dao
@@ -83,7 +86,7 @@ impl DictDataService {
             status: Set(sys_dict_data::enums::Status::Enabled as i8),
             ..Default::default()
         };
-        let result = self.dict_data_dao.add(model).await.map_err(|err| {
+        let result = self.dict_data_dao.create(model).await.map_err(|err| {
             error!("添加字典数据信息失败, err: {:#?}", err);
             Error::DbAddError
                 .into_msg()
@@ -94,9 +97,9 @@ impl DictDataService {
     }
 
     /// 更新字典数据
-    pub async fn update(&self, id: i32, req: UpdateDictDataReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateDictDataReq) -> Result<u64, ErrorMsg> {
         let model = sys_dict_data::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             lable: Set(req.lable),
             value: Set(req.value),
             sort: Set(req.sort),
@@ -114,26 +117,29 @@ impl DictDataService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
-        self.dict_data_dao.status(id, status).await.map_err(|err| {
-            if err == RecordNotUpdated {
-                error!("更新字典数据状态失败, 该字典数据不存在");
-                return Error::DbUpdateError
+    pub async fn update_status(&self, req: UpdateDictDataStatusReq) -> Result<(), ErrorMsg> {
+        self.dict_data_dao
+            .update_status(req.id, req.status as i8)
+            .await
+            .map_err(|err| {
+                if err == RecordNotUpdated {
+                    error!("更新字典数据状态失败, 该字典数据不存在");
+                    return Error::DbUpdateError
+                        .into_msg()
+                        .with_msg("更新字典数据状态失败, 该字典数据不存在");
+                }
+                error!("更新字典数据状态失败, err: {:#?}", err);
+                Error::DbUpdateError
                     .into_msg()
-                    .with_msg("更新字典数据状态失败, 该字典数据不存在");
-            }
-            error!("更新字典数据状态失败, err: {:#?}", err);
-            Error::DbUpdateError
-                .into_msg()
-                .with_msg("更新字典数据状态失败")
-        })?;
+                    .with_msg("更新字典数据状态失败")
+            })?;
 
         Ok(())
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.dict_data_dao.delete(id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteDictDataReq) -> Result<u64, ErrorMsg> {
+        let result = self.dict_data_dao.delete(req.id).await.map_err(|err| {
             error!("删除字典数据信息失败, err: {:#?}", err);
             Error::DbDeleteError
                 .into_msg()

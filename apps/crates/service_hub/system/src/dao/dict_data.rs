@@ -1,7 +1,7 @@
 //! 字典数据管理
 use std::sync::Arc;
 
-use crate::dto::dict_data::GetDictDataListReq;
+use crate::dto::dict_data::GetDictDatasReq;
 
 use database::{Pagination, PoolTrait};
 use entity::system::{sys_dict_data, SysDictData};
@@ -32,7 +32,7 @@ impl DictDataDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetDictDataListReq,
+        req: GetDictDatasReq,
     ) -> Result<(Vec<sys_dict_data::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -87,7 +87,7 @@ impl DictDataDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: sys_dict_data::ActiveModel,
     ) -> Result<sys_dict_data::Model, DbErr> {
@@ -107,7 +107,7 @@ impl DictDataDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = sys_dict_data::ActiveModel {
             id: Set(id),
             status: Set(status),

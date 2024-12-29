@@ -2,13 +2,12 @@
 
 use entity::system::sys_config;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询配置列表
+/// 查询配置列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetConfigListReq {
+pub struct GetConfigsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -23,9 +22,28 @@ pub struct GetConfigListReq {
     pub all: Option<bool>,
 }
 
-/// 添加配置
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetConfigsResp {
+    pub data_list: Vec<sys_config::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetConfigReq {
+    /// 配置ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetConfigResp {
+    #[serde(flatten)]
+    data: sys_config::Model,
+}
+
+/// 添加配置 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddConfigReq {
+pub struct CreateConfigReq {
     /// 父节点ID
     pub pid: Option<i32>,
     /// 配置名称
@@ -41,6 +59,9 @@ pub struct AddConfigReq {
     /// 状态, 0:停用,1:正常
     pub status: sys_config::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateConfigResp {}
 
 /// 更新数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
@@ -62,10 +83,44 @@ pub struct UpdateConfigReq {
     /// 状态(0:停用,1:正常)
     pub status: sys_config::enums::Status,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateConfigResp {}
 
-/// 更新数据状态
+/// 更新数据状态 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateConfigStatusReq {
+    /// 配置ID
+    pub id: i32,
     /// 状态(0:停用,1:正常)
     pub status: sys_config::enums::Status,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateConfigStatusResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteConfigReq {
+    /// 配置ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteConfigResp {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ConfigTreeItem {
+    #[serde(flatten)]
+    pub data: sys_config::Model,
+    pub children: Vec<ConfigTreeItem>,
+}
+
+/// 配置树列表 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct GetConfigTreeReq {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetConfigTreeResp {
+    #[serde(flatten)]
+    pub data: ConfigTreeItem,
 }

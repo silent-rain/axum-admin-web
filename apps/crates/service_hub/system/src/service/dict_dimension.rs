@@ -1,7 +1,10 @@
 //! 字典维度管理
 use crate::{
     dao::dict_dimension::DictDimensionDao,
-    dto::dict_dimension::{AddDictDimensionReq, GetDictDimensionListReq, UpdateDictDimensionReq},
+    dto::dict_dimension::{
+        CreateDictDimensionReq, DeleteDictDimensionReq, GetDictDimensionReq, GetDictDimensionsReq,
+        UpdateDictDimensionReq, UpdateDictDimensionStatusReq,
+    },
 };
 
 use code::{Error, ErrorMsg};
@@ -21,7 +24,7 @@ impl DictDimensionService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetDictDimensionListReq,
+        req: GetDictDimensionsReq,
     ) -> Result<(Vec<sys_dict_dimension::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
@@ -44,10 +47,13 @@ impl DictDimensionService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<sys_dict_dimension::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        req: GetDictDimensionReq,
+    ) -> Result<sys_dict_dimension::Model, ErrorMsg> {
         let result = self
             .dict_dimension_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询字典维度信息失败, err: {:#?}", err);
@@ -66,9 +72,9 @@ impl DictDimensionService {
     }
 
     /// 添加数据
-    pub async fn add(
+    pub async fn create(
         &self,
-        req: AddDictDimensionReq,
+        req: CreateDictDimensionReq,
     ) -> Result<sys_dict_dimension::Model, ErrorMsg> {
         // 查询字典维度名称是否已存在
         self.check_name_exist(req.name.clone(), None).await?;
@@ -84,7 +90,7 @@ impl DictDimensionService {
             status: Set(sys_dict_dimension::enums::Status::Enabled as i8),
             ..Default::default()
         };
-        let result = self.dict_dimension_dao.add(model).await.map_err(|err| {
+        let result = self.dict_dimension_dao.create(model).await.map_err(|err| {
             error!("添加字典维度信息失败, err: {:#?}", err);
             Error::DbAddError
                 .into_msg()
@@ -95,15 +101,17 @@ impl DictDimensionService {
     }
 
     /// 更新字典维度
-    pub async fn update(&self, id: i32, req: UpdateDictDimensionReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateDictDimensionReq) -> Result<u64, ErrorMsg> {
         // 查询字典维度名称是否已存在且不属于当前ID
-        self.check_name_exist(req.name.clone(), Some(id)).await?;
+        self.check_name_exist(req.name.clone(), Some(req.id))
+            .await?;
 
         // 查询字典维度编码是否存在且不属于当前ID
-        self.check_code_exist(req.code.clone(), Some(id)).await?;
+        self.check_code_exist(req.code.clone(), Some(req.id))
+            .await?;
 
         let model = sys_dict_dimension::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             name: Set(req.name),
             code: Set(req.code),
             sort: Set(req.sort),
@@ -183,9 +191,9 @@ impl DictDimensionService {
     }
 
     /// 更新数据状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), ErrorMsg> {
+    pub async fn update_status(&self, req: UpdateDictDimensionStatusReq) -> Result<(), ErrorMsg> {
         self.dict_dimension_dao
-            .status(id, status)
+            .update_status(req.id, req.status as i8)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {
@@ -204,13 +212,17 @@ impl DictDimensionService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.dict_dimension_dao.delete(id).await.map_err(|err| {
-            error!("删除字典维度信息失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除字典维度信息失败")
-        })?;
+    pub async fn delete(&self, req: DeleteDictDimensionReq) -> Result<u64, ErrorMsg> {
+        let result = self
+            .dict_dimension_dao
+            .delete(req.id)
+            .await
+            .map_err(|err| {
+                error!("删除字典维度信息失败, err: {:#?}", err);
+                Error::DbDeleteError
+                    .into_msg()
+                    .with_msg("删除字典维度信息失败")
+            })?;
 
         Ok(result)
     }

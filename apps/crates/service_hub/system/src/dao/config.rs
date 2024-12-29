@@ -1,7 +1,7 @@
 //! 配置管理
 use std::sync::Arc;
 
-use crate::dto::config::GetConfigListReq;
+use crate::dto::config::GetConfigsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::system::{sys_config, SysConfig};
@@ -30,10 +30,7 @@ impl ConfigDao {
     }
 
     /// 获取数据列表
-    pub async fn list(
-        &self,
-        req: GetConfigListReq,
-    ) -> Result<(Vec<sys_config::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetConfigsReq) -> Result<(Vec<sys_config::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = SysConfig::find()
@@ -81,7 +78,7 @@ impl ConfigDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: sys_config::ActiveModel,
     ) -> Result<sys_config::Model, DbErr> {
@@ -101,7 +98,7 @@ impl ConfigDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = sys_config::ActiveModel {
             id: Set(id),
             status: Set(status),

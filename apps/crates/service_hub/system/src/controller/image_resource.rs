@@ -2,24 +2,20 @@
 
 use crate::{
     constant::HEADERS_X_IMG,
-    {
-        dto::image_resource::{
-            BatchDeleteImageResourceReq, GetImageResourceListReq, UpdateImageResourceReq,
-            UploadFileForm, UploadFilesForm,
-        },
-        service::image_resource::ImageResourceService,
+    dto::image_resource::{
+        BatchDeleteImageResourceReq, BatchDeleteImageResourceResp, DeleteImageResourceReq,
+        DeleteImageResourceResp, GetImageResourceReq, GetImageResourceResp, GetImageResourcesReq,
+        GetImageResourcesResp, ShowImageReq, UpdateImageResourceReq, UpdateImageResourceResp,
+        UploadFileReq, UploadFileResp, UploadFilesReq, UploadFilesResp,
     },
+    service::image_resource::ImageResourceService,
 };
 
-use actix_multipart::form::MultipartForm;
-use actix_validator::{Json, Query};
+use axum::{body::Body, extract::Query, Extension, Json};
+use axum_typed_multipart::TypedMultipart;
+use code::Error;
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    HttpResponse, Responder,
-};
+use response::{Responder, Response, ResponseErr};
 
 /// 控制器
 pub struct ImageResourceController;
@@ -27,107 +23,106 @@ pub struct ImageResourceController;
 impl ImageResourceController {
     /// 获取图片列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetImageResourceListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetImageResourcesReq>,
+    ) -> Responder<GetImageResourcesResp> {
         let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = image_resource_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取图片信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetImageResourceReq>,
+    ) -> Responder<GetImageResourceResp> {
         let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.info(*id).await;
-        match resp {
-            Ok(v) => HttpResponse::Ok()
-                .insert_header((HEADERS_X_IMG, "true"))
-                .content_type(v.extension)
-                .body(v.data.to_vec()),
-            Err(_err) => HttpResponse::NotFound().finish(),
-        }
+        let result = image_resource_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 通过hash值获取图片
-    pub async fn info_by_hash(
-        provider: Data<AInjectProvider>,
-        hash: Path<String>,
-    ) -> impl Responder {
+    /// TODO 待验证
+    pub async fn show_image(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<ShowImageReq>,
+    ) -> Result<axum::response::Response<Body>, ResponseErr> {
         let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.info_by_hash(hash.to_string()).await;
-        match resp {
-            Ok(v) => HttpResponse::Ok()
-                .insert_header((HEADERS_X_IMG, "true"))
-                .content_type(v.extension)
-                .body(v.data.to_vec()),
-            Err(_err) => HttpResponse::NotFound().finish(),
-        }
-    }
+        let result = image_resource_service.info_by_hash(req).await?;
 
-    /// 上传图片
-    pub async fn upload_file(
-        provider: Data<AInjectProvider>,
-        MultipartForm(form): MultipartForm<UploadFileForm>,
-    ) -> impl Responder {
-        let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.upload_file(form).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
-    }
+        let img = result.data.to_vec();
 
-    /// 批量上传图片
-    pub async fn upload_files(
-        provider: Data<AInjectProvider>,
-        MultipartForm(form): MultipartForm<UploadFilesForm>,
-    ) -> impl Responder {
-        let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.upload_files(form).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let resp = axum::response::Response::builder()
+            .header(HEADERS_X_IMG, "true")
+            .body(Body::from(img))
+            .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
+        Ok(resp)
     }
 
     /// 更新图片
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateImageResourceReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateImageResourceReq>,
+    ) -> Responder<UpdateImageResourceResp> {
         let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = image_resource_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除图片
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteImageResourceReq>,
+    ) -> Responder<DeleteImageResourceResp> {
         let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = image_resource_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 批量删除图片
     pub async fn batch_delete(
-        provider: Data<AInjectProvider>,
-        data: Json<BatchDeleteImageResourceReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<BatchDeleteImageResourceReq>,
+    ) -> Responder<BatchDeleteImageResourceResp> {
         let image_resource_service: ImageResourceService = provider.provide();
-        let resp = image_resource_service.batch_delete(data.ids.clone()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = image_resource_service.batch_delete(req.ids.clone()).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
+    }
+}
+
+impl ImageResourceController {
+    /// 上传图片
+    pub async fn upload_file(
+        Extension(provider): Extension<AInjectProvider>,
+        TypedMultipart(req): TypedMultipart<UploadFileReq>,
+    ) -> Responder<UploadFileResp> {
+        let image_resource_service: ImageResourceService = provider.provide();
+        let _result = image_resource_service.upload_file(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
+    }
+
+    /// 批量上传图片
+    pub async fn upload_files(
+        Extension(provider): Extension<AInjectProvider>,
+        TypedMultipart(req): TypedMultipart<UploadFilesReq>,
+    ) -> Responder<UploadFilesResp> {
+        let image_resource_service: ImageResourceService = provider.provide();
+        let _result = image_resource_service.upload_files(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }
 

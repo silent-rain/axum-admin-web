@@ -1,11 +1,12 @@
 //! 图片资源管理
 
-use std::io::Read;
+use std::io::{Read, Write};
 
 use crate::{
     dao::image_resource::ImageResourceDao,
     dto::image_resource::{
-        GetImageResourceListReq, UpdateImageResourceReq, UploadFileForm, UploadFilesForm,
+        DeleteImageResourceReq, GetImageResourceReq, GetImageResourcesReq, ShowImageReq,
+        UpdateImageResourceReq, UploadFileReq, UploadFilesReq,
     },
 };
 
@@ -27,7 +28,7 @@ impl ImageResourceService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetImageResourceListReq,
+        req: GetImageResourcesReq,
     ) -> Result<(Vec<sys_image_resource::Model>, u64), ErrorMsg> {
         let (results, total) = self.image_resource_dao.list(req).await.map_err(|err| {
             error!("查询图片列表失败, err: {:#?}", err);
@@ -43,10 +44,13 @@ impl ImageResourceService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<sys_image_resource::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        req: GetImageResourceReq,
+    ) -> Result<sys_image_resource::Model, ErrorMsg> {
         let result = self
             .image_resource_dao
-            .info(id)
+            .info(req.id)
             .await
             .map_err(|err| {
                 error!("查询图片信息失败, err: {:#?}", err);
@@ -61,10 +65,13 @@ impl ImageResourceService {
     }
 
     /// 通过hash值获取详情数据
-    pub async fn info_by_hash(&self, hash: String) -> Result<sys_image_resource::Model, ErrorMsg> {
+    pub async fn info_by_hash(
+        &self,
+        req: ShowImageReq,
+    ) -> Result<sys_image_resource::Model, ErrorMsg> {
         let result = self
             .image_resource_dao
-            .info_by_hash(hash)
+            .info_by_hash(req.hash)
             .await
             .map_err(|err| {
                 error!("获取图片失败, err: {:#?}", err);
@@ -81,27 +88,39 @@ impl ImageResourceService {
     /// 上传图片
     pub async fn upload_file(
         &self,
-        form: UploadFileForm,
+        mut req: UploadFileReq,
     ) -> Result<sys_image_resource::Model, ErrorMsg> {
-        let name = form.file.file_name.map_or("".to_owned(), |v| v);
-        let extension = form
+        let name = req.file.metadata.file_name.ok_or_else(|| {
+            error!("请求参数异常");
+            Error::RequestError("请求参数异常".to_string()).into_msg()
+        })?;
+
+        let extension = req
             .file
+            .metadata
             .content_type
             .map_or("".to_owned(), |v| v.to_string());
-        let base_img = form.file.file.bytes().map(|v| v.unwrap()).collect();
-        let img_size = form.file.size as i32;
+
+        let buffer = vec![];
+        req.file
+            .contents
+            .write_all(&buffer)
+            .map_err(|err| Error::UploadFileError(err.to_string()))?;
+
+        let img_size = req.file.contents.bytes().count() as u16;
+
         let hash = Uuid::new_v4().to_string().replace('-', "");
 
         let model = sys_image_resource::ActiveModel {
             name: Set(name),
             hash: Set(hash),
-            data: Set(base_img),
+            data: Set(buffer),
             extension: Set(extension),
             size: Set(img_size),
             ..Default::default()
         };
 
-        let result = self.image_resource_dao.add(model).await.map_err(|err| {
+        let result = self.image_resource_dao.create(model).await.map_err(|err| {
             error!("传图片信息失败, err: {:#?}", err);
             Error::DbAddError.into_msg().with_msg("传图片信息失败")
         })?;
@@ -110,19 +129,32 @@ impl ImageResourceService {
     }
 
     /// 批量上传图片
-    pub async fn upload_files(&self, form: UploadFilesForm) -> Result<i32, ErrorMsg> {
+    pub async fn upload_files(&self, req: UploadFilesReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
-        for file in form.files {
-            let name = file.file_name.map_or("".to_owned(), |v| v);
-            let extension = file.content_type.map_or("".to_owned(), |v| v.to_string());
-            let base_img = file.file.bytes().map(|v| v.unwrap()).collect();
-            let img_size = file.size as i32;
+        for mut file in req.files {
+            let name = file.metadata.file_name.ok_or_else(|| {
+                error!("请求参数异常");
+                Error::RequestError("请求参数异常".to_string()).into_msg()
+            })?;
+
+            let extension = file
+                .metadata
+                .content_type
+                .map_or("".to_owned(), |v| v.to_string());
+
+            let buffer = vec![];
+            file.contents
+                .write_all(&buffer)
+                .map_err(|err| Error::UploadFileError(err.to_string()))?;
+
+            let img_size = file.contents.bytes().count() as u16;
+
             let hash = Uuid::new_v4().to_string().replace('-', "");
 
             let model = sys_image_resource::ActiveModel {
                 name: Set(name),
                 hash: Set(hash),
-                data: Set(base_img),
+                data: Set(buffer),
                 extension: Set(extension),
                 size: Set(img_size),
                 ..Default::default()
@@ -132,7 +164,7 @@ impl ImageResourceService {
 
         let result = self
             .image_resource_dao
-            .batch_add(models)
+            .batch_create(models)
             .await
             .map_err(|err| {
                 error!("批量上传图片失败, err: {:#?}", err);
@@ -143,9 +175,9 @@ impl ImageResourceService {
     }
 
     /// 更新图片
-    pub async fn update(&self, id: i32, req: UpdateImageResourceReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, req: UpdateImageResourceReq) -> Result<u64, ErrorMsg> {
         let model = sys_image_resource::ActiveModel {
-            id: Set(id),
+            id: Set(req.id),
             name: Set(req.name),
             desc: Set(req.desc),
             ..Default::default()
@@ -160,11 +192,15 @@ impl ImageResourceService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, id: i32) -> Result<u64, ErrorMsg> {
-        let result = self.image_resource_dao.delete(id).await.map_err(|err| {
-            error!("删除图片信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除图片信息失败")
-        })?;
+    pub async fn delete(&self, req: DeleteImageResourceReq) -> Result<u64, ErrorMsg> {
+        let result = self
+            .image_resource_dao
+            .delete(req.id)
+            .await
+            .map_err(|err| {
+                error!("删除图片信息失败, err: {:#?}", err);
+                Error::DbDeleteError.into_msg().with_msg("删除图片信息失败")
+            })?;
 
         Ok(result)
     }

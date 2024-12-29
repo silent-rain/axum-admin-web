@@ -2,13 +2,12 @@
 
 use entity::system::sys_dict_data;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 查询字典数据列表
+/// 查询字典数据列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetDictDataListReq {
+pub struct GetDictDatasReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -25,9 +24,28 @@ pub struct GetDictDataListReq {
     pub dimension_code: Option<String>,
 }
 
-/// 添加字典数据
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetDictDatasResp {
+    pub data_list: Vec<sys_dict_data::Model>,
+    pub total: u64,
+}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetDictDataReq {
+    /// 字典数据ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetDictDataResp {
+    #[serde(flatten)]
+    data: sys_dict_data::Model,
+}
+
+/// 添加字典数据 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct AddDictDataReq {
+pub struct CreateDictDataReq {
     /// 字典维度ID
     pub dimension_id: i32,
     /// 字典维度编码
@@ -43,9 +61,14 @@ pub struct AddDictDataReq {
     pub desc: Option<String>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateDictDataResp {}
+
 /// 更新数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDictDataReq {
+    /// 字典数据ID
+    pub id: i32,
     /// 字典项标签
     #[validate(length(min = 2, message = "至少输入两个字符"))]
     pub lable: String,
@@ -59,9 +82,27 @@ pub struct UpdateDictDataReq {
     pub status: sys_dict_data::enums::Status,
 }
 
-/// 更新字典数据状态
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateDictDataResp {}
+
+/// 更新字典数据状态 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDictDataStatusReq {
+    /// 字典数据ID
+    pub id: i32,
     /// 状态(0:停用,1:正常)
     pub status: sys_dict_data::enums::Status,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateDictDataStatusResp {}
+
+/// 删除数据 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct DeleteDictDataReq {
+    /// 字典数据ID
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteDictDataResp {}

@@ -2,34 +2,34 @@
 
 use crate::controller::image_resource::ImageResourceController;
 
-use actix_web::{web, Scope};
+use axum::{
+    routing::{delete, get, post},
+    Router,
+};
 
 /// 路由器
 pub struct ImageResourceRouter;
 
 impl ImageResourceRouter {
     /// 注册`图片资源管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/image-resources")
-            .route("", web::get().to(ImageResourceController::list))
-            .route("/{id}", web::get().to(ImageResourceController::info))
-            .route(
-                "/img/{hash}",
-                web::get().to(ImageResourceController::info_by_hash),
-            )
-            .route(
-                "/upload",
-                web::post().to(ImageResourceController::upload_file),
-            )
-            .route(
-                "/uploads",
-                web::post().to(ImageResourceController::upload_files),
-            )
-            .route("/{id}", web::put().to(ImageResourceController::update))
-            .route(
-                "/batch",
-                web::delete().to(ImageResourceController::batch_delete),
-            )
-            .route("/{id}", web::delete().to(ImageResourceController::delete))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/image-resources",
+            Router::new()
+                .route("/", get(ImageResourceController::list))
+                .route(
+                    "/:id",
+                    get(ImageResourceController::info)
+                        .put(ImageResourceController::update)
+                        .delete(ImageResourceController::delete),
+                )
+                .route(
+                    "/batch_delete",
+                    delete(ImageResourceController::batch_delete),
+                )
+                .route("/upload", post(ImageResourceController::upload_file))
+                .route("/uploads", post(ImageResourceController::upload_files))
+                .route("/show_image", get(ImageResourceController::show_image)),
+        )
     }
 }

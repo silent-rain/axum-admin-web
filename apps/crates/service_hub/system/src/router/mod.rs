@@ -5,19 +5,22 @@ pub mod dict_dimension;
 pub mod image_captcha;
 pub mod image_resource;
 
-use actix_web::{web, Scope};
+use axum::Router;
 
 /// 路由器
 pub struct SystemRouter;
 
 impl SystemRouter {
     /// 注册`系统管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/system")
-            .service(image_captcha::ImageCaptchaRouter::admin_register())
-            .service(image_resource::ImageResourceRouter::admin_register())
-            .service(config::ConfigRouter::admin_register())
-            .service(dict_dimension::DictDimensionRouter::admin_register())
-            .service(dict_data::DictDataRouter::admin_register())
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/system",
+            Router::new()
+                .merge(image_captcha::ImageCaptchaRouter::register()) // 图片验证码管理
+                .merge(image_resource::ImageResourceRouter::register()) // 图片资源管理
+                .merge(config::ConfigRouter::register()) // 配置管理
+                .merge(dict_dimension::DictDimensionRouter::register()) // 字典维度管理
+                .merge(dict_data::DictDataRouter::register()), // 字典数据管理
+        )
     }
 }

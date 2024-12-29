@@ -1,7 +1,7 @@
 //! 字典维度管理
 use std::sync::Arc;
 
-use crate::dto::dict_dimension::GetDictDimensionListReq;
+use crate::dto::dict_dimension::GetDictDimensionsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::system::{sys_dict_dimension, SysDictDimension};
@@ -32,7 +32,7 @@ impl DictDimensionDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetDictDimensionListReq,
+        req: GetDictDimensionsReq,
     ) -> Result<(Vec<sys_dict_dimension::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -93,7 +93,7 @@ impl DictDimensionDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: sys_dict_dimension::ActiveModel,
     ) -> Result<sys_dict_dimension::Model, DbErr> {
@@ -116,7 +116,7 @@ impl DictDimensionDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = sys_dict_dimension::ActiveModel {
             id: Set(id),
             status: Set(status),

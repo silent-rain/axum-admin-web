@@ -2,20 +2,17 @@
 
 use crate::{
     dto::dict_dimension::{
-        AddDictDimensionReq, GetDictDimensionListReq, UpdateDictDimensionReq,
-        UpdateDictDimensionStatusReq,
+        CreateDictDimensionReq, CreateDictDimensionResp, DeleteDictDimensionReq,
+        DeleteDictDimensionResp, GetDictDimensionReq, GetDictDimensionResp, GetDictDimensionsReq,
+        GetDictDimensionsResp, UpdateDictDimensionReq, UpdateDictDimensionResp,
+        UpdateDictDimensionStatusReq, UpdateDictDimensionStatusResp,
     },
     service::dict_dimension::DictDimensionService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct DictDimensionController;
@@ -23,77 +20,73 @@ pub struct DictDimensionController;
 impl DictDimensionController {
     /// 获取字典维度列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetDictDimensionListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetDictDimensionsReq>,
+    ) -> Responder<GetDictDimensionsResp> {
         let dict_dimension_service: DictDimensionService = provider.provide();
-        let resp = dict_dimension_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = dict_dimension_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取字典维度信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetDictDimensionReq>,
+    ) -> Responder<GetDictDimensionResp> {
         let dict_dimension_service: DictDimensionService = provider.provide();
-        let resp = dict_dimension_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = dict_dimension_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加字典维度
-    pub async fn add(
-        provider: Data<AInjectProvider>,
-        data: Json<AddDictDimensionReq>,
-    ) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateDictDimensionReq>,
+    ) -> Responder<CreateDictDimensionResp> {
         let dict_dimension_service: DictDimensionService = provider.provide();
-        let resp = dict_dimension_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = dict_dimension_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新字典维度
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateDictDimensionReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateDictDimensionReq>,
+    ) -> Responder<UpdateDictDimensionResp> {
         let dict_dimension_service: DictDimensionService = provider.provide();
-        let resp = dict_dimension_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = dict_dimension_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新字典维度状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateDictDimensionStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateDictDimensionStatusReq>,
+    ) -> Responder<UpdateDictDimensionStatusResp> {
         let dict_dimension_service: DictDimensionService = provider.provide();
-        let resp = dict_dimension_service
-            .status(*id, data.status.clone() as i8)
-            .await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        dict_dimension_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除字典维度
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteDictDimensionReq>,
+    ) -> Responder<DeleteDictDimensionResp> {
         let dict_dimension_service: DictDimensionService = provider.provide();
-        let resp = dict_dimension_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = dict_dimension_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

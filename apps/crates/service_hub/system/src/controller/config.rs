@@ -1,18 +1,17 @@
 //! 配置管理
 
 use crate::{
-    dto::config::{AddConfigReq, GetConfigListReq, UpdateConfigReq, UpdateConfigStatusReq},
+    dto::config::{
+        CreateConfigReq, CreateConfigResp, DeleteConfigReq, DeleteConfigResp, GetConfigReq,
+        GetConfigResp, GetConfigTreeReq, GetConfigTreeResp, GetConfigsReq, GetConfigsResp,
+        UpdateConfigReq, UpdateConfigResp, UpdateConfigStatusReq, UpdateConfigStatusResp,
+    },
     service::config::ConfigService,
 };
 
-use actix_validator::{Json, Query};
+use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Path},
-    Responder,
-};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct ConfigController;
@@ -20,82 +19,85 @@ pub struct ConfigController;
 impl ConfigController {
     /// 获配置列表
     pub async fn list(
-        provider: Data<AInjectProvider>,
-        req: Query<GetConfigListReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetConfigsReq>,
+    ) -> Responder<GetConfigsResp> {
         let config_service: ConfigService = provider.provide();
-        let resp = config_service.list(req.into_inner()).await;
-        match resp {
-            Ok((results, total)) => Response::ok().data_list(results, total),
-            Err(err) => Response::err(err),
-        }
+        let (results, total) = config_service.list(req).await?;
+
+        let resp = Response::data_list(results, total).to_json()?;
+        Ok(resp)
     }
 
     /// 获取配置树列表
-    pub async fn tree(provider: Data<AInjectProvider>) -> impl Responder {
+    pub async fn tree(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(_req): Query<GetConfigTreeReq>,
+    ) -> Responder<GetConfigTreeResp> {
         let config_service: ConfigService = provider.provide();
-        let resp = config_service.tree().await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = config_service.tree().await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
-    /// 获配置信息
-    pub async fn info(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    /// 获取配置信息
+    pub async fn info(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetConfigReq>,
+    ) -> Responder<GetConfigResp> {
         let config_service: ConfigService = provider.provide();
-        let resp = config_service.info(*id).await;
-        match resp {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = config_service.info(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 
     /// 添加配置
-    pub async fn add(provider: Data<AInjectProvider>, data: Json<AddConfigReq>) -> impl Responder {
+    pub async fn create(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateConfigReq>,
+    ) -> Responder<CreateConfigResp> {
         let config_service: ConfigService = provider.provide();
-        let resp = config_service.add(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = config_service.create(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新配置
     pub async fn update(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateConfigReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateConfigReq>,
+    ) -> Responder<UpdateConfigResp> {
         let config_service: ConfigService = provider.provide();
-        let resp = config_service.update(*id, data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = config_service.update(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 更新配置状态
-    pub async fn status(
-        provider: Data<AInjectProvider>,
-        id: Path<i32>,
-        data: Json<UpdateConfigStatusReq>,
-    ) -> impl Responder {
+    pub async fn update_status(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateConfigStatusReq>,
+    ) -> Responder<UpdateConfigStatusResp> {
         let config_service: ConfigService = provider.provide();
-        let resp = config_service.status(*id, data.status.clone() as i8).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        config_service.update_status(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 
     /// 删除配置
-    pub async fn delete(provider: Data<AInjectProvider>, id: Path<i32>) -> impl Responder {
+    pub async fn delete(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeleteConfigReq>,
+    ) -> Responder<DeleteConfigResp> {
         let config_service: ConfigService = provider.provide();
-        let resp = config_service.delete(*id).await;
-        match resp {
-            Ok(_v) => Response::ok(),
-            Err(err) => Response::err(err),
-        }
+        let _result = config_service.delete(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
     }
 }

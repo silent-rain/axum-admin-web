@@ -1,7 +1,7 @@
 //! 图片验证码管理
 use std::sync::Arc;
 
-use crate::dto::image_captcha::GetImageCaptchaListReq;
+use crate::dto::image_captcha::GetImageCaptchasReq;
 
 use database::{Pagination, PoolTrait};
 use entity::system::{sys_image_captcha, SysImageCaptcha};
@@ -22,7 +22,7 @@ impl ImageCaptchaDao {
     /// 获取数据列表
     pub async fn list(
         &self,
-        req: GetImageCaptchaListReq,
+        req: GetImageCaptchasReq,
     ) -> Result<(Vec<sys_image_captcha::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
@@ -68,7 +68,7 @@ impl ImageCaptchaDao {
     }
 
     /// 添加详情信息
-    pub async fn add(
+    pub async fn create(
         &self,
         active_model: sys_image_captcha::ActiveModel,
     ) -> Result<sys_image_captcha::Model, DbErr> {
@@ -90,7 +90,7 @@ impl ImageCaptchaDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
         let active_model = sys_image_captcha::ActiveModel {
             id: Set(id),
             status: Set(status),

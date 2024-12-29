@@ -2,22 +2,32 @@
 
 use crate::controller::image_captcha::ImageCaptchaController;
 
-use actix_web::{web, Scope};
+use axum::{
+    routing::{delete, get},
+    Router,
+};
 
 /// 路由器
 pub struct ImageCaptchaRouter;
 
 impl ImageCaptchaRouter {
     /// 注册`图片验证码管理`路由
-    pub fn admin_register() -> Scope {
-        web::scope("/image-captchas")
-            .route("", web::get().to(ImageCaptchaController::list))
-            .route("/{id}", web::get().to(ImageCaptchaController::info))
-            // .route("", web::get().to(ImageCaptchaController::add))
-            .route(
-                "/batch",
-                web::delete().to(ImageCaptchaController::batch_delete),
-            )
-            .route("/{id}", web::delete().to(ImageCaptchaController::delete))
+    pub fn register() -> Router {
+        Router::new().nest(
+            "/image-captchas",
+            Router::new()
+                .route(
+                    "/",
+                    get(ImageCaptchaController::list).post(ImageCaptchaController::create),
+                )
+                .route(
+                    "/:id",
+                    get(ImageCaptchaController::info).delete(ImageCaptchaController::delete),
+                )
+                .route(
+                    "/batch_delete",
+                    delete(ImageCaptchaController::batch_delete),
+                ),
+        )
     }
 }
