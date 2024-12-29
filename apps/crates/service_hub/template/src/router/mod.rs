@@ -10,8 +10,11 @@ pub struct TemplateRouter;
 impl TemplateRouter {
     /// 注册`模板管理`路由
     pub fn register() -> Router {
-        Router::new()
-            .nest("/template", template::AppTemplateRouter::register())
-            .nest("/simple", simple::SimpleRouter::register())
+        Router::new().nest(
+            "/template",
+            Router::new()
+                .merge(template::AppTemplateRouter::register()) // HTTP 模板
+                .merge(simple::SimpleRouter::register()), // Grpc 模板
+        )
     }
 }
