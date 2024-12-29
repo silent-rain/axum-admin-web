@@ -76,7 +76,7 @@ pub fn register() -> Router {
         //     StatusCode::BAD_REQUEST
         // })) // 自定义错误类型需要添加该中间件
         .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
-        .layer(RequestBodyLimitLayer::new(4096)) // 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
+        .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds

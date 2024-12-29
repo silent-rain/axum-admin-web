@@ -10,9 +10,15 @@ use crate::{
     service::user_base::UserBaseService,
 };
 
-use axum::{extract::Query, Extension, Json};
+use axum::{
+    body::Body,
+    extract::{Query, Request},
+    Extension, Json, RequestExt,
+};
+use axum_context::Context;
 use inject::AInjectProvider;
 use response::{Responder, Response};
+use tracing::warn;
 
 /// 控制器
 pub struct UserBaseController;
@@ -107,13 +113,14 @@ impl UserBaseController {
     /// 获取用户信息个人信息
     /// TODO 待修复 Context
     pub async fn profile(
-        // ctx: Context,
+        ctx: Context,
+        request: Request<Body>,
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<ProfileReq>,
     ) -> Responder<ProfileResp> {
-        // let user_id = ctx.get_user_id();
-        // let username = ctx.get_user_name();
-        // warn!("profile context user_id: {user_id} username: {username}");
+        let user_id = ctx.get_user_id();
+        let username = ctx.get_user_name();
+        warn!("profile context user_id: {user_id} username: {username}");
 
         let user_base_service: UserBaseService = provider.provide();
         let result = user_base_service.profile(req.user_id).await?;

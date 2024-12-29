@@ -147,6 +147,12 @@ pub enum Error {
     #[error("写入文件失败, {0}")]
     FsWriterFileError(String) = 10306,
 
+    #[error("Embed Asset Error, {0}")]
+    EmbedAssetError(String) = 10307,
+
+    #[error("Upload File Error, {0}")]
+    UploadFileError(String) = 10308,
+
     // 内部框架错误
     #[error("日志初始化失败, {0}")]
     LoggerInitError(String) = 10351,

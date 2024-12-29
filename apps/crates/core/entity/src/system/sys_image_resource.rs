@@ -23,7 +23,7 @@ pub struct Model {
     /// 图片文件扩展名, 如svg, png
     pub extension: String,
     /// 图片大小
-    pub size: i32,
+    pub size: u16,
     /// 描述信息
     pub desc: Option<String>,
     /// 创建时间
