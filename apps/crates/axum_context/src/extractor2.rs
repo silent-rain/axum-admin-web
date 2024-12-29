@@ -6,22 +6,21 @@ use crate::Context;
 
 use axum::{
     async_trait,
-    extract::FromRequestParts,
-    http::{request::Parts, StatusCode},
+    extract::{FromRequest, Request},
+    http::StatusCode,
 };
 use tokio::sync::Mutex;
 
 #[async_trait]
-impl<S> FromRequestParts<S> for Context
+impl<S> FromRequest<S> for Context
 where
     S: Send + Sync,
 {
     type Rejection = (StatusCode, &'static str);
 
-    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        // ... or use `extract` / `extract_with_state` from `RequestExt` / `RequestPartsExt`
-        let context = parts
-            .extensions
+    async fn from_request(req: Request, _state: &S) -> Result<Self, Self::Rejection> {
+        let context = req
+            .extensions()
             .get::<Arc<Mutex<Context>>>()
             .ok_or((StatusCode::INTERNAL_SERVER_ERROR, "Failed to get context"))?;
 
