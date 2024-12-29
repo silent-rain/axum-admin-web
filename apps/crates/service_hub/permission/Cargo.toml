@@ -13,7 +13,6 @@ inject = { path = "../../core/inject" }
 axum_context = { path = "../../axum_context" }
 
 axum = { workspace = true }
-tonic = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }
