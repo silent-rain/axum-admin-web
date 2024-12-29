@@ -17,7 +17,7 @@ user = { path = "../user" }
 system = { path = "../system" }
 log = { path = "../log" }
 
-
+axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }

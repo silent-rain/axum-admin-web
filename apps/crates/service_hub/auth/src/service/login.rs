@@ -4,13 +4,12 @@ use std::sync::Arc;
 
 use crate::{
     common::captcha::check_captcha,
-    dto::login::{BrowserInfo, LoginReq, LoginRsp},
+    dto::login::{BrowserInfo, LoginReq, LoginResp},
 };
 
 use database::PoolTrait;
-use log::UserLoginDao;
 use system::ImageCaptchaDao;
-use user::{EmailDao, PhoneDao, UserBaseDao};
+use user::{EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
 
 use code::{Error, ErrorMsg};
 use entity::{user::user_base, user::user_login_log};
@@ -26,6 +25,7 @@ use utils::browser::parse_user_agent_async;
 pub struct LoginService {
     db: Arc<dyn PoolTrait>,
     user_dao: UserBaseDao,
+    user_login_log_dao: UserLoginLogDao,
     email_dao: EmailDao,
     phone_dao: PhoneDao,
     captcha_dao: ImageCaptchaDao,
@@ -37,7 +37,7 @@ impl LoginService {
         &self,
         browser_info: BrowserInfo,
         data: LoginReq,
-    ) -> Result<LoginRsp, ErrorMsg> {
+    ) -> Result<LoginResp, ErrorMsg> {
         // 检测验证码
         check_captcha(
             &self.captcha_dao,
@@ -95,7 +95,7 @@ impl LoginService {
         );
 
         // 返回Token
-        Ok(LoginRsp {
+        Ok(LoginResp {
             user_id: user.id,
             token,
         })
@@ -194,7 +194,7 @@ impl LoginService {
     ) {
         let db = self.db.clone();
 
-        actix_web::rt::spawn(async move {
+        tokio::task::spawn(async move {
             let (device, system, browser) =
                 match parse_user_agent_async(browser_info.user_agent.clone()).await {
                     Ok(v) => v,
@@ -218,8 +218,8 @@ impl LoginService {
                 ..Default::default()
             };
 
-            let user_login_dao = UserLoginDao::new(db);
-            let result = user_login_dao.add(data).await.map_err(|err| {
+            let user_login_dao = UserLoginLogDao::new(db);
+            let result = user_login_dao.create(data).await.map_err(|err| {
                 error!("添加登陆日志失败, err: {:#?}", err);
                 code::Error::DbAddError
                     .into_msg()

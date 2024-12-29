@@ -56,7 +56,7 @@ pub async fn check_captcha(
 
     // 验证码设置为无效
     captcha_dao
-        .status(result.id, sys_image_captcha::enums::Status::Invalid as i8)
+        .update_status(result.id, sys_image_captcha::enums::Status::Invalid as i8)
         .await
         .map_err(|err| {
             error!("设置验证码状态失败, err: {:#?}", err);

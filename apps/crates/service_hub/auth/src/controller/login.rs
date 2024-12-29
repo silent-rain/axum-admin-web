@@ -1,15 +1,13 @@
 //! 登陆
 
 use crate::{
-    dto::login::{BrowserInfo, LoginReq},
+    dto::login::{BrowserInfo, LoginReq, LoginResp},
     LoginService,
 };
 
-use actix_validator::Json;
+use axum::{body::Body, extract::Request, Extension, Json};
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{web::Data, HttpRequest, Responder};
+use response::{Responder, Response};
 
 /// 控制器
 pub struct LoginController;
@@ -17,20 +15,16 @@ pub struct LoginController;
 impl LoginController {
     /// 登陆
     pub async fn login(
-        req: HttpRequest,
-        provider: Data<AInjectProvider>,
-        data: Json<LoginReq>,
-    ) -> impl Responder {
-        // Get the remote address from the request
-        // let remote_addr = req
-        //     .connection_info()
-        //     .remote_addr()
-        //     .map_or("".to_owned(), |addr| addr.to_string());
-        let remote_addr = req
+        Extension(provider): Extension<AInjectProvider>,
+        request: Request<Body>,
+        ConnectInfo(addr): ConnectInfo<SocketAddr>,
+        Json(req): Json<LoginReq>,
+    ) -> Responder<LoginResp> {
+        let remote_addr = addr
             .peer_addr()
             .map_or("".to_owned(), |addr| addr.ip().to_string());
         // Get the user agent from the request headers
-        let user_agent = req
+        let user_agent = request
             .headers()
             .get("User-Agent")
             .map_or("".to_owned(), |ua| ua.to_str().unwrap_or("").to_owned());
@@ -40,10 +34,9 @@ impl LoginController {
         };
 
         let login_service: LoginService = provider.provide();
-        let result = login_service.login(browser_info, data.into_inner()).await;
-        match result {
-            Ok(v) => Response::ok().data(v),
-            Err(err) => Response::err(err),
-        }
+        let result = login_service.login(browser_info, req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
     }
 }

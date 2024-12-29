@@ -2,9 +2,8 @@
 
 use entity::user::user_base;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 /// 注册用户
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
@@ -47,6 +46,9 @@ pub struct RegisterReq {
     #[serde(default)]
     pub captcha: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RegisterResp {}
 
 #[cfg(test)]
 mod tests {

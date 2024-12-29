@@ -1,7 +1,6 @@
 //! 登出
 
-use log::UserLoginDao;
-use user::cached::UserCached;
+use user::{cached::UserCached, UserLoginLogDao};
 
 use code::ErrorMsg;
 use entity::user::user_login_log;
@@ -12,7 +11,7 @@ use tracing::error;
 /// 服务层
 #[injectable]
 pub struct Logoutervice {
-    user_login_dao: UserLoginDao,
+    user_login_log_dao: UserLoginLogDao,
 }
 
 impl Logoutervice {
@@ -22,8 +21,8 @@ impl Logoutervice {
         UserCached::remove_user_api_auth(user_id).await;
 
         // 更新登陆日志状态
-        self.user_login_dao
-            .status(user_login_id, user_login_log::enums::Status::Logout as i8)
+        self.user_login_log_dao
+            .update_status(user_login_id, user_login_log::enums::Status::Logout as i8)
             .await
             .map_err(|err| {
                 error!("登出失败, err: {:#?}", err);

@@ -1,15 +1,14 @@
 //! 验证码
 
+use axum::{routing::get, Router};
 use system::ImageCaptchaController;
-
-use actix_web::{web, Scope};
 
 /// 路由器
 pub struct GenCaptchaRouter;
 
 impl GenCaptchaRouter {
     /// 注册`生成验证码`路由
-    pub fn register() -> Scope {
-        web::scope("/captcha").route("", web::post().to(ImageCaptchaController::add))
+    pub fn register() -> Router {
+        Router::new().route("/captcha", get(ImageCaptchaController::create))
     }
 }

@@ -1,14 +1,15 @@
 //! 注册
 
-use crate::{dto::register::RegisterReq, RegisterService};
+use crate::{
+    dto::register::{RegisterReq, RegisterResp},
+    RegisterService,
+};
 
-use actix_validator::Json;
+use axum::{Extension, Json};
 use code::Error;
 use entity::user::user_base;
 use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{web::Data, Responder};
+use response::{Responder, Response};
 use tracing::error;
 
 /// 控制器
@@ -17,36 +18,34 @@ pub struct RegisterController;
 impl RegisterController {
     /// 注册用户
     pub async fn register(
-        provider: Data<AInjectProvider>,
-        data: Json<RegisterReq>,
-    ) -> impl Responder {
-        let data = data.into_inner();
-        match data.register_type {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<RegisterReq>,
+    ) -> Responder<RegisterResp> {
+        match req.register_type {
             user_base::enums::UserType::Phone => {
-                if data.phone.is_none() {
+                if req.phone.is_none() {
                     error!("请输入手机号码");
-                    return Response::err(
-                        Error::InvalidParameter
-                            .into_msg()
-                            .with_msg("请输入手机号码"),
-                    );
+                    return Err(Error::InvalidParameter
+                        .into_msg()
+                        .with_msg("请输入手机号码")
+                        .into());
                 }
             }
             user_base::enums::UserType::Email => {
-                if data.email.is_none() {
+                if req.email.is_none() {
                     error!("请输入邮箱");
-                    return Response::err(
-                        Error::InvalidParameter.into_msg().with_msg("请输入邮箱"),
-                    );
+                    return Err(Error::InvalidParameter
+                        .into_msg()
+                        .with_msg("请输入邮箱")
+                        .into());
                 }
             }
         }
 
         let register_service: RegisterService = provider.provide();
-        let result = register_service.register(data).await;
-        match result {
-            Ok(_v) => Response::ok().with_msg("注册成功"),
-            Err(err) => Response::err(err),
-        }
+        let _result = register_service.register(req).await?;
+
+        let resp = Response::<()>::ok().with_msg("注册成功").to_json()?;
+        Ok(resp)
     }
 }

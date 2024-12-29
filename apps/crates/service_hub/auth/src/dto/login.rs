@@ -2,9 +2,8 @@
 
 use entity::user::user_base;
 
-use actix_validator::Validate;
-
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 /// 登陆 请求体
 #[derive(Default, Clone, Deserialize, Validate)]
@@ -26,7 +25,7 @@ pub struct LoginReq {
 
 /// 登陆 响应体
 #[derive(Default, Deserialize, Serialize)]
-pub struct LoginRsp {
+pub struct LoginResp {
     /// 用户ID
     pub user_id: i32,
     /// Token 令牌
