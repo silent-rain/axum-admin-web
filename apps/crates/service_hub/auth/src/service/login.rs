@@ -25,7 +25,6 @@ use utils::browser::parse_user_agent_async;
 pub struct LoginService {
     db: Arc<dyn PoolTrait>,
     user_dao: UserBaseDao,
-    user_login_log_dao: UserLoginLogDao,
     email_dao: EmailDao,
     phone_dao: PhoneDao,
     captcha_dao: ImageCaptchaDao,

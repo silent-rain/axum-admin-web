@@ -1,11 +1,13 @@
 //! 登陆
 
+use std::net::SocketAddr;
+
 use crate::{
     dto::login::{BrowserInfo, LoginReq, LoginResp},
     LoginService,
 };
 
-use axum::{body::Body, extract::Request, Extension, Json};
+use axum::{extract::ConnectInfo, http::HeaderMap, Extension, Json};
 use inject::AInjectProvider;
 use response::{Responder, Response};
 
@@ -16,16 +18,13 @@ impl LoginController {
     /// 登陆
     pub async fn login(
         Extension(provider): Extension<AInjectProvider>,
-        request: Request<Body>,
         ConnectInfo(addr): ConnectInfo<SocketAddr>,
+        headers: HeaderMap,
         Json(req): Json<LoginReq>,
     ) -> Responder<LoginResp> {
-        let remote_addr = addr
-            .peer_addr()
-            .map_or("".to_owned(), |addr| addr.ip().to_string());
+        let remote_addr = addr.ip().to_string();
         // Get the user agent from the request headers
-        let user_agent = request
-            .headers()
+        let user_agent = headers
             .get("User-Agent")
             .map_or("".to_owned(), |ua| ua.to_str().unwrap_or("").to_owned());
         let browser_info = BrowserInfo {

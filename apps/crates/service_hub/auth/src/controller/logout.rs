@@ -17,8 +17,8 @@ pub struct LogoutController;
 impl LogoutController {
     /// 登出
     pub async fn logout(
-        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
+        ctx: Context,
         Json(_req): Json<LogoutReq>,
     ) -> Responder<LogoutResp> {
         let user_id = ctx.get_user_id();
