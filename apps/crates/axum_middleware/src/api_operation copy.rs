@@ -1,89 +1,89 @@
 //! Api 操作日志中间件
-use code::{Error, ErrorMsg};
-use entity::log::log_api_operation;
-use response::{Response, ResponseErr};
-use service_hub::{
-    inject::AInjectProvider, log, log::dto::api_operation::CreateApiOperationReq,
-    log::ApiOperationService, system::constant::HEADERS_X_IMG,
+use std::{
+    future::{ready, Ready},
+    pin::Pin,
+    rc::Rc,
 };
-use std::{boxed::Box, convert::Infallible, task::Poll};
 
-use axum::{
-    body::{Body, HttpBody},
-    http::{Request, StatusCode},
-    BoxError, Extension,
+use code::ErrorMsg;
+use context::Context;
+use entity::log::log_api_operation;
+use response::Response;
+use service_hub::{
+    inject::AInjectProvider,
+    log::{dto::api_operation::AddApiOperationReq, ApiOperationService},
+    system::constant::HEADERS_X_IMG,
 };
-use axum_context::{ApiAuthType, Context};
-use bytes::Bytes;
-use futures::future::BoxFuture;
-use tower::{Layer, Service};
-use tracing::{error, info};
+
+use actix_http::h1::Payload;
+use actix_web::{
+    body::{to_bytes, BoxBody},
+    dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
+    http::StatusCode,
+    web::{BytesMut, Data},
+    Error, HttpMessage, HttpRequest,
+};
+use futures::{Future, StreamExt};
+use tracing::error;
 
 /// Api 操作日志中间件
-#[derive(Clone)]
-pub struct ApiOperationLayer;
+#[derive(Default)]
+pub struct ApiOperation {}
 
-impl<S> Layer<S> for ApiOperationLayer {
-    type Service = ApiOperationMiddlewareService<S>;
-
-    fn layer(&self, inner: S) -> Self::Service {
-        ApiOperationMiddlewareService { inner }
-    }
-}
-
-#[derive(Clone)]
-pub struct ApiOperationMiddlewareService<S> {
-    inner: S,
-}
-
-impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for ApiOperationMiddlewareService<S>
+impl<S> Transform<S, ServiceRequest> for ApiOperation
 where
-    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>, Error = Infallible>
-        + Clone
-        + Send
-        + 'static,
-    S::Future: Send + 'static,
-    ReqBody: Send + 'static,
-    Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
-    ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
-    ResBody::Error: Into<BoxError>,
-    S::Error: Into<BoxError>,
+    S: Service<ServiceRequest, Response = ServiceResponse, Error = Error> + 'static,
+    S::Future: 'static,
 {
-    type Response = S::Response;
-    type Error = BoxError;
-    // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
-    type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
+    type Response = ServiceResponse;
+    type Error = Error;
+    type Transform = ApiOperationMiddlewareService<S>;
+    type InitError = ();
+    type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
-    fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx).map_err(Into::into)
+    fn new_transform(&self, service: S) -> Self::Future {
+        ready(Ok(ApiOperationMiddlewareService {
+            service: Rc::new(service),
+        }))
     }
+}
 
-    fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
+pub struct ApiOperationMiddlewareService<S> {
+    service: Rc<S>,
+}
+
+impl<S> Service<ServiceRequest> for ApiOperationMiddlewareService<S>
+where
+    S: Service<ServiceRequest, Response = ServiceResponse, Error = Error> + 'static,
+    S::Future: 'static,
+{
+    type Response = ServiceResponse;
+    type Error = Error;
+    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>>>>;
+
+    forward_ready!(service);
+
+    fn call(&self, mut req: ServiceRequest) -> Self::Future {
         let start_time = std::time::Instant::now(); // 请求开始的时间
 
-        let not_ready_inner = self.inner.clone();
-        let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
+        let service = Rc::clone(&self.service);
+
+        let provider = match req.app_data::<Data<AInjectProvider>>() {
+            Some(v) => v.as_ref().clone(),
+            None => {
+                return Box::pin(async move {
+                    error!("获取服务实例失败");
+                    Err(Response::code(code::Error::InjectAproviderObj).into())
+                })
+            }
+        };
+
+        let inner_req = req.request();
 
         // 解析请求信息
-        let mut data = Self::parse_req(&req);
-        let content_type = req
-            .headers()
-            .get("Content-Type")
-            .map_or("".to_string(), |v| {
-                v.to_str().map_or("".to_string(), |v| v.to_string())
-            })
-            .to_uppercase();
-
+        let mut data = Self::parse_req(inner_req);
+        let content_type = req.content_type().to_uppercase();
         Box::pin(async move {
-            // 全局依赖
-            let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => &v.0,
-                None => {
-                    return Err(Box::new(ResponseErr::new(Error::InjectAproviderObj)))
-                        .map_err(Into::into)
-                }
-            };
-
             let mut request_body = BytesMut::new();
             if content_type != "multipart/form-data".to_uppercase() {
                 // EXTRACT THE BODY OF REQUES
@@ -102,10 +102,8 @@ where
             let body = Self::get_request_body(&request_body)
                 .map_or("body data parsing error ".to_string(), |v| v);
             data.body = Some(body);
-            if let Err(err) =
-                Self::add_api_operation_log(inject_provider.clone(), data.clone()).await
-            {
-                return Err(Box::new(err)).map_err(Into::into);
+            if let Err(err) = Self::add_api_operation_log(provider.clone(), data.clone()).await {
+                return Err(Response::err(err).into());
             }
 
             // 响应
@@ -130,8 +128,8 @@ where
             data.body = Some(body);
             data.status_code = fut.status().as_u16() as i32;
 
-            if let Err(err) = Self::add_api_operation_log(inject_provider.clone(), data).await {
-                return Err(Box::new(err)).map_err(Into::into);
+            if let Err(err) = Self::add_api_operation_log(provider.clone(), data).await {
+                return Err(Response::err(err).into());
             }
 
             Ok(fut)
@@ -183,11 +181,15 @@ impl<S> ApiOperationMiddlewareService<S> {
     }
 
     /// 解析请求信息
-    fn parse_req<ReqBody>(req: &Request<ReqBody>) -> CreateApiOperationReq {
+    fn parse_req(req: &HttpRequest) -> AddApiOperationReq {
         // 获取上下文
-        let (user_id, username) = match req.extensions_mut().get::<Context>() {
-            Some(ctx) => (Some(ctx.get_user_id()), Some(ctx.get_user_name())),
-            None => (None, None),
+        let (user_id, username, request_id) = match req.extensions_mut().get::<Context>() {
+            Some(ctx) => (
+                Some(ctx.get_user_id()),
+                Some(ctx.get_user_name()),
+                Some(ctx.get_request_id()),
+            ),
+            None => (None, None, None),
         };
 
         let status_code = StatusCode::OK.as_u16() as i32; // 默认请求成功
@@ -203,10 +205,10 @@ impl<S> ApiOperationMiddlewareService<S> {
             .get("User-Agent")
             .map_or("".to_owned(), |ua| ua.to_str().unwrap_or("").to_owned());
 
-        CreateApiOperationReq {
+        AddApiOperationReq {
             user_id,
             username,
-            request_id: None,
+            request_id,
             status_code,
             method,
             path,
@@ -223,10 +225,10 @@ impl<S> ApiOperationMiddlewareService<S> {
     /// 添加操作日志
     async fn add_api_operation_log(
         provider: AInjectProvider,
-        data: CreateApiOperationReq,
+        data: AddApiOperationReq,
     ) -> Result<(), code::ErrorMsg> {
         let api_operation_service: ApiOperationService = provider.provide();
-        let _user = api_operation_service.create(data).await?;
+        let _user = api_operation_service.add(data).await?;
         Ok(())
     }
 }
