@@ -29,7 +29,7 @@ impl ApiOperationController {
         Ok(resp)
     }
 
-    /// 获取字典数据信息
+    /// 获取API操作日志信息
     pub async fn info(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetApiOperationReq>,
@@ -41,7 +41,7 @@ impl ApiOperationController {
         Ok(resp)
     }
 
-    /// 添加字典数据
+    /// 添加API操作日志
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateApiOperationReq>,

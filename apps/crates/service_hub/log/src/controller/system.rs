@@ -40,7 +40,7 @@ impl SystemController {
         Ok(resp)
     }
 
-    /// 添加新的系统日志
+    /// 添加系统日志
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateSystemReq>,
