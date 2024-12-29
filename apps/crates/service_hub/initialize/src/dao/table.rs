@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::table::AddAdminUserReq;
+use crate::dto::table::CreateTableReq;
 use crate::dto::table::TableDataSql;
 
 use database::PoolTrait;
@@ -47,7 +47,7 @@ impl TableDao {
     /// 初始化表数据
     pub async fn init_table_data(
         &self,
-        req: AddAdminUserReq,
+        req: CreateTableReq,
         table_sql: TableDataSql,
     ) -> Result<user_base::Model, DbErr> {
         let txn = self.db.db().begin().await?;
@@ -98,7 +98,7 @@ impl TableDao {
     async fn txn_add_admin_user(
         &self,
         txn: &DatabaseTransaction,
-        req: AddAdminUserReq,
+        req: CreateTableReq,
     ) -> Result<user_base::Model, DbErr> {
         let active_model = user_base::ActiveModel {
             username: Set(req.username),

@@ -1,14 +1,13 @@
 //! 库表初始化
 
-use inject::AInjectProvider;
-use response::Response;
-
-use actix_web::{
-    web::{Data, Json},
-    Responder,
+use crate::{
+    dto::table::{CreateTableReq, CreateTableResp},
+    service::table::TableService,
 };
 
-use crate::{dto::table::AddAdminUserReq, service::table::TableService};
+use axum::{Extension, Json};
+use inject::AInjectProvider;
+use response::{Responder, Response};
 
 /// 控制器
 pub struct TableController;
@@ -16,14 +15,13 @@ pub struct TableController;
 impl TableController {
     /// 初始化库表
     pub async fn table(
-        provider: Data<AInjectProvider>,
-        data: Json<AddAdminUserReq>,
-    ) -> impl Responder {
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateTableReq>,
+    ) -> Responder<CreateTableResp> {
         let table_service: TableService = provider.provide();
-        let resp = table_service.table(data.into_inner()).await;
-        match resp {
-            Ok(_v) => Response::ok().with_msg("初始化成功"),
-            Err(err) => Response::err(err),
-        }
+        let _result = table_service.table(req).await?;
+
+        let resp = Response::<()>::ok().with_msg("初始化成功").to_json()?;
+        Ok(resp)
     }
 }

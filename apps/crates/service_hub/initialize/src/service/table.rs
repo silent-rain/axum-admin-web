@@ -3,15 +3,16 @@
 use crate::{
     asset::{AssetDbTable, AssetDbTableData},
     dao::table::TableDao,
-    dto::table::{AddAdminUserReq, TableDataSql},
+    dto::table::{CreateTableReq, TableDataSql},
 };
 
 use code::{Error, ErrorMsg};
+use embed_asset::EmbedAssetTrait;
 use entity::user::user_base;
 
 use nject::injectable;
 use tracing::error;
-use utils::{asset::EmbedAssetTrait, crypto::sha2_256};
+use utils::crypto::sha2_256;
 
 /// 服务层
 #[injectable]
@@ -21,7 +22,7 @@ pub struct TableService {
 
 impl TableService {
     /// 初始化库表
-    pub async fn table(&self, req: AddAdminUserReq) -> Result<user_base::Model, ErrorMsg> {
+    pub async fn table(&self, req: CreateTableReq) -> Result<user_base::Model, ErrorMsg> {
         // 初始化库表, 如果已存在则不会重复初始化
         self.init_table().await?;
 
@@ -59,7 +60,7 @@ impl TableService {
         for table in tables {
             let content = asset.to_string(table).map_err(|err| {
                 error!("数据库资源解析错误, err: {err}");
-                Error::AssetParseError
+                Error::EmbedAssetError(err.to_string())
                     .into_msg()
                     .with_msg("数据库资源解析错误")
             })?;
@@ -83,7 +84,7 @@ impl TableService {
     }
 
     /// 初始化表数据
-    async fn init_table_data(&self, req: AddAdminUserReq) -> Result<user_base::Model, ErrorMsg> {
+    async fn init_table_data(&self, req: CreateTableReq) -> Result<user_base::Model, ErrorMsg> {
         let mut data = req.clone();
         // 密码加密
         data.password = sha2_256(&data.password);
@@ -91,25 +92,25 @@ impl TableService {
         let asset = AssetDbTableData;
         let role_sql = asset.to_string("t_user_role.sql").map_err(|err| {
             error!("角色表资源解析错误, err: {err}");
-            Error::AssetParseError
+            Error::EmbedAssetError(err.to_string())
                 .into_msg()
                 .with_msg("角色表资源解析错误")
         })?;
         let openapi_sql = asset.to_string("t_perm_openapi.sql").map_err(|err| {
             error!("OpenAPi表资源解析错误, err: {err}");
-            Error::AssetParseError
+            Error::EmbedAssetError(err.to_string())
                 .into_msg()
                 .with_msg("OpenAPi表资源解析错误")
         })?;
         let menu_sql = asset.to_string("t_perm_menu.sql").map_err(|err| {
             error!("菜单表资源解析错误, err: {err}");
-            Error::AssetParseError
+            Error::EmbedAssetError(err.to_string())
                 .into_msg()
                 .with_msg("菜单表源解析错误")
         })?;
         let schedule_job_sql = asset.to_string("t_schedule_job.sql").map_err(|err| {
             error!("任务调度作业表资源解析错误, err: {err}");
-            Error::AssetParseError
+            Error::EmbedAssetError(err.to_string())
                 .into_msg()
                 .with_msg("任务调度作业表源解析错误")
         })?;

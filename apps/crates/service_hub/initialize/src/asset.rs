@@ -1,8 +1,7 @@
 //! 静态资源文件
 #![allow(unused)]
 
-use utils::asset::EmbedAssetTrait;
-
+use embed_asset::EmbedAssetTrait;
 use rust_embed::{EmbeddedFile, RustEmbed};
 
 /// 库表资源

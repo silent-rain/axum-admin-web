@@ -1,11 +1,11 @@
 //! 库表初始化
 
-use actix_validator::Validate;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-/// 添加管理员用户
+/// 添加管理员用户 请求体
 #[derive(Serialize, Clone, Deserialize, Validate)]
-pub struct AddAdminUserReq {
+pub struct CreateTableReq {
     /// 用户名称
     pub username: String,
     /// 手机号码
@@ -15,6 +15,9 @@ pub struct AddAdminUserReq {
     /// 密码
     pub password: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateTableResp {}
 
 /// 库表数据
 #[derive(Serialize, Clone, Deserialize)]

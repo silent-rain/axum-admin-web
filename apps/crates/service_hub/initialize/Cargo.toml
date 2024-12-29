@@ -12,10 +12,11 @@ code = { path = "../../core/code" }
 response = { path = "../../core/response" }
 utils = { path = "../../core/utils" }
 inject = { path = "../../core/inject" }
+embed_asset = { path = "../../embed_asset" }
 
 permission = { path = "../permission" }
 
-
+axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }
