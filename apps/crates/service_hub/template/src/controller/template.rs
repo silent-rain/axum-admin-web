@@ -31,7 +31,7 @@ impl AppTemplateController {
         Ok(resp)
     }
 
-    /// 获取单个{{InterfaceName}}信息
+    /// 获取{{InterfaceName}}信息
     pub async fn info(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetAppTemplateReq>,
@@ -46,10 +46,10 @@ impl AppTemplateController {
     /// 添加{{InterfaceName}}
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
-        Json(data): Json<CreateAppTemplateReq>,
+        Json(req): Json<CreateAppTemplateReq>,
     ) -> Responder<CreateAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let _result = app_template_service.create(data).await?;
+        let _result = app_template_service.create(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -58,10 +58,10 @@ impl AppTemplateController {
     /// 批量添加{{InterfaceName}}
     pub async fn batch_create(
         Extension(provider): Extension<AInjectProvider>,
-        Json(data): Json<BatchCreateAppTemplateReq>,
+        Json(req): Json<BatchCreateAppTemplateReq>,
     ) -> Responder<BatchCreateAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let _result = app_template_service.batch_create(data).await?;
+        let _result = app_template_service.batch_create(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -70,10 +70,10 @@ impl AppTemplateController {
     /// 更新{{InterfaceName}}
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
-        Json(data): Json<UpdateAppTemplateReq>,
+        Json(req): Json<UpdateAppTemplateReq>,
     ) -> Responder<UpdateAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let _result = app_template_service.update(data).await?;
+        let _result = app_template_service.update(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -106,10 +106,10 @@ impl AppTemplateController {
     /// 批量删除{{InterfaceName}}
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
-        Json(data): Json<BatchDeleteAppTemplateReq>,
+        Json(req): Json<BatchDeleteAppTemplateReq>,
     ) -> Responder<BatchDeleteAppTemplateResp> {
         let app_template_service: AppTemplateService = provider.provide();
-        let _result = app_template_service.batch_delete(data.ids.clone()).await?;
+        let _result = app_template_service.batch_delete(req.ids.clone()).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
