@@ -1,7 +1,7 @@
 //! 系统日志
 use crate::{
-    dao::system::SystemDao,
-    dto::system::{CreateSystemReq, DeleteSystemReq, GetSystemReq, GetSystemsReq},
+    dao::system_log::SystemLogDao,
+    dto::system_log::{CreateSystemLogReq, DeleteSystemLogReq, GetSystemLogReq, GetSystemLogsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -13,15 +13,15 @@ use tracing::error;
 
 /// 服务层
 #[injectable]
-pub struct SystemService {
-    system_dao: SystemDao,
+pub struct SystemLogService {
+    system_dao: SystemLogDao,
 }
 
-impl SystemService {
+impl SystemLogService {
     /// 获取列表数据
     pub async fn list(
         &self,
-        req: GetSystemsReq,
+        req: GetSystemLogsReq,
     ) -> Result<(Vec<log_system::Model>, u64), ErrorMsg> {
         let (results, total) = self.system_dao.list(req).await.map_err(|err| {
             error!("查询系统日志列表失败, err: {:#?}", err);
@@ -34,7 +34,7 @@ impl SystemService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, req: GetSystemReq) -> Result<log_system::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetSystemLogReq) -> Result<log_system::Model, ErrorMsg> {
         let result = self
             .system_dao
             .info(req.id)
@@ -54,7 +54,7 @@ impl SystemService {
     }
 
     /// 添加数据
-    pub async fn create(&self, req: CreateSystemReq) -> Result<log_system::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateSystemLogReq) -> Result<log_system::Model, ErrorMsg> {
         let data: log_system::Model = struct_to_struct(&req).map_err(|err| {
             error!("JSON转换错误失败, err: {:#?}", err);
             Error::JsonConvert.into_msg().with_msg("JSON转换错误失败")
@@ -69,7 +69,7 @@ impl SystemService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, req: DeleteSystemReq) -> Result<u64, ErrorMsg> {
+    pub async fn delete(&self, req: DeleteSystemLogReq) -> Result<u64, ErrorMsg> {
         let result = self.system_dao.delete(req.id).await.map_err(|err| {
             error!("删除系统日志失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("删除系统日志失败")

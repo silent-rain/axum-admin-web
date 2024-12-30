@@ -7,7 +7,7 @@ use entity::log::log_system;
 
 /// 查询系统日志列表 请求体
 #[derive(Default, Deserialize)]
-pub struct GetSystemsReq {
+pub struct GetSystemLogsReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -19,27 +19,27 @@ pub struct GetSystemsReq {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct GetSystemsResp {
+pub struct GetSystemLogsResp {
     pub data_list: Vec<log_system::Model>,
     pub total: u64,
 }
 
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
-pub struct GetSystemReq {
+pub struct GetSystemLogReq {
     /// 日志ID
     pub id: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct GetSystemResp {
+pub struct GetSystemLogResp {
     #[serde(flatten)]
     data: log_system::Model,
 }
 
 /// 添加系统日志 请求体
 #[derive(Serialize, Deserialize, Validate)]
-pub struct CreateSystemReq {
+pub struct CreateSystemLogReq {
     /// 用户ID
     pub user_id: Option<i32>,
     /// 用户名称
@@ -95,14 +95,14 @@ pub struct CreateSystemReq {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CreateSystemResp {}
+pub struct CreateSystemLogResp {}
 
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
-pub struct DeleteSystemReq {
+pub struct DeleteSystemLogReq {
     /// 日志ID
     pub id: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteSystemResp {}
+pub struct DeleteSystemLogResp {}
