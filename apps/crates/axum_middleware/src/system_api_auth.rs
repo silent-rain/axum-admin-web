@@ -73,8 +73,9 @@ where
             let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
                 Some(v) => &v.0,
                 None => {
-                    return Err(Box::new(ResponseErr::new(Error::InjectAproviderObj)))
-                        .map_err(Into::into)
+                    return Err(Into::into(Box::new(ResponseErr::new(
+                        Error::InjectAproviderObj,
+                    ))))
                 }
             };
 
@@ -96,7 +97,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取系统鉴权标识 Token 失败, err: {:#?}", err);
-                    return Err(Box::new(err)).map_err(Into::into);
+                    return Err(Into::into(Box::new(err)));
                 }
             };
             // 解析系统接口Token
@@ -104,7 +105,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("检查系统鉴权异常, err: {:#?}", err);
-                    return Err(Box::new(err)).map_err(Into::into);
+                    return Err(Into::into(Box::new(err)));
                 }
             };
             // 获取缓存
@@ -129,14 +130,14 @@ where
             let user_login_id =
                 match Self::verify_user_login(inject_provider.clone(), system_token).await {
                     Ok(v) => v,
-                    Err(err) => return Err(Box::new(err)).map_err(Into::into),
+                    Err(err) => return Err(Into::into(Box::new(err))),
                 };
             // 获取用户权限
             let permission = match Self::user_permission(inject_provider.clone(), user_id).await {
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取权限失败, err: {:#?}", err);
-                    return Err(Box::new(err)).map_err(Into::into);
+                    return Err(Into::into(Box::new(err)));
                 }
             };
 
