@@ -1,23 +1,25 @@
 //! Api 操作日志中间件
+use std::{boxed::Box, convert::Infallible, net::SocketAddr, task::Poll};
+
 use code::{Error, ErrorMsg};
 use entity::log::log_api_operation;
-use response::{Response, ResponseErr};
+use response::ResponseErr;
 use service_hub::{
-    inject::AInjectProvider, log, log::dto::api_operation::CreateApiOperationReq,
-    log::ApiOperationService, system::constant::HEADERS_X_IMG,
+    inject::AInjectProvider, log::dto::api_operation::CreateApiOperationReq,
+    log::ApiOperationService,
 };
-use std::{boxed::Box, convert::Infallible, task::Poll};
 
 use axum::{
     body::{Body, HttpBody},
     http::{Request, StatusCode},
     BoxError, Extension,
 };
-use axum_context::{ApiAuthType, Context};
+use axum_context::Context;
 use bytes::Bytes;
 use futures::future::BoxFuture;
+use http_body_util::BodyExt;
 use tower::{Layer, Service};
-use tracing::{error, info};
+use tracing::error;
 
 /// Api 操作日志中间件
 #[derive(Clone)]
@@ -43,9 +45,11 @@ where
         + Send
         + 'static,
     S::Future: Send + 'static,
-    ReqBody: Send + 'static,
+    ReqBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
+    ReqBody::Error: std::fmt::Display,
     Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
     ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
+    ResBody::Error: std::fmt::Display,
     ResBody::Error: Into<BoxError>,
     S::Error: Into<BoxError>,
 {
@@ -58,50 +62,44 @@ where
         self.inner.poll_ready(cx).map_err(Into::into)
     }
 
-    fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
+    fn call(&mut self, req: Request<ReqBody>) -> Self::Future {
         let start_time = std::time::Instant::now(); // 请求开始的时间
 
         let not_ready_inner = self.inner.clone();
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
-        // 解析请求信息
-        let mut data = Self::parse_req(&req);
-        let content_type = req
-            .headers()
-            .get("Content-Type")
-            .map_or("".to_string(), |v| {
-                v.to_str().map_or("".to_string(), |v| v.to_string())
-            })
-            .to_uppercase();
-
         Box::pin(async move {
             // 全局依赖
             let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => &v.0,
+                Some(v) => &v.0.clone(),
                 None => {
                     return Err(Box::new(ResponseErr::new(Error::InjectAproviderObj)))
                         .map_err(Into::into)
                 }
             };
 
-            let mut request_body = BytesMut::new();
-            if content_type != "multipart/form-data".to_uppercase() {
-                // EXTRACT THE BODY OF REQUES
-                while let Some(chunk) = req.take_payload().next().await {
-                    request_body.extend_from_slice(&chunk?);
-                }
+            // 解析请求信息
+            let mut data = Self::parse_req(&req);
+            let content_type = req
+                .headers()
+                .get("Content-Type")
+                .map_or("".to_string(), |v| {
+                    v.to_str().map_or("".to_string(), |v| v.to_string())
+                })
+                .to_uppercase();
 
-                // 重新设置body
-                let (_, mut orig_payload) = Payload::create(true);
-                orig_payload.unread_data(request_body.clone().freeze());
-                req.set_payload(actix_http::Payload::from(orig_payload));
-            }
+            // 获取请求体
+            let (parts, body) = req.into_parts();
+            let request_body_bytes = Self::body_buffer(body).await?;
+            let req = Request::from_parts(parts, Body::from(request_body_bytes.clone()).into());
 
             // 添加请求操作日志
             data.cost = start_time.elapsed().as_millis() as u64;
-            let body = Self::get_request_body(&request_body)
+            let body = Self::body_bytes_to_string(&request_body_bytes)
                 .map_or("body data parsing error ".to_string(), |v| v);
             data.body = Some(body);
+
+            // 将日志推入数据库
             if let Err(err) =
                 Self::add_api_operation_log(inject_provider.clone(), data.clone()).await
             {
@@ -109,39 +107,52 @@ where
             }
 
             // 响应
-            let mut fut = service.call(req).await?;
-            let mut body = "".to_owned();
-            // 图片body数据不入库
-            if fut
-                .response_mut()
-                .headers_mut()
-                .get(HEADERS_X_IMG)
-                .is_some()
-            {
-                fut.response_mut().headers_mut().remove(HEADERS_X_IMG);
-            } else {
-                (fut, body) = Self::response_manipulate_body(fut).await;
-            }
+            let fut = inner.call(req).await?;
+            let (parts, body) = fut.into_parts();
+            let request_body_bytes = Self::body_buffer(body).await?;
+            let body = Self::body_bytes_to_string(&request_body_bytes)
+                .map_or("body data parsing error ".to_string(), |v| v);
+            let res =
+                axum::response::Response::from_parts(parts, Body::from(request_body_bytes).into());
 
             // 添加响应操作日志
             data.cost = start_time.elapsed().as_millis() as u64;
             data.http_type = log_api_operation::enums::HttpType::Rsp;
             // TODO 添加字符限制, 如果太大则进行省略
             data.body = Some(body);
-            data.status_code = fut.status().as_u16() as i32;
-
+            // 图片body数据不入库
+            if content_type != "multipart/form-data".to_uppercase() {
+                data.body = None;
+            }
+            data.status_code = res.status().as_u16() as i32;
+            // 将日志推入数据库
             if let Err(err) = Self::add_api_operation_log(inject_provider.clone(), data).await {
                 return Err(Box::new(err)).map_err(Into::into);
             }
 
-            Ok(fut)
+            Ok(res)
         })
     }
 }
 
 impl<S> ApiOperationMiddlewareService<S> {
+    async fn body_buffer<B>(body: B) -> Result<Bytes, ErrorMsg>
+    where
+        B: HttpBody<Data = Bytes>,
+        B::Error: std::fmt::Display,
+    {
+        let bytes = match body.collect().await {
+            Ok(collected) => collected.to_bytes(),
+            Err(err) => {
+                return Err(Error::InvalidParameter(err.to_string()).into_msg());
+            }
+        };
+
+        Ok(bytes)
+    }
+
     /// 获取请求体的 body
-    fn get_request_body(request_body: &BytesMut) -> Result<String, ErrorMsg> {
+    fn body_bytes_to_string(request_body: &Bytes) -> Result<String, ErrorMsg> {
         // 解析字符串为serde_json::Value
         let json_str = String::from_utf8_lossy(request_body).to_string();
 
@@ -167,36 +178,26 @@ impl<S> ApiOperationMiddlewareService<S> {
         Ok(body)
     }
 
-    /// 响应体
-    async fn response_manipulate_body(res: ServiceResponse) -> (ServiceResponse, String) {
-        let (req, res) = res.into_parts();
-
-        let (res, body) = res.into_parts();
-        // TODO body 最大值限制, 防止日志刺穿
-        let body_bytes = to_bytes(body).await.unwrap();
-        let body_str = String::from_utf8_lossy(&body_bytes).to_string();
-
-        let res = res.set_body(BoxBody::new(body_bytes));
-        let service = ServiceResponse::new(req, res);
-
-        (service, body_str)
-    }
-
     /// 解析请求信息
     fn parse_req<ReqBody>(req: &Request<ReqBody>) -> CreateApiOperationReq {
         // 获取上下文
-        let (user_id, username) = match req.extensions_mut().get::<Context>() {
+        let (user_id, username) = match req.extensions().get::<Context>() {
             Some(ctx) => (Some(ctx.get_user_id()), Some(ctx.get_user_name())),
             None => (None, None),
         };
 
         let status_code = StatusCode::OK.as_u16() as i32; // 默认请求成功
         let method = req.method().to_string();
-        let path = req.path().to_string();
-        let query = req.query_string().to_owned();
+        let path = req.uri().path().to_string();
+        let query = req.uri().query().unwrap_or("").to_string();
+
+        // 获取 remote_addr
         let remote_addr = req
-            .peer_addr()
-            .map_or("".to_owned(), |addr| addr.ip().to_string());
+            .extensions()
+            .get::<SocketAddr>()
+            .and_then(|socket_addr| Some(socket_addr.ip().to_string()))
+            .unwrap_or("".to_string());
+
         // Get the user agent from the request headers
         let user_agent = req
             .headers()
