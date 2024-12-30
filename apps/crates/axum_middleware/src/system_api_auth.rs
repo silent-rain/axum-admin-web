@@ -73,7 +73,9 @@ where
             let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
                 Some(v) => &v.0,
                 None => {
-                    return Err(Into::into(Box::new(ResponseErr::new(Error::InjectAproviderObj))))
+                    return Err(Into::into(Box::new(ResponseErr::new(
+                        Error::InjectAproviderObj,
+                    ))))
                 }
             };
 

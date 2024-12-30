@@ -23,8 +23,8 @@ pub enum Error {
     #[error("request timeout, {0}")]
     RequestTimeout(String),
     /// invalid request parameter
-    #[error("invalid request parameter")]
-    InvalidParameter = 10105,
+    #[error("invalid request parameter, {0}")]
+    InvalidParameter(String) = 10105,
     /// config file parse error
     #[error("config file parse error, {0}")]
     ConfigFileParseError(String) = 10106,
