@@ -69,8 +69,7 @@ where
             let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
                 Some(v) => &v.0,
                 None => {
-                    return Err(Box::new(ResponseErr::new(Error::InjectAproviderObj)))
-                        .map_err(Into::into)
+                    return Err(Into::into(Box::new(ResponseErr::new(Error::InjectAproviderObj))))
                 }
             };
 
@@ -91,7 +90,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取鉴权标识失败, err: {:#?}", err);
-                    return Err(Box::new(err)).map_err(Into::into);
+                    return Err(Into::into(Box::new(err)));
                 }
             };
             // 获取缓存
@@ -125,7 +124,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取权限失败, err: {:#?}", err);
-                    return Err(Box::new(err)).map_err(Into::into);
+                    return Err(Into::into(Box::new(err)));
                 }
             };
 
