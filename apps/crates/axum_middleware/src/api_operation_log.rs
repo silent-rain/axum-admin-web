@@ -73,8 +73,7 @@ where
             let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
                 Some(v) => &v.0.clone(),
                 None => {
-                    return Err(Box::new(ResponseErr::new(Error::InjectAproviderObj)))
-                        .map_err(Into::into)
+                    return Err(Into::into(Box::new(ResponseErr::new(Error::InjectAproviderObj))))
                 }
             };
 
@@ -103,7 +102,7 @@ where
             if let Err(err) =
                 Self::add_api_operation_log(inject_provider.clone(), data.clone()).await
             {
-                return Err(Box::new(err)).map_err(Into::into);
+                return Err(Into::into(Box::new(err)));
             }
 
             // 响应
@@ -127,7 +126,7 @@ where
             data.status_code = res.status().as_u16() as i32;
             // 将日志推入数据库
             if let Err(err) = Self::add_api_operation_log(inject_provider.clone(), data).await {
-                return Err(Box::new(err)).map_err(Into::into);
+                return Err(Into::into(Box::new(err)));
             }
 
             Ok(res)
@@ -194,8 +193,7 @@ impl<S> ApiOperationLogMiddlewareService<S> {
         // 获取 remote_addr
         let remote_addr = req
             .extensions()
-            .get::<SocketAddr>()
-            .and_then(|socket_addr| Some(socket_addr.ip().to_string()))
+            .get::<SocketAddr>().map(|socket_addr| socket_addr.ip().to_string())
             .unwrap_or("".to_string());
 
         // Get the user agent from the request headers
