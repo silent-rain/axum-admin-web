@@ -14,8 +14,15 @@ use tracing::warn;
 
 use app_state::AppState;
 use axum_context::ContextLayer;
-use axum_middleware::cors::cors_layer;
-use service_hub::public::HealthRouter;
+use axum_middleware::{
+    api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
+    openapi_auth::OpenApiAuthLayer, system_api_auth::SystemApiAuthLayer,
+};
+use service_hub::{
+    auth::AuthRouter, initialize::InitializeRouter, log::LogRouter,
+    organization::OrganizationRouter, permission::PermissionRouter, public::HealthRouter,
+    schedule::ScheduleRouter, system::SystemRouter, template::TemplateRouter, user::UserRouter,
+};
 
 /// axum handler for any request that fails to match the router routes.
 /// This implementation returns HTTP status code Not Found (404).
@@ -71,10 +78,10 @@ pub fn register() -> Router {
 
     // 注意中间件加载顺序: Last in, first loading
     let layers = ServiceBuilder::new()
-        // .layer(HandleErrorLayer::new(|_: BoxError| async {
-        //     // because Axum uses infallible errors, you must handle your custom error type from your middleware here
-        //     StatusCode::BAD_REQUEST
-        // })) // 自定义错误类型需要添加该中间件
+        .layer(HandleErrorLayer::new(|_: BoxError| async {
+            // because Axum uses infallible errors, you must handle your custom error type from your middleware here
+            StatusCode::BAD_REQUEST
+        })) // 自定义错误类型需要添加该中间件
         .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(CompressionLayer::new()) // 自动压缩响应
@@ -82,16 +89,22 @@ pub fn register() -> Router {
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(ContextLayer::new()) // 上下文
+        // .layer(ApiOperationLogLayer) // Api 操作日志中间件
+        .layer(CasbinAuthLayer) // RBAC 鉴权
+        // .layer(SystemApiAuthLayer) // 系统接口权限中间件
+        // .layer(OpenApiAuthLayer) // OpenApi权限中间件
         .layer(Extension(state)); // 扩展
 
     Router::new()
-        // 接口鉴权
-        // .wrap(ApiOperation::default())
-        // .wrap(CasbinAuth::default())
-        // .wrap(SystemApiAuth::default())
-        // .wrap(OpenApiAuth::default())
-        // .wrap(ContextMiddleware::default())
-        // .nest("/v1", LocationRouter::register())
         .merge(HealthRouter::register()) // 健康检查
+        .merge(AuthRouter::register()) // 认证管理
+        .merge(UserRouter::register()) // 用户管理
+        .merge(OrganizationRouter::register()) // 组织管理
+        .merge(PermissionRouter::register()) // 权限管理
+        .merge(SystemRouter::register()) // 系统管理
+        .merge(ScheduleRouter::register()) // 定时任务管理
+        .merge(LogRouter::register()) // 日志管理
+        .merge(InitializeRouter::register()) // 库表资源初始化管理
+        .merge(TemplateRouter::register()) // 模板管理
         .layer(layers)
 }

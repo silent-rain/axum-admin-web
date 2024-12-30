@@ -45,11 +45,9 @@ where
         + Send
         + 'static,
     S::Future: Send + 'static,
-    ReqBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
-    ReqBody::Error: std::fmt::Display,
+    ReqBody: Send + 'static,
     Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
     ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
-    ResBody::Error: std::fmt::Display,
     ResBody::Error: Into<BoxError>,
     S::Error: Into<BoxError>,
 {
