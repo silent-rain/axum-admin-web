@@ -23,22 +23,22 @@ use tracing::error;
 
 /// Api 操作日志中间件
 #[derive(Clone)]
-pub struct ApiOperationLayer;
+pub struct ApiOperationLogLayer;
 
-impl<S> Layer<S> for ApiOperationLayer {
-    type Service = ApiOperationMiddlewareService<S>;
+impl<S> Layer<S> for ApiOperationLogLayer {
+    type Service = ApiOperationLogMiddlewareService<S>;
 
     fn layer(&self, inner: S) -> Self::Service {
-        ApiOperationMiddlewareService { inner }
+        ApiOperationLogMiddlewareService { inner }
     }
 }
 
 #[derive(Clone)]
-pub struct ApiOperationMiddlewareService<S> {
+pub struct ApiOperationLogMiddlewareService<S> {
     inner: S,
 }
 
-impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for ApiOperationMiddlewareService<S>
+impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for ApiOperationLogMiddlewareService<S>
 where
     S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>, Error = Infallible>
         + Clone
@@ -135,7 +135,7 @@ where
     }
 }
 
-impl<S> ApiOperationMiddlewareService<S> {
+impl<S> ApiOperationLogMiddlewareService<S> {
     async fn body_buffer<B>(body: B) -> Result<Bytes, ErrorMsg>
     where
         B: HttpBody<Data = Bytes>,
