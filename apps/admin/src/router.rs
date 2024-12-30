@@ -89,10 +89,10 @@ pub fn register() -> Router {
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(ContextLayer::new()) // 上下文
-        // .layer(ApiOperationLogLayer) // Api 操作日志中间件
+        .layer(ApiOperationLogLayer) // Api 操作日志中间件
         .layer(CasbinAuthLayer) // RBAC 鉴权
-        // .layer(SystemApiAuthLayer) // 系统接口权限中间件
-        // .layer(OpenApiAuthLayer) // OpenApi权限中间件
+        .layer(SystemApiAuthLayer) // 系统接口权限中间件
+        .layer(OpenApiAuthLayer) // OpenApi权限中间件
         .layer(Extension(state)); // 扩展
 
     Router::new()
