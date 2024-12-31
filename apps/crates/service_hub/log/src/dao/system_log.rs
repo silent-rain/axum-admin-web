@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 
-use crate::dto::system::GetSystemsReq;
+use crate::dto::system_log::GetSystemLogsReq;
 
 use database::{Pagination, PoolTrait};
 use entity::log::{log_system, LogSystem};
@@ -15,13 +15,16 @@ use sea_orm::{
 
 /// 数据访问
 #[injectable]
-pub struct SystemDao {
+pub struct SystemLogDao {
     db: Arc<dyn PoolTrait>,
 }
 
-impl SystemDao {
+impl SystemLogDao {
     /// 获取数据列表
-    pub async fn list(&self, req: GetSystemsReq) -> Result<(Vec<log_system::Model>, u64), DbErr> {
+    pub async fn list(
+        &self,
+        req: GetSystemLogsReq,
+    ) -> Result<(Vec<log_system::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
         let states = LogSystem::find()

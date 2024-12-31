@@ -25,18 +25,16 @@ impl RegisterController {
             user_base::enums::UserType::Phone => {
                 if req.phone.is_none() {
                     error!("请输入手机号码");
-                    return Err(Error::InvalidParameter
+                    return Err(Error::InvalidParameter("请输入手机号码".to_string())
                         .into_msg()
-                        .with_msg("请输入手机号码")
                         .into());
                 }
             }
             user_base::enums::UserType::Email => {
                 if req.email.is_none() {
                     error!("请输入邮箱");
-                    return Err(Error::InvalidParameter
+                    return Err(Error::InvalidParameter("请输入邮箱".to_string())
                         .into_msg()
-                        .with_msg("请输入邮箱")
                         .into());
                 }
             }

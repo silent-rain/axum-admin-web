@@ -129,9 +129,10 @@ impl LoginService {
         let phone = match data.phone.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter
-                    .into_msg()
-                    .with_msg("请求参数错误, phone 不能为空"))
+                return Err(code::Error::InvalidParameter(
+                    "请求参数错误, phone 不能为空".to_string(),
+                )
+                .into_msg())
             }
         };
 
@@ -158,9 +159,10 @@ impl LoginService {
         let email = match data.email.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter
-                    .into_msg()
-                    .with_msg("请求参数错误, phone 不能为空"))
+                return Err(code::Error::InvalidParameter(
+                    "请求参数错误, email 不能为空".to_string(),
+                )
+                .into_msg())
             }
         };
 

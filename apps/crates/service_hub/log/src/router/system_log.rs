@@ -1,13 +1,13 @@
 //! 系统日志
 
-use crate::controller::system::SystemController;
+use crate::controller::system_log::SystemLogController;
 
 use axum::{routing::get, Router};
 
 /// 路由器
-pub struct SystemRouter;
+pub struct SystemLogRouter;
 
-impl SystemRouter {
+impl SystemLogRouter {
     /// 注册`系统日志管理`路由
     pub fn register() -> Router {
         Router::new().nest(
@@ -15,11 +15,11 @@ impl SystemRouter {
             Router::new()
                 .route(
                     "/",
-                    get(SystemController::list).post(SystemController::create),
+                    get(SystemLogController::list).post(SystemLogController::create),
                 )
                 .route(
                     "/:id",
-                    get(SystemController::info).delete(SystemController::delete),
+                    get(SystemLogController::info).delete(SystemLogController::delete),
                 ),
         )
     }

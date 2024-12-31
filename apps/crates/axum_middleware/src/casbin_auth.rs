@@ -1,29 +1,28 @@
 //! RBAC 鉴权
-use std::{
-    future::{ready, Ready},
-    pin::Pin,
-    rc::Rc,
-};
+use std::{boxed::Box, convert::Infallible, task::Poll};
 
-use crate::constant::AUTH_WHITE_LIST;
-
-use context::Context;
-use response::Response;
+use code::Error;
+use response::ResponseErr;
 use service_hub::permission::OpenapiService;
 use service_hub::user::UserRoleRelService;
 use service_hub::{inject::AInjectProvider, user::cached::UserCached};
 
-use actix_web::{
-    dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform},
-    web::Data,
-    Error, HttpMessage,
+use axum::{
+    body::{Body, HttpBody},
+    http::Request,
+    BoxError, Extension,
 };
+use axum_context::Context;
+use bytes::Bytes;
 use casbin::{
     prelude::{DefaultModel, Enforcer, MemoryAdapter},
     CoreApi, MgmtApi,
 };
-use futures::Future;
+use futures::future::BoxFuture;
+use tower::{Layer, Service};
 use tracing::{error, info};
+
+use crate::constant::AUTH_WHITE_LIST;
 
 const MODEL: &str = "
 [request_definition]
@@ -49,63 +48,65 @@ g, alice, admin
 ";
 
 /// OpenApi接口鉴权
-#[derive(Default)]
-pub struct CasbinAuth {}
+#[derive(Clone)]
+pub struct CasbinAuthLayer;
 
-impl<S, B> Transform<S, ServiceRequest> for CasbinAuth
-where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    S::Future: 'static,
-    B: 'static,
-{
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type InitError = ();
-    type Transform = CasbinAuthService<S>;
-    type Future = Ready<Result<Self::Transform, Self::InitError>>;
+impl<S> Layer<S> for CasbinAuthLayer {
+    type Service = CasbinAuthService<S>;
 
-    fn new_transform(&self, service: S) -> Self::Future {
-        ready(Ok(CasbinAuthService {
-            service: Rc::new(service),
-        }))
+    fn layer(&self, inner: S) -> Self::Service {
+        CasbinAuthService { inner }
     }
 }
 
+#[derive(Clone)]
 pub struct CasbinAuthService<S> {
-    service: Rc<S>,
+    inner: S,
 }
 
-impl<S, B> Service<ServiceRequest> for CasbinAuthService<S>
+impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for CasbinAuthService<S>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
-    S::Future: 'static,
-    B: 'static,
+    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>, Error = Infallible>
+        + Clone
+        + Send
+        + 'static,
+    S::Future: Send + 'static,
+    ReqBody: Send + 'static,
+    Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
+    ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
+    ResBody::Error: Into<BoxError>,
+    S::Error: Into<BoxError>,
 {
-    type Response = ServiceResponse<B>;
-    type Error = Error;
-    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>>>>;
+    type Response = S::Response;
+    type Error = BoxError;
+    // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
+    type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
-    forward_ready!(service);
+    fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
+        self.inner.poll_ready(cx).map_err(Into::into)
+    }
 
-    fn call(&self, req: ServiceRequest) -> Self::Future {
-        let service = Rc::clone(&self.service);
+    fn call(&mut self, req: Request<ReqBody>) -> Self::Future {
+        let not_ready_inner = self.inner.clone();
+        let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
-        let provider = match req.app_data::<Data<AInjectProvider>>() {
-            Some(v) => v.as_ref().clone(),
-            None => {
-                return Box::pin(async move {
-                    error!("获取服务实例失败");
-                    Err(Response::code(code::Error::InjectAproviderObj).into())
-                })
-            }
-        };
         Box::pin(async move {
-            let path = req.match_info().as_str();
+            // 全局依赖
+            let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
+                Some(v) => &v.0,
+                None => {
+                    return Err(Into::into(Box::new(ResponseErr::new(
+                        Error::InjectAproviderObj,
+                    ))))
+                }
+            };
+
             let method = req.method().as_str();
 
             // 白名单放行
+            let path = req.uri().path();
             if AUTH_WHITE_LIST.contains(&path) {
-                let resp = service.call(req).await?;
+                let resp = inner.call(req).await?;
                 return Ok(resp);
             }
 
@@ -116,13 +117,15 @@ where
                     // 判断是否已经鉴权, 如果没有则拒绝请求
                     if ctx.get_api_auth_type().is_none() {
                         error!("非法请求");
-                        return Err(Response::code(code::Error::AuthIllegalRequest).into());
+                        return Err(Into::into(Box::new(ResponseErr::new(
+                            Error::AuthIllegalRequest,
+                        ))));
                     }
 
                     ctx.get_user_id()
                 }
                 None => {
-                    let resp = service.call(req).await?;
+                    let resp = inner.call(req).await?;
                     return Ok(resp);
                 }
             };
@@ -139,27 +142,27 @@ where
                     info!(
                         "openapi access permission, cached, user_id: {user_id}, method: {method}, path: {path}"
                     );
-                    let resp = service.call(req).await?;
+                    let resp = inner.call(req).await?;
                     return Ok(resp);
                 }
             }
 
             // 获取接口角色关系列表
-            let openapi_service: OpenapiService = provider.provide();
+            let openapi_service: OpenapiService = inject_provider.provide();
             let role_openapi_permissions = match openapi_service.role_openapi_permissions().await {
                 Ok(v) => v,
                 Err(err) => {
                     error!("{err:?}");
-                    return Err(Response::err(err).into());
+                    return Err(Into::into(Box::new(err)));
                 }
             };
             // 获取用户角色关系列表
-            let user_role_rel_service: UserRoleRelService = provider.provide();
+            let user_role_rel_service: UserRoleRelService = inject_provider.provide();
             let user_role_rels = match user_role_rel_service.all().await {
                 Ok((v, _)) => v,
                 Err(err) => {
                     error!("{err:?}");
-                    return Err(Response::err(err).into());
+                    return Err(Into::into(Box::new(err)));
                 }
             };
 
@@ -194,15 +197,16 @@ where
                     Ok(v) => v,
                     Err(err) => {
                         error!("Casbin 策略执行失败, {err:?}");
-                        return Err(Response::code(code::Error::CasbinEnforceError(
-                            err.to_string(),
-                        ))
-                        .into());
+                        return Err(Into::into(Box::new(ResponseErr::new(
+                            Error::CasbinEnforceError(err.to_string()),
+                        ))));
                     }
                 };
             if !result {
                 error!("{user_id} {method} {path}, No access permission");
-                return Err(Response::code(code::Error::CasbinNoAccessPermission).into());
+                return Err(Into::into(Box::new(ResponseErr::new(
+                    Error::CasbinNoAccessPermission,
+                ))));
             }
 
             // 设置缓存
@@ -216,7 +220,7 @@ where
             info!("openapi access permission, user_id: {user_id}, method: {method}, path: {path}");
 
             // 响应
-            let resp = service.call(req).await?;
+            let resp = inner.call(req).await?;
             Ok(resp)
         })
     }
