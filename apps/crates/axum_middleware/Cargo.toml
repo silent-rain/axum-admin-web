@@ -6,12 +6,11 @@ edition = "2021"
 
 [dependencies]
 code = { path = "../core/code" }
-response = { path = "../core/response" }
 entity = { path = "../core/entity" }
 jwt = { path = "../core/jwt" }
 axum_context = { path = "../axum_context" }
 service_hub = { path = "../service_hub" }
-
+axum_response = { path = "../axum_response" }
 
 axum = { workspace = true }
 tokio = { workspace = true }

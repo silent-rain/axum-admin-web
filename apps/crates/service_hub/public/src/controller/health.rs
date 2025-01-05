@@ -1,6 +1,6 @@
 //! 健康检查
 
-use response::Response;
+use axum_response::Response;
 
 use axum::response::IntoResponse;
 

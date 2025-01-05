@@ -15,7 +15,7 @@ use axum::{body::Body, extract::Query, Extension, Json};
 use axum_typed_multipart::TypedMultipart;
 use code::Error;
 use inject::AInjectProvider;
-use response::{Responder, Response, ResponseErr};
+use axum_response::{Responder, Response, ResponseErr};
 
 /// 控制器
 pub struct ImageResourceController;

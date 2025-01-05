@@ -9,9 +9,9 @@ edition = "2021"
 database = { path = "../../core/database" }
 entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
-response = { path = "../../core/response" }
 utils = { path = "../../core/utils" }
 inject = { path = "../../core/inject" }
+axum_response = { path = "../../axum_response" }
 embed_asset = { path = "../../embed_asset" }
 
 permission = { path = "../permission" }

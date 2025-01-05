@@ -11,7 +11,7 @@ use crate::{
 
 use axum::{extract::Query, Extension, Json};
 use inject::AInjectProvider;
-use response::{Responder, Response};
+use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct ScheduleEventLogController;

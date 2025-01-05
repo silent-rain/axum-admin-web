@@ -39,6 +39,7 @@ dependencies = [
  "axum-extra",
  "axum_context",
  "axum_middleware",
+ "axum_response",
  "axum_static",
  "code",
  "colored",
@@ -49,7 +50,6 @@ dependencies = [
  "listenfd",
  "logger",
  "num_cpus",
- "response",
  "rust-embed",
  "serde",
  "serde_json",
@@ -450,6 +450,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum_context",
+ "axum_response",
  "chrono",
  "code",
  "database",
@@ -458,7 +459,6 @@ dependencies = [
  "jwt",
  "log 0.1.0",
  "nject",
- "response",
  "sea-orm",
  "serde",
  "serde_json",
@@ -610,6 +610,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum_context",
+ "axum_response",
  "bytes",
  "casbin",
  "code",
@@ -618,7 +619,6 @@ dependencies = [
  "http-body-util",
  "jwt",
  "pin-project",
- "response",
  "serde_json",
  "service_hub",
  "tokio",
@@ -633,11 +633,11 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum-test",
+ "axum_response",
  "database",
  "entity",
  "inject",
  "migration",
- "response",
  "sea-orm",
  "sea-orm-migration",
  "serde",
@@ -647,6 +647,18 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "axum_response"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "code",
+ "serde",
+ "serde_json",
+ "tonic",
 ]
 
 [[package]]
@@ -2299,6 +2311,7 @@ name = "initialize"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum_response",
  "code",
  "database",
  "embed_asset",
@@ -2306,7 +2319,6 @@ dependencies = [
  "inject",
  "nject",
  "permission",
- "response",
  "rust-embed",
  "sea-orm",
  "serde",
@@ -2511,12 +2523,12 @@ name = "log"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum_response",
  "code",
  "database",
  "entity",
  "inject",
  "nject",
- "response",
  "sea-orm",
  "serde",
  "serde_repr",
@@ -2959,12 +2971,12 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum_context",
+ "axum_response",
  "code",
  "database",
  "entity",
  "inject",
  "nject",
- "response",
  "sea-orm",
  "serde",
  "serde_repr",
@@ -3085,12 +3097,12 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum_context",
+ "axum_response",
  "code",
  "database",
  "entity",
  "inject",
  "nject",
- "response",
  "sea-orm",
  "serde",
  "serde_repr",
@@ -3386,8 +3398,8 @@ name = "public"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum_response",
  "embed_asset",
- "response",
  "tower-http 0.6.2",
  "tracing",
 ]
@@ -3626,18 +3638,6 @@ checksum = "9838134a2bfaa8e1f40738fcc972ac799de6e0e06b5157acb95fc2b05a0ea283"
 dependencies = [
  "lazy_static",
  "thiserror 1.0.69",
-]
-
-[[package]]
-name = "response"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "code",
- "serde",
- "serde_json",
- "tonic",
 ]
 
 [[package]]
@@ -3915,12 +3915,12 @@ name = "schedule"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum_response",
  "code",
  "database",
  "entity",
  "inject",
  "nject",
- "response",
  "scheduler",
  "sea-orm",
  "serde",
@@ -4683,6 +4683,7 @@ name = "system"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "axum_response",
  "axum_typed_multipart",
  "chrono",
  "code",
@@ -4690,7 +4691,6 @@ dependencies = [
  "entity",
  "inject",
  "nject",
- "response",
  "sea-orm",
  "serde",
  "serde_repr",
@@ -4735,13 +4735,13 @@ dependencies = [
  "axum-extra",
  "axum-test",
  "axum_mock",
+ "axum_response",
  "code",
  "database",
  "entity",
  "grpc_api",
  "inject",
  "nject",
- "response",
  "sea-orm",
  "serde",
  "serde_repr",
@@ -5398,6 +5398,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum_context",
+ "axum_response",
  "base64 0.22.1",
  "cache",
  "code",
@@ -5407,7 +5408,6 @@ dependencies = [
  "nject",
  "permission",
  "regex 1.11.1",
- "response",
  "rust_decimal",
  "sea-orm",
  "serde",
