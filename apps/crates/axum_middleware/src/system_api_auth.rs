@@ -1,9 +1,9 @@
 //! 系统接口权限中间件
-use std::{boxed::Box, convert::Infallible, task::Poll};
+use std::{boxed::Box, task::Poll};
 
 use axum::{
     body::{Body, HttpBody},
-    http::Request,
+    extract::Request,
     BoxError, Extension,
 };
 use axum_context::{ApiAuthType, Context};
@@ -44,16 +44,15 @@ pub struct SystemApiAuthService<S> {
 
 impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for SystemApiAuthService<S>
 where
-    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>, Error = Infallible>
+    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>>
         + Clone
         + Send
         + 'static,
     S::Future: Send + 'static,
+    S::Error: Send + Sync + std::error::Error + Into<BoxError>,
     ReqBody: Send + 'static,
-    Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
     ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
     ResBody::Error: Into<BoxError>,
-    S::Error: Into<BoxError>,
 {
     type Response = S::Response;
     type Error = BoxError;
@@ -75,7 +74,7 @@ where
                 None => {
                     return Err(Into::into(Box::new(ResponseErr::new(
                         Error::InjectAproviderObj,
-                    ))))
+                    ))));
                 }
             };
 

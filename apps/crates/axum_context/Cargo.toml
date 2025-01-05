@@ -9,4 +9,4 @@ axum = { workspace = true }
 tower = { workspace = true }
 tokio = { workspace = true }
 futures = { workspace = true }
-pin-project-lite = "0.2"
+bytes = { workspace = true }
