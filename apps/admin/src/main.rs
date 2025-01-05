@@ -6,7 +6,7 @@ use std::{
 mod asset;
 mod config;
 mod router;
-mod router_demo;
+// mod router_demo;
 
 use config::AppConfig;
 use database::PoolTrait;
