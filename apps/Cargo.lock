@@ -706,6 +706,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum_validator"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_response",
+ "code",
+ "futures",
+ "mime",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "tracing",
+ "validator",
+ "validator_derive",
+]
+
+[[package]]
 name = "backtrace"
 version = "0.3.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2696,9 +2713,9 @@ dependencies = [
 
 [[package]]
 name = "moka"
-version = "0.12.9"
+version = "0.12.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23db87a7f248211f6a7c8644a1b750541f8a4c68ae7de0f908860e44c0c201f6"
+checksum = "a9321642ca94a4282428e6ea4af8cc2ca4eac48ac7a6a4ea8f33f76d0ce70926"
 dependencies = [
  "async-lock",
  "crossbeam-channel",
@@ -2708,7 +2725,7 @@ dependencies = [
  "futures-util",
  "loom",
  "parking_lot",
- "quanta",
+ "portable-atomic",
  "rustc_version",
  "smallvec",
  "tagptr",
@@ -3260,9 +3277,9 @@ dependencies = [
 
 [[package]]
 name = "prettyplease"
-version = "0.2.25"
+version = "0.2.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64d1ec885c64d0457d564db4ec299b2dae3f9c02808b8ad9c3a089c591b18033"
+checksum = "483f8c21f64f3ea09fe0f30f5d48c3e8eefe5dac9129f0075f76593b4c1da705"
 dependencies = [
  "proc-macro2",
  "syn 2.0.95",
@@ -3399,9 +3416,12 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum_response",
+ "axum_validator",
  "embed_asset",
+ "serde",
  "tower-http 0.6.2",
  "tracing",
+ "validator",
 ]
 
 [[package]]

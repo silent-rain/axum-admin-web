@@ -5,10 +5,14 @@ edition = "2021"
 
 [dependencies]
 axum_response = { path = "../../axum_response" }
+axum_validator = { path = "../../axum_validator" }
 
 # app_state = { path = "../../app_state" }
 embed_asset = { path = "../../embed_asset" }
 
 axum = { workspace = true }
 tower-http = { workspace = true, features = ["fs"] }
+
 tracing = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+validator = { workspace = true, features = ["derive"] }

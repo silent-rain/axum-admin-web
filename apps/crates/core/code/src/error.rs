@@ -25,6 +25,11 @@ pub enum Error {
     /// invalid request parameter
     #[error("invalid request parameter, {0}")]
     InvalidParameter(String) = 10105,
+    #[error("Validate Errorr, {0}")]
+    ValidateError(String) = 10285,
+    #[error("Expected request with `Content-Type: application/json`")]
+    MissingJsonContentType = 10286,
+
     /// config file parse error
     #[error("config file parse error, {0}")]
     ConfigFileParseError(String) = 10106,
