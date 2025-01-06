@@ -20,6 +20,7 @@ members = [
     "crates/axum_mock",
     "crates/axum_context",
     "crates/axum_middleware",
+    "crates/axum_validator",
     "crates/grpc_api",
     "crates/plugins",
     "crates/service_hub",
@@ -50,11 +51,13 @@ tonic-build = "0.12"
 reqwest = "0.12"
 prost = "0.13"
 validator = "0.19"
+validator_derive = "0.19"
 listenfd = "1.0"
 num_cpus = "1.16"
 tokio-cron-scheduler = "0.13"
 http-body-util = "0.1"
-
+serde_urlencoded = "0.7"
+mime = "0.3"
 
 # 数据库`
 sea-orm = "1.1"
