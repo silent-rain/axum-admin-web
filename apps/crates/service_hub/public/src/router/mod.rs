@@ -2,4 +2,3 @@
 
 pub mod admin_web_site;
 pub mod health;
-pub mod hello;

@@ -47,7 +47,7 @@ where
     type Rejection = ResponseErr;
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
-        if json_content_type(req.headers()) {
+        if !json_content_type(req.headers()) {
             return Err(ResponseErr::new(Error::MissingJsonContentType));
         }
 

@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 axum_response = { path = "../../axum_response" }
-axum_validator = { path = "../../axum_validator" }
 
 # app_state = { path = "../../app_state" }
 embed_asset = { path = "../../embed_asset" }

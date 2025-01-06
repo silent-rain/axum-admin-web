@@ -44,7 +44,7 @@ where
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         // 解析查询字符串
-        let query_string = &parts.uri.to_string();
+        let query_string = &parts.uri.query().unwrap_or_default();
         // 从查询字符串中解析出 T 结构体
         let query_info: Result<T, _> = serde_urlencoded::from_str(query_string);
         // 根据解析结果进行验证

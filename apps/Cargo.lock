@@ -3416,7 +3416,6 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum_response",
- "axum_validator",
  "embed_asset",
  "serde",
  "tower-http 0.6.2",
@@ -4756,6 +4755,7 @@ dependencies = [
  "axum-test",
  "axum_mock",
  "axum_response",
+ "axum_validator",
  "code",
  "database",
  "entity",
