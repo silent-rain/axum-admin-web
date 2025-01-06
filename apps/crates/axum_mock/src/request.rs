@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
+use axum_response::Response;
 use database::{mock::Mock, PoolTrait};
 use inject::InjectProvider;
 use migration::Migrator;
-use response::Response;
 
 use axum::{Extension, Router};
 use axum_test::TestServer;

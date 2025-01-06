@@ -1,9 +1,9 @@
 //! Api 操作日志中间件
 use std::{boxed::Box, convert::Infallible, net::SocketAddr, task::Poll};
 
+use axum_response::ResponseErr;
 use code::{Error, ErrorMsg};
 use entity::log::log_api_operation;
-use response::ResponseErr;
 use service_hub::{
     inject::AInjectProvider, log::dto::api_operation::CreateApiOperationReq,
     log::ApiOperationService,
@@ -73,7 +73,9 @@ where
             let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
                 Some(v) => &v.0.clone(),
                 None => {
-                    return Err(Into::into(Box::new(ResponseErr::new(Error::InjectAproviderObj))))
+                    return Err(Into::into(Box::new(ResponseErr::new(
+                        Error::InjectAproviderObj,
+                    ))))
                 }
             };
 
@@ -193,7 +195,8 @@ impl<S> ApiOperationLogMiddlewareService<S> {
         // 获取 remote_addr
         let remote_addr = req
             .extensions()
-            .get::<SocketAddr>().map(|socket_addr| socket_addr.ip().to_string())
+            .get::<SocketAddr>()
+            .map(|socket_addr| socket_addr.ip().to_string())
             .unwrap_or("".to_string());
 
         // Get the user agent from the request headers

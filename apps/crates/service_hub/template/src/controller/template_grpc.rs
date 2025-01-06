@@ -9,8 +9,9 @@ use grpc_api::template::{
     GetAppTemplateResp, GetAppTemplatesReq, GetAppTemplatesResp, UpdateAppTemplateReq,
     UpdateAppTemplateResp, UpdateAppTemplateStatusReq, UpdateAppTemplateStatusResp,
 };
+
+use axum_response::Response;
 use nject::injectable;
-use response::Response;
 use tonic::{Request, Status};
 use utils::json::struct_to_struct;
 

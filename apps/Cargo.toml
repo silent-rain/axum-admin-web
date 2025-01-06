@@ -3,7 +3,6 @@ resolver = "2"
 members = [
     # 核心组件
     "crates/core/code",
-    "crates/core/response",
     "crates/core/database",
     "crates/core/inject",
     "crates/core/entity",
@@ -15,6 +14,7 @@ members = [
     "crates/core/cache",
 
     # 组件
+    "crates/axum_response",
     "crates/app_state",
     "crates/embed_asset",
     "crates/axum_mock",

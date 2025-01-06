@@ -7,8 +7,8 @@ edition = "2021"
 database = { path = "../core/database" }
 entity = { path = "../core/entity" }
 migration = { path = "../core/migration" }
-response = { path = "../core/response" }
 inject = { path = "../core/inject" }
+axum_response = { path = "../axum_response" }
 
 
 axum = { workspace = true }

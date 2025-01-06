@@ -59,6 +59,13 @@ pub async fn shutdown_signal() {
     }
 }
 
+async fn handle_error(err: BoxError) -> (StatusCode, String) {
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        format!("Unhandled internal error: {err}"),
+    )
+}
+
 /// 注册路由
 pub fn register() -> Router {
     let state = AppState {};
@@ -78,21 +85,18 @@ pub fn register() -> Router {
 
     // 注意中间件加载顺序: Last in, first loading
     let layers = ServiceBuilder::new()
-        .layer(HandleErrorLayer::new(|_: BoxError| async {
-            // because Axum uses infallible errors, you must handle your custom error type from your middleware here
-            StatusCode::BAD_REQUEST
-        })) // 自定义错误类型需要添加该中间件
+        // .layer(HandleErrorLayer::new(handle_error)) // 自定义错误类型需要添加该中间件
         .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
-        .layer(ContextLayer::new()) // 上下文
-        .layer(ApiOperationLogLayer) // Api 操作日志中间件
-        .layer(CasbinAuthLayer) // RBAC 鉴权
-        .layer(SystemApiAuthLayer) // 系统接口权限中间件
-        .layer(OpenApiAuthLayer) // OpenApi权限中间件
+        // .layer(ContextLayer::new()) // 上下文
+        // .layer(ApiOperationLogLayer) // Api 操作日志中间件
+        // .layer(CasbinAuthLayer) // RBAC 鉴权
+        // .layer(SystemApiAuthLayer) // 系统接口权限中间件
+        // .layer(OpenApiAuthLayer) // OpenApi权限中间件
         .layer(Extension(state)); // 扩展
 
     Router::new()

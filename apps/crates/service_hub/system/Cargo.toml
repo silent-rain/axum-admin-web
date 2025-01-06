@@ -7,8 +7,8 @@ edition = "2021"
 database = { path = "../../core/database" }
 entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
-response = { path = "../../core/response" }
 utils = { path = "../../core/utils" }
+axum_response = { path = "../../axum_response" }
 inject = { path = "../../core/inject" }
 
 

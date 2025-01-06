@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-response = { path = "../../core/response" }
+axum_response = { path = "../../axum_response" }
 
 # app_state = { path = "../../app_state" }
 embed_asset = { path = "../../embed_asset" }
