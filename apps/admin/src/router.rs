@@ -7,8 +7,12 @@ use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
 use tower_http::{
-    compression::CompressionLayer, limit::RequestBodyLimitLayer, timeout::TimeoutLayer,
-    trace::TraceLayer,
+    compression::CompressionLayer,
+    limit::RequestBodyLimitLayer,
+    request_id::MakeRequestUuid,
+    timeout::TimeoutLayer,
+    trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer},
+    ServiceBuilderExt,
 };
 use tracing::warn;
 
@@ -85,8 +89,15 @@ pub fn register() -> Router {
 
     // 注意中间件加载顺序: Last in, first loading
     let layers = ServiceBuilder::new()
+        // make sure to set request ids before the request reaches `TraceLayer`
+        .set_x_request_id(MakeRequestUuid::default())
         // .layer(HandleErrorLayer::new(handle_error)) // 自定义错误类型需要添加该中间件
-        .layer(TraceLayer::new_for_http()) // 高级跟踪/记录
+        .layer(
+            // set request_id log requests and responses
+            TraceLayer::new_for_http()
+                .make_span_with(DefaultMakeSpan::new().include_headers(true))
+                .on_response(DefaultOnResponse::new().include_headers(true)),
+        ) // 高级跟踪/记录
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(governor_layer) // 速率限制
@@ -97,7 +108,9 @@ pub fn register() -> Router {
         // .layer(CasbinAuthLayer) // RBAC 鉴权
         // .layer(SystemApiAuthLayer) // 系统接口权限中间件
         // .layer(OpenApiAuthLayer) // OpenApi权限中间件
-        .layer(Extension(state)); // 扩展
+        .layer(Extension(state)) // 扩展
+        // propagate the header to the response before the response reaches `TraceLayer`
+        .propagate_x_request_id();
 
     Router::new()
         .merge(HealthRouter::register()) // 健康检查

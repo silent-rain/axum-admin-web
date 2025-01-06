@@ -29,6 +29,8 @@ tower-http = { workspace = true, features = [
     "limit",
     "compression-gzip",
     "timeout",
+    "util",
+    "request-id",
 ] }
 
 
