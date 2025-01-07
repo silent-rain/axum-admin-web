@@ -15,7 +15,6 @@ axum_context = { path = "../../axum_context" }
 
 user = { path = "../user" }
 system = { path = "../system" }
-log = { path = "../log" }
 
 axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }

@@ -10,4 +10,6 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 axum = { workspace = true }
 tonic = { workspace = true }
+
+[dev-dependencies]
 anyhow = { workspace = true }

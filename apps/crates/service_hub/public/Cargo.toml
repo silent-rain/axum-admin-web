@@ -14,4 +14,3 @@ tower-http = { workspace = true, features = ["fs"] }
 
 tracing = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-validator = { workspace = true, features = ["derive"] }
