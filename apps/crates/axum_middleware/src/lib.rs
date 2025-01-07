@@ -2,7 +2,7 @@
 pub mod constant;
 pub mod error;
 
-pub mod api_operation_log;
+// pub mod api_operation_log;
 pub mod casbin_auth;
 pub mod cors;
 pub mod openapi_auth;
