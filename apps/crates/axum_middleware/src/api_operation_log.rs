@@ -163,7 +163,7 @@ impl<S> ApiOperationLogMiddlewareService<S> {
 
         let data: serde_json::Value = serde_json::from_str(&json_str).map_err(|err| {
             error!("body 数据转换错误, err: {err}");
-            code::Error::JsonConvert
+            code::Error::JsonConvert(err.to_string())
                 .into_msg()
                 .with_msg("body 数据转换错误")
         })?;
@@ -171,7 +171,7 @@ impl<S> ApiOperationLogMiddlewareService<S> {
         // 将Value转换为紧凑格式的字符串
         let body = serde_json::to_string(&data).map_err(|err| {
             error!("body 数据解析错误, err: {err}");
-            code::Error::JsonConvert
+            code::Error::JsonConvert(err.to_string())
                 .into_msg()
                 .with_msg("body 数据解析错误")
         })?;

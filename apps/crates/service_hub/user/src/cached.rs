@@ -42,7 +42,7 @@ impl UserCached {
             None => return Err(Error::CacheNotFound),
         };
         let permission: UserPermission =
-            serde_json::from_value(result).map_err(|_err| Error::JsonConvert)?;
+            serde_json::from_value(result).map_err(|err| Error::JsonConvert(err.to_string()))?;
         Ok(permission)
     }
 
@@ -76,7 +76,7 @@ impl UserCached {
             None => return Err(Error::CacheNotFound),
         };
         let permission: UserPermission =
-            serde_json::from_value(result).map_err(|_err| Error::JsonConvert)?;
+            serde_json::from_value(result).map_err(|err| Error::JsonConvert(err.to_string()))?;
         Ok(permission)
     }
 
@@ -110,7 +110,8 @@ impl UserCached {
             Some(v) => v.value,
             None => return Err(Error::CacheNotFound),
         };
-        let permission: bool = serde_json::from_value(result).map_err(|_err| Error::JsonConvert)?;
+        let permission: bool =
+            serde_json::from_value(result).map_err(|err| Error::JsonConvert(err.to_string()))?;
         Ok(permission)
     }
 }

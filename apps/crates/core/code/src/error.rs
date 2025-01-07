@@ -41,8 +41,8 @@ pub enum Error {
     /// Deserialize an instance of type T from a string of JSON text.
     #[error("从JSON文本字符串中反序列化错误, {0}")]
     JsonDeserialization(String) = 10151,
-    #[error("JSON转换错误")]
-    JsonConvert = 10152,
+    #[error("JSON转换错误, {0}")]
+    JsonConvert(String) = 10152,
 
     /// io error, no data available
     #[error("io error, no data available")]

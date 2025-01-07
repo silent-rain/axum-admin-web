@@ -1,5 +1,6 @@
 //! 中间件
 pub mod constant;
+pub mod error;
 
 pub mod api_operation_log;
 pub mod casbin_auth;

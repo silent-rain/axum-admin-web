@@ -41,3 +41,16 @@ where
     })?;
     Ok(target)
 }
+
+/// 将一个结构体转换为vec
+pub fn struct_to_vec<S, T>(src: &S) -> Result<Vec<u8>, Error>
+where
+    S: serde::Serialize,
+    T: serde::de::DeserializeOwned,
+{
+    let target: Vec<u8> = bincode::serialize(&src).map_err(|err| {
+        error!("将JSON字符串反序列化为结构体失败, error: {err:#?}");
+        Error::JsonConvert(err.to_string())
+    })?;
+    Ok(target)
+}

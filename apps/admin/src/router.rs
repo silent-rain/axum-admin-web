@@ -2,7 +2,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use axum::{error_handling::HandleErrorLayer, http::StatusCode, BoxError, Extension, Router};
+use axum::{Extension, Router};
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -20,7 +20,7 @@ use app_state::AppState;
 use axum_context::ContextLayer;
 use axum_middleware::{
     api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
-    openapi_auth::OpenApiAuthLayer, system_api_auth::SystemApiAuthLayer,
+    demo1::Demo1Layer, openapi_auth::OpenApiAuthLayer, system_api_auth::SystemApiAuthLayer,
 };
 use service_hub::{
     auth::AuthRouter, initialize::InitializeRouter, log::LogRouter,
@@ -63,13 +63,6 @@ pub async fn shutdown_signal() {
     }
 }
 
-async fn handle_error(err: BoxError) -> (StatusCode, String) {
-    (
-        StatusCode::INTERNAL_SERVER_ERROR,
-        format!("Unhandled internal error: {err}"),
-    )
-}
-
 /// 注册路由
 pub fn register() -> Router {
     let state = AppState {};
@@ -90,7 +83,7 @@ pub fn register() -> Router {
     // 注意中间件加载顺序: Last in, first loading
     let layers = ServiceBuilder::new()
         // make sure to set request ids before the request reaches `TraceLayer`
-        .set_x_request_id(MakeRequestUuid::default())
+        .set_x_request_id(MakeRequestUuid)
         // .layer(HandleErrorLayer::new(handle_error)) // 自定义错误类型需要添加该中间件
         .layer(
             // set request_id log requests and responses
@@ -103,11 +96,12 @@ pub fn register() -> Router {
         .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
-        // .layer(ContextLayer::new()) // 上下文
+        .layer(ContextLayer::new()) // 上下文
         // .layer(ApiOperationLogLayer) // Api 操作日志中间件
         // .layer(CasbinAuthLayer) // RBAC 鉴权
         // .layer(SystemApiAuthLayer) // 系统接口权限中间件
         // .layer(OpenApiAuthLayer) // OpenApi权限中间件
+        .layer(Demo1Layer)
         .layer(Extension(state)) // 扩展
         // propagate the header to the response before the response reaches `TraceLayer`
         .propagate_x_request_id();

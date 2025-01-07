@@ -57,7 +57,9 @@ impl SystemLogService {
     pub async fn create(&self, req: CreateSystemLogReq) -> Result<log_system::Model, ErrorMsg> {
         let data: log_system::Model = struct_to_struct(&req).map_err(|err| {
             error!("JSON转换错误失败, err: {:#?}", err);
-            Error::JsonConvert.into_msg().with_msg("JSON转换错误失败")
+            Error::JsonConvert(err.to_string())
+                .into_msg()
+                .with_msg("JSON转换错误失败")
         })?;
 
         let result = self.system_dao.create(data).await.map_err(|err| {

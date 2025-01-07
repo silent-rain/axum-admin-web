@@ -38,7 +38,7 @@ impl ResponseErr {
 
 impl std::fmt::Display for ResponseErr {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(response err, code: {}, msg: {})", self.code, self.msg)
+        write!(f, "response err, code: {}, msg: {}", self.code, self.msg)
     }
 }
 
@@ -68,5 +68,28 @@ impl From<ErrorMsg> for ResponseErr {
 impl IntoResponse for ResponseErr {
     fn into_response(self) -> axum::response::Response {
         Json(self).into_response()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Debug, Serialize, Deserialize)]
+    struct Book {
+        title: String,
+        desc: String,
+    }
+
+    #[test]
+    fn test_response_err() {
+        let resp = ResponseErr::new(Error::InjectAproviderObj);
+        println!("resp: {:#?}", resp);
+
+        println!("resp to_string: {:#?}", resp.to_string());
+
+        let resp_str =
+            serde_json::to_string_pretty(&resp).expect("Failed to serialize response to JSON");
+        println!("resp str: {}", resp_str);
     }
 }

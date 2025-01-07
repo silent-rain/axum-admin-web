@@ -11,9 +11,10 @@ use bytes::Bytes;
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
 
-use axum_response::ResponseErr;
 use code::Error; // Custom error
 use service_hub::inject::AInjectProvider;
+
+use crate::error::create_error_response;
 
 #[derive(Clone)]
 pub struct Demo1Layer;
@@ -33,10 +34,7 @@ pub struct DemoService<S> {
 
 impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for DemoService<S>
 where
-    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>>
-        + Clone
-        + Send
-        + 'static,
+    S: Service<Request<ReqBody>, Response = axum::http::Response<ResBody>> + Clone + Send + 'static,
     S::Future: Send + 'static,
     S::Error: Send + Sync + std::error::Error + Into<BoxError>,
     ReqBody: Send + 'static,
@@ -44,12 +42,12 @@ where
     ResBody::Error: Into<BoxError>,
 {
     type Response = S::Response;
-    type Error = BoxError;
+    type Error = S::Error;
     // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
     type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx).map_err(Into::into)
+        self.inner.poll_ready(cx)
     }
 
     fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
@@ -60,9 +58,8 @@ where
             let _inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
                 Some(v) => &v.0,
                 None => {
-                    return Err(Into::into(Box::new(ResponseErr::new(
-                        Error::InjectAproviderObj,
-                    ))));
+                    let resp = create_error_response(Error::InjectAproviderObj.into_msg());
+                    return Ok(resp);
                 }
             };
 
