@@ -21,12 +21,12 @@ impl ScheduleJobRouter {
                     get(ScheduleJobController::list).post(ScheduleJobController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(ScheduleJobController::info)
                         .put(ScheduleJobController::update)
                         .delete(ScheduleJobController::delete),
                 )
-                .route("/:id/status", put(ScheduleJobController::update_status)),
+                .route("/{id}/status", put(ScheduleJobController::update_status)),
         )
     }
 }

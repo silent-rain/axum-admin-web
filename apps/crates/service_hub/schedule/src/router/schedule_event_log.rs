@@ -18,7 +18,7 @@ impl ScheduleEventLogRouter {
                     get(ScheduleEventLogController::list).post(ScheduleEventLogController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(ScheduleEventLogController::info)
                         .delete(ScheduleEventLogController::delete),
                 ),

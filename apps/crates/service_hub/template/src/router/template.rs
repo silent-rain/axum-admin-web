@@ -21,14 +21,14 @@ impl AppTemplateRouter {
                     get(AppTemplateController::list).post(AppTemplateController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(AppTemplateController::info)
                         .put(AppTemplateController::update)
                         .delete(AppTemplateController::delete),
                 )
                 .route("/batch_create", post(AppTemplateController::batch_create))
                 .route("/batch_delete", delete(AppTemplateController::batch_delete))
-                .route("/:id/status", put(AppTemplateController::update_status)),
+                .route("/{id}/status", put(AppTemplateController::update_status)),
         )
     }
 }

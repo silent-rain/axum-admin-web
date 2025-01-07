@@ -22,12 +22,12 @@ impl DepartmentRouter {
                 )
                 .route("/tree", get(DepartmentController::tree))
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(DepartmentController::info)
                         .put(DepartmentController::update)
                         .delete(DepartmentController::delete),
                 )
-                .route("/:id/status", put(DepartmentController::update_status)),
+                .route("/{id}/status", put(DepartmentController::update_status)),
         )
     }
 }

@@ -21,12 +21,12 @@ impl DictDimensionRouter {
                     get(DictDimensionController::list).post(DictDimensionController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(DictDimensionController::info)
                         .put(DictDimensionController::update)
                         .delete(DictDimensionController::delete),
                 )
-                .route("/:id/status", put(DictDimensionController::update_status)),
+                .route("/{id}/status", put(DictDimensionController::update_status)),
         )
     }
 }

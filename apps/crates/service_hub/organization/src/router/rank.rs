@@ -18,12 +18,12 @@ impl RankRouter {
             Router::new()
                 .route("/", get(RankController::list).post(RankController::create))
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(RankController::info)
                         .put(RankController::update)
                         .delete(RankController::delete),
                 )
-                .route("/:id/status", put(RankController::update_status)),
+                .route("/{id}/status", put(RankController::update_status)),
         )
     }
 }

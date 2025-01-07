@@ -21,7 +21,7 @@ impl ImageCaptchaRouter {
                     get(ImageCaptchaController::list).post(ImageCaptchaController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(ImageCaptchaController::info).delete(ImageCaptchaController::delete),
                 )
                 .route(

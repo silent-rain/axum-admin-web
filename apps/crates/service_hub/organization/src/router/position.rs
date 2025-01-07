@@ -21,12 +21,12 @@ impl PositionRouter {
                     get(PositionController::list).post(PositionController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(PositionController::info)
                         .put(PositionController::update)
                         .delete(PositionController::delete),
                 )
-                .route("/:id/status", put(PositionController::update_status)),
+                .route("/{id}/status", put(PositionController::update_status)),
         )
     }
 }

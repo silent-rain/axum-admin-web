@@ -18,11 +18,11 @@ impl UserLoginLogRouter {
                     get(UserLoginLogController::list).post(UserLoginLogController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(UserLoginLogController::info).put(UserLoginLogController::update),
                 )
                 .route(
-                    "/:id/status",
+                    "/{id}/status",
                     get(UserLoginLogController::info).put(UserLoginLogController::update_status),
                 ),
         )

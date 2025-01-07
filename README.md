@@ -114,6 +114,8 @@
 
 ## 待办
 
+- axum 扩展考量改为 state
+  - <https://docs.rs/axum/0.8.1/axum/extract/struct.State.html>
 - 调研 log span 全局使用事件，放置在中间件中，这样日志中可以获取统一的 span 数据；
 - 定时器-用户任务
 - doc 文档，细化为接口文档；

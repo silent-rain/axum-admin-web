@@ -22,12 +22,12 @@ impl ConfigRouter {
                 )
                 .route("/tree", get(ConfigController::tree))
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(ConfigController::info)
                         .put(ConfigController::update)
                         .delete(ConfigController::delete),
                 )
-                .route("/:id/status", put(ConfigController::update_status)),
+                .route("/{id}/status", put(ConfigController::update_status)),
         )
     }
 }

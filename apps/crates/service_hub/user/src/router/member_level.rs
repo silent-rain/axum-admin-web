@@ -21,12 +21,12 @@ impl MemberLevelRouter {
                     get(MemberLevelController::list).post(MemberLevelController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(MemberLevelController::info)
                         .put(MemberLevelController::update)
                         .delete(MemberLevelController::delete),
                 )
-                .route("/:id/status", put(MemberLevelController::update_status)),
+                .route("/{id}/status", put(MemberLevelController::update_status)),
         )
     }
 }

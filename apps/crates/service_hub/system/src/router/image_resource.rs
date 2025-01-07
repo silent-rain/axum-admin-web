@@ -18,7 +18,7 @@ impl ImageResourceRouter {
             Router::new()
                 .route("/", get(ImageResourceController::list))
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(ImageResourceController::info)
                         .put(ImageResourceController::update)
                         .delete(ImageResourceController::delete),

@@ -17,7 +17,7 @@ impl WebLogRouter {
                     "/",
                     get(WebLogController::list).post(WebLogController::create),
                 )
-                .route("/:id", get(WebLogController::info)),
+                .route("/{id}", get(WebLogController::info)),
         )
     }
 }

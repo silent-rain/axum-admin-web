@@ -12,7 +12,7 @@ impl SimpleRouter {
     pub fn register() -> Router {
         let router = Router::new()
             .route(
-                "/check_cookie/:user_id",
+                "/check_cookie/{user_id}",
                 get(SimpleController::check_cookie).with_state(Key::generate()),
             )
             .route(

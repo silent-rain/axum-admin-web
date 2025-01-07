@@ -18,7 +18,7 @@ impl ApiOperationRouter {
                     get(ApiOperationController::list).post(ApiOperationController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(ApiOperationController::info).delete(ApiOperationController::delete),
                 ),
         )

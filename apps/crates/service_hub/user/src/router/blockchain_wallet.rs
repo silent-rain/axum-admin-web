@@ -18,7 +18,7 @@ impl BlockchainWalletRouter {
                     get(BlockchainWalletController::list).post(BlockchainWalletController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(BlockchainWalletController::info)
                         .put(BlockchainWalletController::update)
                         .delete(BlockchainWalletController::delete),

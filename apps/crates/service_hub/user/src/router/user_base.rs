@@ -21,18 +21,18 @@ impl UserBaseRouter {
                     get(UserBaseController::list).post(UserBaseController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(UserBaseController::info)
                         .put(UserBaseController::update)
                         .delete(UserBaseController::delete),
                 )
-                .route("/:id/status", put(UserBaseController::update_status))
+                .route("/{id}/status", put(UserBaseController::update_status))
                 .route(
-                    "/:id/share-code",
+                    "/{id}/share-code",
                     put(UserBaseController::update_share_code),
                 )
-                .route("/:id/profile", get(UserBaseController::profile))
-                .route("/:id/roles", get(UserBaseController::roles)),
+                .route("/{id}/profile", get(UserBaseController::profile))
+                .route("/{id}/roles", get(UserBaseController::roles)),
         )
     }
 }

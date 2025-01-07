@@ -18,7 +18,7 @@ impl PhoneRouter {
                     get(PhoneController::list).post(PhoneController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(PhoneController::info)
                         .put(PhoneController::update)
                         .delete(PhoneController::delete),

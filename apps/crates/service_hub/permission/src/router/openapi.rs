@@ -21,13 +21,13 @@ impl OpenapiRouter {
                     get(OpenapiController::list).post(OpenapiController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(OpenapiController::info)
                         .put(OpenapiController::update)
                         .delete(OpenapiController::delete),
                 )
                 .route("/tree", get(OpenapiController::tree))
-                .route("/:id/status", put(OpenapiController::update_status)),
+                .route("/{id}/status", put(OpenapiController::update_status)),
         )
     }
 }

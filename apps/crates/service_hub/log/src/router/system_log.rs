@@ -18,7 +18,7 @@ impl SystemLogRouter {
                     get(SystemLogController::list).post(SystemLogController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(SystemLogController::info).delete(SystemLogController::delete),
                 ),
         )

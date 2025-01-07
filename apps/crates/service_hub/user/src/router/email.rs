@@ -18,7 +18,7 @@ impl EmailRouter {
                     get(EmailController::list).post(EmailController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(EmailController::info)
                         .put(EmailController::update)
                         .delete(EmailController::delete),

@@ -20,7 +20,7 @@ fn register() -> Router {
     let layers = ServiceBuilder::new()
         .layer(HandleErrorLayer::new(handle_error))
         .layer(Demo1Layer)
-        .layer(Demo2Layer)
+        // .layer(Demo2Layer)
         .layer(Extension(state)) // 扩展
         .service_fn(|req: Request<Body>| async {
             // 这里可以添加对请求的处理逻辑

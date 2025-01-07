@@ -18,7 +18,7 @@ impl LocationRouter {
                     get(LocationController::list).post(LocationController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(LocationController::info)
                         .put(LocationController::update)
                         .delete(LocationController::delete),

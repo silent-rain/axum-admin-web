@@ -22,13 +22,13 @@ impl ScheduleStatusLogRouter {
                         .post(ScheduleStatusLogController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(ScheduleStatusLogController::info)
                         .put(ScheduleStatusLogController::update)
                         .delete(ScheduleStatusLogController::delete),
                 )
                 .route(
-                    "/:id/status",
+                    "/{id}/status",
                     put(ScheduleStatusLogController::update_status),
                 ),
         )

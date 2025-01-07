@@ -18,12 +18,12 @@ impl RoleRouter {
             Router::new()
                 .route("/", get(RoleController::list).post(RoleController::create))
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(RoleController::info)
                         .put(RoleController::update)
                         .delete(RoleController::delete),
                 )
-                .route("/:id/status", put(RoleController::update_status)),
+                .route("/{id}/status", put(RoleController::update_status)),
         )
     }
 }

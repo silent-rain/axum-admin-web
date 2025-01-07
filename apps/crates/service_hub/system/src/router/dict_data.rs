@@ -21,12 +21,12 @@ impl DictDataRouter {
                     get(DictDataController::list).post(DictDataController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(DictDataController::info)
                         .put(DictDataController::update)
                         .delete(DictDataController::delete),
                 )
-                .route("/:id/status", put(DictDataController::update_status)),
+                .route("/{id}/status", put(DictDataController::update_status)),
         )
     }
 }

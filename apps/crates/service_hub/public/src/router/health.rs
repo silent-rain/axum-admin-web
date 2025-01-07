@@ -10,6 +10,6 @@ pub struct HealthRouter;
 impl HealthRouter {
     /// 注册路由
     pub fn register() -> Router {
-        Router::new().route("/all", get(HealthController::health))
+        Router::new().route("/health", get(HealthController::health))
     }
 }

@@ -20,12 +20,12 @@ impl MenuRouter {
                 .route("/tree", get(MenuController::tree))
                 .route("/children", get(MenuController::children))
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(MenuController::info)
                         .put(MenuController::update)
                         .delete(MenuController::delete),
                 )
-                .route("/:id/status", put(MenuController::update_status)),
+                .route("/{id}/status", put(MenuController::update_status)),
         )
     }
 }

@@ -21,12 +21,12 @@ impl TokenRouter {
                     get(TokenController::list).post(TokenController::create),
                 )
                 .route(
-                    "/:id",
+                    "/{id}",
                     get(TokenController::info)
                         .put(TokenController::update)
                         .delete(TokenController::delete),
                 )
-                .route("/:id/status", put(TokenController::update_status)),
+                .route("/{id}/status", put(TokenController::update_status)),
         )
     }
 }
