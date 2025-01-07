@@ -47,10 +47,9 @@ where
         + 'static,
     S::Future: Send + 'static,
     S::Error: Send + Sync + std::error::Error + Into<BoxError>,
-    ReqBody: HttpBody<Data = Bytes> + Send + Sync + 'static,
-    ReqBody::Error: std::fmt::Display,
+    ReqBody: HttpBody<Data = Bytes> + Send + 'static,
     ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
-    ResBody::Error: Into<BoxError> + std::fmt::Display,
+    ResBody::Error: Into<BoxError>,
 {
     type Response = S::Response;
     type Error = S::Error;
@@ -87,17 +86,19 @@ where
                 .to_uppercase();
 
             // 获取请求体
-            let (parts, req_body) = req.into_parts();
-            let request_body_bytes = match Self::body_buffer(req_body).await {
+            let (parts, body) = req.into_parts();
+            let request_body_bytes = match Self::body_buffer(body).await {
                 Ok(v) => v,
                 Err(err) => return Ok(create_error_response(err)),
             };
+            let req = Request::from_parts(parts, Body::from(request_body_bytes.clone()).into());
 
             // 添加请求操作日志
             data.cost = start_time.elapsed().as_millis() as u64;
             let body = Self::body_bytes_to_string(&request_body_bytes)
                 .map_or("body data parsing error ".to_string(), |v| v);
             data.body = Some(body);
+
             // 将日志推入数据库
             if let Err(err) =
                 Self::add_api_operation_log(inject_provider.clone(), data.clone()).await
@@ -105,13 +106,10 @@ where
                 return Ok(create_error_response(err));
             }
 
-            // 构建新的请求
-            let req: Request<ReqBody> = Request::from_parts(parts, request_body_bytes);
-
             // 响应
             let fut = inner.call(req).await?;
-            let (parts, resp_body) = fut.into_parts();
-            let request_body_bytes = match Self::body_buffer(resp_body).await {
+            let (parts, body) = fut.into_parts();
+            let request_body_bytes = match Self::body_buffer(body.into()).await {
                 Ok(v) => v,
                 Err(err) => return Ok(create_error_response(err)),
             };
@@ -155,13 +153,6 @@ impl<S> ApiOperationLogMiddlewareService<S> {
         };
 
         Ok(bytes)
-    }
-
-    fn body_to_req_body<B>(v: B) -> B
-    where
-        B: HttpBody<Data = Bytes>,
-    {
-        v
     }
 
     /// 获取请求体的 body

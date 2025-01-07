@@ -16,13 +16,12 @@ use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::{error, info};
 
-use axum_response::ResponseErr;
 use code::Error;
 use service_hub::permission::OpenapiService;
 use service_hub::user::UserRoleRelService;
 use service_hub::{inject::AInjectProvider, user::cached::UserCached};
 
-use crate::constant::AUTH_WHITE_LIST;
+use crate::{constant::AUTH_WHITE_LIST, error::create_error_response};
 
 const MODEL: &str = "
 [request_definition]
@@ -77,12 +76,12 @@ where
     ResBody::Error: Into<BoxError>,
 {
     type Response = S::Response;
-    type Error = BoxError;
+    type Error = S::Error;
     // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
     type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx).map_err(Into::into)
+        self.inner.poll_ready(cx)
     }
 
     fn call(&mut self, req: Request<ReqBody>) -> Self::Future {
@@ -94,9 +93,7 @@ where
             let inject_provider = match req.extensions().get::<AInjectProvider>() {
                 Some(v) => v.clone(),
                 None => {
-                    return Err(Into::into(Box::new(ResponseErr::new(
-                        Error::InjectAproviderObj,
-                    ))))
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
                 }
             };
 
@@ -116,9 +113,7 @@ where
                     // 判断是否已经鉴权, 如果没有则拒绝请求
                     if ctx.get_api_auth_type().is_none() {
                         error!("非法请求");
-                        return Err(Into::into(Box::new(ResponseErr::new(
-                            Error::AuthIllegalRequest,
-                        ))));
+                        return Ok(create_error_response(Error::AuthIllegalRequest.into_msg()));
                     }
 
                     ctx.get_user_id()
@@ -152,7 +147,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("{err:?}");
-                    return Err(Into::into(Box::new(err)));
+                    return Ok(create_error_response(err));
                 }
             };
             // 获取用户角色关系列表
@@ -161,7 +156,7 @@ where
                 Ok((v, _)) => v,
                 Err(err) => {
                     error!("{err:?}");
-                    return Err(Into::into(Box::new(err)));
+                    return Ok(create_error_response(err));
                 }
             };
 
@@ -196,16 +191,16 @@ where
                     Ok(v) => v,
                     Err(err) => {
                         error!("Casbin 策略执行失败, {err:?}");
-                        return Err(Into::into(Box::new(ResponseErr::new(
-                            Error::CasbinEnforceError(err.to_string()),
-                        ))));
+                        return Ok(create_error_response(
+                            Error::CasbinEnforceError(err.to_string()).into_msg(),
+                        ));
                     }
                 };
             if !result {
                 error!("{user_id} {method} {path}, No access permission");
-                return Err(Into::into(Box::new(ResponseErr::new(
-                    Error::CasbinNoAccessPermission,
-                ))));
+                return Ok(create_error_response(
+                    Error::CasbinNoAccessPermission.into_msg(),
+                ));
             }
 
             // 设置缓存

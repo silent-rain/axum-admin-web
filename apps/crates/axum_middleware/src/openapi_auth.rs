@@ -1,5 +1,5 @@
 //! OpenApi权限中间件
-use std::{boxed::Box, convert::Infallible, task::Poll};
+use std::{boxed::Box, task::Poll};
 
 use axum::{
     body::{Body, HttpBody},
@@ -11,7 +11,6 @@ use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::{error, info};
 
-use axum_response::ResponseErr;
 use bytes::Bytes;
 use code::Error;
 use service_hub::{
@@ -19,7 +18,10 @@ use service_hub::{
     user::{cached::UserCached, dto::user_base::UserPermission, UserBaseService},
 };
 
-use crate::constant::{AUTH_WHITE_LIST, OPENAPI_AUTHORIZATION, OPENAPI_PASSPHRASE};
+use crate::{
+    constant::{AUTH_WHITE_LIST, OPENAPI_AUTHORIZATION, OPENAPI_PASSPHRASE},
+    error::create_error_response,
+};
 
 /// OpenApi接口鉴权
 #[derive(Clone)]
@@ -40,24 +42,23 @@ pub struct OpenApiAuthService<S> {
 
 impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for OpenApiAuthService<S>
 where
-    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>, Error = Infallible>
+    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>>
         + Clone
         + Send
         + 'static,
     S::Future: Send + 'static,
+    S::Error: Send + Sync + std::error::Error + Into<BoxError>,
     ReqBody: Send + 'static,
-    Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
     ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
     ResBody::Error: Into<BoxError>,
-    S::Error: Into<BoxError>,
 {
     type Response = S::Response;
-    type Error = BoxError;
+    type Error = S::Error;
     // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
     type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx).map_err(Into::into)
+        self.inner.poll_ready(cx)
     }
 
     fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
@@ -69,9 +70,7 @@ where
             let inject_provider = match req.extensions().get::<AInjectProvider>() {
                 Some(v) => v.clone(),
                 None => {
-                    return Err(Into::into(Box::new(ResponseErr::new(
-                        Error::InjectAproviderObj,
-                    ))))
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
                 }
             };
 
@@ -92,7 +91,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取鉴权标识失败, err: {:#?}", err);
-                    return Err(Into::into(Box::new(err)));
+                    return Ok(create_error_response(err));
                 }
             };
             // 获取缓存
@@ -126,7 +125,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取权限失败, err: {:#?}", err);
-                    return Err(Into::into(Box::new(err)));
+                    return Ok(create_error_response(err));
                 }
             };
 

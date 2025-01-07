@@ -12,7 +12,6 @@ use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::{error, info};
 
-use axum_response::ResponseErr;
 use code::Error;
 use entity::user::user_login_log;
 use jwt::decode_token_with_verify;
@@ -23,7 +22,10 @@ use service_hub::{
     },
 };
 
-use crate::constant::{AUTH_WHITE_LIST, SYSTEM_API_AUTHORIZATION, SYSTEM_API_AUTHORIZATION_BEARER};
+use crate::{
+    constant::{AUTH_WHITE_LIST, SYSTEM_API_AUTHORIZATION, SYSTEM_API_AUTHORIZATION_BEARER},
+    error::create_error_response,
+};
 
 /// 系统接口权限中间件
 #[derive(Clone)]
@@ -55,12 +57,12 @@ where
     ResBody::Error: Into<BoxError>,
 {
     type Response = S::Response;
-    type Error = BoxError;
+    type Error = S::Error;
     // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
     type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx).map_err(Into::into)
+        self.inner.poll_ready(cx)
     }
 
     fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
@@ -72,9 +74,7 @@ where
             let inject_provider = match req.extensions().get::<AInjectProvider>() {
                 Some(v) => v.clone(),
                 None => {
-                    return Err(Into::into(Box::new(ResponseErr::new(
-                        Error::InjectAproviderObj,
-                    ))))
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
                 }
             };
 
@@ -96,7 +96,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取系统鉴权标识 Token 失败, err: {:#?}", err);
-                    return Err(Into::into(Box::new(err)));
+                    return Ok(create_error_response(err));
                 }
             };
             // 解析系统接口Token
@@ -104,7 +104,7 @@ where
                 Ok(v) => v,
                 Err(err) => {
                     error!("检查系统鉴权异常, err: {:#?}", err);
-                    return Err(Into::into(Box::new(err)));
+                    return Ok(create_error_response(err));
                 }
             };
             // 获取缓存
@@ -129,14 +129,16 @@ where
             let user_login_id =
                 match Self::verify_user_login(inject_provider.clone(), system_token).await {
                     Ok(v) => v,
-                    Err(err) => return Err(Into::into(Box::new(err))),
+                    Err(err) => {
+                        return Ok(create_error_response(err));
+                    }
                 };
             // 获取用户权限
             let permission = match Self::user_permission(inject_provider.clone(), user_id).await {
                 Ok(v) => v,
                 Err(err) => {
                     error!("获取权限失败, err: {:#?}", err);
-                    return Err(Into::into(Box::new(err)));
+                    return Ok(create_error_response(err));
                 }
             };
 
@@ -165,10 +167,10 @@ where
 
 impl<S> SystemApiAuthService<S> {
     /// 解析系统接口Token
-    fn parse_system_token(token: String) -> Result<(i32, String), code::Error> {
+    fn parse_system_token(token: String) -> Result<(i32, String), code::ErrorMsg> {
         // 解码 Token
         let claims = decode_token_with_verify(&token)
-            .map_err(|err| code::Error::TokenDecode(err.to_string()))?;
+            .map_err(|err| code::Error::TokenDecode(err.to_string()).into_msg())?;
         Ok((claims.user_id, claims.username))
     }
 

@@ -47,7 +47,7 @@ where
         + 'static,
     S::Future: Send + 'static,
     S::Error: Send + Sync + std::error::Error + Into<BoxError>,
-    ReqBody: HttpBody<Data = Bytes> + Send + Sync + 'static,
+    ReqBody: HttpBody<Data = Bytes> + Send + 'static + From<Bytes>,
     ReqBody::Error: std::fmt::Display,
     ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
     ResBody::Error: Into<BoxError> + std::fmt::Display,
@@ -87,8 +87,8 @@ where
                 .to_uppercase();
 
             // 获取请求体
-            let (parts, req_body) = req.into_parts();
-            let request_body_bytes = match Self::body_buffer(req_body).await {
+            let (parts, body) = req.into_parts();
+            let request_body_bytes = match Self::body_buffer(body).await {
                 Ok(v) => v,
                 Err(err) => return Ok(create_error_response(err)),
             };
@@ -106,12 +106,13 @@ where
             }
 
             // 构建新的请求
-            let req: Request<ReqBody> = Request::from_parts(parts, request_body_bytes);
+            let req_body: ReqBody = ReqBody::from(request_body_bytes.clone());
+            let req: Request<ReqBody> = Request::from_parts(parts, req_body);
 
             // 响应
             let fut = inner.call(req).await?;
-            let (parts, resp_body) = fut.into_parts();
-            let request_body_bytes = match Self::body_buffer(resp_body).await {
+            let (parts, body) = fut.into_parts();
+            let request_body_bytes = match Self::body_buffer(body).await {
                 Ok(v) => v,
                 Err(err) => return Ok(create_error_response(err)),
             };
@@ -155,13 +156,6 @@ impl<S> ApiOperationLogMiddlewareService<S> {
         };
 
         Ok(bytes)
-    }
-
-    fn body_to_req_body<B>(v: B) -> B
-    where
-        B: HttpBody<Data = Bytes>,
-    {
-        v
     }
 
     /// 获取请求体的 body

@@ -7,6 +7,7 @@ use axum::{
     BoxError,
 };
 use axum_context::Context;
+use axum_extra::body::AsyncReadBody;
 use bytes::Bytes;
 use futures::future::BoxFuture;
 use http_body_util::BodyExt;
@@ -106,7 +107,8 @@ where
             }
 
             // 构建新的请求
-            let req: Request<ReqBody> = Request::from_parts(parts, request_body_bytes);
+            let x = AsyncReadBody::new(request_body_bytes);
+            let req = Request::from_parts(parts, x);
 
             // 响应
             let fut = inner.call(req).await?;
