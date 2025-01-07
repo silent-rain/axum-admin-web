@@ -5,13 +5,11 @@ use std::sync::Arc;
 use crate::Context;
 
 use axum::{
-    async_trait,
     extract::FromRequestParts,
     http::{request::Parts, StatusCode},
 };
 use tokio::sync::Mutex;
 
-#[async_trait]
 impl<S> FromRequestParts<S> for Context
 where
     S: Send + Sync,

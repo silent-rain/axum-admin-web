@@ -1,7 +1,7 @@
 //! Json extractor.
 use std::ops::Deref;
 
-use axum::{async_trait, extract::FromRequestParts, http::request::Parts};
+use axum::{extract::FromRequestParts, http::request::Parts};
 use serde::de::DeserializeOwned;
 use tracing::error;
 use validator::Validate;
@@ -34,7 +34,6 @@ impl<T> Deref for Query<T> {
     }
 }
 
-#[async_trait]
 impl<S, T> FromRequestParts<S> for Query<T>
 where
     S: Send + Sync,

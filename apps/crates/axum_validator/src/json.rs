@@ -2,7 +2,6 @@
 use std::ops::Deref;
 
 use axum::{
-    async_trait,
     body::Bytes,
     extract::{FromRequest, Request},
     http::{header, HeaderMap},
@@ -38,7 +37,7 @@ impl<T> Deref for Json<T> {
         &self.0
     }
 }
-#[async_trait]
+
 impl<S, T> FromRequest<S> for Json<T>
 where
     S: Send + Sync,

@@ -35,7 +35,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "app_state",
- "axum",
+ "axum 0.8.1",
  "axum-extra",
  "axum_context",
  "axum_middleware",
@@ -420,9 +420,9 @@ checksum = "8b75356056920673b02621b35afd0f7dda9306d03c79a30f5c56c44cf256e3de"
 
 [[package]]
 name = "async-trait"
-version = "0.1.84"
+version = "0.1.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b1244b10dcd56c92219da4e14caa97e312079e185f04ba3eea25061561dc0a0"
+checksum = "3f934833b4b7233644e5848f235df3f57ed8c80f1528a26c3dfa13d2147fa056"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -448,7 +448,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 name = "auth"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_context",
  "axum_response",
  "chrono",
@@ -489,7 +489,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "edca88bc138befd0323b20752846e6587272d3b03b0343c8ea28a6f819e6e71f"
 dependencies = [
  "async-trait",
- "axum-core",
+ "axum-core 0.4.5",
  "bytes",
  "futures-util",
  "http 1.2.0",
@@ -498,7 +498,41 @@ dependencies = [
  "hyper",
  "hyper-util",
  "itoa",
- "matchit",
+ "matchit 0.7.3",
+ "memchr 2.7.4",
+ "mime",
+ "percent-encoding",
+ "pin-project-lite",
+ "rustversion",
+ "serde",
+ "serde_json",
+ "serde_path_to_error",
+ "serde_urlencoded",
+ "sync_wrapper",
+ "tokio",
+ "tower 0.5.2",
+ "tower-layer",
+ "tower-service",
+ "tracing",
+]
+
+[[package]]
+name = "axum"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d6fd624c75e18b3b4c6b9caf42b1afe24437daaee904069137d8bab077be8b8"
+dependencies = [
+ "axum-core 0.5.0",
+ "bytes",
+ "form_urlencoded",
+ "futures-util",
+ "http 1.2.0",
+ "http-body",
+ "http-body-util",
+ "hyper",
+ "hyper-util",
+ "itoa",
+ "matchit 0.8.4",
  "memchr 2.7.4",
  "mime",
  "multer",
@@ -539,23 +573,41 @@ dependencies = [
 ]
 
 [[package]]
-name = "axum-extra"
-version = "0.9.6"
+name = "axum-core"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c794b30c904f0a1c2fb7740f7df7f7972dfaa14ef6f57cb6178dc63e5dca2f04"
+checksum = "df1362f362fd16024ae199c1970ce98f9661bf5ef94b9808fee734bc3698b733"
 dependencies = [
- "axum",
- "axum-core",
+ "bytes",
+ "futures-util",
+ "http 1.2.0",
+ "http-body",
+ "http-body-util",
+ "mime",
+ "pin-project-lite",
+ "rustversion",
+ "sync_wrapper",
+ "tower-layer",
+ "tower-service",
+ "tracing",
+]
+
+[[package]]
+name = "axum-extra"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "460fc6f625a1f7705c6cf62d0d070794e94668988b1c38111baeec177c715f7b"
+dependencies = [
+ "axum 0.8.1",
+ "axum-core 0.5.0",
  "bytes",
  "cookie",
- "fastrand",
  "futures-util",
  "headers",
  "http 1.2.0",
  "http-body",
  "http-body-util",
  "mime",
- "multer",
  "pin-project-lite",
  "serde",
  "tower 0.5.2",
@@ -565,14 +617,14 @@ dependencies = [
 
 [[package]]
 name = "axum-test"
-version = "16.4.1"
+version = "17.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "63e3a443d2608936a02a222da7b746eb412fede7225b3030b64fe9be99eab8dc"
+checksum = "53f1009889890a439cbf67a4071a2593d027c65209da4faeac5582f28ca9e6c3"
 dependencies = [
  "anyhow",
  "assert-json-diff",
  "auto-future",
- "axum",
+ "axum 0.8.1",
  "bytes",
  "bytesize",
  "cookie",
@@ -597,7 +649,7 @@ dependencies = [
 name = "axum_context"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "bytes",
  "futures",
  "tokio",
@@ -608,7 +660,7 @@ dependencies = [
 name = "axum_middleware"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_context",
  "axum_response",
  "bytes",
@@ -631,7 +683,7 @@ dependencies = [
 name = "axum_mock"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum-test",
  "axum_response",
  "database",
@@ -654,7 +706,7 @@ name = "axum_response"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "axum",
+ "axum 0.8.1",
  "code",
  "serde",
  "serde_json",
@@ -667,18 +719,19 @@ version = "1.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d134d2aeabd596bc82e44748f999c9b0e535a7b756cb36c62df0de6d2445d6e"
 dependencies = [
- "axum",
+ "axum 0.7.9",
  "tower-http 0.5.2",
 ]
 
 [[package]]
 name = "axum_typed_multipart"
-version = "0.14.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b29db77b984912b4ee7396b8f425d4e417e72c631c4ca4ee22120b1c5dcd3c2"
+checksum = "760cf4fe5d984ade7a516ef405df575e6c9fcfab49f20dc64589daa9a447b60a"
 dependencies = [
  "anyhow",
- "axum",
+ "async-trait",
+ "axum 0.8.1",
  "axum_typed_multipart_macros",
  "bytes",
  "chrono",
@@ -693,9 +746,9 @@ dependencies = [
 
 [[package]]
 name = "axum_typed_multipart_macros"
-version = "0.14.0"
+version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87986247727904b1ac050b1191218f4c433afd06ba0a734c47377c21ae192758"
+checksum = "eeffbb473f8141b23eff5deb5ea76d24b23eddefe1a25c3841cc4a3c373b7b53"
 dependencies = [
  "darling",
  "heck 0.5.0",
@@ -709,7 +762,7 @@ dependencies = [
 name = "axum_validator"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_response",
  "code",
  "futures",
@@ -923,9 +976,9 @@ dependencies = [
 
 [[package]]
 name = "casbin"
-version = "2.6.0"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c61a0c04d991df7d819707e615ad1ad44f8b6f9748655b33d9235bffb98da30e"
+checksum = "f1fd3a112ff2930721997b3f2ae7d1912690ded9bb6927d1d910981a24939aed"
 dependencies = [
  "async-trait",
  "fixedbitset",
@@ -940,6 +993,7 @@ dependencies = [
  "serde_json",
  "thiserror 1.0.69",
  "tokio",
+ "wasm-bindgen-test",
 ]
 
 [[package]]
@@ -1032,7 +1086,7 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 name = "code"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "serde",
  "thiserror 2.0.9",
 ]
@@ -2327,7 +2381,7 @@ dependencies = [
 name = "initialize"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_response",
  "code",
  "database",
@@ -2539,7 +2593,7 @@ dependencies = [
 name = "log"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_response",
  "code",
  "database",
@@ -2615,6 +2669,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0e7465ac9959cc2b1404e8e2367b43684a6d13790fe23056cc8c6c5a6b7bcb94"
 
 [[package]]
+name = "matchit"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47e1ffaa40ddd1f3ed91f717a33c8c0ee23fff369e3aa8772b9605cc1d22f4c3"
+
+[[package]]
 name = "matrixmultiply"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2680,6 +2740,16 @@ checksum = "f7c44f8e672c00fe5308fa235f821cb4198414e1c77935c1ab6948d3fd78550e"
 dependencies = [
  "mime",
  "unicase",
+]
+
+[[package]]
+name = "minicov"
+version = "0.3.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f27fe9f1cc3c22e1687f9446c2083c4c5fc7f0bcf1c7a86bdbded14985895b4b"
+dependencies = [
+ "cc",
+ "walkdir",
 ]
 
 [[package]]
@@ -2986,7 +3056,7 @@ dependencies = [
 name = "organization"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_context",
  "axum_response",
  "code",
@@ -3112,7 +3182,7 @@ checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 name = "permission"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_context",
  "axum_response",
  "code",
@@ -3414,7 +3484,7 @@ dependencies = [
 name = "public"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_response",
  "embed_asset",
  "serde",
@@ -3933,7 +4003,7 @@ dependencies = [
 name = "schedule"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_response",
  "code",
  "database",
@@ -4172,9 +4242,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.134"
+version = "1.0.135"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d00f4175c42ee48b15416f6193a959ba3a0d67fc699a0db9ad12df9f83991c7d"
+checksum = "2b0d7ba2887406110130a978386c4e1befb98c674b4fba677954e4db976630d9"
 dependencies = [
  "itoa",
  "memchr 2.7.4",
@@ -4701,7 +4771,7 @@ dependencies = [
 name = "system"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_response",
  "axum_typed_multipart",
  "chrono",
@@ -4750,7 +4820,7 @@ dependencies = [
 name = "template"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum-extra",
  "axum-test",
  "axum_mock",
@@ -5020,7 +5090,7 @@ checksum = "877c5b330756d856ffcc4553ab34a5684481ade925ecc54bcd1bf02b1d0d4d52"
 dependencies = [
  "async-stream",
  "async-trait",
- "axum",
+ "axum 0.7.9",
  "base64 0.22.1",
  "bytes",
  "h2",
@@ -5186,11 +5256,11 @@ checksum = "8df9b6e13f2d32c91b9bd719c00d1958837bc7dec474d94952798cc8e69eeec3"
 
 [[package]]
 name = "tower_governor"
-version = "0.5.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe9ce4d13ec8b7228fa4003e31ea6cfe27b113c9ba51d323aeb4bbe394ef06fe"
+checksum = "57a2ccff6830fa835371af7541e561a90e4c07b84f72991ebac4b3cb6790dc0d"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "forwarded-header-value",
  "governor",
  "http 1.2.0",
@@ -5418,7 +5488,7 @@ dependencies = [
 name = "user"
 version = "0.1.0"
 dependencies = [
- "axum",
+ "axum 0.8.1",
  "axum_context",
  "axum_response",
  "base64 0.22.1",
@@ -5649,6 +5719,31 @@ name = "wasm-bindgen-shared"
 version = "0.2.99"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "943aab3fdaaa029a6e0271b35ea10b72b943135afe9bffca82384098ad0e06a6"
+
+[[package]]
+name = "wasm-bindgen-test"
+version = "0.3.49"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c61d44563646eb934577f2772656c7ad5e9c90fac78aa8013d776fcdaf24625d"
+dependencies = [
+ "js-sys",
+ "minicov",
+ "scoped-tls",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test-macro",
+]
+
+[[package]]
+name = "wasm-bindgen-test-macro"
+version = "0.3.49"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "54171416ce73aa0b9c377b51cc3cb542becee1cd678204812e8392e5b0e4a031"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.95",
+]
 
 [[package]]
 name = "web-sys"
