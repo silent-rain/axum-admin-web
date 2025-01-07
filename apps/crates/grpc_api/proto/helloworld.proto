@@ -1,14 +1,18 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
 package helloworld;
+
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 service Greeter {
   rpc SayHello(HelloRequest) returns (HelloReply) {}
   rpc SayStatus(StatusRequest) returns (google.protobuf.Empty) {}
 }
 
-message HelloRequest { string name = 1; }
+message HelloRequest {
+  string name = 1 [ (validate.rules).string = {min_len : 6, max_len : 10} ];
+}
 
 message HelloReply { string message = 1; }
 

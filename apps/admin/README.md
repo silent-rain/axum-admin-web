@@ -68,6 +68,7 @@ cargo doc -p admin
 - [axum - 生态系统](https://github.com/tokio-rs/axum/blob/main/ECOSYSTEM.md)
 - [rust axum sse keep_alive](https://www.cnblogs.com/soarowl/p/18320061)
 - [SSE(Server Send Event)服务端推送](https://cloud.tencent.com/developer/article/1988605)
+- [tonic examples](https://github.com/hyperium/tonic/tree/master/examples)
 
 - axum错误处理
   - [自定义 extractor](https://www.cnblogs.com/pythonClub/p/17804708.html)

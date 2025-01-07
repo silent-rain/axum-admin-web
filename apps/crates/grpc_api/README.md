@@ -15,3 +15,9 @@ cargo run -p grpc_api --example client
 ## 相关文档
 
 - [grpc 使用示例](https://github.com/davidB/tracing-opentelemetry-instrumentation-sdk/tree/main/examples/grpc)
+
+## QA
+
+### validator
+
+tonic 目前不支持 validator
