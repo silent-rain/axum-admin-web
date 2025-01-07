@@ -1,7 +1,9 @@
 //! 测试
 
+use axum::Extension;
 use axum_response::{Responder, Response};
 use axum_validator::{Json, Query};
+use inject::AInjectProvider;
 
 use crate::dto::axum_validator::{SayHelloReq, SayHelloResp, SayHiReq, SayHiResp};
 
@@ -11,7 +13,10 @@ pub struct AxumValidatorController;
 impl AxumValidatorController {
     /// get sai hello
     /// http://127.0.0.1:3000/api/v1/template/axum-validators/say-hello?name=zhangsan
-    pub async fn say_hello(req: Query<SayHelloReq>) -> Responder<SayHelloResp> {
+    pub async fn say_hello(
+        Extension(_provider): Extension<AInjectProvider>,
+        req: Query<SayHelloReq>,
+    ) -> Responder<SayHelloResp> {
         let result = SayHelloResp {
             msg: format!("say hello: {}", req.name),
         };

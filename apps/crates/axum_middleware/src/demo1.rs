@@ -1,6 +1,7 @@
 //! middleware Demo1
-use std::{boxed::Box, task::Poll};
+use std::{boxed::Box, sync::Arc, task::Poll};
 
+use app_state::AppState;
 use axum::{
     body::{Body, HttpBody},
     extract::Request,
@@ -13,6 +14,7 @@ use tower::{Layer, Service};
 
 use code::Error; // Custom error
 use service_hub::inject::AInjectProvider;
+use tracing::error;
 
 use crate::error::create_error_response;
 
@@ -55,6 +57,13 @@ where
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
         Box::pin(async move {
+            match req.extensions().get::<Extension<Arc<AppState>>>() {
+                Some(_v) => (),
+                None => {
+                    error!("get app state failed");
+                }
+            };
+
             let _inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
                 Some(v) => &v.0,
                 None => {

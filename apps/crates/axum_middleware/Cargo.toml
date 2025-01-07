@@ -11,6 +11,7 @@ jwt = { path = "../core/jwt" }
 axum_context = { path = "../axum_context" }
 service_hub = { path = "../service_hub" }
 axum_response = { path = "../axum_response" }
+app_state = { path = "../app_state" }
 
 axum = { workspace = true }
 tokio = { workspace = true }

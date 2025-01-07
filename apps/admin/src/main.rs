@@ -7,6 +7,7 @@ mod asset;
 mod config;
 mod router;
 
+use app_state::AppState;
 use config::AppConfig;
 use database::PoolTrait;
 use inject::InjectProvider;
@@ -43,6 +44,8 @@ pub async fn main() -> anyhow::Result<()> {
     )
     .await?;
 
+    let state = Arc::new(AppState {});
+
     // Using an Arc to share the provider across multiple threads.
     let inject_provider = Arc::new(InjectProvider::new(Arc::new(db_pool.clone())));
 
@@ -58,7 +61,8 @@ pub async fn main() -> anyhow::Result<()> {
         // ) // 文件服务器, 指定到具体文件才可进行访问
         .fallback(router::fallback) // 用于处理与路由器路由不匹配的任何请求
         .layer(Extension(app_config)) // 全局配置文件
-        .layer(Extension(inject_provider)); // 依赖注入
+        .layer(Extension(inject_provider)) // 依赖注入
+        .layer(Extension(state)); // 全局状态
 
     // Run our application as a hyper server
     let mut listenfd = ListenFd::from_env();

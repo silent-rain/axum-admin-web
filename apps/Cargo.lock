@@ -648,6 +648,7 @@ dependencies = [
 name = "axum_middleware"
 version = "0.1.0"
 dependencies = [
+ "app_state",
  "axum 0.8.1",
  "axum_context",
  "axum_response",

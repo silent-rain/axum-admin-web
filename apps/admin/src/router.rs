@@ -2,7 +2,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use axum::{Extension, Router};
+use axum::Router;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -16,7 +16,6 @@ use tower_http::{
 };
 use tracing::warn;
 
-use app_state::AppState;
 use axum_context::ContextLayer;
 use axum_middleware::{
     api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
@@ -65,8 +64,6 @@ pub async fn shutdown_signal() {
 
 /// 注册路由
 pub fn register() -> Router {
-    let state = AppState {};
-
     // 速率限制
     //允许每个IP地址最多有五个请求的突发, 每两秒钟补充一种元素
     let governor_conf = Arc::new(
@@ -102,7 +99,6 @@ pub fn register() -> Router {
         // .layer(SystemApiAuthLayer) // 系统接口权限中间件
         // .layer(OpenApiAuthLayer) // OpenApi权限中间件
         .layer(Demo1Layer)
-        .layer(Extension(state)) // 扩展
         // propagate the header to the response before the response reaches `TraceLayer`
         .propagate_x_request_id();
 
