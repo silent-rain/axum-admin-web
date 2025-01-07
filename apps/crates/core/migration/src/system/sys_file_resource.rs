@@ -1,5 +1,5 @@
-//! 图片资源表
-//! Entity: [`entity::system::SysImage`]
+//! 文件资源表
+//! Entity: [`entity::system::SysFileResource`]
 
 use sea_orm::{
     sea_query::{ColumnDef, Expr, Table},
@@ -17,53 +17,53 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(SysImage::Table)
-                    .comment("图片资源表")
+                    .table(SysFileResource::Table)
+                    .comment("文件资源表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(SysImage::Id)
+                        ColumnDef::new(SysFileResource::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
                             .not_null()
-                            .comment("图片ID"),
+                            .comment("文件ID"),
                     )
                     .col(
-                        ColumnDef::new(SysImage::Name)
+                        ColumnDef::new(SysFileResource::Name)
                             .string()
                             .string_len(32)
                             .not_null()
-                            .comment("图片名称"),
+                            .comment("文件名称"),
                     )
                     .col(
-                        ColumnDef::new(SysImage::Hash)
+                        ColumnDef::new(SysFileResource::Hash)
                             .string()
                             .string_len(32)
                             .unique_key()
                             .not_null()
-                            .comment("图片HASH值"),
+                            .comment("文件HASH值"),
                     )
                     .col(
-                        ColumnDef::new(SysImage::Data)
+                        ColumnDef::new(SysFileResource::Data)
                             .blob()
                             .not_null()
-                            .comment("图片数据, Base64编码"),
+                            .comment("文件数据, Base64编码"),
                     )
                     .col(
-                        ColumnDef::new(SysImage::Extension)
+                        ColumnDef::new(SysFileResource::Extension)
                             .string()
                             .string_len(10)
                             .not_null()
-                            .comment("图片文件扩展名, 如svg, png"),
+                            .comment("文件文件扩展名, 如svg, png"),
                     )
                     .col(
-                        ColumnDef::new(SysImage::Size)
+                        ColumnDef::new(SysFileResource::Size)
                             .integer()
                             .not_null()
-                            .comment("图片文件大小，单位为字节"),
+                            .comment("文件文件大小，单位为字节"),
                     )
                     .col(
-                        ColumnDef::new(SysImage::Desc)
+                        ColumnDef::new(SysFileResource::Desc)
                             .string()
                             .string_len(200)
                             .null()
@@ -71,7 +71,7 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(SysImage::CreatedAt)
+                        ColumnDef::new(SysFileResource::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -85,14 +85,14 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(SysImage::Table).to_owned())
+            .drop_table(Table::drop().table(SysFileResource::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum SysImage {
-    #[sea_orm(iden = "t_sys_image_resource")]
+pub enum SysFileResource {
+    #[sea_orm(iden = "t_sys_file_resource")]
     Table,
     Id,
     Name,

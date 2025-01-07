@@ -44,7 +44,7 @@ impl MigratorTrait for Migrator {
             Box::new(system::sys_dict_dimension::Migration),
             Box::new(system::sys_dict_data::Migration),
             Box::new(system::sys_image_captcha::Migration),
-            Box::new(system::sys_image_resource::Migration),
+            Box::new(system::sys_file_resource::Migration),
             // 任务调度作业管理
             Box::new(schedule::schedule_job::Migration),
             Box::new(schedule::schedule_status_log::Migration),

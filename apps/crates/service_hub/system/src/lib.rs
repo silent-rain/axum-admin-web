@@ -5,24 +5,24 @@ pub mod dto;
 pub(crate) mod dao;
 pub use dao::{
     config::ConfigDao, dict_data::DictDataDao, dict_dimension::DictDimensionDao,
-    image_captcha::ImageCaptchaDao, image_resource::ImageResourceDao,
+    file_resource::FileResourceDao, image_captcha::ImageCaptchaDao,
 };
 
 pub(crate) mod service;
 pub use service::{
     config::ConfigService, dict_data::DictDataService, dict_dimension::DictDimensionService,
-    image_captcha::ImageCaptchaService, image_resource::ImageResourceService,
+    file_resource::FileResourceService, image_captcha::ImageCaptchaService,
 };
 
 pub(crate) mod controller;
 pub use controller::{
     config::ConfigController, dict_data::DictDataController,
-    dict_dimension::DictDimensionController, image_captcha::ImageCaptchaController,
-    image_resource::ImageResourceController,
+    dict_dimension::DictDimensionController, file_resource::FileResourceController,
+    image_captcha::ImageCaptchaController,
 };
 
 pub(crate) mod router;
 pub use router::{
     config::ConfigRouter, dict_data::DictDataRouter, dict_dimension::DictDimensionRouter,
-    image_captcha::ImageCaptchaRouter, image_resource::ImageResourceRouter, SystemRouter,
+    file_resource::FileResourceRouter, image_captcha::ImageCaptchaRouter, SystemRouter,
 };

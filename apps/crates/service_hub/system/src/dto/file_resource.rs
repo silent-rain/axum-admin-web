@@ -1,15 +1,15 @@
-//! 图片资源管理
+//! 文件资源管理
 
 use axum_typed_multipart::{FieldData, TryFromMultipart};
 use serde::{Deserialize, Serialize};
 use tempfile::NamedTempFile;
 use validator::Validate;
 
-use entity::system::sys_image_resource;
+use entity::system::sys_file_resource;
 
-/// 获取图片列表 请求体
+/// 获取文件列表 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct GetImageResourcesReq {
+pub struct GetFileResourcesReq {
     /// 当前分页
     pub page: u64,
     /// 页面大小
@@ -18,75 +18,75 @@ pub struct GetImageResourcesReq {
     pub start_time: Option<String>,
     /// 结束时间
     pub end_time: Option<String>,
-    /// 图片名称
+    /// 文件名称
     pub name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct GetImageResourcesResp {
-    pub data_list: Vec<sys_image_resource::Model>,
+pub struct GetFileResourcesResp {
+    pub data_list: Vec<sys_file_resource::Model>,
     pub total: u64,
 }
 
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
-pub struct GetImageResourceReq {
-    /// 图片ID
+pub struct GetFileResourceReq {
+    /// 文件ID
     pub id: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct GetImageResourceResp {
+pub struct GetFileResourceResp {
     #[serde(flatten)]
-    data: sys_image_resource::Model,
+    data: sys_file_resource::Model,
 }
 
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
-pub struct ShowImageReq {
-    /// 图片hash值
+pub struct ShowFileReq {
+    /// 文件hash值
     pub hash: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ShowImageResp {
+pub struct ShowFileResp {
     #[serde(flatten)]
-    data: sys_image_resource::Model,
+    data: sys_file_resource::Model,
 }
 
-/// 更新图片 请求体
+/// 更新文件 请求体
 #[derive(Default, Deserialize, Serialize, Validate)]
-pub struct UpdateImageResourceReq {
-    /// 图片ID
+pub struct UpdateFileResourceReq {
+    /// 文件ID
     pub id: i32,
-    /// 图片名称
+    /// 文件名称
     pub name: String,
     /// 描述信息
     pub desc: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateImageResourceResp {}
+pub struct UpdateFileResourceResp {}
 
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
-pub struct DeleteImageResourceReq {
-    /// 图片ID
+pub struct DeleteFileResourceReq {
+    /// 文件ID
     pub id: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteImageResourceResp {}
+pub struct DeleteFileResourceResp {}
 
-/// 批量删除图片 请求体
+/// 批量删除文件 请求体
 #[derive(Default, Deserialize, Validate)]
-pub struct BatchDeleteImageResourceReq {
+pub struct BatchDeleteFileResourceReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteImageResourceResp {}
+pub struct BatchDeleteFileResourceResp {}
 
 #[derive(TryFromMultipart)]
 pub struct UploadFileReq {

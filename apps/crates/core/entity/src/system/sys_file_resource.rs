@@ -1,4 +1,4 @@
-//! 图片资源表
+//! 文件资源表
 
 use sea_orm::{
     prelude::DateTimeLocal, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
@@ -6,23 +6,23 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 
-/// 图片资源表
+/// 文件资源表
 #[derive(Clone, Debug, Default, PartialEq, Eq, Deserialize, Serialize, DeriveEntityModel)]
-#[sea_orm(table_name = "t_sys_image_resource")]
+#[sea_orm(table_name = "t_sys_file_resource")]
 pub struct Model {
-    /// 图片ID
+    /// 文件ID
     #[sea_orm(primary_key)]
     pub id: i32,
-    /// 图片名称
+    /// 文件名称
     pub name: String,
-    /// 图片HASH值
+    /// 文件HASH值
     #[sea_orm(unique)]
     pub hash: String,
-    /// 图片数据, Base64编码
+    /// 文件数据, Base64编码
     pub data: Vec<u8>,
-    /// 图片文件扩展名, 如svg, png
+    /// 文件文件扩展名, 如svg, png
     pub extension: String,
-    /// 图片大小
+    /// 文件大小
     pub size: u16,
     /// 描述信息
     pub desc: Option<String>,
@@ -39,7 +39,7 @@ impl ActiveModelBehavior for ActiveModel {}
 pub mod enums {
     use serde::{Deserialize, Serialize};
 
-    /// ICON图片扩展类型,svg,png
+    /// ICON文件扩展类型,svg,png
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
     #[repr(i8)]
     pub enum ImageType {

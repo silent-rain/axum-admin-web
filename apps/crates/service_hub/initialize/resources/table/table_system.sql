@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS
 
 -- 图片资源表
 CREATE TABLE IF NOT EXISTS
-    `t_sys_image_resource` (
+    `t_sys_file_resource` (
         `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '图片ID',
         `name` VARCHAR(32) NOT NULL COMMENT '图片名称',
         `hash` VARCHAR(32) UNIQUE NOT NULL COMMENT '图片HASH值',
