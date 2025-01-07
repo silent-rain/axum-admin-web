@@ -1,7 +1,15 @@
 //! OpenApi权限中间件
 use std::{boxed::Box, convert::Infallible, task::Poll};
 
-use crate::constant::{AUTH_WHITE_LIST, OPENAPI_AUTHORIZATION, OPENAPI_PASSPHRASE};
+use axum::{
+    body::{Body, HttpBody},
+    http::Request,
+    BoxError,
+};
+use axum_context::{ApiAuthType, Context};
+use futures::future::BoxFuture;
+use tower::{Layer, Service};
+use tracing::{error, info};
 
 use axum_response::ResponseErr;
 use bytes::Bytes;
@@ -11,15 +19,7 @@ use service_hub::{
     user::{cached::UserCached, dto::user_base::UserPermission, UserBaseService},
 };
 
-use axum::{
-    body::{Body, HttpBody},
-    http::Request,
-    BoxError, Extension,
-};
-use axum_context::{ApiAuthType, Context};
-use futures::future::BoxFuture;
-use tower::{Layer, Service};
-use tracing::{error, info};
+use crate::constant::{AUTH_WHITE_LIST, OPENAPI_AUTHORIZATION, OPENAPI_PASSPHRASE};
 
 /// OpenApi接口鉴权
 #[derive(Clone)]
@@ -66,8 +66,8 @@ where
 
         Box::pin(async move {
             // 全局依赖
-            let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => &v.0,
+            let inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v.clone(),
                 None => {
                     return Err(Into::into(Box::new(ResponseErr::new(
                         Error::InjectAproviderObj,

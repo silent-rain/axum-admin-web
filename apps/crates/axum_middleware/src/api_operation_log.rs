@@ -1,18 +1,10 @@
 //! Api 操作日志中间件
 use std::{boxed::Box, convert::Infallible, net::SocketAddr, task::Poll};
 
-use axum_response::ResponseErr;
-use code::{Error, ErrorMsg};
-use entity::log::log_api_operation;
-use service_hub::{
-    inject::AInjectProvider, log::dto::api_operation::CreateApiOperationReq,
-    log::ApiOperationService,
-};
-
 use axum::{
     body::{Body, HttpBody},
     http::{Request, StatusCode},
-    BoxError, Extension,
+    BoxError,
 };
 use axum_context::Context;
 use bytes::Bytes;
@@ -20,6 +12,14 @@ use futures::future::BoxFuture;
 use http_body_util::BodyExt;
 use tower::{Layer, Service};
 use tracing::error;
+
+use axum_response::ResponseErr;
+use code::{Error, ErrorMsg};
+use entity::log::log_api_operation;
+use service_hub::{
+    inject::AInjectProvider, log::dto::api_operation::CreateApiOperationReq,
+    log::ApiOperationService,
+};
 
 /// Api 操作日志中间件
 #[derive(Clone)]
@@ -70,8 +70,8 @@ where
 
         Box::pin(async move {
             // 全局依赖
-            let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => &v.0.clone(),
+            let inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v.clone(),
                 None => {
                     return Err(Into::into(Box::new(ResponseErr::new(
                         Error::InjectAproviderObj,

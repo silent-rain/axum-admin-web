@@ -1,16 +1,10 @@
 //! RBAC 鉴权
 use std::{boxed::Box, task::Poll};
 
-use axum_response::ResponseErr;
-use code::Error;
-use service_hub::permission::OpenapiService;
-use service_hub::user::UserRoleRelService;
-use service_hub::{inject::AInjectProvider, user::cached::UserCached};
-
 use axum::{
     body::{Body, HttpBody},
     http::Request,
-    BoxError, Extension,
+    BoxError,
 };
 use axum_context::Context;
 use bytes::Bytes;
@@ -21,6 +15,12 @@ use casbin::{
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::{error, info};
+
+use axum_response::ResponseErr;
+use code::Error;
+use service_hub::permission::OpenapiService;
+use service_hub::user::UserRoleRelService;
+use service_hub::{inject::AInjectProvider, user::cached::UserCached};
 
 use crate::constant::AUTH_WHITE_LIST;
 
@@ -91,12 +91,12 @@ where
 
         Box::pin(async move {
             // 全局依赖
-            let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => &v.0,
+            let inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v.clone(),
                 None => {
                     return Err(Into::into(Box::new(ResponseErr::new(
                         Error::InjectAproviderObj,
-                    ))));
+                    ))))
                 }
             };
 

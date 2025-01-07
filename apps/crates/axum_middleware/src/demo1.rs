@@ -5,7 +5,7 @@ use app_state::AppState;
 use axum::{
     body::{Body, HttpBody},
     extract::Request,
-    BoxError, Extension,
+    BoxError,
 };
 use axum_context::{ApiAuthType, Context};
 use bytes::Bytes;
@@ -57,15 +57,15 @@ where
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
         Box::pin(async move {
-            match req.extensions().get::<Extension<Arc<AppState>>>() {
+            match req.extensions().get::<Arc<AppState>>() {
                 Some(_v) => (),
                 None => {
                     error!("get app state failed");
                 }
             };
 
-            let _inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => &v.0,
+            let _inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v,
                 None => {
                     let resp = create_error_response(Error::InjectAproviderObj.into_msg());
                     return Ok(resp);

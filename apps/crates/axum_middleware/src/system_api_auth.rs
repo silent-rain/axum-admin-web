@@ -4,7 +4,7 @@ use std::{boxed::Box, task::Poll};
 use axum::{
     body::{Body, HttpBody},
     extract::Request,
-    BoxError, Extension,
+    BoxError,
 };
 use axum_context::{ApiAuthType, Context};
 use bytes::Bytes;
@@ -69,12 +69,12 @@ where
 
         Box::pin(async move {
             // 全局依赖
-            let inject_provider = match req.extensions().get::<Extension<AInjectProvider>>() {
-                Some(v) => &v.0,
+            let inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v.clone(),
                 None => {
                     return Err(Into::into(Box::new(ResponseErr::new(
                         Error::InjectAproviderObj,
-                    ))));
+                    ))))
                 }
             };
 
