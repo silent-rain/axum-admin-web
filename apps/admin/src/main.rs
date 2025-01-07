@@ -30,6 +30,7 @@ pub async fn main() -> anyhow::Result<()> {
     let app_config = AppConfig::new("config.yaml")?;
 
     // 初始化日志
+    // let _guards = logger::Logger::build(&conf.logger).expect("初始化日志失败");
     tracing_subscriber::fmt()
         .compact()
         .with_max_level(tracing::Level::TRACE)
@@ -43,6 +44,9 @@ pub async fn main() -> anyhow::Result<()> {
         app_config.postgresql.options.clone(),
     )
     .await?;
+
+    // 定时任务
+    // TimerRegister::start(db_pool.clone());
 
     let state = Arc::new(AppState {});
 
