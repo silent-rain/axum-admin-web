@@ -81,9 +81,12 @@ pub async fn main() -> anyhow::Result<()> {
         listener.local_addr()?.to_string().yellow()
     );
     // Run the server with graceful shutdown
-    axum::serve(listener, app.into_make_service())
-        .with_graceful_shutdown(router::shutdown_signal())
-        .await?;
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .with_graceful_shutdown(router::shutdown_signal())
+    .await?;
 
     // 关闭数据库
     let _ = db_pool.close().await;

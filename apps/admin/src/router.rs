@@ -1,6 +1,6 @@
 //! 路由
 
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 
 use axum::{error_handling::HandleErrorLayer, http::StatusCode, BoxError, Extension, Router};
 use tokio::signal;
@@ -76,7 +76,7 @@ pub fn register() -> Router {
 
     // 速率限制
     //允许每个IP地址最多有五个请求的突发, 每两秒钟补充一种元素
-    let governor_conf = Box::new(
+    let governor_conf = Arc::new(
         GovernorConfigBuilder::default()
             .per_second(2)
             .burst_size(5)
@@ -84,7 +84,7 @@ pub fn register() -> Router {
             .expect("init governor config failed"),
     );
     let governor_layer = GovernorLayer {
-        config: governor_conf.into(),
+        config: governor_conf,
     };
 
     // 注意中间件加载顺序: Last in, first loading
@@ -100,7 +100,7 @@ pub fn register() -> Router {
         ) // 高级跟踪/记录
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(CompressionLayer::new()) // 自动压缩响应
-        // .layer(governor_layer) // 速率限制
+        .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
         // .layer(ContextLayer::new()) // 上下文
