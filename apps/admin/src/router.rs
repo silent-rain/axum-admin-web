@@ -18,7 +18,7 @@ use tracing::warn;
 
 use axum_context::ContextLayer;
 use axum_middleware::{
-    api_operation_log::api_operation_log_middleware, casbin_auth::CasbinAuthLayer,
+    api_operation_log_fn::api_operation_log_middleware, casbin_auth::CasbinAuthLayer,
     cors::cors_layer, openapi_auth::OpenApiAuthLayer, system_api_auth::SystemApiAuthLayer,
 };
 use service_hub::{

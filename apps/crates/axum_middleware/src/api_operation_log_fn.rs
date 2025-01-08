@@ -1,122 +1,73 @@
 //! Api 操作日志中间件
-//! 失败的示例： expected `Response<Body>`, found `Response<ResponseBody<...>>`
-use std::{boxed::Box, net::SocketAddr, task::Poll, time::Instant};
+
+use std::{net::SocketAddr, time::Instant};
 
 use axum::{
     body::Body,
     extract::Request,
-    http::{Response, StatusCode},
-    BoxError,
+    http::StatusCode,
+    middleware::Next,
+    response::{IntoResponse, Response},
 };
-use axum_context::Context;
 use bytes::Bytes;
-use futures::future::BoxFuture;
 use http_body_util::BodyExt;
-use tower::{Layer, Service};
 use tracing::error;
 
+use axum_context::Context;
+use axum_response::ResponseErr;
 use code::{Error, ErrorMsg};
 use entity::log::log_api_operation;
 use service_hub::{
-    inject::AInjectProvider, log::dto::api_operation::CreateApiOperationReq,
-    log::ApiOperationService,
+    inject::AInjectProvider,
+    log::{dto::api_operation::CreateApiOperationReq, ApiOperationService},
 };
 
-use crate::error::create_error_response;
-
 /// Api 操作日志中间件
-#[derive(Clone)]
-pub struct ApiOperationLogLayer;
+/// ```
+/// .layer(axum::middleware::from_fn(api_operation_log_middleware))
+/// ```
+pub async fn api_operation_log_middleware(
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse, ResponseErr> {
+    let mut api_log = ApiOperationLog::new(&request)
+        .map_err(Into::<ResponseErr>::into)?
+        .parse_req_info(&request);
 
-impl<S> Layer<S> for ApiOperationLogLayer {
-    type Service = ApiOperationLogMiddlewareService<S>;
+    // 获取缓存的 req body bytes
+    let (parts, body) = request.into_parts();
 
-    fn layer(&self, inner: S) -> Self::Service {
-        ApiOperationLogMiddlewareService { inner }
-    }
-}
+    let body_bytes = buffer_request_body(body).await?;
 
-#[derive(Clone)]
-pub struct ApiOperationLogMiddlewareService<S> {
-    inner: S,
-}
+    // 创建请求体日志
+    api_log = api_log
+        .parse_req_body(body_bytes.clone())
+        .create_api_operation_log()
+        .await
+        .map_err(Into::<ResponseErr>::into)?;
 
-impl<S> Service<Request> for ApiOperationLogMiddlewareService<S>
-where
-    S: Service<Request, Response = axum::response::Response> + Clone + Send + 'static,
-    S::Future: Send + 'static,
-    S::Error: Send + Sync + std::error::Error + Into<BoxError>,
-{
-    type Response = S::Response;
-    type Error = S::Error;
-    // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
-    type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
+    // 重新构建请求
+    let request = Request::from_parts(parts, Body::from(body_bytes));
 
-    fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx)
-    }
+    // 响应
+    let resp = next.run(request).await;
 
-    fn call(&mut self, req: Request) -> Self::Future {
-        let not_ready_inner = self.inner.clone();
-        let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
+    let status_code = resp.status();
 
-        Box::pin(async move {
-            let mut api_log = match ApiOperationLog::new(&req) {
-                Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
-            };
+    let (parts, body) = resp.into_parts();
 
-            api_log = api_log.parse_req_info(&req);
+    // 获取缓存的 resp body bytes
+    let body_bytes = buffer_request_body(body).await?;
 
-            // 获取缓存的 req body bytes
-            let (parts, body) = req.into_parts();
+    // 创建响应体日志
+    api_log
+        .parse_resp_body(body_bytes.clone(), status_code)
+        .create_api_operation_log()
+        .await
+        .map_err(Into::<ResponseErr>::into)?;
 
-            let body_bytes = match buffer_request_body(body).await {
-                Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
-            };
-
-            // 创建请求体日志
-            api_log = match api_log
-                .parse_req_body(body_bytes.clone())
-                .create_api_operation_log()
-                .await
-            {
-                Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
-            };
-
-            // 重新构建请求
-            let req = Request::from_parts(parts, Body::from(body_bytes));
-
-            // 响应
-            let resp = inner.call(req).await?;
-
-            let status_code = resp.status();
-
-            let (parts, body) = resp.into_parts();
-
-            // 获取缓存的 resp body bytes
-            let body_bytes = match buffer_request_body(body).await {
-                Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
-            };
-
-            // 创建响应体日志
-            match api_log
-                .parse_resp_body(body_bytes.clone(), status_code)
-                .create_api_operation_log()
-                .await
-            {
-                Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
-            };
-
-            let res = Response::from_parts(parts, Body::from(body_bytes));
-
-            Ok(res)
-        })
-    }
+    let res = Response::from_parts(parts, Body::from(body_bytes));
+    Ok(res)
 }
 
 /// the trick is to take the request apart, buffer the body, do what you need to do, then put
