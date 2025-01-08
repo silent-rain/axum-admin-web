@@ -72,6 +72,13 @@ impl MigrationTrait for Migration {
                             .comment("请求地址路径"),
                     )
                     .col(
+                        ColumnDef::new(LogApiOperation::ContentType)
+                            .string()
+                            .string_len(100)
+                            .not_null()
+                            .comment("Content-Type"),
+                    )
+                    .col(
                         ColumnDef::new(LogApiOperation::Query)
                             .string()
                             .string_len(500)
@@ -154,6 +161,7 @@ pub enum LogApiOperation {
     StatusCode,
     Method,
     Path,
+    ContentType,
     Query,
     Body,
     RemoteAddr,

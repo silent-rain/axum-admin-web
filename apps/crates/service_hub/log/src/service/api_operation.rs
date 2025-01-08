@@ -70,6 +70,7 @@ impl ApiOperationService {
             status_code: Set(req.status_code),
             method: Set(req.method),
             path: Set(req.path),
+            content_type: Set(req.content_type),
             query: Set(req.query),
             body: Set(req.body),
             remote_addr: Set(req.remote_addr),
