@@ -1,45 +1,51 @@
-//! 无错误返回的模板
-use std::{convert::Infallible, task::Poll};
+//! 通用中间件写法
+use std::{boxed::Box, sync::Arc, task::Poll};
 
+use app_state::AppState;
 use axum::{
-    body::HttpBody,
-    http::{Request, Response},
+    body::{Body, HttpBody},
+    extract::Request,
     BoxError,
 };
+use axum_context::{ApiAuthType, Context};
 use bytes::Bytes;
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
+
+use code::Error; // Custom error
+use service_hub::inject::AInjectProvider;
+use tracing::error;
+
+use crate::error::create_error_response;
 
 #[derive(Clone)]
 pub struct Template3Layer;
 
 impl<S> Layer<S> for Template3Layer {
-    type Service = TimeoutService<S>;
+    type Service = TemplateService<S>;
 
     fn layer(&self, inner: S) -> Self::Service {
-        TimeoutService { inner }
+        TemplateService { inner }
     }
 }
 
 #[derive(Clone)]
-pub struct TimeoutService<S> {
+pub struct TemplateService<S> {
     inner: S,
 }
 
-impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for TimeoutService<S>
+impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for TemplateService<S>
 where
-    S: Service<Request<ReqBody>, Response = Response<ResBody>, Error = Infallible>
-        + Clone
-        + Send
-        + 'static,
+    S: Service<Request<ReqBody>, Response = axum::http::Response<ResBody>> + Clone + Send + 'static,
     S::Future: Send + 'static,
+    S::Error: Send + Sync + std::error::Error + Into<BoxError>,
     ReqBody: Send + 'static,
-    Infallible: From<<S as Service<Request<ReqBody>>>::Error>,
-    ResBody: HttpBody<Data = Bytes> + Default + Send + 'static,
+    ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
     ResBody::Error: Into<BoxError>,
 {
-    type Response = Response<ResBody>;
-    type Error = Infallible;
+    type Response = S::Response;
+    type Error = S::Error;
+    // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
     type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
@@ -48,11 +54,36 @@ where
 
     fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
         let not_ready_inner = self.inner.clone();
-        let mut ready_inner = std::mem::replace(&mut self.inner, not_ready_inner);
+        let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
         Box::pin(async move {
-            // todo
-            ready_inner.call(req).await
+            match req.extensions().get::<Arc<AppState>>() {
+                Some(_v) => (),
+                None => {
+                    error!("get app state failed");
+                }
+            };
+
+            let _inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v,
+                None => {
+                    let resp = create_error_response(Error::InjectAproviderObj.into_msg());
+                    return Ok(resp);
+                }
+            };
+
+            // ...
+
+            if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
+                ctx.set_user_id(1);
+                ctx.set_user_name("demo".to_owned());
+                ctx.set_api_auth_type(ApiAuthType::Openapi);
+            }
+
+            // ...
+
+            let resp = inner.call(req).await?;
+            Ok(resp)
         })
     }
 }

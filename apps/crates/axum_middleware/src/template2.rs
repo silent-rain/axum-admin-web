@@ -1,111 +1,83 @@
-//!  返回自定义错误的模板
-use std::fmt;
-use std::future::Future;
-use std::pin::Pin;
-use std::task::{Context, Poll};
-use std::time::Duration;
+//! axum 原生 Request<Body>
+//! 不兼容 RequestBodyLimitLayer 这类子自定义 Body 类型
+use std::{sync::Arc, task::Poll};
 
-use pin_project::pin_project;
-use tokio::time::Sleep;
+use axum::{body::Body, extract::Request, http::Response};
+use futures::future::BoxFuture;
 use tower::{BoxError, Layer, Service};
+use tracing::error;
 
-#[derive(Debug, Default, Clone)]
-pub struct TimeoutLayer2 {
-    timeout: Duration,
-}
+use app_state::AppState;
+use axum_context::{ApiAuthType, Context};
+use code::Error;
+use service_hub::inject::AInjectProvider;
 
-impl TimeoutLayer2 {
-    pub fn new(timeout: Duration) -> Self {
-        TimeoutLayer2 { timeout }
-    }
-}
+use crate::error::create_error_response;
 
-impl<S> Layer<S> for TimeoutLayer2 {
-    type Service = Timeout<S>;
+#[derive(Clone)]
+pub struct Template2Layer;
+
+impl<S> Layer<S> for Template2Layer {
+    type Service = TimeoutService<S>;
 
     fn layer(&self, inner: S) -> Self::Service {
-        Timeout {
-            inner,
-            timeout: self.timeout,
-        }
+        TimeoutService { inner }
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Timeout<S> {
+#[derive(Clone)]
+pub struct TimeoutService<S> {
     inner: S,
-    timeout: Duration,
 }
 
-impl<S, Request> Service<Request> for Timeout<S>
+impl<S> Service<Request> for TimeoutService<S>
 where
-    S: Service<Request>,
+    S: Service<Request> + Clone + Send + 'static,
+    S::Future: Send + 'static,
     S::Error: Into<BoxError>,
+    S::Response: Into<Response<Body>>,
 {
-    type Response = S::Response;
-    type Error = BoxError;
-    type Future = ResponseFuture<S::Future>;
+    type Response = Response<Body>;
+    type Error = S::Error;
+    // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
+    type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
-    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx).map_err(Into::into)
+    fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
+        self.inner.poll_ready(cx)
     }
 
-    fn call(&mut self, request: Request) -> Self::Future {
-        let response_future = self.inner.call(request);
-        let sleep = tokio::time::sleep(self.timeout);
+    fn call(&mut self, mut req: Request) -> Self::Future {
+        let not_ready_inner = self.inner.clone();
+        let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
-        ResponseFuture {
-            response_future,
-            sleep,
-        }
-    }
-}
+        Box::pin(async move {
+            match req.extensions().get::<Arc<AppState>>() {
+                Some(_v) => (),
+                None => {
+                    error!("get app state failed");
+                }
+            };
 
-#[pin_project]
-pub struct ResponseFuture<F> {
-    #[pin]
-    response_future: F,
-    #[pin]
-    sleep: Sleep,
-}
+            let _inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v,
+                None => {
+                    let resp = create_error_response(Error::InjectAproviderObj.into_msg());
+                    return Ok(resp);
+                }
+            };
 
-impl<F, Response, Error> Future for ResponseFuture<F>
-where
-    F: Future<Output = Result<Response, Error>>,
-    Error: Into<BoxError>,
-{
-    type Output = Result<Response, BoxError>;
+            // ...
 
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        let this = self.project();
-
-        match this.response_future.poll(cx) {
-            Poll::Ready(result) => {
-                let result = result.map_err(Into::into);
-                return Poll::Ready(result);
+            if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
+                ctx.set_user_id(1);
+                ctx.set_user_name("demo".to_owned());
+                ctx.set_api_auth_type(ApiAuthType::Openapi);
             }
-            Poll::Pending => {}
-        }
 
-        match this.sleep.poll(cx) {
-            Poll::Ready(()) => {
-                let error = Box::new(TimeoutError());
-                return Poll::Ready(Err(error));
-            }
-            Poll::Pending => {}
-        }
+            // ...
 
-        Poll::Pending
+            let resp = inner.call(req).await?.into();
+            Ok(resp)
+        })
     }
 }
-
-#[derive(Debug, Default)]
-struct TimeoutError();
-
-impl fmt::Display for TimeoutError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.pad("request timed out")
-    }
-}
-
-impl std::error::Error for TimeoutError {}

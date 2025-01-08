@@ -2,17 +2,12 @@
 pub mod constant;
 pub mod error;
 
-pub mod api_operation_log;
+// pub mod api_operation_log;
 pub mod casbin_auth;
 pub mod cors;
 pub mod openapi_auth;
 pub mod system_api_auth;
 
-// pub mod template;
-// pub mod template2;
+// pub mod template1;
+pub mod template2;
 // pub mod template3;
-// pub mod template4;
-// pub mod template5;
-pub mod demo1;
-pub mod demo2;
-pub mod template6;

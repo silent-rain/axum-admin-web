@@ -18,8 +18,12 @@ use tracing::warn;
 
 use axum_context::ContextLayer;
 use axum_middleware::{
-    api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
-    demo1::Demo1Layer, openapi_auth::OpenApiAuthLayer, system_api_auth::SystemApiAuthLayer,
+    // api_operation_log::ApiOperationLogLayer,
+    casbin_auth::CasbinAuthLayer,
+    cors::cors_layer,
+    openapi_auth::OpenApiAuthLayer,
+    system_api_auth::SystemApiAuthLayer,
+    template2::Template2Layer,
 };
 use service_hub::{
     auth::AuthRouter, initialize::InitializeRouter, log::LogRouter,
@@ -95,11 +99,11 @@ pub fn register() -> Router {
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(ContextLayer::new()) // 上下文
-        .layer(ApiOperationLogLayer) // Api 操作日志中间件
+        // .layer(ApiOperationLogLayer) // Api 操作日志中间件
         .layer(SystemApiAuthLayer) // 系统接口权限中间件
         .layer(OpenApiAuthLayer) // OpenApi权限中间件
         .layer(CasbinAuthLayer) // RBAC 鉴权
-        .layer(Demo1Layer)
+        // .layer(Template2Layer)
         // propagate the header to the response before the response reaches `TraceLayer`
         .propagate_x_request_id();
 
