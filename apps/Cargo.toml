@@ -80,6 +80,7 @@ tracing-appender = "0.2"
 tracing-bunyan-formatter = "0.3"
 tracing-error = "0.2"
 color-eyre = "0.6"
+axum-prometheus = "0.8.0"
 
 
 # 加密

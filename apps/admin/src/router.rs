@@ -2,7 +2,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use axum::{extract::DefaultBodyLimit, Router};
+use axum::{extract::DefaultBodyLimit, routing::get, Router};
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -19,7 +19,8 @@ use tracing::warn;
 use axum_context::ContextLayer;
 use axum_middleware::{
     api_operation_log_fn::api_operation_log_middleware, casbin_auth::CasbinAuthLayer,
-    cors::cors_layer, openapi_auth::OpenApiAuthLayer, system_api_auth::SystemApiAuthLayer,
+    cors::cors_layer, openapi_auth::OpenApiAuthLayer, prometheus::prometheus_layer_metric_handle,
+    system_api_auth::SystemApiAuthLayer,
 };
 use service_hub::{
     auth::AuthRouter, initialize::InitializeRouter, log::LogRouter,
@@ -77,6 +78,9 @@ pub fn register() -> Router {
         config: governor_conf,
     };
 
+    // prometheus
+    let (prometheus_layer, prometheus_metric_handle) = prometheus_layer_metric_handle();
+
     // 注意中间件加载顺序: Last in, first loading
     let layers = ServiceBuilder::new()
         // make sure to set request ids before the request reaches `TraceLayer`
@@ -91,6 +95,7 @@ pub fn register() -> Router {
         .layer(DefaultBodyLimit::disable()) // Disable the default limit
         .layer(axum::middleware::from_fn(api_operation_log_middleware)) // Api 操作日志中间件
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
+        .layer(prometheus_layer) // 速率限制
         .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
@@ -113,5 +118,9 @@ pub fn register() -> Router {
         .merge(LogRouter::register()) // 日志管理
         .merge(InitializeRouter::register()) // 库表资源初始化管理
         .merge(TemplateRouter::register()) // 模板管理
+        .route(
+            "/metrics",
+            get(|| async move { prometheus_metric_handle.render() }),
+        ) // prometheus metric
         .layer(layers)
 }

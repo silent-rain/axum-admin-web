@@ -24,6 +24,7 @@ tracing = { workspace = true }
 serde_json = { workspace = true }
 bytes = { workspace = true }
 pin-project = { workspace = true }
+axum-prometheus = { workspace = true }
 
 
 [dev-dependencies]
