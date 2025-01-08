@@ -25,11 +25,11 @@
 
 - [x] 热重启
 - [x] 内嵌 Web 服务
-- [ ] 日志
+- [x] 日志
   - [x] 终端日志
   - [x] 文件日志
   - [x] 数据库日志
-  - [ ] OpenTelemetry 日志
+  - [ ] [OpenTelemetry 日志](https://github.com/davidB/tracing-opentelemetry-instrumentation-sdk)
 - [x] 自定义业务状态码
 - [x] 数据库
   - [x] 迁移库表
@@ -114,14 +114,14 @@
 
 ## 待办
 
-- axum 扩展考量改为 state
-  - <https://docs.rs/axum/0.8.1/axum/extract/struct.State.html>
 - sql使用模型转换位postgresql与sqlite3
 - orm更新时间问题
 - 下载文件:
   - <https://github.com/tokio-rs/axum/discussions/608>
 - 如何托管 SPA 文件并将文件嵌入到可执行文件中？
   - <https://github.com/tokio-rs/axum/discussions/1309>
+- curd 设计参考
+  - <https://github.com/zenlex/crustd/blob/main/src/crud_traits.rs>
 - 定时器-用户任务
 - doc 文档，细化为接口文档；
 - 用户权限封装；
