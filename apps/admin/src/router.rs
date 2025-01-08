@@ -18,8 +18,8 @@ use tracing::warn;
 
 use axum_context::ContextLayer;
 use axum_middleware::{
-    api_operation_log_fn::api_operation_log_middleware, casbin_auth::CasbinAuthLayer,
-    cors::cors_layer, openapi_auth::OpenApiAuthLayer, prometheus::prometheus_layer_metric_handle,
+    api_operation_log_fn::api_operation_log_layer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
+    openapi_auth::OpenApiAuthLayer, prometheus::prometheus_layer_metric_handle,
     system_api_auth::SystemApiAuthLayer,
 };
 use service_hub::{
@@ -94,7 +94,7 @@ pub fn register() -> Router {
         ) // 高级跟踪/记录
         .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(ContextLayer::new()) // 上下文
-        .layer(axum::middleware::from_fn(api_operation_log_middleware)) // Api 操作日志中间件
+        .layer(axum::middleware::from_fn(api_operation_log_layer)) // Api 操作日志中间件
         .layer(DefaultBodyLimit::disable()) // Disable the default limit
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(prometheus_layer) // 速率限制
