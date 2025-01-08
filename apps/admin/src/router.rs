@@ -92,15 +92,15 @@ pub fn register() -> Router {
                 .make_span_with(DefaultMakeSpan::new().include_headers(true))
                 .on_response(DefaultOnResponse::new().include_headers(true)),
         ) // 高级跟踪/记录
-        .layer(DefaultBodyLimit::disable()) // Disable the default limit
+        .layer(cors_layer()) // 为CORS添加标头的中间件
+        .layer(ContextLayer::new()) // 上下文
         .layer(axum::middleware::from_fn(api_operation_log_middleware)) // Api 操作日志中间件
+        .layer(DefaultBodyLimit::disable()) // Disable the default limit
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(prometheus_layer) // 速率限制
         .layer(CompressionLayer::new()) // 自动压缩响应
-        .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
-        .layer(cors_layer()) // 为CORS添加标头的中间件
-        .layer(ContextLayer::new()) // 上下文
+        .layer(governor_layer) // 速率限制
         .layer(SystemApiAuthLayer) // 系统接口权限中间件
         .layer(OpenApiAuthLayer) // OpenApi权限中间件
         .layer(CasbinAuthLayer) // RBAC 鉴权

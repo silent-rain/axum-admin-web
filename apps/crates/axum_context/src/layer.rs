@@ -30,9 +30,9 @@ pub struct ContextService<S> {
     inner: S,
 }
 
-impl<S, B> Service<Request<B>> for ContextService<S>
+impl<S> Service<Request> for ContextService<S>
 where
-    S: Service<Request<B>>,
+    S: Service<Request>,
 {
     type Response = S::Response;
     type Error = S::Error;
@@ -42,7 +42,7 @@ where
         self.inner.poll_ready(cx)
     }
 
-    fn call(&mut self, mut req: Request<B>) -> Self::Future {
+    fn call(&mut self, mut req: Request) -> Self::Future {
         // Do something with `self.state`.
         //
         // See `axum::RequestExt` for how to run extractors directly from

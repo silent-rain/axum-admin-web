@@ -1,7 +1,6 @@
 //! 测试
 
-use axum::Extension;
-use axum_response::{Responder, Response};
+use axum_response::{Extension, Responder, Response};
 use axum_validator::{Json, Query};
 use inject::AInjectProvider;
 
