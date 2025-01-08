@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS
         `status_code` INT(10) NOT NULL COMMENT '请求状态码',
         `method` VARCHAR(10) NOT NULL COMMENT '请求方法',
         `path` VARCHAR(500) NOT NULL COMMENT '请求地址路径',
+        `content_type` VARCHAR(100) NOT NULL COMMENT 'Content-Type',
         `query` VARCHAR(500) NULL DEFAULT '' COMMENT '请求参数',
         `body` TEXT NULL COMMENT '请求体/响应体',
         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '请求IP',
