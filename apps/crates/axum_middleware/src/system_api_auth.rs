@@ -1,13 +1,8 @@
 //! 系统接口权限中间件
 use std::{boxed::Box, task::Poll};
 
-use axum::{
-    body::{Body, HttpBody},
-    extract::Request,
-    BoxError,
-};
+use axum::{body::Body, extract::Request, http::Response};
 use axum_context::{ApiAuthType, Context};
-use bytes::Bytes;
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::{error, info};
@@ -44,17 +39,11 @@ pub struct SystemApiAuthService<S> {
     inner: S,
 }
 
-impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for SystemApiAuthService<S>
+impl<S> Service<Request> for SystemApiAuthService<S>
 where
-    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>>
-        + Clone
-        + Send
-        + 'static,
+    S: Service<Request, Response = Response<Body>> + Clone + Send + 'static,
     S::Future: Send + 'static,
-    S::Error: Send + Sync + std::error::Error + Into<BoxError>,
-    ReqBody: Send + 'static,
-    ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
-    ResBody::Error: Into<BoxError>,
+    S::Error: Send + Sync,
 {
     type Response = S::Response;
     type Error = S::Error;
@@ -65,7 +54,7 @@ where
         self.inner.poll_ready(cx)
     }
 
-    fn call(&mut self, mut req: Request<ReqBody>) -> Self::Future {
+    fn call(&mut self, mut req: Request) -> Self::Future {
         let not_ready_inner = self.inner.clone();
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 

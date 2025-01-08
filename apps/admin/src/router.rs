@@ -18,9 +18,9 @@ use tracing::warn;
 
 use axum_context::ContextLayer;
 use axum_middleware::{
-    api_operation_log_fn::api_operation_log_layer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
-    openapi_auth::OpenApiAuthLayer, prometheus::prometheus_layer_metric_handle,
-    system_api_auth::SystemApiAuthLayer,
+    api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
+    empty_wrapper_fn::empty_wrapper_layer, openapi_auth::OpenApiAuthLayer,
+    prometheus::prometheus_layer_metric_handle, system_api_auth::SystemApiAuthLayer,
 };
 use service_hub::{
     auth::AuthRouter, initialize::InitializeRouter, log::LogRouter,
@@ -92,18 +92,19 @@ pub fn register() -> Router {
                 .make_span_with(DefaultMakeSpan::new().include_headers(true))
                 .on_response(DefaultOnResponse::new().include_headers(true)),
         ) // 高级跟踪/记录
-        .layer(cors_layer()) // 为CORS添加标头的中间件
-        .layer(ContextLayer::new()) // 上下文
-        .layer(axum::middleware::from_fn(api_operation_log_layer)) // Api 操作日志中间件
-        .layer(DefaultBodyLimit::disable()) // Disable the default limit
-        .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         .layer(prometheus_layer) // 速率限制
+        .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(CompressionLayer::new()) // 自动压缩响应
-        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(governor_layer) // 速率限制
+        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
+        .layer(ContextLayer::new()) // 上下文
+        .layer(ApiOperationLogLayer) // Api 操作日志中间件
         .layer(SystemApiAuthLayer) // 系统接口权限中间件
         .layer(OpenApiAuthLayer) // OpenApi权限中间件
         .layer(CasbinAuthLayer) // RBAC 鉴权
+        .layer(axum::middleware::from_fn(empty_wrapper_layer)) // 空包装
+        .layer(DefaultBodyLimit::disable()) // Disable the default limit
+        .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         // propagate the header to the response before the response reaches `TraceLayer`
         .propagate_x_request_id();
 

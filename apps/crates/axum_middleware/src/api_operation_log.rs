@@ -6,7 +6,6 @@ use axum::{
     body::Body,
     extract::Request,
     http::{Response, StatusCode},
-    BoxError,
 };
 use axum_context::Context;
 use bytes::Bytes;
@@ -45,7 +44,7 @@ impl<S> Service<Request> for ApiOperationLogMiddlewareService<S>
 where
     S: Service<Request, Response = axum::response::Response> + Clone + Send + 'static,
     S::Future: Send + 'static,
-    S::Error: Send + Sync + std::error::Error + Into<BoxError>,
+    S::Error: Send + Sync,
 {
     type Response = S::Response;
     type Error = S::Error;

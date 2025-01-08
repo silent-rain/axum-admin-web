@@ -5,6 +5,7 @@ pub mod error;
 pub mod api_operation_log;
 pub mod api_operation_log_fn;
 pub mod casbin_auth;
+pub mod empty_wrapper_fn;
 pub mod openapi_auth;
 pub mod system_api_auth;
 
