@@ -7,7 +7,6 @@ use axum::{
     BoxError,
 };
 use axum_context::Context;
-use axum_extra::body::AsyncReadBody;
 use bytes::Bytes;
 use futures::future::BoxFuture;
 use http_body_util::BodyExt;
@@ -48,8 +47,7 @@ where
         + 'static,
     S::Future: Send + 'static,
     S::Error: Send + Sync + std::error::Error + Into<BoxError>,
-    ReqBody: HttpBody<Data = Bytes> + Send + Sync + 'static,
-    ReqBody::Error: std::fmt::Display,
+    ReqBody: Send + Sync + 'static,
     ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
     ResBody::Error: Into<BoxError> + std::fmt::Display,
 {
@@ -89,14 +87,16 @@ where
 
             // 获取请求体
             let (parts, req_body) = req.into_parts();
-            let request_body_bytes = match Self::body_buffer(req_body).await {
+            let mut req_bodys = std::mem::replace(&req_body, not_ready_inner);
+
+            let req_body_bytes = match Self::body_buffer(req_body).await {
                 Ok(v) => v,
                 Err(err) => return Ok(create_error_response(err)),
             };
 
             // 添加请求操作日志
             data.cost = start_time.elapsed().as_millis() as u64;
-            let body = Self::body_bytes_to_string(&request_body_bytes)
+            let body = Self::body_bytes_to_string(&req_body_bytes)
                 .map_or("body data parsing error ".to_string(), |v| v);
             data.body = Some(body);
             // 将日志推入数据库
@@ -107,21 +107,20 @@ where
             }
 
             // 构建新的请求
-            let x = AsyncReadBody::new(request_body_bytes);
-            let req = Request::from_parts(parts, x);
+            let req = Request::from_parts(parts, Body::from(req_body_bytes));
 
             // 响应
             let fut = inner.call(req).await?;
             let (parts, resp_body) = fut.into_parts();
-            let request_body_bytes = match Self::body_buffer(resp_body).await {
+            let resp_body_bytes = match Self::body_buffer(resp_body).await {
                 Ok(v) => v,
                 Err(err) => return Ok(create_error_response(err)),
             };
 
-            let body = Self::body_bytes_to_string(&request_body_bytes)
+            let body = Self::body_bytes_to_string(&resp_body_bytes)
                 .map_or("body data parsing error ".to_string(), |v| v);
             let res =
-                axum::response::Response::from_parts(parts, Body::from(request_body_bytes).into());
+                axum::response::Response::from_parts(parts, Body::from(resp_body_bytes).into());
 
             // 添加响应操作日志
             data.cost = start_time.elapsed().as_millis() as u64;

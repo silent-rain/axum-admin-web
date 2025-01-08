@@ -52,6 +52,8 @@ pub struct CreateApiOperationReq {
     pub method: String,
     /// 请求地址路径
     pub path: String,
+    /// Content-Type
+    pub content_type: String,
     /// 请求参数
     pub query: Option<String>,
     /// 请求体/响应体

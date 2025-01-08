@@ -1,168 +1,209 @@
 //! Api 操作日志中间件
-use std::{boxed::Box, net::SocketAddr, task::Poll};
+
+use std::{net::SocketAddr, time::Instant};
 
 use axum::{
-    body::{Body, HttpBody},
-    http::{Request, StatusCode},
-    BoxError,
+    body::Body,
+    extract::Request,
+    http::StatusCode,
+    middleware::Next,
+    response::{IntoResponse, Response},
 };
-use axum_context::Context;
 use bytes::Bytes;
-use futures::future::BoxFuture;
 use http_body_util::BodyExt;
-use tower::{Layer, Service};
 use tracing::error;
 
+use axum_context::Context;
+use axum_response::ResponseErr;
 use code::{Error, ErrorMsg};
 use entity::log::log_api_operation;
 use service_hub::{
-    inject::AInjectProvider, log::dto::api_operation::CreateApiOperationReq,
-    log::ApiOperationService,
+    inject::AInjectProvider,
+    log::{dto::api_operation::CreateApiOperationReq, ApiOperationService},
 };
 
-use crate::error::create_error_response;
-
 /// Api 操作日志中间件
-#[derive(Clone)]
-pub struct ApiOperationLogLayer;
+pub async fn api_operation_log_middleware(
+    request: Request,
+    next: Next,
+) -> Result<impl IntoResponse, ResponseErr> {
+    let mut api_log = ApiOperationLog::new(&request)
+        .map_err(|err| Into::<ResponseErr>::into(err))?
+        .parse_req_info(&request);
 
-impl<S> Layer<S> for ApiOperationLogLayer {
-    type Service = ApiOperationLogMiddlewareService<S>;
+    // 获取缓存的 req body bytes
+    let (parts, body) = request.into_parts();
 
-    fn layer(&self, inner: S) -> Self::Service {
-        ApiOperationLogMiddlewareService { inner }
-    }
+    let body_bytes = buffer_request_body(body).await?;
+
+    // 创建请求体日志
+    api_log = api_log
+        .parse_req_body(body_bytes.clone())
+        .create_api_operation_log()
+        .await
+        .map_err(|err| Into::<ResponseErr>::into(err))?;
+
+    // 重新构建请求
+    let request = Request::from_parts(parts, Body::from(body_bytes));
+
+    // 响应
+    let resp = next.run(request).await;
+
+    let status_code = resp.status();
+
+    let (parts, body) = resp.into_parts();
+
+    // 获取缓存的 resp body bytes
+    let body_bytes = buffer_request_body(body).await?;
+
+    // 创建响应体日志
+    api_log
+        .parse_resp_body(body_bytes.clone(), status_code)
+        .create_api_operation_log()
+        .await
+        .map_err(|err| Into::<ResponseErr>::into(err))?;
+
+    let res = Response::from_parts(parts, Body::from(body_bytes));
+    Ok(res)
 }
 
-#[derive(Clone)]
-pub struct ApiOperationLogMiddlewareService<S> {
-    inner: S,
-}
-
-impl<S, ReqBody, ResBody> Service<Request<ReqBody>> for ApiOperationLogMiddlewareService<S>
+/// the trick is to take the request apart, buffer the body, do what you need to do, then put
+/// the request back together
+async fn buffer_request_body<B>(body: B) -> Result<Bytes, ErrorMsg>
 where
-    S: Service<Request<ReqBody>, Response = axum::response::Response<ResBody>>
-        + Clone
-        + Send
-        + 'static,
-    S::Future: Send + 'static,
-    S::Error: Send + Sync + std::error::Error + Into<BoxError>,
-    ReqBody: Send + Sync + 'static,
-    ResBody: HttpBody<Data = Bytes> + Send + 'static + From<Body>,
-    ResBody::Error: Into<BoxError> + std::fmt::Display,
+    B: axum::body::HttpBody<Data = Bytes>,
+    B::Error: std::fmt::Display,
 {
-    type Response = S::Response;
-    type Error = S::Error;
-    // `BoxFuture` is a type alias for `Pin<Box<dyn Future + Send + 'a>>`
-    type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
-
-    fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx)
-    }
-
-    fn call(&mut self, req: Request<ReqBody>) -> Self::Future {
-        let start_time = std::time::Instant::now(); // 请求开始的时间
-
-        let not_ready_inner = self.inner.clone();
-        let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
-
-        Box::pin(async move {
-            // 全局依赖
-            let inject_provider = match req.extensions().get::<AInjectProvider>() {
-                Some(v) => v.clone(),
-                None => {
-                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
-                }
-            };
-
-            // 解析请求信息
-            let mut data = Self::parse_req(&req);
-            let content_type = req
-                .headers()
-                .get("Content-Type")
-                .map_or("".to_string(), |v| {
-                    v.to_str().map_or("".to_string(), |v| v.to_string())
-                })
-                .to_uppercase();
-
-            // 获取请求体
-            let (parts, req_body) = req.into_parts();
-            let mut req_bodys = std::mem::replace(&req_body, not_ready_inner);
-
-            let req_body_bytes = match Self::body_buffer(req_body).await {
-                Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
-            };
-
-            // 添加请求操作日志
-            data.cost = start_time.elapsed().as_millis() as u64;
-            let body = Self::body_bytes_to_string(&req_body_bytes)
-                .map_or("body data parsing error ".to_string(), |v| v);
-            data.body = Some(body);
-            // 将日志推入数据库
-            if let Err(err) =
-                Self::add_api_operation_log(inject_provider.clone(), data.clone()).await
-            {
-                return Ok(create_error_response(err));
-            }
-
-            // 构建新的请求
-            let req = Request::from_parts(parts, Body::from(req_body_bytes));
-
-            // 响应
-            let fut = inner.call(req).await?;
-            let (parts, resp_body) = fut.into_parts();
-            let resp_body_bytes = match Self::body_buffer(resp_body).await {
-                Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
-            };
-
-            let body = Self::body_bytes_to_string(&resp_body_bytes)
-                .map_or("body data parsing error ".to_string(), |v| v);
-            let res =
-                axum::response::Response::from_parts(parts, Body::from(resp_body_bytes).into());
-
-            // 添加响应操作日志
-            data.cost = start_time.elapsed().as_millis() as u64;
-            data.http_type = log_api_operation::enums::HttpType::Rsp;
-            // TODO 添加字符限制, 如果太大则进行省略
-            data.body = Some(body);
-            // 图片body数据不入库
-            if content_type != "multipart/form-data".to_uppercase() {
-                data.body = None;
-            }
-            data.status_code = res.status().as_u16() as i32;
-            // 将日志推入数据库
-            if let Err(err) = Self::add_api_operation_log(inject_provider.clone(), data).await {
-                return Ok(create_error_response(err));
-            }
-
-            Ok(res)
-        })
-    }
+    // this won't work if the body is an long running stream
+    let bytes = body
+        .collect()
+        .await
+        .map_err(|err| Error::ParseRequestBodyError(err.to_string()).into_msg())?
+        .to_bytes();
+    Ok(bytes)
 }
 
-impl<S> ApiOperationLogMiddlewareService<S> {
-    async fn body_buffer<B>(body: B) -> Result<Bytes, ErrorMsg>
-    where
-        B: HttpBody<Data = Bytes>,
-        B::Error: std::fmt::Display,
-    {
-        let bytes = match body.collect().await {
-            Ok(collected) => collected.to_bytes(),
-            Err(err) => {
-                return Err(Error::InvalidParameter(err.to_string()).into_msg());
+/// 操作日志处理
+struct ApiOperationLog {
+    inject_provider: AInjectProvider,
+    data: Option<CreateApiOperationReq>,
+    start_time: Instant,
+}
+
+impl ApiOperationLog {
+    fn new(request: &Request) -> Result<Self, ErrorMsg> {
+        // 请求开始的时间
+        let start_time = std::time::Instant::now();
+
+        // 全局依赖
+        let inject_provider = match request.extensions().get::<AInjectProvider>() {
+            Some(v) => v.clone(),
+            None => {
+                return Err(Error::InjectAproviderObj.into_msg());
             }
         };
 
-        Ok(bytes)
+        Ok(ApiOperationLog {
+            inject_provider,
+            data: None,
+            start_time,
+        })
     }
 
-    fn body_to_req_body<B>(v: B) -> B
-    where
-        B: HttpBody<Data = Bytes>,
-    {
-        v
+    /// 解析请求信息
+    fn parse_req_info(mut self, request: &Request) -> Self {
+        // 获取上下文
+        let (user_id, username) = match request.extensions().get::<Context>() {
+            Some(ctx) => (Some(ctx.get_user_id()), Some(ctx.get_user_name())),
+            None => (None, None),
+        };
+
+        let status_code = StatusCode::OK.as_u16() as i32; // 默认请求成功
+        let method = request.method().to_string();
+        let path = request.uri().path().to_string();
+        let query = request.uri().query().unwrap_or("").to_string();
+
+        let content_type = request
+            .headers()
+            .get("Content-Type")
+            .map_or("".to_string(), |v| {
+                v.to_str().map_or("".to_string(), |v| v.to_string())
+            })
+            .to_uppercase();
+
+        // 获取 remote_addr
+        let remote_addr = request
+            .extensions()
+            .get::<SocketAddr>()
+            .map(|socket_addr| socket_addr.ip().to_string())
+            .unwrap_or("".to_string());
+
+        // Get the user agent from the request headers
+        let user_agent = request
+            .headers()
+            .get("User-Agent")
+            .map_or("".to_owned(), |ua| ua.to_str().unwrap_or("").to_owned());
+
+        self.data = Some(CreateApiOperationReq {
+            user_id,
+            username,
+            request_id: None,
+            status_code,
+            method,
+            path,
+            content_type,
+            query: Some(query),
+            body: None,
+            remote_addr,
+            user_agent,
+            cost: 0,
+            http_type: log_api_operation::enums::HttpType::Req,
+            desc: None,
+        });
+
+        self
+    }
+
+    /// 解析请求体
+    fn parse_req_body(mut self, req_body_bytes: Bytes) -> Self {
+        let body = Self::body_bytes_to_string(&req_body_bytes)
+            .map_or("body data parsing error ".to_string(), |v| v);
+        let cost = self.start_time.elapsed().as_millis() as u64;
+
+        let data = self.data.and_then(|mut data| {
+            data.cost = cost;
+            data.body = Some(body);
+
+            Some(data)
+        });
+        self.data = data;
+
+        self
+    }
+
+    /// 解析响应体
+    fn parse_resp_body(mut self, req_body_bytes: Bytes, status_code: StatusCode) -> Self {
+        let body = Self::body_bytes_to_string(&req_body_bytes)
+            .map_or("body data parsing error ".to_string(), |v| v);
+        let cost = self.start_time.elapsed().as_millis() as u64;
+
+        let data = self.data.and_then(|mut data| {
+            data.cost = cost;
+            // TODO 添加字符限制, 如果太大则进行省略
+            data.body = Some(body);
+            data.http_type = log_api_operation::enums::HttpType::Rsp;
+
+            // 图片body数据不入库
+            if data.content_type != "multipart/form-data".to_uppercase() {
+                data.body = None;
+            }
+            data.status_code = status_code.as_u16() as i32;
+
+            Some(data)
+        });
+        self.data = data;
+
+        self
     }
 
     /// 获取请求体的 body
@@ -192,56 +233,15 @@ impl<S> ApiOperationLogMiddlewareService<S> {
         Ok(body)
     }
 
-    /// 解析请求信息
-    fn parse_req<ReqBody>(req: &Request<ReqBody>) -> CreateApiOperationReq {
-        // 获取上下文
-        let (user_id, username) = match req.extensions().get::<Context>() {
-            Some(ctx) => (Some(ctx.get_user_id()), Some(ctx.get_user_name())),
-            None => (None, None),
+    /// 创建操作日志
+    async fn create_api_operation_log(self) -> Result<Self, code::ErrorMsg> {
+        let data = match self.data {
+            Some(ref v) => v,
+            None => return Ok(self),
         };
+        let api_operation_service: ApiOperationService = self.inject_provider.provide();
+        let _user = api_operation_service.create(data.clone()).await?;
 
-        let status_code = StatusCode::OK.as_u16() as i32; // 默认请求成功
-        let method = req.method().to_string();
-        let path = req.uri().path().to_string();
-        let query = req.uri().query().unwrap_or("").to_string();
-
-        // 获取 remote_addr
-        let remote_addr = req
-            .extensions()
-            .get::<SocketAddr>()
-            .map(|socket_addr| socket_addr.ip().to_string())
-            .unwrap_or("".to_string());
-
-        // Get the user agent from the request headers
-        let user_agent = req
-            .headers()
-            .get("User-Agent")
-            .map_or("".to_owned(), |ua| ua.to_str().unwrap_or("").to_owned());
-
-        CreateApiOperationReq {
-            user_id,
-            username,
-            request_id: None,
-            status_code,
-            method,
-            path,
-            query: Some(query),
-            body: None,
-            remote_addr,
-            user_agent,
-            cost: 0,
-            http_type: log_api_operation::enums::HttpType::Req,
-            desc: None,
-        }
-    }
-
-    /// 添加操作日志
-    async fn add_api_operation_log(
-        provider: AInjectProvider,
-        data: CreateApiOperationReq,
-    ) -> Result<(), code::ErrorMsg> {
-        let api_operation_service: ApiOperationService = provider.provide();
-        let _user = api_operation_service.create(data).await?;
-        Ok(())
+        Ok(self)
     }
 }
