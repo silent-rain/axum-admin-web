@@ -117,6 +117,11 @@
 - axum 扩展考量改为 state
   - <https://docs.rs/axum/0.8.1/axum/extract/struct.State.html>
 - sql使用模型转换位postgresql与sqlite3
+- orm更新时间问题
+- 下载文件:
+  - <https://github.com/tokio-rs/axum/discussions/608>
+- 如何托管 SPA 文件并将文件嵌入到可执行文件中？
+  - <https://github.com/tokio-rs/axum/discussions/1309>
 - 定时器-用户任务
 - doc 文档，细化为接口文档；
 - 用户权限封装；

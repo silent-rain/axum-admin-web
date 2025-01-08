@@ -6,6 +6,9 @@
     // <<<
     // >>> Mysql
     "Prettier-SQL.SQLFlavourOverride": "mysql",
-    "Prettier-SQL.keywordCase": "upper"
+    "Prettier-SQL.keywordCase": "upper",
     // <<<
+    "editor.rulers": [ // 显示120字符或者80字符提示线或者显示垂直标尺
+        120
+    ]
 }
