@@ -134,6 +134,13 @@ impl ApiOperationLog {
             })
             .to_uppercase();
 
+        let request_id = request
+            .headers()
+            .get("x-request-id")
+            .map_or("".to_string(), |v| {
+                v.to_str().map_or("".to_string(), |v| v.to_string())
+            });
+
         // 获取 remote_addr
         let remote_addr = request
             .extensions()
@@ -150,7 +157,7 @@ impl ApiOperationLog {
         self.data = Some(CreateApiOperationReq {
             user_id,
             username,
-            request_id: None,
+            request_id: Some(request_id),
             status_code,
             method,
             path,
