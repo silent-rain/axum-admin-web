@@ -7,3 +7,7 @@ target = 'x86_64-unknown-linux-gnu'
 # [target.x86_64-unknown-linux-gnu]
 # linker = "clang"
 # rustflags = ["-C", "link-arg=-fuse-ld=/usr/bin/mold"]
+
+
+[alias]
+t = "test -- --nocapture" # 单元测试显示println!宏的打印信息
