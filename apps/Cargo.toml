@@ -33,7 +33,7 @@ members = [
 
 [workspace.dependencies]
 # 网络相关
-tokio = "1.42"
+tokio = "1.43"
 async-std = "1.13"
 async-trait = "0.1"
 axum = "0.8"
@@ -107,7 +107,7 @@ captcha-rs = "0.2"
 rust-embed = "8.5"
 regex = "1.11"
 moka = "0.12"
-colored = "2.2"
+colored = "3"
 dotenv = "0.15"
 casbin = "2.5"
 once_cell = "1.20"

@@ -75,14 +75,14 @@ mod tests {
     #[test]
     fn it_works() {
         let result = DateTimeLocal::default();
-        println!("result default: {}", result.to_string());
+        println!("result default: {}", result);
         println!("result default: {}", result.to_rfc3339());
 
         let result = Local::now();
-        println!("result now: {}", result.to_string());
+        println!("result now: {}", result);
         println!("result now: {}", result.to_rfc3339());
 
         let result = Local::now().naive_local();
-        println!("result naive_local: {}", result.to_string());
+        println!("result naive_local: {}", result);
     }
 }
