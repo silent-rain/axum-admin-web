@@ -1,12 +1,7 @@
 //! 用户手机号表
 //! Entity: [`entity::user::Phone`]
 
-use crate::user::user_base::UserBase;
-
-use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
-};
+use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
 #[derive(DeriveMigrationName)]
@@ -15,125 +10,77 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        manager
-            .create_table(
-                Table::create()
-                    .table(UserPhone::Table)
-                    .comment("用户手机号表")
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(UserPhone::Id)
-                            .integer()
-                            .primary_key()
-                            .auto_increment()
-                            .not_null()
-                            .comment("手机号ID"),
-                    )
-                    .col(
-                        ColumnDef::new(UserPhone::UserId)
-                            .integer()
-                            .unique_key()
-                            .not_null()
-                            .comment("用户ID"),
-                    )
-                    .col(
-                        ColumnDef::new(UserPhone::Phone)
-                            .string()
-                            .string_len(16)
-                            .unique_key()
-                            .not_null()
-                            .comment("手机号码"),
-                    )
-                    .col(
-                        ColumnDef::new(UserPhone::Desc)
-                            .string()
-                            .string_len(200)
-                            .default("")
-                            .null()
-                            .default("")
-                            .comment("描述信息"),
-                    )
-                    .col(
-                        ColumnDef::new(UserPhone::CreatedAt)
-                            .date_time()
-                            .not_null()
-                            .default(Expr::current_timestamp())
-                            .comment("创建时间"),
-                    )
-                    .col(
-                        ColumnDef::new(UserPhone::UpdatedAt)
-                            .date_time()
-                            .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
-                            .comment("更新时间"),
-                    )
-                    .to_owned(),
-            )
-            .await?;
+        let db = manager.get_connection();
 
-        if !manager
-            .has_index(UserPhone::Table.to_string(), "idx_user_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_user_id")
-                        .table(UserPhone::Table)
-                        .col(UserPhone::UserId)
-                        .to_owned(),
+        match manager.get_database_backend() {
+            DatabaseBackend::MySql => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    `t_user_phone` (
+                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '手机号ID',
+                        `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
+                        `phone` VARCHAR(16) UNIQUE NOT NULL COMMENT '手机号码',
+                        `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
+                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                        PRIMARY KEY (`id`)
+                    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '用户手机号';
+                    ",
                 )
                 .await?;
-        }
+            }
+            DatabaseBackend::Postgres => {
+                db.execute_unprepared(
+                    r#"
+                    CREATE TABLE IF NOT EXISTS 
+                    "t_user_phone" (
+                        "id" SERIAL PRIMARY KEY,
+                        "user_id" INT UNIQUE NOT NULL,
+                        "phone" VARCHAR(16) UNIQUE NOT NULL,
+                        "desc" VARCHAR(200) DEFAULT '',
+                        "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
 
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(UserPhone::Table.to_string(), "fk_phone_user_id")
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_phone_user_id")
-                        .from(UserPhone::Table, UserPhone::UserId)
-                        .to(UserBase::Table, UserBase::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
+                    COMMENT ON TABLE t_user_phone IS '用户手机号';
+                    COMMENT ON COLUMN t_user_phone.id IS '手机号ID';
+                    COMMENT ON COLUMN t_user_phone.user_id IS '用户ID';
+                    COMMENT ON COLUMN t_user_phone.phone IS '手机号码';
+                    COMMENT ON COLUMN t_user_phone.desc IS '描述信息';
+                    COMMENT ON COLUMN t_user_phone.created_at IS '创建时间';
+                    COMMENT ON COLUMN t_user_phone.updated_at IS '更新时间';
+                    "#,
                 )
                 .await?;
+            }
+            DatabaseBackend::Sqlite => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    `t_user_phone` ( -- 用户手机号
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 手机号ID
+                        `user_id` INTEGER UNIQUE NOT NULL, -- 用户ID
+                        `phone` TEXT UNIQUE NOT NULL, -- 手机号码
+                        `desc` TEXT DEFAULT '', -- 描述信息
+                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 创建时间
+                        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP -- 更新时间
+                    );
+                    ",
+                )
+                .await?;
+            }
         }
 
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(UserPhone::Table).to_owned())
-            .await
-    }
-}
+            .get_connection()
+            .execute_unprepared("DROP TABLE `t_user_phone`")
+            .await?;
 
-#[derive(DeriveIden)]
-pub enum UserPhone {
-    #[sea_orm(iden = "t_user_phone")]
-    Table,
-    Id,
-    UserId,
-    Phone,
-    Desc,
-    CreatedAt,
-    UpdatedAt,
+        Ok(())
+    }
 }

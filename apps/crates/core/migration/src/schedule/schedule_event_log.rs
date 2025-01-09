@@ -1,10 +1,7 @@
 //! 任务调度事件日志表
 //! Entity: [`entity::schedule::ScheduleEventLog`]
 
-use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DeriveIden, DeriveMigrationName,
-};
+use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
 #[derive(DeriveMigrationName)]
@@ -13,67 +10,80 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        manager
-            .create_table(
-                Table::create()
-                    .table(ScheduleEventLog::Table)
-                    .comment("任务调度事件日志表")
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(ScheduleEventLog::Id)
-                            .integer()
-                            .primary_key()
-                            .auto_increment()
-                            .not_null()
-                            .comment("事件日志ID"),
-                    )
-                    .col(
-                        ColumnDef::new(ScheduleEventLog::JobId)
-                            .integer()
-                            .not_null()
-                            .comment("任务ID"),
-                    )
-                    .col(
-                        ColumnDef::new(ScheduleEventLog::Uuid)
-                            .string()
-                            .string_len(50)
-                            .comment("任务调度ID"),
-                    )
-                    .col(
-                        ColumnDef::new(ScheduleEventLog::Status)
-                            .tiny_integer()
-                            .not_null()
-                            .default(0)
-                            .comment("任务状态(0:开始,1:完成,2:停止,3:移除)"),
-                    )
-                    .col(
-                        ColumnDef::new(ScheduleEventLog::CreatedAt)
-                            .date_time()
-                            .not_null()
-                            .default(Expr::current_timestamp())
-                            .comment("创建时间"),
-                    )
-                    .to_owned(),
-            )
-            .await
+        let db = manager.get_connection();
+
+        match manager.get_database_backend() {
+            DatabaseBackend::MySql => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    `t_schedule_event_log` (
+                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '事件日志ID',
+                        `job_id` INT(11) NOT NULL COMMENT '任务ID',
+                        `uuid` VARCHAR(50) NOT NULL COMMENT '任务调度ID',
+                        `status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '任务状态(0:开始,1:完成,2:停止,3:移除)',
+                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT '创建时间',
+                        PRIMARY KEY (`id`) USING BTREE
+                    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '任务调度事件日志表';
+
+                    CREATE INDEX idx_job_id ON t_schedule_event_log (`job_id`);
+                    CREATE INDEX idx_uuid ON t_schedule_event_log (`uuid`);
+                    ",
+                )
+                .await?;
+            }
+            DatabaseBackend::Postgres => {
+                db.execute_unprepared(
+                    r#"
+                    CREATE TABLE IF NOT EXISTS "t_schedule_event_log" (
+                        "id" SERIAL PRIMARY KEY,
+                        "job_id" INTEGER NOT NULL,
+                        "uuid" VARCHAR(50) NOT NULL,
+                        "status" BOOLEAN NOT NULL DEFAULT FALSE,
+                        "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+
+                    CREATE INDEX idx_t_schedule_event_log_job_id ON t_schedule_event_log ("job_id");
+                    CREATE INDEX idx_t_schedule_event_log_uuid ON t_schedule_event_log ("uuid");
+
+                    COMMENT ON TABLE t_schedule_event_log IS '任务调度事件日志表';
+                    COMMENT ON COLUMN t_schedule_event_log.id IS '事件日志ID';
+                    COMMENT ON COLUMN t_schedule_event_log.job_id IS '任务ID';
+                    COMMENT ON COLUMN t_schedule_event_log.uuid IS '任务调度ID';
+                    COMMENT ON COLUMN t_schedule_event_log.status IS '任务状态(0:开始,1:完成,2:停止,3:移除)';
+                    COMMENT ON COLUMN t_schedule_event_log.created_at IS '创建时间';
+                    "#,
+                )
+                .await?;
+            }
+            DatabaseBackend::Sqlite => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS `t_schedule_event_log` ( -- 任务调度事件日志表
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 事件日志ID
+                        `job_id` INTEGER NOT NULL, -- 任务ID
+                        `uuid` TEXT NOT NULL, -- 任务调度ID
+                        `status` BOOLEAN NOT NULL DEFAULT 0, -- 任务状态(0:开始,1:完成,2:停止,3:移除)
+                        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间
+                    );
+                    
+                    CREATE INDEX idx_t_schedule_event_log_job_id ON t_schedule_event_log (`job_id`);
+                    CREATE INDEX idx_t_schedule_event_log_uuid ON t_schedule_event_log (`uuid`);
+                    ",
+                )
+                .await?;
+            }
+        }
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(ScheduleEventLog::Table).to_owned())
-            .await
-    }
-}
+            .get_connection()
+            .execute_unprepared("DROP TABLE `t_schedule_event_log`")
+            .await?;
 
-#[derive(DeriveIden)]
-pub enum ScheduleEventLog {
-    #[sea_orm(iden = "t_schedule_event_log")]
-    Table,
-    Id,
-    JobId,
-    Uuid,
-    Status,
-    CreatedAt,
+        Ok(())
+    }
 }

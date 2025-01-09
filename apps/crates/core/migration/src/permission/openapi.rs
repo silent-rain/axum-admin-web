@@ -1,10 +1,7 @@
 //! OpenApi接口表
 //! Entity: [`entity::permission::Openapi`]
 
-use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName,
-};
+use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
 #[derive(DeriveMigrationName)]
@@ -13,124 +10,101 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
+        let db = manager.get_connection();
 
-        manager
-            .create_table(
-                Table::create()
-                    .table(Openapi::Table)
-                    .comment("OpenApi接口表")
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(Openapi::Id)
-                            .integer()
-                            .primary_key()
-                            .auto_increment()
-                            .not_null()
-                            .comment("接口ID"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Pid)
-                            .integer()
-                            .null()
-                            .default(0)
-                            .comment("父ID"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Category)
-                            .integer()
-                            .not_null()
-                            .comment("类别,0:目录,1:接口"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Name)
-                            .string()
-                            .string_len(50)
-                            .not_null()
-                            .comment("接口名称"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Method)
-                            .string()
-                            .string_len(50)
-                            .not_null()
-                            .comment("请求类型"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Path)
-                            .string()
-                            .string_len(200)
-                            .not_null()
-                            .comment("资源路径"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Sort)
-                            .integer()
-                            .null()
-                            .default(0)
-                            .comment("排序"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Desc)
-                            .string()
-                            .string_len(200)
-                            .null()
-                            .default("")
-                            .comment("描述信息"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::Status)
-                            .tiny_integer()
-                            .not_null()
-                            .default(1)
-                            .comment("状态(0:停用,1:正常)"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::CreatedAt)
-                            .date_time()
-                            .not_null()
-                            .default(Expr::current_timestamp())
-                            .comment("创建时间"),
-                    )
-                    .col(
-                        ColumnDef::new(Openapi::UpdatedAt)
-                            .date_time()
-                            .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
-                            .comment("更新时间"),
-                    )
-                    .to_owned(),
-            )
-            .await
+        match manager.get_database_backend() {
+            DatabaseBackend::MySql => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    t_perm_openapi (
+                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '接口ID',
+                        `pid` INT(20) NULL DEFAULT 0 COMMENT '父ID',
+                        `category` TINYINT(1) NOT NULL COMMENT '类别,0:目录,1:接口',
+                        `name` VARCHAR(50) NOT NULL COMMENT '接口名称',
+                        `method` VARCHAR(50) NOT NULL COMMENT '请求类型',
+                        `path` VARCHAR(200) NOT NULL COMMENT '资源路径',
+                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
+                        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:停用,1:正常)',
+                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                        PRIMARY KEY (`id`)
+                    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT 'OpenApi接口表';
+
+                    CREATE INDEX idx_pid ON t_perm_openapi (`pid`);
+                    ",
+                )
+                .await?;
+            }
+            DatabaseBackend::Postgres => {
+                db.execute_unprepared(
+                    r#"
+                    CREATE TABLE IF NOT EXISTS "t_perm_openapi" (
+                        "id" SERIAL PRIMARY KEY,
+                        "pid" INTEGER DEFAULT 0,
+                        "category" SMALLINT NOT NULL,
+                        "name" VARCHAR(50) NOT NULL,
+                        "method" VARCHAR(50) NOT NULL,
+                        "path" VARCHAR(200) NOT NULL,
+                        "sort" INTEGER DEFAULT 0,
+                        "desc" VARCHAR(200) DEFAULT '',
+                        "status" BOOLEAN NOT NULL DEFAULT TRUE,
+                        "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+
+                    CREATE INDEX idx_t_perm_openapi_pid ON t_perm_openapi ("pid");
+
+                    COMMENT ON TABLE t_perm_openapi IS 'OpenApi接口表';
+                    COMMENT ON COLUMN t_perm_openapi.id IS '接口ID';
+                    COMMENT ON COLUMN t_perm_openapi.pid IS '父ID';
+                    COMMENT ON COLUMN t_perm_openapi.category IS '类别,0:目录,1:接口';
+                    COMMENT ON COLUMN t_perm_openapi.name IS '接口名称';
+                    COMMENT ON COLUMN t_perm_openapi.method IS '请求类型';
+                    COMMENT ON COLUMN t_perm_openapi.path IS '资源路径';
+                    COMMENT ON COLUMN t_perm_openapi.sort IS '排序';
+                    COMMENT ON COLUMN t_perm_openapi.desc IS '描述信息';
+                    COMMENT ON COLUMN t_perm_openapi.status IS '状态(0:停用,1:正常)';
+                    COMMENT ON COLUMN t_perm_openapi.created_at IS '创建时间';
+                    COMMENT ON COLUMN t_perm_openapi.updated_at IS '更新时间';
+                    "#,
+                )
+                .await?;
+            }
+            DatabaseBackend::Sqlite => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS `t_perm_openapi` ( -- OpenApi接口表
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 接口ID
+                        `pid` INTEGER DEFAULT 0, -- 父ID
+                        `category` BOOLEAN NOT NULL, -- 类别,0:目录,1:接口
+                        `name` VARCHAR(50) NOT NULL, -- 接口名称
+                        `method` VARCHAR(50) NOT NULL, -- 请求类型
+                        `path` VARCHAR(200) NOT NULL, -- 资源路径
+                        `sort` INTEGER DEFAULT 0, -- 排序
+                        `desc` VARCHAR(200) DEFAULT '', -- 描述信息
+                        `status` BOOLEAN NOT NULL DEFAULT 1, -- 状态(0:停用,1:正常)
+                        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
+                        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
+                    );
+
+                    CREATE INDEX idx_t_perm_openapi_pid ON t_perm_openapi (`pid`);
+                    ",
+                )
+                .await?;
+            }
+        }
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-
         manager
-            .drop_table(Table::drop().table(Openapi::Table).to_owned())
-            .await
-    }
-}
+            .get_connection()
+            .execute_unprepared("DROP TABLE `t_perm_openapi`")
+            .await?;
 
-#[derive(DeriveIden)]
-pub enum Openapi {
-    #[sea_orm(iden = "t_perm_openapi")]
-    Table,
-    Id,
-    Pid,
-    Category,
-    Name,
-    Method,
-    Path,
-    Sort,
-    Desc,
-    Status,
-    CreatedAt,
-    UpdatedAt,
+        Ok(())
+    }
 }

@@ -82,7 +82,7 @@ logger:
     level: "info" # 日志级别, trace/debug/info/warn/error
     enable: true # 是否启用，默认不启用
   db: # 数据库配置
-    address: "mysql://one:pass@127.0.0.1:3306/actix_admin_web"
+    address: "mysql://one:pass@127.0.0.1:3306/axum_admin_web"
     # address: "sqlite://./data.dat?mode=rwc" # 数据库地址
     log_name: "logger" # 日志记录器名称
     level: "info" # 日志级别, trace/debug/info/warn/error

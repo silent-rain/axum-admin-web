@@ -1,6 +1,6 @@
 /*Mysql 速查表*/
 -- 创建数据库 
-CREATE DATABASE IF NOT EXISTS `actix_admin_web` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `axum_admin_web` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- 修改表名
 ALTER TABLE avatar
@@ -28,7 +28,7 @@ DROP 字段名;
 
 /*
 # 备份数据库
-mysqldump -uxxx -pxxx actix_admin_web > actix_admin_web.sql
+mysqldump -uxxx -pxxx axum_admin_web > axum_admin_web.sql
 # 恢复数据库
-mysql -uxxx -pxxx actix_admin_web < actix_admin_web.sql
+mysql -uxxx -pxxx axum_admin_web < axum_admin_web.sql
  */

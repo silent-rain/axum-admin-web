@@ -16,7 +16,7 @@ DATABASE_URL=sqlite://data.dat?mode=rwc
 
 or
 
-DATABASE_URL=mysql://user:pass@127.0.0.1:3306/actix_admin_web
+DATABASE_URL=mysql://user:pass@127.0.0.1:3306/axum_admin_web
 ```
 
 ## 库表创建迁移实体
@@ -58,7 +58,7 @@ cd service/core
 
 # 指定数据库生成实体
 sea-orm-cli generate entity -u sqlite://../data.db -o entity/src
-sea-orm-cli generate entity --database-url=mysql://one:pass@localhost/actix_admin_web -o entity/src
+sea-orm-cli generate entity --database-url=mysql://one:pass@localhost/axum_admin_web -o entity/src
 ```
 
 ## CLI 迁移的表文件

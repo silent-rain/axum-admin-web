@@ -4,6 +4,7 @@
     "rust-lang.rust-analyzer",
     "numso.vscode-tailwindcss-with-hex-colors",
     "zxh404.vscode-proto3",
-    "inferrinizzard.prettier-sql-vscode"
+    "inferrinizzard.prettier-sql-vscode",
+    "qufiwefefwoyn.inline-sql-syntax"
   ]
 }

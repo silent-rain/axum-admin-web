@@ -1,5 +1,15 @@
 # Running Migrator CLI
 
+## 示例
+
+```shell
+# 执行
+cargo run --package migration 
+
+# example
+cargo run --package migration --example migration
+```
+
 - Generate a new migration file
 
     ```sh

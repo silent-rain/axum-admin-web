@@ -1,5 +1,5 @@
 INSERT INTO
-	actix_admin_web.t_perm_menu (
+	axum_admin_web.t_perm_menu (
 		pid,
 		title,
 		icon_class,

@@ -1,10 +1,7 @@
 //! WEB日志表
 //! Entity: [`entity::log::LogWeb`]
 
-use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DeriveIden, DeriveMigrationName,
-};
+use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
 #[derive(DeriveMigrationName)]
@@ -13,129 +10,117 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        manager
-            .create_table(
-                Table::create()
-                    .table(LogWeb::Table)
-                    .comment("WEB日志表")
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(LogWeb::Id)
-                            .integer()
-                            .primary_key()
-                            .auto_increment()
-                            .not_null()
-                            .comment("日志ID"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::UserId)
-                            .integer()
-                            .not_null()
-                            .comment("用户ID"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::Username)
-                            .string()
-                            .string_len(32)
-                            .not_null()
-                            .comment("用户名称"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::RequestId)
-                            .string()
-                            .string_len(32)
-                            .null()
-                            .comment("请求ID"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::OsType)
-                            .tiny_integer()
-                            .not_null()
-                            .comment("终端类型(0:未知, 1:安卓, 2:IOS, 3:WEB)"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::ErrorType)
-                            .tiny_integer()
-                            .not_null()
-                            .comment("错误类型(0:代码报错, 1:接口报错)"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::Level)
-                            .string()
-                            .string_len(10)
-                            .not_null()
-                            .comment("日志级别"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::CallerLine)
-                            .string()
-                            .string_len(100)
-                            .not_null()
-                            .comment("日发生位置"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::Url)
-                            .string()
-                            .string_len(500)
-                            .null()
-                            .comment("请求地址"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::Msg)
-                            .text()
-                            .null()
-                            .comment("日志消息"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::Stack)
-                            .text()
-                            .null()
-                            .comment("堆栈信息"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::Desc)
-                            .string()
-                            .string_len(200)
-                            .null()
-                            .default("")
-                            .comment("描述信息"),
-                    )
-                    .col(
-                        ColumnDef::new(LogWeb::CreatedAt)
-                            .date_time()
-                            .not_null()
-                            .default(Expr::current_timestamp())
-                            .comment("创建时间"),
-                    )
-                    .to_owned(),
-            )
-            .await
+        let db = manager.get_connection();
+
+        match manager.get_database_backend() {
+            DatabaseBackend::MySql => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    `t_log_web` (
+                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '日志ID',
+                        `user_id` INT(11) NULL DEFAULT 0 COMMENT '用户ID',
+                        `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
+                        `request_id` VARCHAR(32) NULL DEFAULT '' COMMENT '请求ID',
+                        `os_type` TINYINT(1) NOT NULL COMMENT '终端类型(0:未知, 1:安卓, 2:IOS, 3:WEB)',
+                        `error_type` TINYINT(1) NOT NULL COMMENT '错误类型(1:接口报错, 2:代码报错)',
+                        `level` VARCHAR(10) NOT NULL COMMENT '日志级别',
+                        `caller_line` VARCHAR(100) NOT NULL COMMENT '日发生位置',
+                        `url` VARCHAR(500) NULL COMMENT '请求地址',
+                        `msg` TEXT NULL COMMENT '日志消息',
+                        `stack` TEXT NULL COMMENT '堆栈信息',
+                        `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
+                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        PRIMARY KEY (`id`)
+                    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT 'WEB日志表';
+
+                    CREATE INDEX idx_user_id ON t_log_web (`user_id`);
+                    CREATE INDEX idx_username ON t_log_web (`username`);
+                    CREATE INDEX idx_request_id ON t_log_web (`request_id`);
+                    ",
+                )
+                .await?;
+            }
+            DatabaseBackend::Postgres => {
+                db.execute_unprepared(
+                    r#"
+                    CREATE TABLE IF NOT EXISTS
+                    "t_log_web" (
+                        "id" SERIAL PRIMARY KEY,
+                        "user_id" INTEGER DEFAULT 0,
+                        "username" VARCHAR(32) DEFAULT '',
+                        "request_id" VARCHAR(32) DEFAULT '',
+                        "os_type" SMALLINT NOT NULL,
+                        "error_type" SMALLINT NOT NULL,
+                        "level" VARCHAR(10) NOT NULL,
+                        "caller_line" VARCHAR(100) NOT NULL,
+                        "url" VARCHAR(500),
+                        "msg" TEXT,
+                        "stack" TEXT,
+                        "desc" VARCHAR(200) DEFAULT '',
+                        "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
+
+                    CREATE INDEX idx_t_log_web_user_id ON t_log_web ("user_id");
+                    CREATE INDEX idx_t_log_web_username ON t_log_web ("username");
+                    CREATE INDEX idx_t_log_web_request_id ON t_log_web ("request_id");
+
+                    COMMENT ON TABLE t_log_web IS 'WEB日志表';
+                    COMMENT ON COLUMN t_log_web.id IS '日志ID';
+                    COMMENT ON COLUMN t_log_web.user_id IS '用户ID';
+                    COMMENT ON COLUMN t_log_web.username IS '用户名称';
+                    COMMENT ON COLUMN t_log_web.request_id IS '请求ID';
+                    COMMENT ON COLUMN t_log_web.os_type IS '终端类型(0:未知, 1:安卓, 2:IOS, 3:WEB)';
+                    COMMENT ON COLUMN t_log_web.error_type IS '错误类型(1:接口报错, 2:代码报错)';
+                    COMMENT ON COLUMN t_log_web.level IS '日志级别';
+                    COMMENT ON COLUMN t_log_web.caller_line IS '日发生位置';
+                    COMMENT ON COLUMN t_log_web.url IS '请求地址';
+                    COMMENT ON COLUMN t_log_web.msg IS '日志消息';
+                    COMMENT ON COLUMN t_log_web.stack IS '堆栈信息';
+                    COMMENT ON COLUMN t_log_web.desc IS '描述信息';
+                    COMMENT ON COLUMN t_log_web.created_at IS '创建时间';
+                    "#,
+                )
+                .await?;
+            }
+            DatabaseBackend::Sqlite => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    `t_log_web` ( -- WEB日志表
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 日志ID
+                        `user_id` INTEGER DEFAULT 0, -- 用户ID
+                        `username` TEXT DEFAULT '', -- 用户名称
+                        `request_id` TEXT DEFAULT '', -- 请求ID
+                        `os_type` INTEGER NOT NULL, -- 终端类型(0:未知, 1:安卓, 2:IOS, 3:WEB)
+                        `error_type` INTEGER NOT NULL, -- 错误类型(1:接口报错, 2:代码报错)
+                        `level` TEXT NOT NULL, -- 日志级别
+                        `caller_line` TEXT NOT NULL, -- 日发生位置
+                        `url` TEXT, -- 请求地址
+                        `msg` TEXT, -- 日志消息
+                        `stack` TEXT, -- 堆栈信息
+                        `desc` TEXT DEFAULT '', -- 描述信息
+                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP -- 创建时间
+                    );
+
+                    CREATE INDEX idx_t_log_web_user_id ON t_log_web (`user_id`);
+                    CREATE INDEX idx_t_log_web_username ON t_log_web (`username`);
+                    CREATE INDEX idx_t_log_web_request_id ON t_log_web (`request_id`);
+                    ",
+                )
+                .await?;
+            }
+        }
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(LogWeb::Table).to_owned())
-            .await
-    }
-}
+            .get_connection()
+            .execute_unprepared("DROP TABLE `t_log_web;`")
+            .await?;
 
-#[derive(DeriveIden)]
-pub enum LogWeb {
-    #[sea_orm(iden = "t_log_web")]
-    Table,
-    Id,
-    UserId,
-    Username,
-    RequestId,
-    OsType,
-    ErrorType,
-    Level,
-    CallerLine,
-    Url,
-    Msg,
-    Stack,
-    Desc,
-    CreatedAt,
+        Ok(())
+    }
 }

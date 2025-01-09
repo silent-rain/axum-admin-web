@@ -5,5 +5,5 @@
 ### 创建数据库
 
 ```sql
-CREATE DATABASE IF NOT EXISTS `actix_admin_web` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `axum_admin_web` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ```

@@ -6,7 +6,7 @@ use scheduler::{Job, JobScheduler};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let database_url = "mysql://one:pass@127.0.0.1:3306/actix_admin_web".to_owned();
+    let database_url = "mysql://one:pass@127.0.0.1:3306/axum_admin_web".to_owned();
     let options = Options::default();
     let db = database::Pool::new(database_url, options)
         .await

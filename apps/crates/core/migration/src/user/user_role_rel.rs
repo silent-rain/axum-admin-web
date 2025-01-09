@@ -1,12 +1,7 @@
 //! 用户角色关系表
 //! Entity: [`entity::user::UserRoleRel`]
 
-use crate::{user::role::UserRole, user::user_base::UserBase};
-
-use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
-};
+use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
 #[derive(DeriveMigrationName)]
@@ -15,118 +10,75 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
-        manager
-            .create_table(
-                Table::create()
-                    .table(UserRoleRel::Table)
-                    .comment("用户角色关系表")
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(UserRoleRel::Id)
-                            .integer()
-                            .primary_key()
-                            .auto_increment()
-                            .not_null()
-                            .comment("ID"),
-                    )
-                    .col(
-                        ColumnDef::new(UserRoleRel::UserId)
-                            .integer()
-                            .not_null()
-                            .comment("用户ID"),
-                    )
-                    .col(
-                        ColumnDef::new(UserRoleRel::RoleId)
-                            .integer()
-                            .not_null()
-                            .comment("角色ID"),
-                    )
-                    .col(
-                        ColumnDef::new(UserRoleRel::CreatedAt)
-                            .date_time()
-                            .not_null()
-                            .default(Expr::current_timestamp())
-                            .comment("创建时间"),
-                    )
-                    .to_owned(),
-            )
-            .await?;
+        let db = manager.get_connection();
 
-        if !manager
-            .has_index(UserRoleRel::Table.to_string(), "uk_user_id_role_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .table(UserRoleRel::Table)
-                        .name("uk_user_id_role_id")
-                        .unique()
-                        .col(UserRoleRel::UserId)
-                        .col(UserRoleRel::RoleId)
-                        .to_owned(),
+        match manager.get_database_backend() {
+            DatabaseBackend::MySql => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    `t_user_role_rel` (
+                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `user_id` INT(10) NOT NULL COMMENT '用户ID',
+                        `role_id` INT(10) NOT NULL COMMENT '角色ID',
+                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                        PRIMARY KEY (`id`)
+                    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '用户角色关系表';
+
+                    CREATE UNIQUE INDEX uk_user_id_role_id ON t_user_role_rel (`user_id`, `role_id`);
+                    ",
                 )
                 .await?;
-        }
+            }
+            DatabaseBackend::Postgres => {
+                db.execute_unprepared(
+                    r#"
+                    CREATE TABLE IF NOT EXISTS
+                    "t_user_role_rel" (
+                        "id" SERIAL PRIMARY KEY,
+                        "user_id" INT NOT NULL,
+                        "role_id" INT NOT NULL,
+                        "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    );
 
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
+                    CREATE UNIQUE INDEX uk_t_user_role_rel_user_id_role_id ON t_user_role_rel ("user_id", "role_id");
 
-        if !manager
-            .has_index(UserRoleRel::Table.to_string(), "fk_user_role_rel_user_id")
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_user_role_rel_user_id")
-                        .from(UserRoleRel::Table, UserRoleRel::UserId)
-                        .to(UserBase::Table, UserBase::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
+                    COMMENT ON TABLE t_user_role_rel IS '用户角色关系表';
+                    COMMENT ON COLUMN t_user_role_rel.id IS '自增ID';
+                    COMMENT ON COLUMN t_user_role_rel.user_id IS '用户ID';
+                    COMMENT ON COLUMN t_user_role_rel.role_id IS '角色ID';
+                    COMMENT ON COLUMN t_user_role_rel.created_at IS '创建时间';
+                    "#,
                 )
                 .await?;
-        }
+            }
+            DatabaseBackend::Sqlite => {
+                db.execute_unprepared(
+                    "
+                    CREATE TABLE IF NOT EXISTS
+                    `t_user_role_rel` ( -- 用户角色关系表
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 自增ID
+                        `user_id` INTEGER NOT NULL, -- 用户ID
+                        `role_id` INTEGER NOT NULL, -- 角色ID
+                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP -- 创建时间
+                    );
 
-        if !manager
-            .has_index(UserRoleRel::Table.to_string(), "fk_user_role_rel_role_id")
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_user_role_rel_role_id")
-                        .from(UserRoleRel::Table, UserRoleRel::RoleId)
-                        .to(UserRole::Table, UserRole::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
+                    CREATE UNIQUE INDEX uk_t_user_role_rel_user_id_role_id ON t_user_role_rel (`user_id`, `role_id`);
+                    ",
                 )
                 .await?;
+            }
         }
 
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(UserRoleRel::Table).to_owned())
-            .await
-    }
-}
+            .get_connection()
+            .execute_unprepared("DROP TABLE `t_user_role_rel`")
+            .await?;
 
-#[derive(DeriveIden)]
-pub enum UserRoleRel {
-    #[sea_orm(iden = "t_user_role_rel")]
-    Table,
-    Id,
-    UserId,
-    RoleId,
-    CreatedAt,
+        Ok(())
+    }
 }
