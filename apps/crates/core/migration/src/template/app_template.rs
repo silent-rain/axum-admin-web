@@ -24,16 +24,16 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(AppTemplate::Id)
                             .integer()
-                            // .primary_key()
-                            // .auto_increment()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    // `id` INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
-                                    DatabaseBackend::Sqlite => "PRIMARY KEY AUTOINCREMENT",
-                                    // `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                                    _ => "PRIMARY KEY AUTO_INCREMENT",
-                                }
-                            })
+                            .primary_key()
+                            .auto_increment()
+                            // .extra({
+                            //     match manager.get_database_backend() {
+                            //         // `id` INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
+                            //         DatabaseBackend::Sqlite => "PRIMARY KEY AUTOINCREMENT",
+                            //         // `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                            //         _ => "PRIMARY KEY AUTO_INCREMENT",
+                            //     }
+                            // })
                             .not_null()
                             .comment("模板ID"),
                     )
@@ -72,7 +72,10 @@ impl MigrationTrait for Migration {
                             .extra({
                                 match manager.get_database_backend() {
                                     DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
+                                    DatabaseBackend::Postgres => "DEFAULT CURRENT_TIMESTAMP",
+                                    DatabaseBackend::MySql => {
+                                        "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                                    }
                                 }
                             })
                             .comment("更新时间"),
