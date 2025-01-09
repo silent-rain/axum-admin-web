@@ -76,7 +76,6 @@ impl AppTemplateService {
         let model = app_template::ActiveModel {
             user_id: Set(data.user_id),
             desc: Set(data.desc),
-            status: Set(data.status as i8),
             ..Default::default()
         };
 
@@ -97,7 +96,7 @@ impl AppTemplateService {
             let model = app_template::ActiveModel {
                 user_id: Set(item.user_id),
                 desc: Set(item.desc),
-                status: Set(item.status as i8),
+                status: Set(item.status),
                 ..Default::default()
             };
             models.push(model);
@@ -122,7 +121,7 @@ impl AppTemplateService {
         let model = app_template::ActiveModel {
             id: Set(data.id),
             desc: Set(data.desc),
-            status: Set(data.status as i8),
+            status: Set(data.status),
             ..Default::default()
         };
 
@@ -143,7 +142,7 @@ impl AppTemplateService {
     ) -> Result<app_template::Model, ErrorMsg> {
         let result = self
             .app_template_dao
-            .status(req.id, req.status as i8)
+            .status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新{{InterfaceName}}状态失败, err: {:#?}", err);
@@ -207,7 +206,6 @@ mod tests {
         let data = CreateAppTemplateReq {
             user_id: 1,
             desc: Some("desc".to_string()),
-            status: app_template::enums::Status::Enabled,
         };
         let result = service.create(data).await?;
         println!("create result1: {result:#?}");
@@ -217,7 +215,6 @@ mod tests {
         let data = CreateAppTemplateReq {
             user_id: 2,
             desc: Some("desc".to_string()),
-            status: app_template::enums::Status::Enabled,
         };
         let result = service.create(data).await?;
         println!("create result2: {result:#?}");

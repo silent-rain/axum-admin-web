@@ -102,7 +102,7 @@ impl AppTemplateDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: i8) -> Result<app_template::Model, DbErr> {
+    pub async fn status(&self, id: i32, status: bool) -> Result<app_template::Model, DbErr> {
         let active_model = app_template::ActiveModel {
             id: Set(id),
             status: Set(status),
@@ -168,7 +168,7 @@ mod tests {
         let active_model = app_template::ActiveModel {
             id: Set(1),
             user_id: Set(11),
-            status: Set(1),
+            status: Set(true),
             ..Default::default()
         };
         let result = AppTemplate::insert(active_model)
@@ -185,13 +185,13 @@ mod tests {
         let active_model1 = app_template::ActiveModel {
             id: Set(1),
             user_id: Set(11),
-            status: Set(1),
+            status: Set(true),
             ..Default::default()
         };
         let active_model2 = app_template::ActiveModel {
             id: Set(2),
             user_id: Set(22),
-            status: Set(0),
+            status: Set(false),
             ..Default::default()
         };
         let models = [active_model1, active_model2];
@@ -209,7 +209,7 @@ mod tests {
         let active_model = app_template::ActiveModel {
             id: Set(1),
             user_id: Set(11),
-            status: Set(1),
+            status: Set(true),
             ..Default::default()
         };
         let id: i32 = *(active_model.id.clone().as_ref());
@@ -228,7 +228,7 @@ mod tests {
     fn test_status() {
         let active_model = app_template::ActiveModel {
             id: Set(1),
-            status: Set(0),
+            status: Set(false),
             ..Default::default()
         };
         let result = AppTemplate::update(active_model)
@@ -297,7 +297,7 @@ mod tests {
         let active_model = app_template::ActiveModel {
             user_id: Set(1),
             desc: Set(Some("desc".to_string())),
-            status: Set(1),
+            status: Set(true),
             ..Default::default()
         };
         let result = dao.create(active_model).await?;
@@ -308,7 +308,7 @@ mod tests {
         let active_model = app_template::ActiveModel {
             user_id: Set(2),
             desc: Set(Some("desc2".to_string())),
-            status: Set(0),
+            status: Set(false),
             ..Default::default()
         };
         let result = dao.create(active_model).await?;

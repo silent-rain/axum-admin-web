@@ -1,6 +1,6 @@
 //! 模板管理
 
-use entity::template::app_template::{self, enums::Status};
+use entity::template::app_template;
 
 use serde::{Deserialize, Serialize};
 use validator::Validate;
@@ -48,8 +48,6 @@ pub struct CreateAppTemplateReq {
     pub user_id: i32,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: Status,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -62,8 +60,8 @@ pub struct BatchCreateAppTemplateItem {
     pub user_id: i32,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 /// 批量添加数据 请求体
@@ -85,8 +83,8 @@ pub struct UpdateAppTemplateReq {
     pub user_id: i32,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -97,8 +95,8 @@ pub struct UpdateAppTemplateResp {}
 pub struct UpdateAppTemplateStatusReq {
     /// 模板ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

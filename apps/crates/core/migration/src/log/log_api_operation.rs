@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                         `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
                         `user_id` INT(11) NULL DEFAULT 0 COMMENT '用户ID',
                         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
-                        `request_id` VARCHAR(32) NULL DEFAULT '' COMMENT '请求ID',
+                        `request_id` VARCHAR(36) NULL DEFAULT '' COMMENT '请求ID',
                         `status_code` INT(10) NOT NULL COMMENT '请求状态码',
                         `method` VARCHAR(10) NOT NULL COMMENT '请求方法',
                         `path` VARCHAR(500) NOT NULL COMMENT '请求地址路径',
@@ -62,7 +62,7 @@ impl MigrationTrait for Migration {
                         "body" TEXT,
                         "remote_addr" VARCHAR(64) DEFAULT '',
                         "user_agent" VARCHAR(256) DEFAULT '',
-                        "cost" BIGINT NOT NULL,
+                        "cost" INT2 NOT NULL,
                         "http_type" VARCHAR(10) NOT NULL,
                         "desc" VARCHAR(200) DEFAULT '',
                         "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

@@ -20,8 +20,8 @@ pub struct Model {
     pub user_id: i32,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: i8,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 创建时间
     pub created_at: DateTime,
     /// 更新时间
@@ -49,21 +49,6 @@ impl ActiveModelBehavior for ActiveModel {
     {
         self.updated_at = Set(Local::now().naive_local());
         Ok(self)
-    }
-}
-/// 枚举
-pub mod enums {
-    use serde_repr::{Deserialize_repr, Serialize_repr};
-
-    /// 状态
-    #[derive(Debug, Default, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum Status {
-        /// 停用
-        #[default]
-        Disabled = 0,
-        /// 正常
-        Enabled = 1,
     }
 }
 

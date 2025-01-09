@@ -1,7 +1,7 @@
 //! API操作日志表
 
 use sea_orm::{
-    prelude::{async_trait::async_trait, DateTimeLocal},
+    prelude::{async_trait::async_trait, DateTime},
     ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
     DeriveRelation, EnumIter, PrimaryKeyTrait,
 };
@@ -38,13 +38,13 @@ pub struct Model {
     /// 用户代理
     pub user_agent: String,
     /// 耗时,毫秒
-    pub cost: u64,
+    pub cost: i16,
     /// 请求类型:REQ/RSP
     pub http_type: String,
     /// 描述信息
     pub desc: Option<String>,
     /// 创建时间
-    pub created_at: DateTimeLocal,
+    pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -99,9 +99,9 @@ pub fn register() -> Router {
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(ContextLayer::new()) // 上下文
         .layer(ApiOperationLogLayer) // Api 操作日志中间件
-        .layer(SystemApiAuthLayer) // 系统接口权限中间件
-        .layer(OpenApiAuthLayer) // OpenApi权限中间件
-        .layer(CasbinAuthLayer) // RBAC 鉴权
+        // .layer(SystemApiAuthLayer) // 系统接口权限中间件
+        // .layer(OpenApiAuthLayer) // OpenApi权限中间件
+        // .layer(CasbinAuthLayer) // RBAC 鉴权
         .layer(axum::middleware::from_fn(empty_wrapper_layer)) // 空包装
         .layer(DefaultBodyLimit::disable()) // Disable the default limit
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击

@@ -63,7 +63,7 @@ pub struct CreateApiOperationReq {
     /// 用户代理
     pub user_agent: String,
     /// 耗时,纳秒
-    pub cost: u64,
+    pub cost: i16,
     /// 请求类型:REQ/RSP
     pub http_type: log_api_operation::enums::HttpType,
     /// 描述信息

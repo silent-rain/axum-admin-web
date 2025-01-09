@@ -226,7 +226,7 @@ impl ApiOperationLog {
     fn parse_req_body(mut self, req_body_bytes: Bytes) -> Self {
         let body = Self::body_bytes_to_string(&req_body_bytes)
             .map_or("body data parsing error ".to_string(), |v| v);
-        let cost = self.start_time.elapsed().as_millis() as u64;
+        let cost = self.start_time.elapsed().as_millis() as i16;
 
         let data = self.data.map(|mut data| {
             data.cost = cost;
@@ -243,7 +243,7 @@ impl ApiOperationLog {
     fn parse_resp_body(mut self, req_body_bytes: Bytes, status_code: StatusCode) -> Self {
         let body = Self::body_bytes_to_string(&req_body_bytes)
             .map_or("body data parsing error ".to_string(), |v| v);
-        let cost = self.start_time.elapsed().as_millis() as u64;
+        let cost = self.start_time.elapsed().as_millis() as i16;
 
         let data = self.data.map(|mut data| {
             data.cost = cost;
