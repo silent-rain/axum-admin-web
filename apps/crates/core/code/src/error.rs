@@ -31,66 +31,64 @@ pub enum Error {
     MissingJsonContentType,
     #[error("Parse Request Body Error, {0}")]
     ParseRequestBodyError(String) = 10108,
-
     /// config file parse error
     #[error("config file parse error, {0}")]
-    ConfigFileParseError(String) = 10126,
+    ConfigFileParseError(String),
 
     // 数据处理异常
     /// Serialize the given data structure as a String of JSON.
-    #[error("结构序列化为JSON字符串错误, {0}")]
-    JsonSerialization(String) = 10150,
+    #[error("json serialization error, {0}")]
+    JsonSerialization(String) = 10151,
     /// Deserialize an instance of type T from a string of JSON text.
-    #[error("从JSON文本字符串中反序列化错误, {0}")]
-    JsonDeserialization(String) = 10151,
-    #[error("JSON转换错误, {0}")]
-    JsonConvert(String) = 10152,
-
+    #[error("json deserialization error, {0}")]
+    JsonDeserialization(String),
+    #[error("json convert error, {0}")]
+    JsonConvert(String),
+    #[error("convert type failed, {0}")]
+    ConvertType(String),
     /// io error, no data available
     #[error("io error, no data available")]
-    NoDataAvailable = 10153,
+    NoDataAvailable,
     /// io error, from io::Error
     #[error("io error, {0}")]
-    Io(io::Error) = 10154,
+    Io(io::Error),
     /// from utf8 error, from std::string::FromUtf8Error
     #[error("from utf8 error, {0}")]
-    FromUtf8(#[from] std::string::FromUtf8Error) = 10155,
+    FromUtf8(#[from] std::string::FromUtf8Error),
+    #[error("date time parse error, {0}")]
+    DateTimeParseError(String),
 
-    #[error("{0}")]
-    DeserializerError(String) = 10156,
-    #[error("{0}")]
-    DateTimeParseError(String) = 10157,
-
-    #[error("查询数据失败")]
-    DbQueryError = 10206,
-    #[error("未查到数据")]
-    DbQueryEmptyError = 10207,
-    #[error("添加数据失败")]
-    DbAddError = 10208,
-    #[error("批量添加数据失败")]
-    DbBatchAddError = 10209,
-    #[error("更新数据失败")]
-    DbUpdateError = 10210,
-    #[error("删除数据失败")]
-    DbDeleteError = 10211,
-    #[error("批量删除数据失败")]
-    DbBatchDeleteError = 10212,
-    #[error("更新数据状态失败")]
-    DbUpdateStatusError = 10213,
-    #[error("数据已存在")]
-    DbDataExistError = 10214,
-    #[error("数据已存在子项")]
-    DbDataExistChildrenError = 10215,
+    // 数据库操作
     #[error("db not initialized!")]
-    DbNotInit = 10216,
+    DbNotInit = 10201,
+    #[error("查询数据失败")]
+    DbQueryError,
+    #[error("未查到数据")]
+    DbQueryEmptyError,
+    #[error("添加数据失败")]
+    DbAddError,
+    #[error("批量添加数据失败")]
+    DbBatchAddError,
+    #[error("更新数据失败")]
+    DbUpdateError,
+    #[error("删除数据失败")]
+    DbDeleteError,
+    #[error("批量删除数据失败")]
+    DbBatchDeleteError,
+    #[error("更新数据状态失败")]
+    DbUpdateStatusError,
+    #[error("数据已存在")]
+    DbDataExistError,
+    #[error("数据已存在子项")]
+    DbDataExistChildrenError,
 
     // 验证码
     #[error("未知的验证码")]
     CaptchaNotExist = 10251,
     #[error("验证码已过期, 请刷新重试")]
-    CaptchaExpire = 10252,
+    CaptchaExpire,
     #[error("验证码错误")]
-    CaptchaInvalid = 10253,
+    CaptchaInvalid,
 
     // 鉴权
     #[error("账号或密码错误")]
@@ -98,6 +96,7 @@ pub enum Error {
     #[error("用户已被禁用")]
     LoginUserDisableError = 10255,
 
+    // JWT
     #[error("获取密匙异常")]
     TokenEncode = 10256,
     #[error("鉴权解析失败, err: {0}")]
@@ -116,9 +115,6 @@ pub enum Error {
     HeadersNotAuthorizationPassphrase = 10263,
     #[error("Illegal Request")]
     AuthIllegalRequest = 10266,
-
-    #[error("生成用户分享码失败")]
-    UserShareCore = 10264,
 
     #[error("数据库初始化失败, 管理员已存在无需重复初始化")]
     DbInitByAdminExistError = 10265,
@@ -141,28 +137,28 @@ pub enum Error {
     CasbinNoAccessPermission,
 
     // 文件或目录操作
-    #[error("获取目录失败")]
-    FsReadDirError = 10301,
-    #[error("获取上级目录失败")]
-    FsParentDirError = 10302,
-    #[error("创建目录失败")]
-    FsCreateDir = 10303,
-    #[error("读取文件失败, {0}")]
-    FsReadFileError(String) = 10304,
-    #[error("创建文件失败, {0}")]
-    FsCreateFileError(String) = 10305,
-    #[error("写入文件失败, {0}")]
-    FsWriterFileError(String) = 10306,
-
     #[error("Embed Asset Error, {0}")]
-    EmbedAssetError(String) = 10307,
+    ParseFileExtension(String) = 10301,
+    #[error("获取目录失败")]
+    FsReadDirError,
+    #[error("获取上级目录失败")]
+    FsParentDirError,
+    #[error("创建目录失败")]
+    FsCreateDir,
+    #[error("读取文件失败, {0}")]
+    FsReadFileError(String),
+    #[error("创建文件失败, {0}")]
+    FsCreateFileError(String),
+    #[error("写入文件失败, {0}")]
+    FsWriterFileError(String),
+    #[error("parse file extension failed, {0}")]
+    EmbedAssetError(String),
 
+    // 业务逻辑
     #[error("Upload File Error, {0}")]
-    UploadFileError(String) = 10308,
-
-    // 内部框架错误
-    #[error("日志初始化失败, {0}")]
-    LoggerInitError(String) = 10351,
+    UploadFileError(String) = 20001,
+    #[error("failed to generate user sharing code")]
+    GenerateUserShareCore,
 
     /// 自定义错误
     #[error("自定义错误")]
@@ -211,21 +207,21 @@ mod tests {
 
     #[test]
     fn test_error_code() {
-        let mut err = Error::LoggerInitError("0".to_string());
-        assert!(err.to_string() == "日志初始化失败, 0");
+        let mut err = Error::Unknown("0".to_string());
+        assert!(err.to_string() == "unknown error, 0");
 
         let code = unsafe {
             let mul_err = &mut err;
             let ptr: *const u16 = mul_err as *mut Error as *const u16;
             ptr.read_volatile()
         };
-        assert!(code == 10351);
+        assert!(code == 10001);
     }
 
     #[test]
     fn test_error_code2() {
-        let err = Error::LoggerInitError("0".to_string());
+        let err = Error::Unknown("0".to_string());
         let code = err.code();
-        assert!(code == 10351);
+        assert!(code == 10001);
     }
 }

@@ -122,7 +122,7 @@ impl UserBaseService {
 
         if share_code.is_empty() {
             error!("生成用户分享码失败, 请重试");
-            return Err(Error::UserShareCore
+            return Err(Error::GenerateUserShareCore
                 .into_msg()
                 .with_msg("生成用户分享码失败, 请重试"));
         }
