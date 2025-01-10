@@ -16,6 +16,7 @@ use entity::system::sys_file_resource;
 use nject::injectable;
 use sea_orm::Set;
 use tracing::error;
+use utils::file::file_extension;
 use uuid::Uuid;
 
 /// 服务层
@@ -90,12 +91,14 @@ impl FileResourceService {
         &self,
         mut req: UploadFileReq,
     ) -> Result<sys_file_resource::Model, ErrorMsg> {
-        let name = req.file.metadata.file_name.ok_or_else(|| {
+        let file_name = req.file.metadata.file_name.ok_or_else(|| {
             error!("请求参数异常");
             Error::RequestError("请求参数异常".to_string()).into_msg()
         })?;
 
-        let extension = req
+        let extension = file_extension(file_name.clone())?;
+
+        let content_type = req
             .file
             .metadata
             .content_type
@@ -107,16 +110,17 @@ impl FileResourceService {
             .write_all(&buffer)
             .map_err(|err| Error::UploadFileError(err.to_string()))?;
 
-        let img_size = req.file.contents.bytes().count() as u16;
+        let file_size = req.file.contents.bytes().count() as u16;
 
         let hash = Uuid::new_v4().to_string().replace('-', "");
 
         let model = sys_file_resource::ActiveModel {
-            name: Set(name),
+            file_name: Set(file_name),
             hash: Set(hash),
             data: Set(buffer),
             extension: Set(extension),
-            size: Set(img_size),
+            content_type: Set(content_type),
+            size: Set(file_size),
             ..Default::default()
         };
 
@@ -132,10 +136,12 @@ impl FileResourceService {
     pub async fn upload_files(&self, req: UploadFilesReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for mut file in req.files {
-            let name = file.metadata.file_name.ok_or_else(|| {
+            let file_name = file.metadata.file_name.ok_or_else(|| {
                 error!("请求参数异常");
                 Error::RequestError("请求参数异常".to_string()).into_msg()
             })?;
+
+            let content_type = file_extension(file_name.clone())?;
 
             let extension = file
                 .metadata
@@ -147,16 +153,17 @@ impl FileResourceService {
                 .write_all(&buffer)
                 .map_err(|err| Error::UploadFileError(err.to_string()))?;
 
-            let img_size = file.contents.bytes().count() as u16;
+            let file_size = file.contents.bytes().count() as u16;
 
             let hash = Uuid::new_v4().to_string().replace('-', "");
 
             let model = sys_file_resource::ActiveModel {
-                name: Set(name),
+                file_name: Set(file_name),
                 hash: Set(hash),
                 data: Set(buffer),
                 extension: Set(extension),
-                size: Set(img_size),
+                content_type: Set(content_type),
+                size: Set(file_size),
                 ..Default::default()
             };
             models.push(model);
@@ -178,7 +185,7 @@ impl FileResourceService {
     pub async fn update(&self, req: UpdateFileResourceReq) -> Result<u64, ErrorMsg> {
         let model = sys_file_resource::ActiveModel {
             id: Set(req.id),
-            name: Set(req.name),
+            file_name: Set(req.file_name),
             desc: Set(req.desc),
             ..Default::default()
         };

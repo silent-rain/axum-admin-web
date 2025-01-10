@@ -19,7 +19,7 @@ pub struct GetFileResourcesReq {
     /// 结束时间
     pub end_time: Option<String>,
     /// 文件名称
-    pub name: Option<String>,
+    pub file_name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -60,7 +60,7 @@ pub struct UpdateFileResourceReq {
     /// 文件ID
     pub id: i32,
     /// 文件名称
-    pub name: String,
+    pub file_name: String,
     /// 描述信息
     pub desc: Option<String>,
 }

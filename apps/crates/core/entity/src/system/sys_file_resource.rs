@@ -1,8 +1,8 @@
 //! 文件资源表
 
 use sea_orm::{
-    prelude::DateTimeLocal, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
-    DeriveRelation, EnumIter, PrimaryKeyTrait,
+    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, DeriveRelation,
+    EnumIter, PrimaryKeyTrait,
 };
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +14,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     /// 文件名称
-    pub name: String,
+    pub file_name: String,
     /// 文件HASH值
     #[sea_orm(unique)]
     pub hash: String,
@@ -22,12 +22,15 @@ pub struct Model {
     pub data: Vec<u8>,
     /// 文件文件扩展名, 如svg, png
     pub extension: String,
+    /// 内容类型, text/html
+    /// [content-type](https://www.runoob.com/http/http-content-type.html)
+    pub content_type: String,
     /// 文件大小
     pub size: u16,
     /// 描述信息
     pub desc: Option<String>,
     /// 创建时间
-    pub created_at: DateTimeLocal,
+    pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -39,23 +42,21 @@ impl ActiveModelBehavior for ActiveModel {}
 pub mod enums {
     use serde::{Deserialize, Serialize};
 
-    /// ICON文件扩展类型,svg,png
+    /// 文件文件扩展类型, svg,png
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
     #[repr(i8)]
-    pub enum ImageType {
-        /// 无效验证码
+    pub enum ExtensionType {
         #[serde(rename = "svg")]
         Svg,
-        /// 有效验证码
         #[serde(rename = "png")]
         Png,
     }
 
-    impl From<ImageType> for String {
-        fn from(value: ImageType) -> Self {
+    impl From<ExtensionType> for String {
+        fn from(value: ExtensionType) -> Self {
             match value {
-                ImageType::Svg => "svg".to_owned(),
-                ImageType::Png => "png".to_owned(),
+                ExtensionType::Svg => "svg".to_owned(),
+                ExtensionType::Png => "png".to_owned(),
             }
         }
     }

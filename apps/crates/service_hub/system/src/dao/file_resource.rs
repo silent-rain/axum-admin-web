@@ -33,8 +33,8 @@ impl FileResourceDao {
             .apply_if(req.end_time, |query, v| {
                 query.filter(sys_file_resource::Column::CreatedAt.lt(v))
             })
-            .apply_if(req.name, |query, v| {
-                query.filter(sys_file_resource::Column::Name.like(format!("{v}%")))
+            .apply_if(req.file_name, |query, v| {
+                query.filter(sys_file_resource::Column::FileName.like(format!("{v}%")))
             });
 
         let total = states.clone().count(self.db.db()).await?;
@@ -51,6 +51,7 @@ impl FileResourceDao {
 
         Ok((results, total))
     }
+
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<sys_file_resource::Model>, DbErr> {
         SysFileResource::find()

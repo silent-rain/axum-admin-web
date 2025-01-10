@@ -137,7 +137,7 @@ pub enum Error {
     CasbinNoAccessPermission,
 
     // 文件或目录操作
-    #[error("Embed Asset Error, {0}")]
+    #[error("parse file extension failed, {0}")]
     ParseFileExtension(String) = 10301,
     #[error("获取目录失败")]
     FsReadDirError,
