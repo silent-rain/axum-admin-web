@@ -5,7 +5,7 @@ use crate::{
     dto::file_resource::{
         BatchDeleteFileResourceReq, BatchDeleteFileResourceResp, DeleteFileResourceReq,
         DeleteFileResourceResp, GetFileResourceReq, GetFileResourceResp, GetFileResourcesReq,
-        GetFileResourcesResp, ShowFileReq, UpdateFileResourceReq, UpdateFileResourceResp,
+        GetFileResourcesResp, ShowImageReq, UpdateFileResourceReq, UpdateFileResourceResp,
         UploadFileReq, UploadFileResp, UploadFilesReq, UploadFilesResp,
     },
     service::file_resource::FileResourceService,
@@ -42,24 +42,6 @@ impl FileResourceController {
         let result = image_resource_service.info(req).await?;
 
         let resp = Response::data(result).to_json()?;
-        Ok(resp)
-    }
-
-    /// 通过hash值获取图片
-    /// TODO 待验证
-    pub async fn show_image(
-        Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<ShowFileReq>,
-    ) -> Result<axum::response::Response<Body>, ResponseErr> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let result = image_resource_service.info_by_hash(req).await?;
-
-        let img = result.data.to_vec();
-
-        let resp = axum::response::Response::builder()
-            .header(HEADERS_X_IMG, "true")
-            .body(Body::from(img))
-            .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
         Ok(resp)
     }
 
@@ -122,6 +104,24 @@ impl FileResourceController {
         let _result = image_resource_service.upload_files(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
+    }
+
+    /// 通过hash值获取图片
+    /// TODO 待验证
+    pub async fn show_image(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<ShowImageReq>,
+    ) -> Result<axum::response::Response<Body>, ResponseErr> {
+        let image_resource_service: FileResourceService = provider.provide();
+        let result = image_resource_service.info_by_hash(req).await?;
+
+        let img = result.data.to_vec();
+
+        let resp = axum::response::Response::builder()
+            .header(HEADERS_X_IMG, "true")
+            .body(Body::from(img))
+            .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
         Ok(resp)
     }
 }

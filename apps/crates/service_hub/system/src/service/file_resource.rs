@@ -5,7 +5,7 @@ use std::io::{Read, Write};
 use crate::{
     dao::file_resource::FileResourceDao,
     dto::file_resource::{
-        DeleteFileResourceReq, GetFileResourceReq, GetFileResourcesReq, ShowFileReq,
+        DeleteFileResourceReq, GetFileResourceReq, GetFileResourcesReq, ShowImageReq,
         UpdateFileResourceReq, UploadFileReq, UploadFilesReq,
     },
 };
@@ -68,7 +68,7 @@ impl FileResourceService {
     /// 通过hash值获取详情数据
     pub async fn info_by_hash(
         &self,
-        req: ShowFileReq,
+        req: ShowImageReq,
     ) -> Result<sys_file_resource::Model, ErrorMsg> {
         let result = self
             .image_resource_dao

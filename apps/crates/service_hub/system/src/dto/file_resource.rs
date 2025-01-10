@@ -5,7 +5,26 @@ use serde::{Deserialize, Serialize};
 use tempfile::NamedTempFile;
 use validator::Validate;
 
-use entity::system::sys_file_resource;
+/// 文件资源
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct FileResource {
+    /// 文件ID
+    pub id: i32,
+    /// 文件名称
+    pub file_name: String,
+    /// 文件HASH值
+    pub hash: String,
+    /// 文件文件扩展名, 如svg, png
+    pub extension: String,
+    /// 内容类型, text/html
+    pub content_type: String,
+    /// 文件大小
+    pub size: u16,
+    /// 描述信息
+    pub desc: Option<String>,
+    /// 创建时间
+    pub created_at: String,
+}
 
 /// 获取文件列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -24,7 +43,7 @@ pub struct GetFileResourcesReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetFileResourcesResp {
-    pub data_list: Vec<sys_file_resource::Model>,
+    pub data_list: Vec<FileResource>,
     pub total: u64,
 }
 
@@ -38,20 +57,7 @@ pub struct GetFileResourceReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetFileResourceResp {
     #[serde(flatten)]
-    data: sys_file_resource::Model,
-}
-
-/// 查询数据 请求体
-#[derive(Debug, Default, Serialize, Deserialize, Validate)]
-pub struct ShowFileReq {
-    /// 文件hash值
-    pub hash: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ShowFileResp {
-    #[serde(flatten)]
-    data: sys_file_resource::Model,
+    data: FileResource,
 }
 
 /// 更新文件 请求体
@@ -88,6 +94,7 @@ pub struct BatchDeleteFileResourceReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BatchDeleteFileResourceResp {}
 
+/// 单文件上传 请求体
 #[derive(TryFromMultipart)]
 pub struct UploadFileReq {
     // The `unlimited arguments` means that this field will be limited to the
@@ -107,9 +114,17 @@ pub struct UploadFileResp {}
 /// 多文件上传 请求体
 #[derive(TryFromMultipart)]
 pub struct UploadFilesReq {
+    /// 文件列表
     #[form_data(limit = "5MiB")]
     pub files: Vec<FieldData<NamedTempFile>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UploadFilesResp {}
+
+/// 查询数据 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct ShowImageReq {
+    /// 文件hash值
+    pub hash: String,
+}
