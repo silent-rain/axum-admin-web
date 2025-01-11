@@ -1,30 +1,11 @@
 /*日志相关表*/
--- 用户登录日志表
-CREATE TABLE IF NOT EXISTS
-    `t_user_login_log` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `user_id` INT(11) NOT NULL COMMENT '用户ID',
-        `username` VARCHAR(32) NOT NULL COMMENT '用户名称',
-        `token` VARCHAR(300) NULL DEFAULT '' COMMENT '登陆令牌',
-        `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '登录IP',
-        `user_agent` VARCHAR(256) NULL DEFAULT '' COMMENT '用户代理',
-        `device` VARCHAR(20) NULL DEFAULT '' COMMENT '设备',
-        `system` VARCHAR(20) NULL DEFAULT '' COMMENT '系统',
-        `browser` VARCHAR(20) NULL DEFAULT '' COMMENT '浏览器',
-        `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
-        `status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '登录状态(0:登陆成功,1:登陆失败,2:已禁用,3:登出)',
-        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-        `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-        PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT '用户登录日志表';
-
 -- API操作日志表
 CREATE TABLE IF NOT EXISTS
     `t_log_api_operation` (
         `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
         `user_id` INT(11) NULL DEFAULT 0 COMMENT '用户ID',
         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
-        `request_id` VARCHAR(32) NULL DEFAULT '' COMMENT '请求ID',
+        `request_id` VARCHAR(36) NULL DEFAULT '' COMMENT '请求ID',
         `status_code` INT(10) NOT NULL COMMENT '请求状态码',
         `method` VARCHAR(10) NOT NULL COMMENT '请求方法',
         `path` VARCHAR(500) NOT NULL COMMENT '请求地址路径',
@@ -38,7 +19,15 @@ CREATE TABLE IF NOT EXISTS
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT 'API操作日志表';
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT 'API操作日志表';
+
+CREATE INDEX idx_user_id ON t_log_api_operation (`user_id`);
+
+CREATE INDEX idx_username ON t_log_api_operation (`username`);
+
+CREATE INDEX idx_request_id ON t_log_api_operation (`request_id`);
+
+CREATE INDEX idx_status_code ON t_log_api_operation (`status_code`);
 
 -- 系统日志表
 CREATE TABLE IF NOT EXISTS
@@ -55,8 +44,8 @@ CREATE TABLE IF NOT EXISTS
         `line` INT(10) UNSIGNED NULL DEFAULT 0 COMMENT '报错行数',
         `level` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '日志级别',
         `kind` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '事件类型',
-        `is_event` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否为事件',
-        `is_span` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否为 span',
+        `is_event` BOOL NOT NULL DEFAULT FALSE COMMENT '是否为事件',
+        `is_span` BOOL NOT NULL DEFAULT FALSE COMMENT '是否为 span',
         `fields` VARCHAR(500) NULL DEFAULT '' COMMENT '日志字段名称列表',
         `field_data` TEXT NULL COMMENT 'fields 日志数据集',
         `message` TEXT NULL COMMENT '日志信息',
@@ -66,7 +55,11 @@ CREATE TABLE IF NOT EXISTS
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT '创建时间',
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB AUTO_INCREMENT = 1485 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '系统日志';
+    ) ENGINE = InnoDB AUTO_INCREMENT = 1485 DEFAULT CHARSET = utf8mb4 COMMENT = '系统日志';
+
+CREATE INDEX idx_user_id ON t_log_system (`user_id`);
+
+CREATE INDEX idx_username ON t_log_system (`username`);
 
 -- TODO WEB日志表
 CREATE TABLE IF NOT EXISTS
@@ -85,4 +78,10 @@ CREATE TABLE IF NOT EXISTS
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT 'WEB日志表';
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT 'WEB日志表';
+
+CREATE INDEX idx_user_id ON t_log_web (`user_id`);
+
+CREATE INDEX idx_username ON t_log_web (`username`);
+
+CREATE INDEX idx_request_id ON t_log_web (`request_id`);

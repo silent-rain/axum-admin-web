@@ -3101,6 +3101,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "orm_migration"
+version = "0.1.0"
+dependencies = [
+ "async-std",
+ "colored",
+ "database",
+ "dotenv",
+ "entity",
+ "sea-orm",
+ "sea-orm-migration",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "ouroboros"
 version = "0.18.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"

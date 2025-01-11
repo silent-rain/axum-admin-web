@@ -6,7 +6,7 @@ members = [
     "crates/core/database",
     "crates/core/inject",
     "crates/core/entity",
-    # "crates/core/orm_migration",
+    "crates/core/orm_migration", # 当前不完善, 以migration为主
     "crates/core/migration",
     "crates/core/jwt",
     "crates/core/scheduler",

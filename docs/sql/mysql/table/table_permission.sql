@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS
         `redirect_to` VARCHAR(255) NULL DEFAULT '' COMMENT '路由重定向',
         `link` VARCHAR(255) NULL DEFAULT '' COMMENT '链接地址:站内链地址/站外链地址',
         `link_target` VARCHAR(20) NULL DEFAULT '_blank' COMMENT '链接跳转方式,_blank/_self',
-        `is_hidden` TINYINT(1) NULL DEFAULT 1 COMMENT '是否隐藏(0:显示,1:隐藏)',
-        `is_always_show_root` TINYINT(1) NULL DEFAULT 1 COMMENT '是否始终显示根菜单(0:隐藏,1:显示)',
+        `is_hidden` BOOL NULL DEFAULT TRUE COMMENT '是否隐藏',
+        `is_always_show_root` BOOL NULL DEFAULT TRUE COMMENT '是否始终显示根菜单',
         `permission` VARCHAR(200) NULL DEFAULT '' COMMENT '权限标识',
         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
@@ -22,7 +22,11 @@ CREATE TABLE IF NOT EXISTS
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT '菜单表';
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '菜单表';
+
+CREATE INDEX idx_pid ON t_perm_menu (`pid`);
+
+CREATE INDEX idx_title ON t_perm_menu (`title`);
 
 -- 菜单角色关系表
 CREATE TABLE IF NOT EXISTS
@@ -31,11 +35,10 @@ CREATE TABLE IF NOT EXISTS
         `menu_id` INT(10) NOT NULL COMMENT '菜单ID',
         `role_id` INT(10) NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-        PRIMARY KEY (`id`),
-        UNIQUE KEY `uk_menu_id_role_id` (`menu_id`, `role_id`),
-        CONSTRAINT `fk_perm_menu_role_rel_menu_id` FOREIGN KEY (`menu_id`) REFERENCES `t_perm_menu` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT `fk_perm_menu_role_rel_role_id` FOREIGN KEY (`role_id`) REFERENCES `t_user_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT '菜单角色关系表';
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '菜单角色关系表';
+
+CREATE UNIQUE INDEX uk_menu_id_role_id ON t_perm_menu_role_rel (`menu_id`, `role_id`);
 
 -- 令牌表
 CREATE TABLE IF NOT EXISTS
@@ -51,20 +54,25 @@ CREATE TABLE IF NOT EXISTS
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT '令牌表';
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '令牌表';
+
+CREATE INDEX idx_user_id ON t_perm_token (`user_id`);
+
+CREATE INDEX idx_token ON t_perm_token (`token`);
+
+CREATE INDEX idx_passphrase ON t_perm_token (`passphrase`);
 
 -- 令牌角色关系表
 CREATE TABLE IF NOT EXISTS
-    t_perm_token_role_rel (
+    `t_perm_token_role_rel` (
         `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
         `token_id` INT(11) NOT NULL COMMENT '令牌ID',
         `role_id` INT(11) NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-        PRIMARY KEY (`id`),
-        UNIQUE KEY `uk_token_id_role_id` (`token_id`, `role_id`),
-        CONSTRAINT `fk_perm_token_role_rel_token_id` FOREIGN KEY (`token_id`) REFERENCES `t_perm_token` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT `fk_perm_token_role_rel_role_id` FOREIGN KEY (`role_id`) REFERENCES `t_user_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT '令牌角色关系表';
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '令牌角色关系表';
+
+CREATE UNIQUE INDEX uk_token_id_role_id ON t_perm_token_role_rel (`token_id`, `role_id`);
 
 -- OpenApi接口表
 CREATE TABLE IF NOT EXISTS
@@ -81,7 +89,9 @@ CREATE TABLE IF NOT EXISTS
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT 'OpenApi接口表';
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT 'OpenApi接口表';
+
+CREATE INDEX idx_pid ON t_perm_openapi (`pid`);
 
 -- OpenApi接口角色关系表
 CREATE TABLE IF NOT EXISTS
@@ -90,8 +100,7 @@ CREATE TABLE IF NOT EXISTS
         `openapi_id` INT(11) NOT NULL COMMENT '接口ID',
         `role_id` INT(11) NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-        PRIMARY KEY (`id`),
-        UNIQUE KEY `uk_openapi_id_role_id` (`openapi_id`, `role_id`),
-        CONSTRAINT `fk_openapi_role_rel_openapi_id` FOREIGN KEY (`openapi_id`) REFERENCES `t_perm_openapi` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT `fk_openapi_role_rel_role_id` FOREIGN KEY (`role_id`) REFERENCES `t_user_role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT 'OpenApi接口角色关系表';
+        PRIMARY KEY (`id`)
+    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT 'OpenApi接口角色关系表';
+
+CREATE UNIQUE INDEX uk_openapi_id_role_id ON t_perm_openapi_role_rel (`openapi_id`, `role_id`);

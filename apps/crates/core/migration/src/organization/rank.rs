@@ -28,9 +28,6 @@ impl MigrationTrait for Migration {
                         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`)
                     ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '职级表';
-
-                    CREATE INDEX idx_name ON t_org_rank (`name`);
-                    CREATE INDEX idx_level ON t_org_rank (`level`);
                     ",
                 )
                 .await?;
@@ -48,9 +45,6 @@ impl MigrationTrait for Migration {
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
-
-                    CREATE INDEX idx_t_org_rank_name ON t_org_rank ("name");
-                    CREATE INDEX idx_t_org_rank_level ON t_org_rank ("level");
 
                     COMMENT ON TABLE t_org_rank IS '职级表';
                     COMMENT ON COLUMN t_org_rank.id IS '职级ID';
@@ -78,9 +72,6 @@ impl MigrationTrait for Migration {
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );
-
-                    CREATE INDEX idx_t_org_rank_name ON t_org_rank (`name`);
-                    CREATE INDEX idx_t_org_rank_level ON t_org_rank (`level`);
                     ",
                 )
                 .await?;
