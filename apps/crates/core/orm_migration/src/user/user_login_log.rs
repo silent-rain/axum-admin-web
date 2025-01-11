@@ -97,7 +97,7 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(UserLoginLog::Status)
+                        ColumnDef::new(UserLoginLog::LoginStatus)
                             .tiny_integer()
                             .not_null()
                             .default(0)
@@ -149,7 +149,7 @@ pub enum UserLoginLog {
     System,
     Browser,
     Desc,
-    Status,
+    LoginStatus,
     CreatedAt,
     UpdatedAt,
 }

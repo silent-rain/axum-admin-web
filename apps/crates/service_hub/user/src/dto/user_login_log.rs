@@ -1,5 +1,5 @@
 //! 登陆日志管理
-use entity::user::user_login_log;
+use entity::user::user_login_log::{self, enums::LoginStatus};
 
 use serde::{Deserialize, Serialize};
 use validator::Validate;
@@ -56,7 +56,7 @@ pub struct CreateUserLoginLogReq {
     /// 描述信息
     pub desc: Option<String>,
     /// 登录状态
-    pub status: user_login_log::enums::Status,
+    pub login_status: LoginStatus,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -70,7 +70,7 @@ pub struct UpdateUserLoginLogReq {
     /// 描述信息
     pub desc: Option<String>,
     /// 登录状态
-    pub status: user_login_log::enums::Status,
+    pub login_status: LoginStatus,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -82,7 +82,7 @@ pub struct UpdateUserLoginLogStatusReq {
     /// ID
     pub id: i32,
     /// 登录状态
-    pub status: user_login_log::enums::Status,
+    pub login_status: LoginStatus,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

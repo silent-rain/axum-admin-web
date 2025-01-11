@@ -98,10 +98,10 @@ impl UserLoginLogDao {
     }
 
     /// 更新禁用状态
-    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, login_status: i8) -> Result<(), DbErr> {
         let active_model = user_login_log::ActiveModel {
             id: Set(id),
-            status: Set(status),
+            login_status: Set(login_status),
             ..Default::default()
         };
         let _ = active_model.update(self.db.db()).await?;

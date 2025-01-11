@@ -28,7 +28,7 @@ impl MigrationTrait for Migration {
                         `system` VARCHAR(20) NULL DEFAULT '' COMMENT '系统',
                         `browser` VARCHAR(20) NULL DEFAULT '' COMMENT '浏览器',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
-                        `status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '登录状态(0:登陆成功,1:登陆失败,2:已禁用,3:登出)',
+                        `login_status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '登录状态(0:登陆成功,1:登陆失败,2:已禁用,3:登出)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`)
@@ -37,7 +37,7 @@ impl MigrationTrait for Migration {
                     CREATE INDEX idx_user_id ON t_user_login_log (`user_id`);
                     CREATE INDEX idx_username ON t_user_login_log (`username`);
                     CREATE INDEX idx_token ON t_user_login_log (`token`);
-                    CREATE INDEX idx_status ON t_user_login_log (`status`);
+                    CREATE INDEX idx_login_status ON t_user_login_log (`login_status`);
                     ",
                 )
                 .await?;
@@ -57,7 +57,7 @@ impl MigrationTrait for Migration {
                         "system" VARCHAR(20) DEFAULT '',
                         "browser" VARCHAR(20) DEFAULT '',
                         "desc" VARCHAR(200) DEFAULT '',
-                        "status" SMALLINT NOT NULL DEFAULT 0,
+                        "login_status" char NOT NULL DEFAULT 0,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
@@ -65,7 +65,7 @@ impl MigrationTrait for Migration {
                     CREATE INDEX idx_t_user_login_log_user_id ON t_user_login_log ("user_id");
                     CREATE INDEX idx_t_user_login_log_username ON t_user_login_log ("username");
                     CREATE INDEX idx_t_user_login_log_token ON t_user_login_log ("token");
-                    CREATE INDEX idx_t_user_login_log_status ON t_user_login_log ("status");
+                    CREATE INDEX idx_t_user_login_log_login_status ON t_user_login_log ("login_status");
 
                     COMMENT ON TABLE t_user_login_log IS '用户登录日志表';
                     COMMENT ON COLUMN t_user_login_log.id IS '自增ID';
@@ -78,7 +78,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_user_login_log.system IS '系统';
                     COMMENT ON COLUMN t_user_login_log.browser IS '浏览器';
                     COMMENT ON COLUMN t_user_login_log.desc IS '描述信息';
-                    COMMENT ON COLUMN t_user_login_log.status IS '登录状态(0:登录成功,1:登录失败,2:已禁用,3:登出)';
+                    COMMENT ON COLUMN t_user_login_log.login_status IS '登录状态(0:登录成功,1:登录失败,2:已禁用,3:登出)';
                     COMMENT ON COLUMN t_user_login_log.created_at IS '创建时间';
                     COMMENT ON COLUMN t_user_login_log.updated_at IS '更新时间';
                     "#,
@@ -100,7 +100,7 @@ impl MigrationTrait for Migration {
                         `system` TEXT DEFAULT '', -- 系统
                         `browser` TEXT DEFAULT '', -- 浏览器
                         `desc` TEXT DEFAULT '', -- 描述信息
-                        `status` INTEGER NOT NULL DEFAULT 0, -- 登录状态(0:登录成功,1:登录失败,2:已禁用,3:登出)
+                        `login_status` INTEGER NOT NULL DEFAULT 0, -- 登录状态(0:登录成功,1:登录失败,2:已禁用,3:登出)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );
@@ -108,7 +108,7 @@ impl MigrationTrait for Migration {
                     CREATE INDEX idx_t_user_login_log_user_id ON t_user_login_log (`user_id`);
                     CREATE INDEX idx_t_user_login_log_username ON t_user_login_log (`username`);
                     CREATE INDEX idx_t_user_login_log_token ON t_user_login_log (`token`);
-                    CREATE INDEX idx_t_user_login_log_status ON t_user_login_log (`status`);
+                    CREATE INDEX idx_t_user_login_log_login_status ON t_user_login_log (`login_status`);
                     ",
                 )
                 .await?;

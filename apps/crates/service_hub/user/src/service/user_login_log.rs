@@ -109,7 +109,7 @@ impl UserLoginLogService {
             system: Set(Some(system)),
             browser: Set(Some(browser)),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            login_status: Set(req.login_status as i8),
             ..Default::default()
         };
         let result = self.user_login_dao.create(model).await.map_err(|err| {
@@ -127,7 +127,7 @@ impl UserLoginLogService {
         let model = user_login_log::ActiveModel {
             id: Set(req.id),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            login_status: Set(req.login_status as i8),
             ..Default::default()
         };
 
@@ -144,7 +144,7 @@ impl UserLoginLogService {
     /// 更新登录日志状态
     pub async fn update_status(&self, req: UpdateUserLoginLogStatusReq) -> Result<(), ErrorMsg> {
         self.user_login_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.login_status as i8)
             .await
             .map_err(|err| {
                 error!("更新登录日志状态失败, err: {:#?}", err);

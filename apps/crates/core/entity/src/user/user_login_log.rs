@@ -34,7 +34,7 @@ pub struct Model {
     /// 描述信息
     pub desc: Option<String>,
     /// 登录状态
-    pub status: i8,
+    pub login_status: i8,
     /// 创建时间
     pub created_at: DateTimeLocal,
     /// 更新时间
@@ -62,7 +62,7 @@ pub mod enums {
     /// 用户登陆状态
     #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
-    pub enum Status {
+    pub enum LoginStatus {
         /// 登陆成功
         Success = 0,
         /// 登陆失败

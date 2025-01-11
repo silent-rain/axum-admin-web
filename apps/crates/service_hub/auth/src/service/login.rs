@@ -55,7 +55,7 @@ impl LoginService {
                 browser_info,
                 "".to_owned(),
                 Some("用户已被禁用".to_owned()),
-                user_login_log::enums::Status::Failed,
+                user_login_log::enums::LoginStatus::Failed,
             );
             error!("用户已被禁用");
             return Err(Error::LoginUserDisableError
@@ -70,7 +70,7 @@ impl LoginService {
                 browser_info,
                 "".to_owned(),
                 Some("账号或密码错误".to_owned()),
-                user_login_log::enums::Status::Failed,
+                user_login_log::enums::LoginStatus::Failed,
             );
             error!("账号或密码错误");
             return Err(Error::LoginPasswordError
@@ -90,7 +90,7 @@ impl LoginService {
             browser_info,
             token.clone(),
             None,
-            user_login_log::enums::Status::Success,
+            user_login_log::enums::LoginStatus::Success,
         );
 
         // 返回Token
@@ -191,7 +191,7 @@ impl LoginService {
         browser_info: BrowserInfo,
         token: String,
         desc: Option<String>,
-        status: user_login_log::enums::Status,
+        login_status: user_login_log::enums::LoginStatus,
     ) {
         let db = self.db.clone();
 
@@ -211,7 +211,7 @@ impl LoginService {
                 token: Set(token),
                 remote_addr: Set(browser_info.remote_addr),
                 user_agent: Set(browser_info.user_agent),
-                status: Set(status as i8),
+                login_status: Set(login_status as i8),
                 device: Set(Some(device)),
                 system: Set(Some(system)),
                 browser: Set(Some(browser)),

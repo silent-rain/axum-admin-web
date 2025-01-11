@@ -22,7 +22,10 @@ impl Logoutervice {
 
         // 更新登陆日志状态
         self.user_login_log_dao
-            .update_status(user_login_id, user_login_log::enums::Status::Logout as i8)
+            .update_status(
+                user_login_id,
+                user_login_log::enums::LoginStatus::Logout as i8,
+            )
             .await
             .map_err(|err| {
                 error!("登出失败, err: {:#?}", err);
