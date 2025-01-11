@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                         "uuid" VARCHAR(50) NOT NULL,
                         "error" TEXT,
                         "cost" BIGINT NOT NULL,
-                        "status" BOOLEAN NOT NULL DEFAULT FALSE,
+                        "status" char NOT NULL DEFAULT 0,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
@@ -74,7 +74,7 @@ impl MigrationTrait for Migration {
                         `uuid` TEXT NOT NULL, -- 任务调度ID
                         `error` TEXT, -- 失败信息
                         `cost` INTEGER NOT NULL, -- 耗时,毫秒
-                        `status` BOOLEAN NOT NULL DEFAULT 0, -- 任务状态(0:开始,1:完成,2:停止,3:移除)
+                        `status` TINYINT(1) NOT NULL DEFAULT 0, -- 任务状态(0:开始,1:完成,2:停止,3:移除)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

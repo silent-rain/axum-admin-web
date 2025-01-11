@@ -50,7 +50,7 @@ impl RegisterDao {
             date_birth: Set(req.date_birth),
             avatar: Set(req.avatar),
             password: Set(req.password),
-            status: Set(user_base::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         active_model.insert(txn).await

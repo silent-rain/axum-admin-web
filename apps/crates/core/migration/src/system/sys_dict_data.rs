@@ -25,7 +25,7 @@ impl MigrationTrait for Migration {
                         `value` TEXT NOT NULL COMMENT '字典项值',
                         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
-                        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0: 停用, 1: 正常)',
+                        `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`)
@@ -49,7 +49,7 @@ impl MigrationTrait for Migration {
                         "value" TEXT NOT NULL,
                         "sort" INTEGER DEFAULT 0,
                         "desc" VARCHAR(200) DEFAULT '',
-                        "status" SMALLINT NOT NULL DEFAULT 1,
+                        "status" BOOL NOT NULL DEFAULT TRUE,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
@@ -66,7 +66,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_sys_dict_data.value IS '字典项值';
                     COMMENT ON COLUMN t_sys_dict_data.sort IS '排序';
                     COMMENT ON COLUMN t_sys_dict_data.desc IS '描述信息';
-                    COMMENT ON COLUMN t_sys_dict_data.status IS '状态(0: 停用, 1: 正常)';
+                    COMMENT ON COLUMN t_sys_dict_data.status IS '状态(false:停用,true:正常)';
                     COMMENT ON COLUMN t_sys_dict_data.created_at IS '创建时间';
                     COMMENT ON COLUMN t_sys_dict_data.updated_at IS '更新时间';
                     "#,
@@ -84,7 +84,7 @@ impl MigrationTrait for Migration {
                         `value` TEXT NOT NULL, -- 字典项值
                         `sort` INTEGER DEFAULT 0, -- 排序
                         `desc` TEXT DEFAULT '', -- 描述信息
-                        `status` INTEGER NOT NULL DEFAULT 1, -- 状态(0: 停用, 1: 正常)
+                        `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

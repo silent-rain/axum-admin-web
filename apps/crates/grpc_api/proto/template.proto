@@ -86,7 +86,7 @@ message GetAppTemplateResp {
 message CreateAppTemplateReq {
   int32 user_id = 1; // 用户ID
   string desc = 2;   // 描述信息
-  int32 status = 3;  // 状态(0:停用,1:正常)
+  bool status = 3;   // 状态(false:停用,true:正常)
 }
 
 message CreateAppTemplateResp {
@@ -98,7 +98,7 @@ message UpdateAppTemplateReq {
   int32 id = 1;      // 模板ID
   int32 user_id = 2; // 用户ID
   string desc = 3;   // 描述信息
-  int32 status = 4;  // 状态(0:停用,1:正常)
+  bool status = 4;   // 状态(false:停用,true:正常)
 }
 
 message UpdateAppTemplateResp {
@@ -107,8 +107,8 @@ message UpdateAppTemplateResp {
 }
 
 message UpdateAppTemplateStatusReq {
-  int32 id = 1;     // 模板ID
-  int32 status = 2; // 状态(0:停用,1:正常)
+  int32 id = 1;    // 模板ID
+  bool status = 2; // 状态(false:停用,true:正常)
 }
 
 message UpdateAppTemplateStatusResp {

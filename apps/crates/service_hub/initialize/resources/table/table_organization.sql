@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS
         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '部门名称',
         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '部门描述',
-        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:停用,1:正常)',
+        `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS
         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '岗位描述',
         `department_id` INT(11) DEFAULT 0 COMMENT '所属部门ID',
-        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:停用,1:正常)',
+        `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`),
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS
         `level` INT UNSIGNED UNIQUE NOT NULL COMMENT '职级等级',
         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '职级描述',
-        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:停用,1:正常)',
+        `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)

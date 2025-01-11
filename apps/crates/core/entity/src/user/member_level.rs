@@ -21,8 +21,8 @@ pub struct Model {
     pub sort: Option<i32>,
     /// 会员描述
     pub desc: Option<String>,
-    /// 状态
-    pub status: i8,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 创建时间
     pub created_at: DateTimeLocal,
     /// 更新时间
@@ -33,18 +33,3 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
-
-/// 枚举
-pub mod enums {
-    use serde_repr::{Deserialize_repr, Serialize_repr};
-
-    /// 状态
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum Status {
-        /// 停用
-        Disabled = 0,
-        /// 正常
-        Enabled = 1,
-    }
-}

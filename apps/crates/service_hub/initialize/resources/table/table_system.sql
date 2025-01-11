@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS
         `captcha` VARCHAR(10) NOT NULL COMMENT '验证码',
         `data` MEDIUMBLOB NOT NULL COMMENT '图片数据, Base64编码',
         `expire` INT(4) UNSIGNED NOT NULL DEFAULT 1 COMMENT '过期时间,秒',
-        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:失效,1:有效)',
+        `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:失效,true:有效)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS
         `value` TEXT NULL COMMENT '配置值',
         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) DEFAULT '' COMMENT '配置描述',
-        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:停用,1:正常)',
+        `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS
         `code` VARCHAR(64) UNIQUE NOT NULL COMMENT '字典维度编码',
         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
-        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0: 停用, 1: 正常)',
+        `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS
         `value` TEXT NOT NULL COMMENT '字典项值',
         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
-        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0: 停用, 1: 正常)',
+        `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`),

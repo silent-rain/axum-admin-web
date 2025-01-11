@@ -48,7 +48,7 @@ impl LoginService {
         // 检测手机号码或邮件用户是否存在
         let user = self.get_user(data.clone()).await?;
         // 检查用户是否被禁用
-        if user.status == user_base::enums::Status::Disabled as i8 {
+        if !user.status {
             // 添加登陆日志
             self.add_login_log(
                 user.clone(),

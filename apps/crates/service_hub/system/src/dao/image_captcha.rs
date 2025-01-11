@@ -90,7 +90,7 @@ impl ImageCaptchaDao {
     }
 
     /// 更新状态
-    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: bool) -> Result<(), DbErr> {
         let active_model = sys_image_captcha::ActiveModel {
             id: Set(id),
             status: Set(status),

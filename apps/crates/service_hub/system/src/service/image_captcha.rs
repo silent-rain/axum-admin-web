@@ -85,7 +85,7 @@ impl ImageCaptchaService {
 
         // 验证码在使用后将其状态更新为无效
         self.image_captcha_dao
-            .update_status(result.id, sys_image_captcha::enums::Status::Invalid as i8)
+            .update_status(result.id, false)
             .await
             .map_err(|err| {
                 error!("更新验证码状态失败, err: {:#?}", err);

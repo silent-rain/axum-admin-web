@@ -86,7 +86,7 @@ impl ConfigService {
             value: Set(req.value),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(sys_config::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result = self.config_dao.create(model).await.map_err(|err| {
@@ -111,7 +111,7 @@ impl ConfigService {
             value: Set(req.value),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -151,7 +151,7 @@ impl ConfigService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateConfigStatusReq) -> Result<(), ErrorMsg> {
         self.config_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {

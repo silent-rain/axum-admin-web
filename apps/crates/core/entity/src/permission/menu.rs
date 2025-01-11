@@ -45,8 +45,8 @@ pub struct Model {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: i8,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 创建时间
     pub created_at: DateTimeLocal,
     /// 更新时间
@@ -82,16 +82,6 @@ impl GenericTreeTrait for Model {
 pub mod enums {
     use serde::{Deserialize, Serialize};
     use serde_repr::{Deserialize_repr, Serialize_repr};
-
-    /// 菜单状态
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum Status {
-        /// 停用
-        Disabled = 0,
-        /// 正常
-        Enabled = 1,
-    }
 
     /// 菜单类型
     #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]

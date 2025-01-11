@@ -4,12 +4,12 @@
 
 ```sql
 CREATE TABLE public.t_app_template (
- id serial4 NOT NULL, -- 模板ID
- user_id int4 NOT NULL, -- 用户ID
+ "id" serial4 NOT NULL, -- 模板ID
+ "user_id" int4 NOT NULL, -- 用户ID
  "desc" varchar(200) NULL, -- 描述信息
- status int2 DEFAULT 0 NOT NULL, -- 状态(0:停用,1:正常)
- created_at timestamp DEFAULT CURRENT_TIMESTAMP  NOT NULL, -- 创建时间
- updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  NOT NULL, -- 更新时间
+ "status" BOOL NOT NULL DEFAULT TRUE, -- 状态(false:停用,true:正常)
+ "created_at" timestamp DEFAULT CURRENT_TIMESTAMP  NOT NULL, -- 创建时间
+ "updated_at" timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  NOT NULL, -- 更新时间
  CONSTRAINT t_app_template2_pk PRIMARY KEY (id),
  CONSTRAINT t_app_template2_unique UNIQUE (user_id)
 );
@@ -21,7 +21,7 @@ COMMENT ON TABLE public.t_app_template IS '应用模板';
 COMMENT ON COLUMN public.t_app_template.id IS '模板ID';
 COMMENT ON COLUMN public.t_app_template.user_id IS '用户ID';
 COMMENT ON COLUMN public.t_app_template."desc" IS '描述信息';
-COMMENT ON COLUMN public.t_app_template.status IS '状态(0:停用,1:正常)';
+COMMENT ON COLUMN public.t_app_template.status IS '状态(false:停用,true:正常)';
 COMMENT ON COLUMN public.t_app_template.created_at IS '创建时间';
 COMMENT ON COLUMN public.t_app_template.updated_at IS '更新时间';
 

@@ -78,8 +78,8 @@ pub struct UpdateDictDataReq {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: sys_dict_data::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -90,8 +90,8 @@ pub struct UpdateDictDataResp {}
 pub struct UpdateDictDataStatusReq {
     /// 字典数据ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: sys_dict_data::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

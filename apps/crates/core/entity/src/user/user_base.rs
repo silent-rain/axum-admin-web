@@ -21,8 +21,8 @@ pub struct Model {
     pub gender: i8,
     /// 密码
     pub password: String,
-    /// 状态(0:停用,1:正常)
-    pub status: i8,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 年龄
     pub age: Option<i32>,
     /// 出生日期
@@ -97,16 +97,6 @@ pub mod enums {
 
     use serde::{Deserialize, Serialize};
     use serde_repr::{Deserialize_repr, Serialize_repr};
-
-    /// 用户状态
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum Status {
-        /// 停用
-        Disabled = 0,
-        /// 正常
-        Enabled = 1,
-    }
 
     /// 性别
     #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize_repr, Deserialize_repr)]

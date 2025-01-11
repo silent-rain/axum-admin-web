@@ -23,7 +23,7 @@ impl MigrationTrait for Migration {
                         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '岗位描述',
                         `department_id` INT(11) DEFAULT 0 COMMENT '所属部门ID',
-                        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:停用,1:正常)',
+                        `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`)
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                         "sort" INTEGER DEFAULT 0,
                         "desc" VARCHAR(200) DEFAULT '',
                         "department_id" INTEGER DEFAULT 0,
-                        "status" BOOLEAN NOT NULL DEFAULT TRUE,
+                        "status" BOOL NOT NULL DEFAULT TRUE,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
@@ -58,7 +58,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_org_position.sort IS '排序';
                     COMMENT ON COLUMN t_org_position.desc IS '岗位描述';
                     COMMENT ON COLUMN t_org_position.department_id IS '所属部门ID';
-                    COMMENT ON COLUMN t_org_position.status IS '状态(0:停用,1:正常)';
+                    COMMENT ON COLUMN t_org_position.status IS '状态(false:停用,true:正常)';
                     COMMENT ON COLUMN t_org_position.created_at IS '创建时间';
                     COMMENT ON COLUMN t_org_position.updated_at IS '更新时间';
                     "#,
@@ -74,7 +74,7 @@ impl MigrationTrait for Migration {
                         `sort` INTEGER DEFAULT 0, -- 排序
                         `desc` VARCHAR(200) DEFAULT '', -- 岗位描述
                         `department_id` INTEGER DEFAULT 0, -- 所属部门ID
-                        `status` BOOLEAN NOT NULL DEFAULT 1, -- 状态(0:停用,1:正常)
+                        `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

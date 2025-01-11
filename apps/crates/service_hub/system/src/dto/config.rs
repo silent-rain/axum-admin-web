@@ -56,8 +56,8 @@ pub struct CreateConfigReq {
     pub sort: Option<i32>,
     /// 配置描述
     pub desc: Option<String>,
-    /// 状态, 0:停用,1:正常
-    pub status: sys_config::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -80,8 +80,8 @@ pub struct UpdateConfigReq {
     pub sort: Option<i32>,
     /// 配置描述
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: sys_config::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateConfigResp {}
@@ -91,8 +91,8 @@ pub struct UpdateConfigResp {}
 pub struct UpdateConfigStatusReq {
     /// 配置ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: sys_config::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

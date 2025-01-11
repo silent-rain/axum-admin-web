@@ -59,10 +59,10 @@ pub struct CreateTokenReq {
         default = "default_local_date_time"
     )]
     pub expire: DateTimeLocal,
-    /// 状态,0:禁用,1:启用
-    pub status: token::enums::Status,
     /// 描述信息
     pub desc: Option<String>,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -85,10 +85,10 @@ pub struct UpdateTokenReq {
         default = "default_local_date_time"
     )]
     pub expire: DateTimeLocal,
-    /// 状态,0:禁用,1:启用
-    pub status: token::enums::Status,
     /// 描述信息
     pub desc: Option<String>,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -99,8 +99,8 @@ pub struct UpdateTokenResp {}
 pub struct UpdateTokenStatusReq {
     /// 令牌ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: token::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

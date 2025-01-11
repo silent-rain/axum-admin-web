@@ -92,7 +92,7 @@ impl TokenService {
             permission: Set(req.permission),
             expire: Set(req.expire),
             desc: Set(req.desc),
-            status: Set(token::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result =
@@ -117,7 +117,7 @@ impl TokenService {
             permission: Set(req.permission),
             expire: Set(req.expire),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -132,7 +132,7 @@ impl TokenService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateTokenStatusReq) -> Result<(), ErrorMsg> {
         self.token_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新令牌状态失败, err: {:#?}", err);

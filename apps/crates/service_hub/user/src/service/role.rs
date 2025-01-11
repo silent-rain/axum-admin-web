@@ -65,7 +65,7 @@ impl RoleService {
             name: Set(req.name),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(role::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result = self.role_dao.create(model).await.map_err(|err| {
@@ -87,7 +87,7 @@ impl RoleService {
             name: Set(req.name),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -127,7 +127,7 @@ impl RoleService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateRoleStatusReq) -> Result<(), ErrorMsg> {
         self.role_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {

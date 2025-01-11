@@ -21,8 +21,8 @@ pub struct Model {
     pub data: Vec<u8>,
     /// 过期时间,秒
     pub expire: u32,
-    /// 状态
-    pub status: i8,
+    /// 状态(false:无效验证码,true:有效验证码)
+    pub status: bool,
     /// 创建时间
     pub created_at: DateTimeLocal,
     /// 更新时间
@@ -33,18 +33,3 @@ pub struct Model {
 pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
-
-/// 枚举
-pub mod enums {
-    use serde_repr::{Deserialize_repr, Serialize_repr};
-
-    /// 验证码状态
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum Status {
-        /// 无效验证码
-        Invalid = 0,
-        /// 有效验证码
-        Valid = 1,
-    }
-}

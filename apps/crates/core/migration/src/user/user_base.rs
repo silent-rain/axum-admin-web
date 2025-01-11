@@ -23,7 +23,7 @@ impl MigrationTrait for Migration {
                         `real_name` VARCHAR(32) NULL DEFAULT '' COMMENT '真实姓名',
                         `gender` TINYINT(1) NOT NULL COMMENT '性别(0:男,1:女,2:保密)',
                         `password` VARCHAR(64) NOT NULL COMMENT '密码',
-                        `status` TINYINT(1) NOT NULL COMMENT '状态(0:停用,1:正常)',
+                        `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `age` INT(11) NULL DEFAULT 0 COMMENT '年龄',
                         `date_birth` VARCHAR(20) NULL DEFAULT '' COMMENT '出生日期',
                         `avatar` VARCHAR(200) NULL DEFAULT '' COMMENT '头像URL',
@@ -59,7 +59,7 @@ impl MigrationTrait for Migration {
                         "real_name" VARCHAR(32) DEFAULT '',
                         "gender" SMALLINT NOT NULL,
                         "password" VARCHAR(64) NOT NULL,
-                        "status" SMALLINT NOT NULL,
+                        "status" BOOL NULL DEFAULT TRUE,
                         "age" INT DEFAULT 0,
                         "date_birth" VARCHAR(20) DEFAULT '',
                         "avatar" VARCHAR(200) DEFAULT '',
@@ -88,7 +88,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_user_base.real_name IS '真实姓名';
                     COMMENT ON COLUMN t_user_base.gender IS '性别(0:男,1:女,2:保密)';
                     COMMENT ON COLUMN t_user_base.password IS '密码';
-                    COMMENT ON COLUMN t_user_base.status IS '状态(0:停用,1:正常)';
+                    COMMENT ON COLUMN t_user_base.status IS '状态(false:停用,true:正常)';
                     COMMENT ON COLUMN t_user_base.age IS '年龄';
                     COMMENT ON COLUMN t_user_base.date_birth IS '出生日期';
                     COMMENT ON COLUMN t_user_base.avatar IS '头像URL';
@@ -117,7 +117,7 @@ impl MigrationTrait for Migration {
                         `real_name` VARCHAR(32) DEFAULT '', -- 真实姓名
                         `gender` INTEGER NOT NULL, -- 性别
                         `password` VARCHAR(64) NOT NULL, -- 密码
-                        `status` INTEGER NOT NULL, -- 用户状态
+                        `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
                         `age` INTEGER DEFAULT 0, -- 年龄
                         `date_birth` VARCHAR(20) DEFAULT '', -- 出生日期
                         `avatar` VARCHAR(200) DEFAULT '', -- 头像URL

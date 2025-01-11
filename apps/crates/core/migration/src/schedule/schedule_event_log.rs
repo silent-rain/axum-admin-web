@@ -39,7 +39,7 @@ impl MigrationTrait for Migration {
                         "id" SERIAL PRIMARY KEY,
                         "job_id" INTEGER NOT NULL,
                         "uuid" VARCHAR(50) NOT NULL,
-                        "status" BOOLEAN NOT NULL DEFAULT FALSE,
+                        "status" char NOT NULL DEFAULT 1,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
 
@@ -63,7 +63,7 @@ impl MigrationTrait for Migration {
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 事件日志ID
                         `job_id` INTEGER NOT NULL, -- 任务ID
                         `uuid` TEXT NOT NULL, -- 任务调度ID
-                        `status` BOOLEAN NOT NULL DEFAULT 0, -- 任务状态(0:开始,1:完成,2:停止,3:移除)
+                        `status` TINYINT(1) NOT NULL DEFAULT 0, -- 任务状态(0:开始,1:完成,2:停止,3:移除)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间
                     );
                     

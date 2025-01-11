@@ -51,8 +51,8 @@ pub struct CreateUserBaseReq {
     pub gender: user_base::enums::Gender,
     /// 密码
     pub password: String,
-    /// 状态(0:停用,1:正常)
-    pub status: user_base::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 年龄
     pub age: Option<i32>,
     /// 出生日期
@@ -93,8 +93,8 @@ pub struct UpdateUserBaseReq {
     pub real_name: Option<String>,
     /// 性别(0:男,1:女,2:保密)
     pub gender: user_base::enums::Gender,
-    /// 状态(0:停用,1:正常)
-    pub status: user_base::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 年龄
     pub age: Option<i32>,
     /// 出生日期
@@ -130,7 +130,7 @@ pub struct UpdateUserBaseStatusReq {
     /// 用户ID
     pub id: i32,
     /// 用户状态
-    pub status: user_base::enums::Status,
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

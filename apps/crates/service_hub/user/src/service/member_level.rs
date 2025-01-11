@@ -80,7 +80,7 @@ impl MemberLevelService {
             sort: Set(req.sort),
             desc: Set(req.desc),
             level: Set(req.level),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
         let member_level =
@@ -111,7 +111,7 @@ impl MemberLevelService {
             sort: Set(req.sort),
             desc: Set(req.desc),
             level: Set(req.level),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -182,7 +182,7 @@ impl MemberLevelService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateMemberLevelStatusReq) -> Result<(), ErrorMsg> {
         self.member_level_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新会员等级状态失败, err: {:#?}", err);

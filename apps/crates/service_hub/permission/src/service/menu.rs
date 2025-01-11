@@ -99,7 +99,7 @@ impl MenuService {
             permission: Set(req.permission),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(menu::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result =
@@ -133,7 +133,7 @@ impl MenuService {
             permission: Set(req.permission),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(menu::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
 
@@ -148,7 +148,7 @@ impl MenuService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateMenuStatusReq) -> Result<(), ErrorMsg> {
         self.menu_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新菜单状态失败, err: {:#?}", err);

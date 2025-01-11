@@ -51,8 +51,8 @@ pub struct CreateRoleReq {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: role::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -69,8 +69,8 @@ pub struct UpdateRoleReq {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: role::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -81,8 +81,8 @@ pub struct UpdateRoleResp {}
 pub struct UpdateRoleStatusReq {
     /// 角色ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: role::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -107,7 +107,7 @@ mod tests {
     #[test]
     fn test_status() {
         let expected = UpdateRoleStatusReq {
-            status: role::enums::Status::Enabled,
+            status: true,
             id: 1,
         };
         let json_data = json!({ "status":1 });

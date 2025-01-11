@@ -83,7 +83,7 @@ impl DictDataService {
             value: Set(req.value),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(sys_dict_data::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result = self.dict_data_dao.create(model).await.map_err(|err| {
@@ -104,7 +104,7 @@ impl DictDataService {
             value: Set(req.value),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -119,7 +119,7 @@ impl DictDataService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateDictDataStatusReq) -> Result<(), ErrorMsg> {
         self.dict_data_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {

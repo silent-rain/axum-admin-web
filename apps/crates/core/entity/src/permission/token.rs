@@ -23,8 +23,8 @@ pub struct Model {
     pub permission: String,
     /// 授权到期时间
     pub expire: DateTimeLocal,
-    /// 状态,0:禁用,1:启用
-    pub status: i8,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 描述信息
     pub desc: Option<String>,
     /// 创建时间
@@ -50,17 +50,6 @@ impl ActiveModelBehavior for ActiveModel {}
 /// 枚举
 pub mod enums {
     use serde::{Deserialize, Serialize};
-    use serde_repr::{Deserialize_repr, Serialize_repr};
-
-    /// 令牌状态
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum Status {
-        /// 停用
-        Disabled = 0,
-        /// 正常
-        Enabled = 1,
-    }
 
     /// 令牌权限范围
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

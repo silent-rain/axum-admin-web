@@ -58,8 +58,8 @@ pub struct CreateOpenapiReq {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态, 0:停用,1:正常
-    pub status: openapi::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -84,8 +84,8 @@ pub struct UpdateOpenapiReq {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: openapi::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -96,8 +96,8 @@ pub struct UpdateOpenapiResp {}
 pub struct UpdateOpenapiStatusReq {
     /// 接口ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: openapi::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -23,7 +23,7 @@ impl MigrationTrait for Migration {
                         `captcha` VARCHAR(10) NOT NULL COMMENT '验证码',
                         `data` MEDIUMBLOB NOT NULL COMMENT '图片数据, Base64编码',
                         `expire` INT(4) UNSIGNED NOT NULL DEFAULT 1 COMMENT '过期时间,秒',
-                        `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态(0:失效,1:有效)',
+                        `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:失效,true:有效)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`)
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                         "captcha" VARCHAR(10) NOT NULL,
                         "data" BYTEA NOT NULL,
                         "expire" INTEGER NOT NULL DEFAULT 1,
-                        "status" BOOLEAN NOT NULL DEFAULT TRUE,
+                        "status" BOOL NOT NULL DEFAULT TRUE,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
@@ -58,7 +58,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_sys_image_captcha.captcha IS '验证码';
                     COMMENT ON COLUMN t_sys_image_captcha.data IS '图片数据, Base64编码';
                     COMMENT ON COLUMN t_sys_image_captcha.expire IS '过期时间,秒';
-                    COMMENT ON COLUMN t_sys_image_captcha.status IS '状态(0:失效,1:有效)';
+                    COMMENT ON COLUMN t_sys_image_captcha.status IS '状态(false:失效,true:有效)';
                     COMMENT ON COLUMN t_sys_image_captcha.created_at IS '创建时间';
                     COMMENT ON COLUMN t_sys_image_captcha.updated_at IS '更新时间';
                     "#,
@@ -74,7 +74,7 @@ impl MigrationTrait for Migration {
                         `captcha` TEXT NOT NULL, -- 验证码
                         `data` BLOB NOT NULL, -- 图片数据, Base64编码
                         `expire` INTEGER NOT NULL DEFAULT 1, -- 过期时间,秒
-                        `status` BOOLEAN NOT NULL DEFAULT 1, -- 状态(0:失效,1:有效)
+                        `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:失效,true:有效)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

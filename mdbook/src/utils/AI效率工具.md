@@ -19,31 +19,33 @@
 # Postgres
 CREATE TABLE IF NOT EXISTS 
 `t_user_role` (
-    `id` SERIAL PRIMARY KEY,
-    `name` VARCHAR(20) UNIQUE NOT NULL,
-    `sort` INT NULL DEFAULT 0,
-    `desc` VARCHAR(200) NULL DEFAULT '',
-    `status` SMALLINT NOT NULL DEFAULT 1,
-    `created_at` TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    "id" SERIAL PRIMARY KEY,
+    "name" VARCHAR(20) UNIQUE NOT NULL,
+    "sort" INT NULL DEFAULT 0,
+    "desc" VARCHAR(200) NULL DEFAULT '',
+    "status" BOOL NOT NULL DEFAULT TRUE,
+    "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE t_user_role_rel IS '用户角色关系表';
-COMMENT ON COLUMN t_user_role_rel.id IS '自增ID';
-COMMENT ON COLUMN t_user_role_rel.user_id IS '用户ID';
-COMMENT ON COLUMN t_user_role_rel.role_id IS '角色ID';
-COMMENT ON COLUMN t_user_role_rel.created_at IS '创建时间';
+COMMENT ON TABLE t_user_role IS '用户角色表';
+COMMENT ON COLUMN t_user_role.id IS '角色ID';
+COMMENT ON COLUMN t_user_role.name IS '角色名称';
+COMMENT ON COLUMN t_user_role.sort IS '排序';
+COMMENT ON COLUMN t_user_role.desc IS '描述信息';
+COMMENT ON COLUMN t_user_role.status IS '状态(false:停用,true:正常)';
+COMMENT ON COLUMN t_user_role.created_at IS '创建时间';
+COMMENT ON COLUMN t_user_role.updated_at IS '更新时间';
 
 
 # Sqlite
 CREATE TABLE IF NOT EXISTS
 t_user_role ( -- 角色表
-    i`d INTEGER PRIMARY KEY AUTOINCREMENT, -- 角色ID
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 角色ID
     `name` TEXT UNIQUE NOT NULL, -- 角色名称
     `sort` INTEGER DEFAULT 0, -- 排序
     `desc` TEXT DEFAULT '', -- 描述信息
-    `status` INTEGER NOT NULL DEFAULT 1, -- 状态(0:停用,1:正常)
+    `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
 );

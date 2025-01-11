@@ -74,9 +74,9 @@ pub struct CreateAppTemplateReq {
     /// 描述信息
     #[prost(string, tag = "2")]
     pub desc: ::prost::alloc::string::String,
-    /// 状态(0:停用,1:正常)
-    #[prost(int32, tag = "3")]
-    pub status: i32,
+    /// 状态(false:停用,true:正常)
+    #[prost(bool, tag = "3")]
+    pub status: bool,
 }
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -98,9 +98,9 @@ pub struct UpdateAppTemplateReq {
     /// 描述信息
     #[prost(string, tag = "3")]
     pub desc: ::prost::alloc::string::String,
-    /// 状态(0:停用,1:正常)
-    #[prost(int32, tag = "4")]
-    pub status: i32,
+    /// 状态(false:停用,true:正常)
+    #[prost(bool, tag = "4")]
+    pub status: bool,
 }
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -116,9 +116,9 @@ pub struct UpdateAppTemplateStatusReq {
     /// 模板ID
     #[prost(int32, tag = "1")]
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    #[prost(int32, tag = "2")]
-    pub status: i32,
+    /// 状态(false:停用,true:正常)
+    #[prost(bool, tag = "2")]
+    pub status: bool,
 }
 #[derive(serde::Serialize, serde::Deserialize)]
 #[derive(Clone, PartialEq, ::prost::Message)]

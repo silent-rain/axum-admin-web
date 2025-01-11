@@ -49,7 +49,7 @@ impl MigrationTrait for Migration {
                         "expression" VARCHAR(100) DEFAULT '',
                         "interval" INTEGER DEFAULT 0,
                         "desc" VARCHAR(200) DEFAULT '',
-                        "status" BOOLEAN NOT NULL DEFAULT TRUE,
+                        "status" char NOT NULL DEFAULT 1,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
@@ -84,7 +84,7 @@ impl MigrationTrait for Migration {
                         `expression` TEXT DEFAULT '', -- cron表达式
                         `interval` INTEGER DEFAULT 0, -- 间隔时间,秒
                         `desc` TEXT DEFAULT '', -- 描述信息
-                        `status` BOOLEAN NOT NULL DEFAULT 1, -- 任务状态(0:下线,1:上线)
+                        `status` TINYINT(1) NOT NULL DEFAULT 1, -- 任务状态(0:下线,1:上线)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

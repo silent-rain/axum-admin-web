@@ -164,7 +164,7 @@ impl UserBaseService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateUserBaseStatusReq) -> Result<(), ErrorMsg> {
         self.user_base_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新用户信息状态失败, err: {:#?}", err);
@@ -202,7 +202,7 @@ impl UserBaseService {
             real_name: Set(data.real_name),
             gender: Set(data.gender as i8),
             password: Set(password),
-            status: Set(data.status as i8),
+            status: Set(data.status),
             age: Set(data.age),
             date_birth: Set(data.date_birth),
             avatar: Set(data.avatar),
@@ -254,7 +254,7 @@ impl UserBaseService {
             username: Set(req.username),
             real_name: Set(req.real_name),
             gender: Set(req.gender as i8),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             age: Set(req.age),
             date_birth: Set(req.date_birth),
             avatar: Set(req.avatar),
@@ -424,7 +424,7 @@ impl UserBaseService {
                     .into_msg()
                     .with_msg("用户令牌不存在")
             })?;
-        if token.status == token::enums::Status::Disabled as i8 {
+        if token.status {
             error!("openapi_token: {}, 用户令牌已被禁用", openapi_token.clone());
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
@@ -448,7 +448,7 @@ impl UserBaseService {
                 error!("user_id: {user_id}, 用户不存在");
                 Error::DbQueryEmptyError.into_msg().with_msg("用户不存在")
             })?;
-        if user.status == user_base::enums::Status::Disabled as i8 {
+        if !user.status {
             error!("user_id: {user_id}, 用户已被禁用");
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()

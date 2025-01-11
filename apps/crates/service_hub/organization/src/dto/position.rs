@@ -53,8 +53,8 @@ pub struct CreatePositionReq {
     pub desc: Option<String>,
     /// 所属部门ID
     pub department_id: Option<i32>,
-    /// 状态(0:停用,1:正常)
-    pub status: position::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -74,8 +74,8 @@ pub struct UpdatePositionReq {
     pub desc: Option<String>,
     /// 所属部门ID
     pub department_id: Option<i32>,
-    /// 状态(0:停用,1:正常)
-    pub status: position::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -86,8 +86,8 @@ pub struct UpdatePositionResp {}
 pub struct UpdatePositionStatusReq {
     /// 岗位ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: position::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

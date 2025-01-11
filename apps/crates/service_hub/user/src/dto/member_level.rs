@@ -53,8 +53,8 @@ pub struct CreateMemberLevelReq {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: member_level::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -74,8 +74,8 @@ pub struct UpdateMemberLevelReq {
     pub sort: Option<i32>,
     /// 描述信息
     pub desc: Option<String>,
-    /// 状态(0:停用,1:正常)
-    pub status: member_level::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -86,8 +86,8 @@ pub struct UpdateMemberLevelResp {}
 pub struct UpdateMemberLevelStatusReq {
     /// 会员等级ID
     pub id: i32,
-    /// 状态(0:停用,1:正常)
-    pub status: member_level::enums::Status,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                         `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '模板ID',
                         `user_id` INT(11) NOT NULL COMMENT '用户ID',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
-                        `status` BOOL NOT NULL DEFAULT 0 COMMENT '状态(false:停用,true:正常)',
+                        `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`)
@@ -39,7 +39,7 @@ impl MigrationTrait for Migration {
                         "id" SERIAL PRIMARY KEY,
                         "user_id" INTEGER NOT NULL,
                         "desc" VARCHAR(200) DEFAULT '',
-                        "status" BOOL NOT NULL DEFAULT false,
+                        "status" BOOL NOT NULL DEFAULT true,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
@@ -65,7 +65,7 @@ impl MigrationTrait for Migration {
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 模板ID
                         `user_id` INTEGER NOT NULL, -- 用户ID
                         `desc` TEXT DEFAULT '', -- 描述信息
-                        `status` boolean NOT NULL DEFAULT false, -- 状态(false:停用,true:正常)
+                        `status` boolean NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

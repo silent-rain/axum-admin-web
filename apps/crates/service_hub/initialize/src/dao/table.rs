@@ -104,7 +104,7 @@ impl TableDao {
             username: Set(req.username),
             gender: Set(user_base::enums::Gender::Undisclosed as i8),
             password: Set(req.password),
-            status: Set(user_base::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result = active_model.insert(txn).await?;

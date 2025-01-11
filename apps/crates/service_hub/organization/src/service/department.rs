@@ -83,7 +83,7 @@ impl DepartmentService {
             name: Set(req.name),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
         let mut department =
@@ -143,7 +143,7 @@ impl DepartmentService {
             name: Set(req.name),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -187,7 +187,7 @@ impl DepartmentService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateDepartmentStatusReq) -> Result<(), ErrorMsg> {
         self.department_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新部门状态失败, err: {:#?}", err);

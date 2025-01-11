@@ -87,7 +87,7 @@ impl DictDimensionService {
             code: Set(req.code),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(sys_dict_dimension::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result = self.dict_dimension_dao.create(model).await.map_err(|err| {
@@ -116,7 +116,7 @@ impl DictDimensionService {
             code: Set(req.code),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -193,7 +193,7 @@ impl DictDimensionService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateDictDimensionStatusReq) -> Result<(), ErrorMsg> {
         self.dict_dimension_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {

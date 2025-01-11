@@ -70,7 +70,7 @@ impl PositionService {
             sort: Set(req.sort),
             desc: Set(req.desc),
             department_id: Set(req.department_id),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
         let position =
@@ -97,7 +97,7 @@ impl PositionService {
             sort: Set(req.sort),
             desc: Set(req.desc),
             department_id: Set(req.department_id),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -137,7 +137,7 @@ impl PositionService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdatePositionStatusReq) -> Result<(), ErrorMsg> {
         self.position_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新岗位状态失败, err: {:#?}", err);

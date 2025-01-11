@@ -106,7 +106,7 @@ impl OpenapiDao {
     }
 
     /// 更新状态
-    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: bool) -> Result<(), DbErr> {
         let active_model = openapi::ActiveModel {
             id: Set(id),
             status: Set(status),
@@ -137,7 +137,7 @@ impl OpenapiDao {
                     .to(openapi::Column::Id)
                     .into(),
             )
-            .filter(openapi::Column::Status.eq(openapi::enums::Status::Enabled as i8))
+            .filter(openapi::Column::Status.eq(true))
             .into_model::<RoleOpenapiPermission>()
             .all(self.db.db())
             .await?;

@@ -82,8 +82,8 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(Openapi::Status)
                             .tiny_integer()
                             .not_null()
-                            .default(1)
-                            .comment("状态(0:停用,1:正常)"),
+                            .boolean()
+                            .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
                         ColumnDef::new(Openapi::CreatedAt)

@@ -108,7 +108,7 @@ impl OpenapiService {
             path: Set(req.path),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(openapi::enums::Status::Enabled as i8),
+            status: Set(true),
             ..Default::default()
         };
         let result =
@@ -136,7 +136,7 @@ impl OpenapiService {
             path: Set(req.path),
             sort: Set(req.sort),
             desc: Set(req.desc),
-            status: Set(req.status as i8),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -153,7 +153,7 @@ impl OpenapiService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateOpenapiStatusReq) -> Result<(), ErrorMsg> {
         self.openapi_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 error!("更新OpenApi接口状态失败, err: {:#?}", err);

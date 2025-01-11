@@ -59,8 +59,8 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(SysImageCaptcha::Status)
                             .tiny_integer()
                             .not_null()
-                            .default(1)
-                            .comment("状态(0:失效,1:有效)"),
+                            .boolean()
+                            .comment("状态(false:失效,true:有效)"),
                     )
                     .col(
                         ColumnDef::new(SysImageCaptcha::CreatedAt)
