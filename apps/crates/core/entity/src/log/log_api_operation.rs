@@ -73,14 +73,14 @@ pub mod enums {
         Req,
         /// 响应
         #[serde(rename = "RESP")]
-        RESP,
+        Resp,
     }
 
     impl From<HttpType> for String {
         fn from(value: HttpType) -> Self {
             match value {
                 HttpType::Req => "REQ".to_owned(),
-                HttpType::RESP => "RESP".to_owned(),
+                HttpType::Resp => "RESP".to_owned(),
             }
         }
     }

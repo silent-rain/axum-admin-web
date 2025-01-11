@@ -203,7 +203,7 @@ impl ApiOperationLog {
             data.cost = cost;
             // TODO 添加字符限制, 如果太大则进行省略
             data.body = Some(body);
-            data.http_type = log_api_operation::enums::HttpType::Rsp;
+            data.http_type = log_api_operation::enums::HttpType::Resp;
 
             // 图片body数据不入库
             if data.content_type != "multipart/form-data".to_uppercase() {
