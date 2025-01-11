@@ -10,6 +10,7 @@ code = { path = "../../core/code" }
 utils = { path = "../../core/utils" }
 inject = { path = "../../core/inject" }
 axum_response = { path = "../../axum_response" }
+axum_validator = { path = "../../axum_validator" }
 
 axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }

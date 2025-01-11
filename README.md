@@ -115,7 +115,6 @@
 
 ## 待办
 
-- sql使用模型转换位postgresql与sqlite3
 - 下载文件:
   - <https://github.com/tokio-rs/axum/discussions/608>
 - 如何托管 SPA 文件并将文件嵌入到可执行文件中？
@@ -128,7 +127,6 @@
 - 文件上传表
   - 图片展示接口验证
   - 添加文件下载接口
-- 所有的请求接口添加校验
 - session 登录态管理
   - 结合登录日志进行管理
 

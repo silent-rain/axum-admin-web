@@ -7,9 +7,10 @@ use crate::{
     LoginService,
 };
 
-use axum::{extract::ConnectInfo, http::HeaderMap, Extension, Json};
-use inject::AInjectProvider;
+use axum::{extract::ConnectInfo, http::HeaderMap};
 use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json};
+use inject::AInjectProvider;
 
 /// 控制器
 pub struct LoginController;

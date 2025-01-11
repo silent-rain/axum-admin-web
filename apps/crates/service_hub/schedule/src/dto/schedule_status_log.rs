@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 /// 查询任务调度状态日志列表
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, Validate)]
 pub struct GetScheduleStatusLogsReq {
     /// 当前分页
     pub page: u64,

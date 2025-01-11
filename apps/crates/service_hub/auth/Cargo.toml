@@ -12,6 +12,7 @@ jwt = { path = "../../core/jwt" }
 inject = { path = "../../core/inject" }
 axum_response = { path = "../../axum_response" }
 axum_context = { path = "../../axum_context" }
+axum_validator = { path = "../../axum_validator" }
 
 user = { path = "../user" }
 system = { path = "../system" }

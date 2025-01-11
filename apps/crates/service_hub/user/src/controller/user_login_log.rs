@@ -9,8 +9,8 @@ use crate::{
     service::user_login_log::UserLoginLogService,
 };
 
-use axum::{extract::Query, Extension, Json};
 use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 
 /// 控制器

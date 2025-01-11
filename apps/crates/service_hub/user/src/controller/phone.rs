@@ -8,7 +8,7 @@ use crate::{
     service::phone::PhoneService,
 };
 
-use axum::{extract::Query, Extension, Json};
+use axum_validator::{Extension, Json, Query};
 use axum_response::{Responder, Response};
 use inject::AInjectProvider;
 

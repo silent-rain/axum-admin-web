@@ -5,11 +5,11 @@ use crate::{
     RegisterService,
 };
 
-use axum::{Extension, Json};
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json};
 use code::Error;
 use entity::user::user_base;
 use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 use tracing::error;
 
 /// 控制器

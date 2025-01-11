@@ -6,10 +6,10 @@ use crate::{
 };
 
 use axum_context::Context;
-use inject::AInjectProvider;
 use axum_response::{Responder, Response};
+use inject::AInjectProvider;
 
-use axum::{Extension, Json};
+use axum_validator::{Extension, Json};
 
 /// 控制器
 pub struct LogoutController;

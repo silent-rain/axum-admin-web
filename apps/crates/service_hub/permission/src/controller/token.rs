@@ -9,7 +9,7 @@ use crate::{
     service::token::TokenService,
 };
 
-use axum::{extract::Query, Extension, Json};
+use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 use axum_response::{Responder, Response};
 

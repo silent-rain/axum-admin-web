@@ -449,6 +449,7 @@ dependencies = [
  "axum 0.8.1",
  "axum_context",
  "axum_response",
+ "axum_validator",
  "chrono",
  "code",
  "database",
@@ -2380,6 +2381,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
  "axum_response",
+ "axum_validator",
  "code",
  "database",
  "embed_asset",
@@ -3084,6 +3086,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
  "axum_response",
+ "axum_validator",
  "code",
  "database",
  "entity",
@@ -3208,6 +3211,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
  "axum_response",
+ "axum_validator",
  "code",
  "database",
  "entity",
@@ -4036,6 +4040,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
  "axum_response",
+ "axum_validator",
  "code",
  "database",
  "entity",
@@ -4811,6 +4816,7 @@ dependencies = [
  "axum 0.8.1",
  "axum_response",
  "axum_typed_multipart",
+ "axum_validator",
  "chrono",
  "code",
  "database",
@@ -5503,6 +5509,7 @@ dependencies = [
  "axum 0.8.1",
  "axum_context",
  "axum_response",
+ "axum_validator",
  "base64 0.22.1",
  "cache",
  "code",

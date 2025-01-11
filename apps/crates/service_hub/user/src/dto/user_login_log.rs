@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 /// 查询登陆日志列表 请求体
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize, Validate)]
 pub struct GetUserLoginLogsReq {
     /// 当前分页
     pub page: u64,
@@ -41,7 +41,7 @@ pub struct GetUserLoginLogResp {
 }
 
 /// 添加登陆日志信息 请求体
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct CreateUserLoginLogReq {
     /// 用户ID
     pub user_id: i32,
@@ -63,7 +63,7 @@ pub struct CreateUserLoginLogReq {
 pub struct CreateUserLoginLogResp {}
 
 /// 更新登陆日志信息 请求体
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct UpdateUserLoginLogReq {
     /// ID
     pub id: i32,
@@ -77,7 +77,7 @@ pub struct UpdateUserLoginLogReq {
 pub struct UpdateUserLoginLogResp {}
 
 /// 更新登录日志状态 请求体
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct UpdateUserLoginLogStatusReq {
     /// ID
     pub id: i32,

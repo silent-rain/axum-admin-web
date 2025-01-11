@@ -5,9 +5,9 @@ use crate::{
     service::table::TableService,
 };
 
-use axum::{Extension, Json};
-use inject::AInjectProvider;
 use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json};
+use inject::AInjectProvider;
 
 /// 控制器
 pub struct TableController;

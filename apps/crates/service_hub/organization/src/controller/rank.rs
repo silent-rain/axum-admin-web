@@ -9,9 +9,9 @@ use crate::{
     service::rank::RankService,
 };
 
-use axum::{extract::Query, Extension, Json};
-use inject::AInjectProvider;
 use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+use inject::AInjectProvider;
 
 /// 控制器
 pub struct RankController;

@@ -11,9 +11,10 @@ use crate::{
     service::file_resource::FileResourceService,
 };
 
-use axum::{body::Body, extract::Query, Extension, Json};
+use axum::body::Body;
 use axum_response::{Responder, Response, ResponseErr};
 use axum_typed_multipart::TypedMultipart;
+use axum_validator::{Extension, Json, Query};
 use code::Error;
 use inject::AInjectProvider;
 
