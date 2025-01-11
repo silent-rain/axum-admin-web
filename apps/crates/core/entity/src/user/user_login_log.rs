@@ -2,7 +2,7 @@
 
 use chrono::Local;
 use sea_orm::{
-    prelude::{async_trait::async_trait, DateTimeLocal},
+    prelude::{async_trait::async_trait, DateTime},
     ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
     DeriveRelation, EnumIter, PrimaryKeyTrait, Set,
 };
@@ -36,9 +36,9 @@ pub struct Model {
     /// 登录状态
     pub login_status: i8,
     /// 创建时间
-    pub created_at: DateTimeLocal,
+    pub created_at: DateTime,
     /// 更新时间
-    pub updated_at: DateTimeLocal,
+    pub updated_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -50,7 +50,7 @@ impl ActiveModelBehavior for ActiveModel {
     where
         C: ConnectionTrait,
     {
-        self.updated_at = Set(Local::now());
+        self.updated_at = Set(Local::now().naive_local());
         Ok(self)
     }
 }

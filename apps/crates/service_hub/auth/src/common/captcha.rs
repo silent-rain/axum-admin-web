@@ -44,7 +44,7 @@ pub async fn check_captcha(
     }
 
     // 验证过期时间
-    let max_time = result.created_at.timestamp() + result.expire as i64;
+    let max_time = result.created_at.and_utc().timestamp() + result.expire as i64;
     let now = Local::now().timestamp();
     if now > max_time {
         return {

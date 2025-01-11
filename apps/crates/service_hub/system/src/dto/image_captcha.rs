@@ -1,5 +1,5 @@
 //! 图片验证码管理
-use chrono::{DateTime, Local};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -64,7 +64,7 @@ pub struct CreateImageCaptchaResp {
     /// 过期时间,秒
     pub expire: u32,
     /// 创建时间
-    pub created_at: DateTime<Local>,
+    pub created_at: NaiveDateTime,
 }
 
 /// 删除数据 请求体

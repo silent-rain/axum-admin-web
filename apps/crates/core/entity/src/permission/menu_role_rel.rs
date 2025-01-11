@@ -1,7 +1,7 @@
 //! 菜单角色关系表
 
 use sea_orm::{
-    prelude::DateTimeLocal, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
+    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
     DeriveRelation, EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait,
 };
 use serde::{Deserialize, Serialize};
@@ -18,7 +18,7 @@ pub struct Model {
     /// 角色ID
     pub role_id: i32,
     /// 创建时间
-    pub created_at: DateTimeLocal,
+    pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

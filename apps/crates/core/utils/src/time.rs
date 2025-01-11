@@ -15,7 +15,7 @@ where
     Ok(naive)
 }
 
-/// 将字符串转为 NaiveDateTime
+/// 将字符串转为 DateTime<Local>
 ///
 /// https://docs.rs/serde/latest/serde/de/trait.Error.html
 ///

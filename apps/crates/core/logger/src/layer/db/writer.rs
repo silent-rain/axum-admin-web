@@ -136,7 +136,7 @@ impl DbWriter {
             stack,
             code: storage.code().map(|v| v as i32),
             code_msg: storage.code_msg(),
-            created_at: Some(Local::now()),
+            created_at: Some(Local::now().naive_local()),
             ..Default::default()
         };
 

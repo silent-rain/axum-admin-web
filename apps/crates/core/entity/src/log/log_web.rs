@@ -1,7 +1,7 @@
 //! WEB日志表
 
 use sea_orm::{
-    prelude::DateTimeLocal, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
+    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
     DeriveRelation, EnumIter, PrimaryKeyTrait,
 };
 use serde::{Deserialize, Serialize};
@@ -38,7 +38,7 @@ pub struct Model {
     /// 描述信息
     pub desc: Option<String>,
     /// 创建时间
-    pub created_at: DateTimeLocal,
+    pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -1,7 +1,7 @@
 //! 任务调度事件日志表
 
 use sea_orm::{
-    prelude::DateTimeLocal, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
+    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
     DeriveRelation, EnumIter, PrimaryKeyTrait,
 };
 use serde::{Deserialize, Serialize};
@@ -20,7 +20,7 @@ pub struct Model {
     /// 任务状态(0:开始,1:完成,2:停止,3:移除)
     pub status: i8,
     /// 创建时间
-    pub created_at: DateTimeLocal,
+    pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

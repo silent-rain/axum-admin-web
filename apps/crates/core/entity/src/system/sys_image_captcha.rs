@@ -1,8 +1,10 @@
 //! 图片验证码表
 
+use chrono::Local;
 use sea_orm::{
-    prelude::DateTimeLocal, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
-    DeriveRelation, EnumIter, PrimaryKeyTrait,
+    prelude::{async_trait::async_trait, DateTime},
+    ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
+    DeriveRelation, EnumIter, PrimaryKeyTrait, Set,
 };
 use serde::{Deserialize, Serialize};
 
@@ -24,12 +26,22 @@ pub struct Model {
     /// 状态(false:无效验证码,true:有效验证码)
     pub status: bool,
     /// 创建时间
-    pub created_at: DateTimeLocal,
+    pub created_at: DateTime,
     /// 更新时间
-    pub updated_at: DateTimeLocal,
+    pub updated_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
-impl ActiveModelBehavior for ActiveModel {}
+#[async_trait]
+impl ActiveModelBehavior for ActiveModel {
+    /// Will be triggered before insert / update
+    async fn before_save<C>(mut self, _db: &C, _insert: bool) -> Result<Self, DbErr>
+    where
+        C: ConnectionTrait,
+    {
+        self.updated_at = Set(Local::now().naive_local());
+        Ok(self)
+    }
+}

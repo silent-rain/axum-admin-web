@@ -2,9 +2,9 @@
 
 use entity::permission::token;
 
-use utils::time::{default_local_date_time, str_to_local_date_time};
+use utils::time::{default_naive_date_time, str_to_naive_date_time};
 
-use sea_orm::prelude::DateTimeLocal;
+use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -55,10 +55,10 @@ pub struct CreateTokenReq {
     /// 授权到期时间
     #[serde(
         rename = "expire",
-        deserialize_with = "str_to_local_date_time",
-        default = "default_local_date_time"
+        deserialize_with = "str_to_naive_date_time",
+        default = "default_naive_date_time"
     )]
-    pub expire: DateTimeLocal,
+    pub expire: DateTime,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)
@@ -81,10 +81,10 @@ pub struct UpdateTokenReq {
     /// 授权到期时间
     #[serde(
         rename = "expire",
-        deserialize_with = "str_to_local_date_time",
-        default = "default_local_date_time"
+        deserialize_with = "str_to_naive_date_time",
+        default = "default_naive_date_time"
     )]
-    pub expire: DateTimeLocal,
+    pub expire: DateTime,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)

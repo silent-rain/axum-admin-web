@@ -208,19 +208,19 @@ impl<S> SystemApiAuthService<S> {
     ) -> Result<i32, code::ErrorMsg> {
         let user_login_service: UserLoginLogService = provider.provide();
         let user = user_login_service.info_by_token(token.clone()).await?;
-        if user.status == user_login_log::enums::Status::Disabled as i8 {
+        if user.login_status == user_login_log::enums::LoginStatus::Disabled as i8 {
             error!("user_id: {} token: {}, 当前登陆态已被禁用", user.id, token);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("当前登陆态已被禁用, 请重新登陆"));
         }
-        if user.status == user_login_log::enums::Status::Failed as i8 {
+        if user.login_status == user_login_log::enums::LoginStatus::Failed as i8 {
             error!("user_id: {} token: {}, 无效鉴权", user.id, token);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("无效鉴权, 请重新登陆"));
         }
-        if user.status == user_login_log::enums::Status::Logout as i8 {
+        if user.login_status == user_login_log::enums::LoginStatus::Logout as i8 {
             error!("user_id: {} token: {}, 已登出", user.id, token);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
