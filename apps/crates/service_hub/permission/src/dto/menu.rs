@@ -66,9 +66,9 @@ pub struct CreateMenuReq {
     /// 链接跳转方式, _blank/_self
     pub link_target: Option<menu::enums::LinkTarget>,
     /// 是否隐藏(0:显示,1:隐藏)
-    pub is_hidden: Option<menu::enums::IsHidden>,
+    pub is_hidden: Option<bool>,
     /// 是否始终显示根菜单(0:隐藏,1:显示)
-    pub is_always_show_root: Option<menu::enums::IsAlwaysShowRoot>,
+    pub is_always_show_root: Option<bool>,
     /// 权限标识
     pub permission: Option<String>,
     /// 排序
@@ -109,9 +109,9 @@ pub struct UpdateMenuReq {
     /// 链接跳转方式, _blank/_self
     pub link_target: Option<menu::enums::LinkTarget>,
     /// 是否隐藏(0:显示,1:隐藏)
-    pub is_hidden: Option<menu::enums::IsHidden>,
+    pub is_hidden: Option<bool>,
     /// 是否始终显示根菜单(0:隐藏,1:显示)
-    pub is_always_show_root: Option<menu::enums::IsAlwaysShowRoot>,
+    pub is_always_show_root: Option<bool>,
     /// 权限标识
     pub permission: Option<String>,
     /// 排序

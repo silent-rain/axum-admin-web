@@ -29,8 +29,8 @@ impl MigrationTrait for Migration {
                         `redirect_to` VARCHAR(255) NULL DEFAULT '' COMMENT '路由重定向',
                         `link` VARCHAR(255) NULL DEFAULT '' COMMENT '链接地址:站内链地址/站外链地址',
                         `link_target` VARCHAR(20) NULL DEFAULT '_blank' COMMENT '链接跳转方式,_blank/_self',
-                        `is_hidden` TINYINT(1) NULL DEFAULT 1 COMMENT '是否隐藏(0:显示,1:隐藏)',
-                        `is_always_show_root` TINYINT(1) NULL DEFAULT 1 COMMENT '是否始终显示根菜单(0:隐藏,1:显示)',
+                        `is_hidden` bool NULL DEFAULT true COMMENT '是否隐藏',
+                        `is_always_show_root` bool NULL DEFAULT true COMMENT '是否始终显示根菜单',
                         `permission` VARCHAR(200) NULL DEFAULT '' COMMENT '权限标识',
                         `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
@@ -54,15 +54,15 @@ impl MigrationTrait for Migration {
                         "pid" INTEGER DEFAULT 0,
                         "title" VARCHAR(20) NOT NULL,
                         "icon_class" VARCHAR(20) DEFAULT '',
-                        "menu_type" SMALLINT NOT NULL DEFAULT 0,
-                        "open_method" SMALLINT NOT NULL DEFAULT 0,
+                        "menu_type" char NOT NULL DEFAULT 0,
+                        "open_method" char NOT NULL DEFAULT 0,
                         "path" VARCHAR(255) DEFAULT '',
                         "component_path" VARCHAR(255) DEFAULT '',
                         "redirect_to" VARCHAR(255) DEFAULT '',
                         "link" VARCHAR(255) DEFAULT '',
                         "link_target" VARCHAR(20) DEFAULT '_blank',
-                        "is_hidden" SMALLINT DEFAULT 1,
-                        "is_always_show_root" SMALLINT DEFAULT 1,
+                        "is_hidden" bool DEFAULT true,
+                        "is_always_show_root" bool DEFAULT true,
                         "permission" VARCHAR(200) DEFAULT '',
                         "sort" INTEGER DEFAULT 0,
                         "desc" VARCHAR(200) DEFAULT '',
@@ -86,8 +86,8 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_perm_menu.redirect_to IS '路由重定向';
                     COMMENT ON COLUMN t_perm_menu.link IS '链接地址:站内链地址/站外链地址';
                     COMMENT ON COLUMN t_perm_menu.link_target IS '链接跳转方式,_blank/_self';
-                    COMMENT ON COLUMN t_perm_menu.is_hidden IS '是否隐藏(0:显示,1:隐藏)';
-                    COMMENT ON COLUMN t_perm_menu.is_always_show_root IS '是否始终显示根菜单(0:隐藏,1:显示)';
+                    COMMENT ON COLUMN t_perm_menu.is_hidden IS '是否隐藏';
+                    COMMENT ON COLUMN t_perm_menu.is_always_show_root IS '是否始终显示根菜单';
                     COMMENT ON COLUMN t_perm_menu.permission IS '权限标识';
                     COMMENT ON COLUMN t_perm_menu.sort IS '排序';
                     COMMENT ON COLUMN t_perm_menu.desc IS '描述信息';
@@ -113,12 +113,12 @@ impl MigrationTrait for Migration {
                         `redirect_to` VARCHAR(255) DEFAULT '', -- 路由重定向
                         `link` VARCHAR(255) DEFAULT '', -- 链接地址:站内链地址/站外链地址
                         `link_target` VARCHAR(20) DEFAULT '_blank', -- 链接跳转方式,_blank/_self
-                        `is_hidden` TINYINT DEFAULT 1, -- 是否隐藏(0:显示,1:隐藏)
-                        `is_always_show_root` TINYINT DEFAULT 1, -- 是否始终显示根菜单(0:隐藏,1:显示)
+                        `is_hidden` BOOLEAN DEFAULT true, -- 是否隐藏
+                        `is_always_show_root` BOOLEAN DEFAULT true, -- 是否始终显示根菜单
                         `permission` VARCHAR(200) DEFAULT '', -- 权限标识
                         `sort` INTEGER DEFAULT 0, -- 排序
                         `desc` VARCHAR(200) DEFAULT '', -- 描述信息
-                        `status` BOOL NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
+                        `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

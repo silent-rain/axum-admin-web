@@ -30,8 +30,8 @@ impl MigrationTrait for Migration {
                         `line` INT(10) UNSIGNED NULL DEFAULT 0 COMMENT '报错行数',
                         `level` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '日志级别',
                         `kind` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '事件类型',
-                        `is_event` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否为事件',
-                        `is_span` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否为 span',
+                        `is_event` BOOL NOT NULL DEFAULT false COMMENT '是否为事件',
+                        `is_span` BOOL NOT NULL DEFAULT false COMMENT '是否为 span',
                         `fields` VARCHAR(500) NULL DEFAULT '' COMMENT '日志字段名称列表',
                         `field_data` TEXT NULL COMMENT 'fields 日志数据集',
                         `message` TEXT NULL COMMENT '日志信息',
@@ -66,8 +66,8 @@ impl MigrationTrait for Migration {
                         "line" BIGINT DEFAULT 0,
                         "level" VARCHAR(10) NOT NULL DEFAULT '',
                         "kind" VARCHAR(10) NOT NULL DEFAULT '',
-                        "is_event" BOOLEAN NOT NULL DEFAULT FALSE,
-                        "is_span" BOOLEAN NOT NULL DEFAULT FALSE,
+                        "is_event" BOOL NOT NULL DEFAULT FALSE,
+                        "is_span" BOOL NOT NULL DEFAULT FALSE,
                         "fields" VARCHAR(500) DEFAULT '',
                         "field_data" TEXT,
                         "message" TEXT,
@@ -125,8 +125,8 @@ impl MigrationTrait for Migration {
                         `line` INTEGER UNSIGNED DEFAULT 0, -- 报错行数
                         `level` TEXT NOT NULL DEFAULT '', -- 日志级别
                         `kind` TEXT NOT NULL DEFAULT '', -- 事件类型
-                        `is_event` BOOLEAN NOT NULL DEFAULT 0, -- 是否为事件
-                        `is_span` BOOLEAN NOT NULL DEFAULT 0, -- 是否为 span
+                        `is_event` BOOLEAN NOT NULL DEFAULT false, -- 是否为事件
+                        `is_span` BOOLEAN NOT NULL DEFAULT false, -- 是否为 span
                         `fields` TEXT DEFAULT '', -- 日志字段名称列表
                         `field_data` TEXT, -- fields 日志数据集
                         `message` TEXT, -- 日志信息

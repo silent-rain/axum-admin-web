@@ -57,7 +57,7 @@ impl MigrationTrait for Migration {
                         "id" SERIAL PRIMARY KEY,
                         "username" VARCHAR(32) UNIQUE NOT NULL,
                         "real_name" VARCHAR(32) DEFAULT '',
-                        "gender" SMALLINT NOT NULL,
+                        "gender" char NOT NULL,
                         "password" VARCHAR(64) NOT NULL,
                         "status" BOOL NULL DEFAULT TRUE,
                         "age" INT DEFAULT 0,
@@ -115,7 +115,7 @@ impl MigrationTrait for Migration {
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 用户ID,自增
                         `username` VARCHAR(32) NOT NULL UNIQUE, -- 用户名,唯一
                         `real_name` VARCHAR(32) DEFAULT '', -- 真实姓名
-                        `gender` INTEGER NOT NULL, -- 性别
+                        `gender` TINYINT NOT NULL, -- 性别
                         `password` VARCHAR(64) NOT NULL, -- 密码
                         `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
                         `age` INTEGER DEFAULT 0, -- 年龄

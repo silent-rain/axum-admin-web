@@ -43,7 +43,7 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS "t_perm_openapi" (
                         "id" SERIAL PRIMARY KEY,
                         "pid" INTEGER DEFAULT 0,
-                        "category" SMALLINT NOT NULL,
+                        "category" char NOT NULL,
                         "name" VARCHAR(50) NOT NULL,
                         "method" VARCHAR(50) NOT NULL,
                         "path" VARCHAR(200) NOT NULL,
@@ -78,7 +78,7 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS `t_perm_openapi` ( -- OpenApi接口表
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 接口ID
                         `pid` INTEGER DEFAULT 0, -- 父ID
-                        `category` BOOLEAN NOT NULL, -- 类别,0:目录,1:接口
+                        `category` TINYINT NOT NULL, -- 类别,0:目录,1:接口
                         `name` VARCHAR(50) NOT NULL, -- 接口名称
                         `method` VARCHAR(50) NOT NULL, -- 请求类型
                         `path` VARCHAR(200) NOT NULL, -- 资源路径

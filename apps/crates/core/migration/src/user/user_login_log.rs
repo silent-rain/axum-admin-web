@@ -100,7 +100,7 @@ impl MigrationTrait for Migration {
                         `system` TEXT DEFAULT '', -- 系统
                         `browser` TEXT DEFAULT '', -- 浏览器
                         `desc` TEXT DEFAULT '', -- 描述信息
-                        `login_status` INTEGER NOT NULL DEFAULT 0, -- 登录状态(0:登录成功,1:登录失败,2:已禁用,3:登出)
+                        `login_status` TINYINT NOT NULL DEFAULT 0, -- 登录状态(0:登录成功,1:登录失败,2:已禁用,3:登出)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );

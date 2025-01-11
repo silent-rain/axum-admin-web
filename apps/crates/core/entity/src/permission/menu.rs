@@ -38,10 +38,10 @@ pub struct Model {
     pub link: Option<String>,
     /// 链接跳转方式, _blank/_self
     pub link_target: Option<String>,
-    /// 是否隐藏(0:显示,1:隐藏)
-    pub is_hidden: Option<i8>,
-    /// 是否始终显示根菜单(0:隐藏,1:显示)
-    pub is_always_show_root: Option<i8>,
+    /// 是否隐藏
+    pub is_hidden: Option<bool>,
+    /// 是否始终显示根菜单
+    pub is_always_show_root: Option<bool>,
     /// 权限标识
     pub permission: Option<String>,
     /// 排序
@@ -136,25 +136,5 @@ pub mod enums {
                 LinkTarget::Current => "_self".to_owned(),
             }
         }
-    }
-
-    /// 菜单是否隐藏
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum IsHidden {
-        /// 显示
-        Visible = 0,
-        /// 隐藏
-        Hidden = 1,
-    }
-
-    /// 始终显示根菜单
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum IsAlwaysShowRoot {
-        /// 显示
-        Show = 0,
-        /// 隐藏
-        Hide = 1,
     }
 }

@@ -43,8 +43,8 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS "t_schedule_job" (
                         "id" SERIAL PRIMARY KEY,
                         "name" VARCHAR(200) UNIQUE NOT NULL,
-                        "source" BOOLEAN NOT NULL,
-                        "job_type" BOOLEAN NOT NULL DEFAULT FALSE,
+                        "source" char NOT NULL,
+                        "job_type" char NOT NULL DEFAULT FALSE,
                         "sys_code" VARCHAR(200) NOT NULL,
                         "expression" VARCHAR(100) DEFAULT '',
                         "interval" INTEGER DEFAULT 0,
@@ -78,8 +78,8 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS `t_schedule_job` ( -- 任务调度作业表
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 自增ID
                         `name` TEXT UNIQUE NOT NULL, -- 任务名称
-                        `source` BOOLEAN NOT NULL, -- 任务来源(0:用户定义,1:系统内部)
-                        `job_type` BOOLEAN NOT NULL DEFAULT 0, -- 任务类型(0:定时任务,1:即时任务)
+                        `source` TINYINT NOT NULL, -- 任务来源(0:用户定义,1:系统内部)
+                        `job_type` TINYINT NOT NULL DEFAULT 0, -- 任务类型(0:定时任务,1:即时任务)
                         `sys_code` TEXT NOT NULL, -- 系统任务编码
                         `expression` TEXT DEFAULT '', -- cron表达式
                         `interval` INTEGER DEFAULT 0, -- 间隔时间,秒
