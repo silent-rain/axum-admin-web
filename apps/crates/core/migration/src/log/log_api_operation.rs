@@ -31,7 +31,7 @@ impl MigrationTrait for Migration {
                         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '请求IP',
                         `user_agent` VARCHAR(256) NULL DEFAULT '' COMMENT '用户代理',
                         `cost` INT(20) UNSIGNED NOT NULL COMMENT '耗时,毫秒',
-                        `http_type` VARCHAR(10) NOT NULL COMMENT '请求类型:REQ/RSP',
+                        `http_type` VARCHAR(10) NOT NULL COMMENT '请求类型:REQ/RESP',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         PRIMARY KEY (`id`)
@@ -87,7 +87,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_log_api_operation.remote_addr IS '请求IP';
                     COMMENT ON COLUMN t_log_api_operation.user_agent IS '用户代理';
                     COMMENT ON COLUMN t_log_api_operation.cost IS '耗时,毫秒';
-                    COMMENT ON COLUMN t_log_api_operation.http_type IS '请求类型:REQ/RSP';
+                    COMMENT ON COLUMN t_log_api_operation.http_type IS '请求类型:REQ/RESP';
                     COMMENT ON COLUMN t_log_api_operation.desc IS '描述信息';
                     COMMENT ON COLUMN t_log_api_operation.created_at IS '创建时间';
                     "#,
@@ -112,7 +112,7 @@ impl MigrationTrait for Migration {
                         `remote_addr` TEXT DEFAULT '', -- 请求IP
                         `user_agent` TEXT DEFAULT '', -- 用户代理
                         `cost` INTEGER NOT NULL, -- 耗时,毫秒
-                        `http_type` TEXT NOT NULL, -- 请求类型:REQ/RSP
+                        `http_type` TEXT NOT NULL, -- 请求类型:REQ/RESP
                         `desc` TEXT DEFAULT '', -- 描述信息
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP -- 创建时间
                     );

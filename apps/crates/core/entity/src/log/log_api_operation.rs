@@ -39,7 +39,7 @@ pub struct Model {
     pub user_agent: String,
     /// 耗时,毫秒
     pub cost: i16,
-    /// 请求类型:REQ/RSP
+    /// 请求类型:REQ/RESP
     pub http_type: String,
     /// 描述信息
     pub desc: Option<String>,
@@ -72,15 +72,15 @@ pub mod enums {
         #[serde(rename = "REQ")]
         Req,
         /// 响应
-        #[serde(rename = "RSP")]
-        Rsp,
+        #[serde(rename = "RESP")]
+        RESP,
     }
 
     impl From<HttpType> for String {
         fn from(value: HttpType) -> Self {
             match value {
                 HttpType::Req => "REQ".to_owned(),
-                HttpType::Rsp => "RSP".to_owned(),
+                HttpType::RESP => "RESP".to_owned(),
             }
         }
     }

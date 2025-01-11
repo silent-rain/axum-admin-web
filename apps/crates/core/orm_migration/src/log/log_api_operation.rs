@@ -120,7 +120,7 @@ impl MigrationTrait for Migration {
                             .string()
                             .string_len(10)
                             .not_null()
-                            .comment("请求类型:REQ/RSP"),
+                            .comment("请求类型:REQ/RESP"),
                     )
                     .col(
                         ColumnDef::new(LogApiOperation::Desc)
