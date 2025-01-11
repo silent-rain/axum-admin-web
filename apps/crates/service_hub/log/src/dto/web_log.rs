@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 /// 查询WEB日志列表 请求体
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize, Validate)]
 pub struct GetWebLogsReq {
     /// 当前分页
     pub page: u64,

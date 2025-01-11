@@ -6,7 +6,7 @@ use validator::Validate;
 use entity::log::log_system;
 
 /// 查询系统日志列表 请求体
-#[derive(Default, Deserialize)]
+#[derive(Default, Deserialize, Validate)]
 pub struct GetSystemLogsReq {
     /// 当前分页
     pub page: u64,

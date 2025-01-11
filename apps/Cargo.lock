@@ -2593,6 +2593,7 @@ version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
  "axum_response",
+ "axum_validator",
  "code",
  "database",
  "entity",
