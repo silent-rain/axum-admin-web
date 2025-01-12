@@ -61,29 +61,3 @@ pub struct CreateUserLoginLogReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateUserLoginLogResp {}
-
-/// 更新登陆日志信息 请求体
-#[derive(Deserialize, Validate)]
-pub struct UpdateUserLoginLogReq {
-    /// ID
-    pub id: i32,
-    /// 描述信息
-    pub desc: Option<String>,
-    /// 登录状态
-    pub login_status: LoginStatus,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateUserLoginLogResp {}
-
-/// 更新登录日志状态 请求体
-#[derive(Deserialize, Validate)]
-pub struct UpdateUserLoginLogStatusReq {
-    /// ID
-    pub id: i32,
-    /// 登录状态
-    pub login_status: LoginStatus,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateUserLoginLogStatusResp {}

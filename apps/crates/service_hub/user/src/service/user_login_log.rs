@@ -1,10 +1,7 @@
 //! 登陆日志管理
 use crate::{
     dao::user_login_log::UserLoginLogDao,
-    dto::user_login_log::{
-        CreateUserLoginLogReq, GetUserLoginLogReq, GetUserLoginLogsReq, UpdateUserLoginLogReq,
-        UpdateUserLoginLogStatusReq,
-    },
+    dto::user_login_log::{CreateUserLoginLogReq, GetUserLoginLogReq, GetUserLoginLogsReq},
 };
 
 use code::{Error, ErrorMsg};
@@ -120,39 +117,5 @@ impl UserLoginLogService {
         })?;
 
         Ok(result)
-    }
-
-    /// 更新数据
-    pub async fn update(&self, req: UpdateUserLoginLogReq) -> Result<u64, ErrorMsg> {
-        let model = user_login_log::ActiveModel {
-            id: Set(req.id),
-            desc: Set(req.desc),
-            login_status: Set(req.login_status as i8),
-            ..Default::default()
-        };
-
-        let result = self.user_login_dao.update(model).await.map_err(|err| {
-            error!("更新登陆日志信息失败, err: {:#?}", err);
-            Error::DbUpdateError
-                .into_msg()
-                .with_msg("更新登陆日志信息失败")
-        })?;
-
-        Ok(result)
-    }
-
-    /// 更新登录日志状态
-    pub async fn update_status(&self, req: UpdateUserLoginLogStatusReq) -> Result<(), ErrorMsg> {
-        self.user_login_dao
-            .update_status(req.id, req.login_status as i8)
-            .await
-            .map_err(|err| {
-                error!("更新登录日志状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新登录日志状态失败")
-            })?;
-
-        Ok(())
     }
 }

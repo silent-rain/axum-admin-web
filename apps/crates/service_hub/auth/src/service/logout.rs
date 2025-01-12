@@ -21,6 +21,7 @@ impl Logoutervice {
         UserCached::remove_user_api_auth(user_id).await;
 
         // 更新登陆日志状态
+        // TODO 切换为 session
         self.user_login_log_dao
             .update_status(
                 user_login_id,

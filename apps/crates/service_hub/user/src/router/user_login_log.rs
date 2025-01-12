@@ -12,19 +12,10 @@ impl UserLoginLogRouter {
     pub fn register() -> Router {
         Router::new().nest(
             "/user-login-logs",
-            Router::new()
-                .route(
-                    "/",
-                    get(UserLoginLogController::list).post(UserLoginLogController::create),
-                )
-                .route(
-                    "/{id}",
-                    get(UserLoginLogController::info).put(UserLoginLogController::update),
-                )
-                .route(
-                    "/{id}/status",
-                    get(UserLoginLogController::info).put(UserLoginLogController::update_status),
-                ),
+            Router::new().route(
+                "/",
+                get(UserLoginLogController::list).post(UserLoginLogController::create),
+            ),
         )
     }
 }

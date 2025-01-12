@@ -3,8 +3,7 @@
 use crate::{
     dto::user_login_log::{
         CreateUserLoginLogReq, CreateUserLoginLogResp, GetUserLoginLogReq, GetUserLoginLogResp,
-        GetUserLoginLogsReq, GetUserLoginLogsResp, UpdateUserLoginLogReq, UpdateUserLoginLogResp,
-        UpdateUserLoginLogStatusReq, UpdateUserLoginLogStatusResp,
+        GetUserLoginLogsReq, GetUserLoginLogsResp,
     },
     service::user_login_log::UserLoginLogService,
 };
@@ -48,30 +47,6 @@ impl UserLoginLogController {
     ) -> Responder<CreateUserLoginLogResp> {
         let user_login_service: UserLoginLogService = provider.provide();
         let _result = user_login_service.create(data).await?;
-
-        let resp = Response::<()>::ok().to_json()?;
-        Ok(resp)
-    }
-
-    /// 更新登陆日志
-    pub async fn update(
-        Extension(provider): Extension<AInjectProvider>,
-        Json(req): Json<UpdateUserLoginLogReq>,
-    ) -> Responder<UpdateUserLoginLogResp> {
-        let user_login_service: UserLoginLogService = provider.provide();
-        let _result = user_login_service.update(req).await?;
-
-        let resp = Response::<()>::ok().to_json()?;
-        Ok(resp)
-    }
-
-    /// 更新登录日志状态
-    pub async fn update_status(
-        Extension(provider): Extension<AInjectProvider>,
-        Json(req): Json<UpdateUserLoginLogStatusReq>,
-    ) -> Responder<UpdateUserLoginLogStatusResp> {
-        let user_login_service: UserLoginLogService = provider.provide();
-        user_login_service.update_status(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
