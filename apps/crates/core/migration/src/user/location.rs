@@ -26,7 +26,7 @@ impl MigrationTrait for Migration {
                         `address` VARCHAR(255) NOT NULL COMMENT '详细地址',
                         `postal_code` VARCHAR(20) NULL DEFAULT '' COMMENT '邮政编码',
                         `longitude` DECIMAL(11, 8) NULL DEFAULT 0 COMMENT '经度',
-                        `latitude` DECIMAL(10, 8) NULL DEFAULT 0 COMMENT '纬度',
+                        `latitude` DECIMAL(11, 8) NULL DEFAULT 0 COMMENT '纬度',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

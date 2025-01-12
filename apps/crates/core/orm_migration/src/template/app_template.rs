@@ -1,11 +1,13 @@
 //! 应用模板表
-//! Entity: [`entity::prelude::AppTemplate`]
+//! Entity: [`entity::template::AppTemplate`]
 
 use sea_orm::{
     sea_query::{ColumnDef, Expr, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName,
+    DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -30,8 +32,10 @@ impl MigrationTrait for Migration {
                             //     match manager.get_database_backend() {
                             //         // `id` INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT,
                             //         DatabaseBackend::Sqlite => "PRIMARY KEY AUTOINCREMENT",
-                            //         // `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                            //         _ => "PRIMARY KEY AUTO_INCREMENT",
+                            //         // "id" SERIAL PRIMARY KEY,
+                            //         DatabaseBackend::Postgres => "",
+                            //         // `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                            //         DatabaseBackend::MySql => "PRIMARY KEY AUTO_INCREMENT",
                             //     }
                             // })
                             .not_null()
@@ -53,9 +57,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(AppTemplate::Status)
-                            .tiny_integer()
-                            .not_null()
                             .boolean()
+                            .not_null()
+                            .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
@@ -69,20 +73,25 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(AppTemplate::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    DatabaseBackend::Postgres => "DEFAULT CURRENT_TIMESTAMP",
-                                    DatabaseBackend::MySql => {
-                                        "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
-                                    }
-                                }
-                            })
+                            .default(Expr::current_timestamp())
+                            // .extra({
+                            //     match manager.get_database_backend() {
+                            //         DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
+                            //         DatabaseBackend::Postgres => "DEFAULT CURRENT_TIMESTAMP",
+                            //         DatabaseBackend::MySql => {
+                            //             "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
+                            //         }
+                            //     }
+                            // })
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        if_not_exists_create_index(manager, AppTemplate::Table, vec![AppTemplate::UserId]).await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

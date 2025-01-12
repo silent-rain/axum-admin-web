@@ -1,10 +1,10 @@
 //! 字典数据表
 //! Entity: [`entity::system::SysDictData`]
-use crate::system::sys_dict_dimension::SysDictDimension;
+use crate::utils::if_not_exists_create_index;
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, Index, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, Table},
+    DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                             .comment("字典维度编码"),
                     )
                     .col(
-                        ColumnDef::new(SysDictData::Lable)
+                        ColumnDef::new(SysDictData::Label)
                             .string()
                             .string_len(64)
                             .not_null()
@@ -73,9 +73,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(SysDictData::Status)
-                            .tiny_integer()
-                            .not_null()
                             .boolean()
+                            .not_null()
+                            .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
@@ -89,73 +89,22 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(SysDictData::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
             .await?;
 
-        if !manager
-            .has_index(SysDictData::Table.to_string(), "idx_dimension_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_dimension_id")
-                        .table(SysDictData::Table)
-                        .col(SysDictData::DimensionId)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        if !manager
-            .has_index(SysDictData::Table.to_string(), "idx_dimension_code")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_dimension_code")
-                        .table(SysDictData::Table)
-                        .col(SysDictData::DimensionId)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(
-                SysDictData::Table.to_string(),
-                "fk_sys_dict_data_dimension_id",
-            )
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_sys_dict_data_dimension_id")
-                        .from(SysDictData::Table, SysDictData::DimensionId)
-                        .to(SysDictDimension::Table, SysDictDimension::Id)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
+        if_not_exists_create_index(manager, SysDictData::Table, vec![SysDictData::DimensionId])
+            .await?;
+        if_not_exists_create_index(
+            manager,
+            SysDictData::Table,
+            vec![SysDictData::DimensionCode],
+        )
+        .await?;
+        if_not_exists_create_index(manager, SysDictData::Table, vec![SysDictData::Label]).await?;
         Ok(())
     }
 
@@ -175,7 +124,7 @@ pub enum SysDictData {
     Id,
     DimensionId,
     DimensionCode,
-    Lable,
+    Label,
     Value,
     Sort,
     Desc,

@@ -3,9 +3,11 @@
 
 use sea_orm::{
     sea_query::{ColumnDef, Expr, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName,
+    DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -39,8 +41,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(MemberLevel::Level)
-                            .integer()
-                            .unsigned()
+                            .small_integer()
                             .unique_key()
                             .not_null()
                             .comment("会员等级"),
@@ -62,9 +63,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(MemberLevel::Status)
-                            .tiny_integer()
-                            .not_null()
                             .boolean()
+                            .not_null()
+                            .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
@@ -78,17 +79,15 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(MemberLevel::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
             .await?;
+
+        if_not_exists_create_index(manager, MemberLevel::Table, vec![MemberLevel::Name]).await?;
+        if_not_exists_create_index(manager, MemberLevel::Table, vec![MemberLevel::Level]).await?;
 
         Ok(())
     }

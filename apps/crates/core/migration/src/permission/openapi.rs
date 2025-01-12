@@ -18,13 +18,13 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     t_perm_openapi (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '接口ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '接口ID',
                         `pid` INT(20) NULL DEFAULT 0 COMMENT '父ID',
                         `category` TINYINT(1) NOT NULL COMMENT '类别,0:目录,1:接口',
                         `name` VARCHAR(50) NOT NULL COMMENT '接口名称',
                         `method` VARCHAR(50) NOT NULL COMMENT '请求类型',
                         `path` VARCHAR(200) NOT NULL COMMENT '资源路径',
-                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

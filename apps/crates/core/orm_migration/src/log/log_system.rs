@@ -2,8 +2,8 @@
 //! Entity: [`entity::log::LogSystem`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -178,7 +178,39 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogSystem::Table.to_string(),
+                        LogSystem::UserId.to_string()
+                    ))
+                    .table(LogSystem::Table)
+                    .col(LogSystem::UserId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogSystem::Table.to_string(),
+                        LogSystem::Username.to_string()
+                    ))
+                    .table(LogSystem::Table)
+                    .col(LogSystem::Username)
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

@@ -18,13 +18,13 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_schedule_job` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
                         `name` VARCHAR(200) UNIQUE NOT NULL COMMENT '任务名称',
                         `source` TINYINT(1) NOT NULL COMMENT '任务来源(0:用户定义,1:系统内部)',
                         `job_type` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '任务类型(0:定时任务,1:即时任务)',
-                        `sys_code` VARCHAR(200) NOT NULL COMMENT '系统任务编码',
+                        `sys_code` VARCHAR(50) NOT NULL COMMENT '系统任务编码',
                         `expression` VARCHAR(100) DEFAULT '' COMMENT 'cron表达式',
-                        `interval` INT(11) DEFAULT 0 COMMENT '间隔时间,秒',
+                        `interval` INT DEFAULT 0 COMMENT '间隔时间,秒',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '任务状态(0:下线,1:上线)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -45,7 +45,7 @@ impl MigrationTrait for Migration {
                         "name" VARCHAR(200) UNIQUE NOT NULL,
                         "source" char NOT NULL,
                         "job_type" char NOT NULL DEFAULT FALSE,
-                        "sys_code" VARCHAR(200) NOT NULL,
+                        "sys_code" VARCHAR(50) NOT NULL,
                         "expression" VARCHAR(100) DEFAULT '',
                         "interval" INTEGER DEFAULT 0,
                         "desc" VARCHAR(200) DEFAULT '',

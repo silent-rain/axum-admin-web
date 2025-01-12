@@ -7,6 +7,8 @@ use sea_orm::{
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
+use crate::utils::if_not_exists_create_index;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
@@ -29,7 +31,7 @@ impl MigrationTrait for Migration {
                             .comment("文件ID"),
                     )
                     .col(
-                        ColumnDef::new(SysFileResource::Name)
+                        ColumnDef::new(SysFileResource::FileName)
                             .string()
                             .string_len(32)
                             .not_null()
@@ -57,6 +59,13 @@ impl MigrationTrait for Migration {
                             .comment("文件文件扩展名, 如svg, png"),
                     )
                     .col(
+                        ColumnDef::new(SysFileResource::ContentType)
+                            .string()
+                            .string_len(20)
+                            .not_null()
+                            .comment("内容类型, text/html"),
+                    )
+                    .col(
                         ColumnDef::new(SysFileResource::Size)
                             .integer()
                             .not_null()
@@ -79,7 +88,17 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        if_not_exists_create_index(
+            manager,
+            SysFileResource::Table,
+            vec![SysFileResource::FileName],
+        )
+        .await?;
+        if_not_exists_create_index(manager, SysFileResource::Table, vec![SysFileResource::Hash])
+            .await?;
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
@@ -95,10 +114,11 @@ pub enum SysFileResource {
     #[sea_orm(iden = "t_sys_file_resource")]
     Table,
     Id,
-    Name,
+    FileName,
     Hash,
     Data,
     Extension,
+    ContentType,
     Size,
     Desc,
     CreatedAt,

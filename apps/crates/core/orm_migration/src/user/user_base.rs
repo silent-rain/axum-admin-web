@@ -2,10 +2,12 @@
 //! Entity: [`entity::user::UserBase`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Index, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, Table},
+    DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -59,9 +61,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(UserBase::Status)
-                            .tiny_integer()
-                            .not_null()
                             .boolean()
+                            .not_null()
+                            .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
@@ -165,34 +167,17 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(UserBase::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
             .await?;
 
-        if !manager
-            .has_index(UserBase::Table.to_string(), "idx_username")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_username")
-                        .table(UserBase::Table)
-                        .col(UserBase::Username)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::Username]).await?;
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::RealName]).await?;
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::Password]).await?;
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::ShareCode]).await?;
         Ok(())
     }
 

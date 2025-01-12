@@ -2,7 +2,7 @@
 -- 图片验证码表
 CREATE TABLE IF NOT EXISTS
     `t_sys_image_captcha` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
         `captcha_id` VARCHAR(40) UNIQUE NOT NULL COMMENT '验证码ID',
         `captcha` VARCHAR(10) NOT NULL COMMENT '验证码',
         `data` MEDIUMBLOB NOT NULL COMMENT '图片数据, Base64编码',
@@ -16,12 +16,12 @@ CREATE TABLE IF NOT EXISTS
 -- 配置表
 CREATE TABLE IF NOT EXISTS
     `t_sys_config` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '配置ID',
-        `pid` INT(11) DEFAULT 0 COMMENT '父节点ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '配置ID',
+        `pid` INT DEFAULT 0 COMMENT '父节点ID',
         `name` VARCHAR(64) NOT NULL COMMENT '配置名称',
         `code` VARCHAR(64) UNIQUE NOT NULL COMMENT '配置编码(英文)',
         `value` TEXT NULL COMMENT '配置值',
-        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+        `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) DEFAULT '' COMMENT '配置描述',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS
 -- 图片资源表
 CREATE TABLE IF NOT EXISTS
     `t_sys_file_resource` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '图片ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '图片ID',
         `name` VARCHAR(32) NOT NULL COMMENT '图片名称',
         `hash` VARCHAR(32) UNIQUE NOT NULL COMMENT '图片HASH值',
         `data` MEDIUMBLOB NOT NULL COMMENT '图片数据, Base64编码',
@@ -46,10 +46,10 @@ CREATE TABLE IF NOT EXISTS
 -- 字典维度表
 CREATE TABLE IF NOT EXISTS
     `t_sys_dict_dimension` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '字典维度ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '字典维度ID',
         `name` VARCHAR(64) UNIQUE NOT NULL COMMENT '字典维度名称',
         `code` VARCHAR(64) UNIQUE NOT NULL COMMENT '字典维度编码',
-        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+        `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -60,12 +60,12 @@ CREATE TABLE IF NOT EXISTS
 -- 字典数据表
 CREATE TABLE IF NOT EXISTS
     `t_sys_dict_data` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '字典项ID',
-        `dimension_id` INT(11) NOT NULL COMMENT '字典维度ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '字典项ID',
+        `dimension_id` INT NOT NULL COMMENT '字典维度ID',
         `dimension_code` VARCHAR(64) NOT NULL COMMENT '字典维度编码',
         `lable` VARCHAR(64) NOT NULL COMMENT '字典项标签',
         `value` TEXT NOT NULL COMMENT '字典项值',
-        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+        `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

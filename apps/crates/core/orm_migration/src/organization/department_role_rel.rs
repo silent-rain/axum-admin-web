@@ -1,9 +1,12 @@
 //! 部门角色关系表
 //! Entity: [`entity::organization::DepartmentRoleRel`]
-use crate::{organization::department::Department, user::role::UserRole};
+use crate::{
+    organization::department::Department, user::role::UserRole,
+    utils::if_not_exists_create_unique_index,
+};
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
@@ -52,26 +55,12 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if !manager
-            .has_index(
-                DepartmentRoleRel::Table.to_string(),
-                "uk_department_id_role_id",
-            )
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .table(DepartmentRoleRel::Table)
-                        .name("uk_department_id_role_id")
-                        .unique()
-                        .col(DepartmentRoleRel::DepartmentId)
-                        .col(DepartmentRoleRel::RoleId)
-                        .to_owned(),
-                )
-                .await?;
-        }
+        if_not_exists_create_unique_index(
+            manager,
+            DepartmentRoleRel::Table,
+            vec![DepartmentRoleRel::DepartmentId, DepartmentRoleRel::RoleId],
+        )
+        .await?;
 
         // Sqlite 不支持外键
         if manager.get_database_backend() == DatabaseBackend::Sqlite {

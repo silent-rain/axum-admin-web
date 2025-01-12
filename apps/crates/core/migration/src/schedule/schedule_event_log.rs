@@ -18,8 +18,8 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_schedule_event_log` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '事件日志ID',
-                        `job_id` INT(11) NOT NULL COMMENT '任务ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '事件日志ID',
+                        `job_id` INT NOT NULL COMMENT '任务ID',
                         `uuid` VARCHAR(50) NOT NULL COMMENT '任务调度ID',
                         `status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '任务状态(0:开始,1:完成,2:停止,3:移除)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT '创建时间',
@@ -33,7 +33,7 @@ impl MigrationTrait for Migration {
                 .await?;
             }
             DatabaseBackend::Postgres => {
-                db.execute_unprepared(
+                db.execute_unprepared( 
                     r#"
                     CREATE TABLE IF NOT EXISTS "t_schedule_event_log" (
                         "id" SERIAL PRIMARY KEY,

@@ -1,10 +1,9 @@
 //! 岗位表
 //! Entity: [`entity::organization::Position`]
-use crate::organization::department::Department;
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -33,7 +32,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Position::Name)
                             .string()
-                            .string_len(20)
+                            .string_len(100)
                             .unique_key()
                             .not_null()
                             .comment("岗位名称"),
@@ -62,9 +61,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(Position::Status)
-                            .tiny_integer()
-                            .not_null()
                             .boolean()
+                            .not_null()
+                            .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
@@ -78,39 +77,42 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(Position::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
             .await?;
 
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        Position::Table.to_string(),
+                        Position::Name.to_string()
+                    ))
+                    .table(Position::Table)
+                    .col(Position::Name)
+                    .to_owned(),
+            )
+            .await?;
 
-        if !manager
-            .has_index(Position::Table.to_string(), "fk_org_position_department_id")
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_org_position_department_id")
-                        .from(Position::Table, Position::DepartmentId)
-                        .to(Department::Table, Department::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        Position::Table.to_string(),
+                        Position::DepartmentId.to_string()
+                    ))
+                    .table(Position::Table)
+                    .col(Position::DepartmentId)
+                    .to_owned(),
+            )
+            .await?;
 
         Ok(())
     }

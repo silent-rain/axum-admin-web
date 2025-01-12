@@ -18,21 +18,21 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_perm_menu` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '菜单ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '菜单ID',
                         `pid` INT(20) NULL DEFAULT 0 COMMENT '父菜单ID',
                         `title` VARCHAR(20) NOT NULL COMMENT '菜单名称',
                         `icon_class` VARCHAR(20) NULL DEFAULT '' COMMENT 'Icon图标类',
                         `menu_type` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '菜单类型(0:菜单,1:按钮)',
                         `open_method` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '打开方式(0:组件,1:内链,2:外链)',
-                        `path` VARCHAR(255) NULL DEFAULT '' COMMENT '路由地址',
-                        `component_path` VARCHAR(255) NULL DEFAULT '' COMMENT '组件路径',
-                        `redirect_to` VARCHAR(255) NULL DEFAULT '' COMMENT '路由重定向',
-                        `link` VARCHAR(255) NULL DEFAULT '' COMMENT '链接地址:站内链地址/站外链地址',
+                        `path` VARCHAR(500) NULL DEFAULT '' COMMENT '路由地址',
+                        `component_path` VARCHAR(500) NULL DEFAULT '' COMMENT '组件路径',
+                        `redirect_to` VARCHAR(500) NULL DEFAULT '' COMMENT '路由重定向',
+                        `link` VARCHAR(500) NULL DEFAULT '' COMMENT '链接地址:站内链地址/站外链地址',
                         `link_target` VARCHAR(20) NULL DEFAULT '_blank' COMMENT '链接跳转方式,_blank/_self',
                         `is_hidden` bool NULL DEFAULT true COMMENT '是否隐藏',
                         `is_always_show_root` bool NULL DEFAULT true COMMENT '是否始终显示根菜单',
                         `permission` VARCHAR(200) NULL DEFAULT '' COMMENT '权限标识',
-                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -56,10 +56,10 @@ impl MigrationTrait for Migration {
                         "icon_class" VARCHAR(20) DEFAULT '',
                         "menu_type" char NOT NULL DEFAULT 0,
                         "open_method" char NOT NULL DEFAULT 0,
-                        "path" VARCHAR(255) DEFAULT '',
-                        "component_path" VARCHAR(255) DEFAULT '',
-                        "redirect_to" VARCHAR(255) DEFAULT '',
-                        "link" VARCHAR(255) DEFAULT '',
+                        "path" VARCHAR(500) DEFAULT '',
+                        "component_path" VARCHAR(500) DEFAULT '',
+                        "redirect_to" VARCHAR(500) DEFAULT '',
+                        "link" VARCHAR(500) DEFAULT '',
                         "link_target" VARCHAR(20) DEFAULT '_blank',
                         "is_hidden" bool DEFAULT true,
                         "is_always_show_root" bool DEFAULT true,
@@ -108,10 +108,10 @@ impl MigrationTrait for Migration {
                         `icon_class` VARCHAR(20) DEFAULT '', -- Icon图标类
                         `menu_type` TINYINT NOT NULL DEFAULT 0, -- 菜单类型(0:菜单,1:按钮)
                         `open_method` TINYINT NOT NULL DEFAULT 0, -- 打开方式(0:组件,1:内链,2:外链)
-                        `path` VARCHAR(255) DEFAULT '', -- 路由地址
-                        `component_path` VARCHAR(255) DEFAULT '', -- 组件路径
-                        `redirect_to` VARCHAR(255) DEFAULT '', -- 路由重定向
-                        `link` VARCHAR(255) DEFAULT '', -- 链接地址:站内链地址/站外链地址
+                        `path` VARCHAR(500) DEFAULT '', -- 路由地址
+                        `component_path` VARCHAR(500) DEFAULT '', -- 组件路径
+                        `redirect_to` VARCHAR(500) DEFAULT '', -- 路由重定向
+                        `link` VARCHAR(500) DEFAULT '', -- 链接地址:站内链地址/站外链地址
                         `link_target` VARCHAR(20) DEFAULT '_blank', -- 链接跳转方式,_blank/_self
                         `is_hidden` BOOLEAN DEFAULT true, -- 是否隐藏
                         `is_always_show_root` BOOLEAN DEFAULT true, -- 是否始终显示根菜单

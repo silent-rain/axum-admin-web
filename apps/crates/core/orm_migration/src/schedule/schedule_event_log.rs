@@ -2,8 +2,8 @@
 //! Entity: [`entity::schedule::ScheduleEventLog`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -56,7 +56,39 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        ScheduleEventLog::Table.to_string(),
+                        ScheduleEventLog::JobId.to_string()
+                    ))
+                    .table(ScheduleEventLog::Table)
+                    .col(ScheduleEventLog::JobId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        ScheduleEventLog::Table.to_string(),
+                        ScheduleEventLog::Uuid.to_string()
+                    ))
+                    .table(ScheduleEventLog::Table)
+                    .col(ScheduleEventLog::Uuid)
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

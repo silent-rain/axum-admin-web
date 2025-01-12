@@ -2,8 +2,8 @@
 //! Entity: [`entity::log::LogApiOperation`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -46,7 +46,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(LogApiOperation::RequestId)
                             .string()
-                            .string_len(32)
+                            .string_len(36)
                             .null()
                             .default("")
                             .comment("请求ID"),
@@ -110,8 +110,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(LogApiOperation::Cost)
-                            .integer()
-                            .unsigned()
+                            .small_integer()
                             .not_null()
                             .comment("耗时,毫秒"),
                     )
@@ -139,7 +138,69 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogApiOperation::Table.to_string(),
+                        LogApiOperation::UserId.to_string()
+                    ))
+                    .table(LogApiOperation::Table)
+                    .col(LogApiOperation::UserId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogApiOperation::Table.to_string(),
+                        LogApiOperation::Username.to_string()
+                    ))
+                    .table(LogApiOperation::Table)
+                    .col(LogApiOperation::Username)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogApiOperation::Table.to_string(),
+                        LogApiOperation::RequestId.to_string()
+                    ))
+                    .table(LogApiOperation::Table)
+                    .col(LogApiOperation::RequestId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogApiOperation::Table.to_string(),
+                        LogApiOperation::StatusCode.to_string()
+                    ))
+                    .table(LogApiOperation::Table)
+                    .col(LogApiOperation::StatusCode)
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

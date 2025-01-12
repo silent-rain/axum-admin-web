@@ -18,8 +18,8 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_user_login_log` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                        `user_id` INT(11) NOT NULL COMMENT '用户ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `user_id` INT NOT NULL COMMENT '用户ID',
                         `username` VARCHAR(32) NOT NULL COMMENT '用户名称',
                         `token` VARCHAR(300) NULL DEFAULT '' COMMENT '登陆令牌',
                         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '登录IP',

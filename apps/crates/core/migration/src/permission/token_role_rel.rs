@@ -18,9 +18,9 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_perm_token_role_rel` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                        `token_id` INT(11) NOT NULL COMMENT '令牌ID',
-                        `role_id` INT(11) NOT NULL COMMENT '角色ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `token_id` INT NOT NULL COMMENT '令牌ID',
+                        `role_id` INT NOT NULL COMMENT '角色ID',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         PRIMARY KEY (`id`)
                     ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '令牌角色关系表';

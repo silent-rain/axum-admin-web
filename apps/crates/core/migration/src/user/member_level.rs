@@ -18,10 +18,10 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE
                     `t_user_member_level` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '会员等级ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '会员等级ID',
                         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '会员等级名称',
-                        `level` INT(11) UNSIGNED UNIQUE NOT NULL COMMENT '会员等级',
-                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `level` SMALLINT UNIQUE NOT NULL COMMENT '会员等级',
+                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '会员描述',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

@@ -1,9 +1,11 @@
 //! 菜单角色关系表
 //! Entity: [`entity::permission::MenuRoleRel`]
-use crate::{permission::menu::Menu, user::role::UserRole};
+use crate::{
+    permission::menu::Menu, user::role::UserRole, utils::if_not_exists_create_unique_index,
+};
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
@@ -52,23 +54,12 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if !manager
-            .has_index(MenuRoleRel::Table.to_string(), "uk_menu_id_role_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .table(MenuRoleRel::Table)
-                        .name("uk_menu_id_role_id")
-                        .unique()
-                        .col(MenuRoleRel::MenuId)
-                        .col(MenuRoleRel::RoleId)
-                        .to_owned(),
-                )
-                .await?;
-        }
+        if_not_exists_create_unique_index(
+            manager,
+            MenuRoleRel::Table,
+            vec![MenuRoleRel::MenuId, MenuRoleRel::RoleId],
+        )
+        .await?;
 
         // Sqlite 不支持外键
         if manager.get_database_backend() == DatabaseBackend::Sqlite {

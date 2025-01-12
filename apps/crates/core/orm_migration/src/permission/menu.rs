@@ -2,8 +2,8 @@
 //! Entity: [`entity::permission::Menu`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -53,14 +53,16 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(Menu::MenuType)
-                            .integer()
+                            .tiny_integer()
                             .not_null()
+                            .default(0)
                             .comment("菜单类型(0:菜单,1:按钮)"),
                     )
                     .col(
                         ColumnDef::new(Menu::OpenMethod)
-                            .integer()
+                            .tiny_integer()
                             .not_null()
+                            .default(0)
                             .comment("打开方式(0:组件,1:内链,2:外链)"),
                     )
                     .col(
@@ -82,7 +84,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Menu::RedirectTo)
                             .string()
-                            .string_len(200)
+                            .string_len(500)
                             .null()
                             .default("")
                             .comment("路由重定向"),
@@ -90,7 +92,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Menu::Link)
                             .string()
-                            .string_len(200)
+                            .string_len(500)
                             .null()
                             .default("")
                             .comment("链接地址:站内链地址/站外链地址"),
@@ -105,16 +107,16 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(Menu::IsHidden)
-                            .integer()
+                            .boolean()
                             .null()
-                            .default(1)
+                            .default(true)
                             .comment("是否隐藏(0:显示,1:隐藏)"),
                     )
                     .col(
-                        ColumnDef::new(Menu::IsAlwaysDisplayed)
-                            .integer()
+                        ColumnDef::new(Menu::IsAlwaysShowRoot)
+                            .boolean()
                             .null()
-                            .default(1)
+                            .default(true)
                             .comment("是否始终显示根菜单(0:隐藏,1:显示)"),
                     )
                     .col(
@@ -142,9 +144,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(Menu::Status)
-                            .tiny_integer()
-                            .not_null()
                             .boolean()
+                            .null()
+                            .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
@@ -158,17 +160,44 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(Menu::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        Menu::Table.to_string(),
+                        Menu::Pid.to_string()
+                    ))
+                    .table(Menu::Table)
+                    .col(Menu::Pid)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        Menu::Table.to_string(),
+                        Menu::Title.to_string()
+                    ))
+                    .table(Menu::Table)
+                    .col(Menu::Title)
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
@@ -197,7 +226,7 @@ pub enum Menu {
     Link,
     LinkTarget,
     IsHidden,
-    IsAlwaysDisplayed,
+    IsAlwaysShowRoot,
     Permission,
     Sort,
     Desc,

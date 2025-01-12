@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_perm_token` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '令牌ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '令牌ID',
                         `user_id` INT(20) NOT NULL COMMENT '用户ID',
                         `token` VARCHAR(50) UNIQUE NOT NULL COMMENT '令牌',
                         `passphrase` VARCHAR(20) NOT NULL COMMENT '口令',

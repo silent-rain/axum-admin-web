@@ -18,11 +18,11 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_sys_image_captcha` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
                         `captcha_id` VARCHAR(40) UNIQUE NOT NULL COMMENT '验证码ID',
                         `captcha` VARCHAR(10) NOT NULL COMMENT '验证码',
                         `data` MEDIUMBLOB NOT NULL COMMENT '图片数据, Base64编码',
-                        `expire` INT(4) UNSIGNED NOT NULL DEFAULT 1 COMMENT '过期时间,秒',
+                        `expire` SMALLINT NOT NULL DEFAULT 1 COMMENT '过期时间,秒',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:失效,true:有效)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

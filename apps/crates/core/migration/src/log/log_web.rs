@@ -18,10 +18,10 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_log_web` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '日志ID',
-                        `user_id` INT(11) NULL DEFAULT 0 COMMENT '用户ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '日志ID',
+                        `user_id` INT NULL DEFAULT 0 COMMENT '用户ID',
                         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
-                        `request_id` VARCHAR(32) NULL DEFAULT '' COMMENT '请求ID',
+                        `request_id` VARCHAR(36) NULL DEFAULT '' COMMENT '请求ID',
                         `os_type` TINYINT(1) NOT NULL COMMENT '终端类型(0:未知, 1:安卓, 2:IOS, 3:WEB)',
                         `error_type` TINYINT(1) NOT NULL COMMENT '错误类型(1:接口报错, 2:代码报错)',
                         `level` VARCHAR(10) NOT NULL COMMENT '日志级别',
@@ -49,7 +49,7 @@ impl MigrationTrait for Migration {
                         "id" SERIAL PRIMARY KEY,
                         "user_id" INTEGER DEFAULT 0,
                         "username" VARCHAR(32) DEFAULT '',
-                        "request_id" VARCHAR(32) DEFAULT '',
+                        "request_id" VARCHAR(36) DEFAULT '',
                         "os_type" char NOT NULL,
                         "error_type" char NOT NULL,
                         "level" VARCHAR(10) NOT NULL,

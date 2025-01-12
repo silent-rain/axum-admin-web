@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_perm_menu_role_rel` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
                         `menu_id` INT(10) NOT NULL COMMENT '菜单ID',
                         `role_id` INT(10) NOT NULL COMMENT '角色ID',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

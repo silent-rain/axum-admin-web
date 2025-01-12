@@ -2,8 +2,8 @@
 //! Entity: [`entity::log::LogWeb`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
-    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(LogWeb::RequestId)
                             .string()
-                            .string_len(32)
+                            .string_len(36)
                             .null()
                             .comment("请求ID"),
                     )
@@ -110,7 +110,54 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogWeb::Table.to_string(),
+                        LogWeb::UserId.to_string()
+                    ))
+                    .table(LogWeb::Table)
+                    .col(LogWeb::UserId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogWeb::Table.to_string(),
+                        LogWeb::Username.to_string()
+                    ))
+                    .table(LogWeb::Table)
+                    .col(LogWeb::Username)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogWeb::Table.to_string(),
+                        LogWeb::RequestId.to_string()
+                    ))
+                    .table(LogWeb::Table)
+                    .col(LogWeb::RequestId)
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

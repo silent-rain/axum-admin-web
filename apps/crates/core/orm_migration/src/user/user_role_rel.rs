@@ -1,14 +1,16 @@
 //! 用户角色关系表
 //! Entity: [`entity::user::UserRoleRel`]
 
-use crate::{user::role::UserRole, user::user_base::UserBase};
-
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
+use crate::{
+    user::{role::UserRole, user_base::UserBase},
+    utils::if_not_exists_create_unique_index,
+};
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
@@ -53,23 +55,12 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if !manager
-            .has_index(UserRoleRel::Table.to_string(), "uk_user_id_role_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .table(UserRoleRel::Table)
-                        .name("uk_user_id_role_id")
-                        .unique()
-                        .col(UserRoleRel::UserId)
-                        .col(UserRoleRel::RoleId)
-                        .to_owned(),
-                )
-                .await?;
-        }
+        if_not_exists_create_unique_index(
+            manager,
+            UserRoleRel::Table,
+            vec![UserRoleRel::UserId, UserRoleRel::RoleId],
+        )
+        .await?;
 
         // Sqlite 不支持外键
         if manager.get_database_backend() == DatabaseBackend::Sqlite {

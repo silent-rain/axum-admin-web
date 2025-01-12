@@ -18,9 +18,9 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     t_perm_openapi_role_rel (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                        `openapi_id` INT(11) NOT NULL COMMENT '接口ID',
-                        `role_id` INT(11) NOT NULL COMMENT '角色ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `openapi_id` INT NOT NULL COMMENT '接口ID',
+                        `role_id` INT NOT NULL COMMENT '角色ID',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         PRIMARY KEY (`id`)
                     ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT 'OpenApi接口角色关系表';

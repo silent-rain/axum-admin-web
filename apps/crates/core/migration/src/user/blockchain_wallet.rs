@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_user_blockchain_wallet` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '钱包ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '钱包ID',
                         `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
                         `wallet_address` VARCHAR(255) UNIQUE NOT NULL COMMENT '钱包地址',
                         `mnemonic` VARCHAR(255) NULL DEFAULT '' COMMENT '助记词',

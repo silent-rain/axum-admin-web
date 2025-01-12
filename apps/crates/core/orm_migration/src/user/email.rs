@@ -1,11 +1,9 @@
 //! 用户邮箱表
 //! Entity: [`entity::user::Email`]
 
-use crate::user::user_base::UserBase;
-
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, Table},
+    DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -49,7 +47,6 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(UserEmail::Desc)
                             .string()
                             .string_len(200)
-                            .default("")
                             .null()
                             .default("")
                             .comment("描述信息"),
@@ -65,55 +62,12 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(UserEmail::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
             .await?;
-
-        if !manager
-            .has_index(UserEmail::Table.to_string(), "idx_user_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_user_id")
-                        .table(UserEmail::Table)
-                        .col(UserEmail::UserId)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(UserEmail::Table.to_string(), "fk_user_email_user_id")
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_user_email_user_id")
-                        .from(UserEmail::Table, UserEmail::UserId)
-                        .to(UserBase::Table, UserBase::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
 
         Ok(())
     }

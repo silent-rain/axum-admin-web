@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_org_department_role_rel` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
                         `department_id` INT(10) NOT NULL COMMENT '部门ID',
                         `role_id` INT(10) NOT NULL COMMENT '角色ID',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

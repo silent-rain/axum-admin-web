@@ -18,11 +18,11 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_org_department` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '部门ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '部门ID',
                         `pid` BIGINT DEFAULT NULL DEFAULT 0 COMMENT '上级部门ID',
                         `pids` VARCHAR(200) DEFAULT NULL DEFAULT '' COMMENT '所有上级部门ID, 用逗号分开',
                         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '部门名称',
-                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '部门描述',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

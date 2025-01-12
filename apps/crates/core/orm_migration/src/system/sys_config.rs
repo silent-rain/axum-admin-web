@@ -3,9 +3,11 @@
 
 use sea_orm::{
     sea_query::{ColumnDef, Expr, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName,
+    DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -74,9 +76,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(SysConfig::Status)
-                            .tiny_integer()
-                            .not_null()
                             .boolean()
+                            .not_null()
+                            .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
@@ -90,17 +92,18 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(SysConfig::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        if_not_exists_create_index(manager, SysConfig::Table, vec![SysConfig::Name]).await?;
+        if_not_exists_create_index(manager, SysConfig::Table, vec![SysConfig::Pid]).await?;
+        if_not_exists_create_index(manager, SysConfig::Table, vec![SysConfig::Code]).await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

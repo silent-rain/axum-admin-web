@@ -18,10 +18,10 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_sys_dict_dimension` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '字典维度ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '字典维度ID',
                         `name` VARCHAR(64) UNIQUE NOT NULL COMMENT '字典维度名称',
                         `code` VARCHAR(64) UNIQUE NOT NULL COMMENT '字典维度编码',
-                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

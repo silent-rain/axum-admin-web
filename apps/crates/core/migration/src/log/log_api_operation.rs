@@ -18,8 +18,8 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_log_api_operation` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                        `user_id` INT(11) NULL DEFAULT 0 COMMENT '用户ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `user_id` INT NULL DEFAULT 0 COMMENT '用户ID',
                         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
                         `request_id` VARCHAR(36) NULL DEFAULT '' COMMENT '请求ID',
                         `status_code` INT(10) NOT NULL COMMENT '请求状态码',
@@ -30,7 +30,7 @@ impl MigrationTrait for Migration {
                         `body` TEXT NULL COMMENT '请求体/响应体',
                         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '请求IP',
                         `user_agent` VARCHAR(256) NULL DEFAULT '' COMMENT '用户代理',
-                        `cost` INT(20) UNSIGNED NOT NULL COMMENT '耗时,毫秒',
+                        `cost` SMALLINT NOT NULL COMMENT '耗时,毫秒',
                         `http_type` VARCHAR(10) NOT NULL COMMENT '请求类型:REQ/RESP',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

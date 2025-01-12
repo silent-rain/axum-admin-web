@@ -18,13 +18,13 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_user_base` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '用户ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '用户ID',
                         `username` VARCHAR(32) UNIQUE NOT NULL COMMENT '用户名称',
                         `real_name` VARCHAR(32) NULL DEFAULT '' COMMENT '真实姓名',
                         `gender` TINYINT(1) NOT NULL COMMENT '性别(0:男,1:女,2:保密)',
                         `password` VARCHAR(64) NOT NULL COMMENT '密码',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
-                        `age` INT(11) NULL DEFAULT 0 COMMENT '年龄',
+                        `age` INT NULL DEFAULT 0 COMMENT '年龄',
                         `date_birth` VARCHAR(20) NULL DEFAULT '' COMMENT '出生日期',
                         `avatar` VARCHAR(200) NULL DEFAULT '' COMMENT '头像URL',
                         `intro` VARCHAR(200) NULL DEFAULT '' COMMENT '用户个人介绍',
@@ -32,10 +32,10 @@ impl MigrationTrait for Migration {
                         `address` VARCHAR(200) NULL DEFAULT '' COMMENT '用户的居住或邮寄地址',
                         `share_code` VARCHAR(16) NULL DEFAULT '' COMMENT '用户分享码',
                         `preferences` VARCHAR(200) NULL DEFAULT '' COMMENT '偏好设置',
-                        `department_id` INT(11) DEFAULT 0 COMMENT '所属部门ID',
-                        `position_id` INT(11) DEFAULT 0 COMMENT '所属岗位ID',
-                        `rank_id` INT(11) DEFAULT 0 COMMENT '所属职级ID',
-                        `member_level_id` INT(11) DEFAULT 0 COMMENT '用户会员等级ID',
+                        `department_id` INT DEFAULT 0 COMMENT '所属部门ID',
+                        `position_id` INT DEFAULT 0 COMMENT '所属岗位ID',
+                        `rank_id` INT DEFAULT 0 COMMENT '所属职级ID',
+                        `member_level_id` INT DEFAULT 0 COMMENT '用户会员等级ID',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
                         PRIMARY KEY (`id`)

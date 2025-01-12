@@ -1,9 +1,11 @@
 //! OpenApi接口角色关系表
 //! Entity: [`entity::permission::OpenapiRoleRel`]
-use crate::{permission::openapi::Openapi, user::role::UserRole};
+use crate::{
+    permission::openapi::Openapi, user::role::UserRole, utils::if_not_exists_create_unique_index,
+};
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
@@ -30,7 +32,7 @@ impl MigrationTrait for Migration {
                             .comment("自增ID"),
                     )
                     .col(
-                        ColumnDef::new(OpenapiRoleRel::ApiId)
+                        ColumnDef::new(OpenapiRoleRel::OpenapiId)
                             .integer()
                             .not_null()
                             .comment("接口ID"),
@@ -52,23 +54,12 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if !manager
-            .has_index(OpenapiRoleRel::Table.to_string(), "uk_openapi_id_role_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .table(OpenapiRoleRel::Table)
-                        .name("uk_openapi_id_role_id")
-                        .unique()
-                        .col(OpenapiRoleRel::ApiId)
-                        .col(OpenapiRoleRel::RoleId)
-                        .to_owned(),
-                )
-                .await?;
-        }
+        if_not_exists_create_unique_index(
+            manager,
+            OpenapiRoleRel::Table,
+            vec![OpenapiRoleRel::OpenapiId, OpenapiRoleRel::RoleId],
+        )
+        .await?;
 
         // Sqlite 不支持外键
         if manager.get_database_backend() == DatabaseBackend::Sqlite {
@@ -86,7 +77,7 @@ impl MigrationTrait for Migration {
                 .create_foreign_key(
                     ForeignKey::create()
                         .name("fk_openapi_role_rel_openapi_id")
-                        .from(OpenapiRoleRel::Table, OpenapiRoleRel::ApiId)
+                        .from(OpenapiRoleRel::Table, OpenapiRoleRel::OpenapiId)
                         .to(Openapi::Table, Openapi::Id)
                         .on_update(ForeignKeyAction::Cascade)
                         .on_delete(ForeignKeyAction::Cascade)
@@ -131,7 +122,7 @@ pub enum OpenapiRoleRel {
     #[sea_orm(iden = "t_perm_openapi_role_rel")]
     Table,
     Id,
-    ApiId,
+    OpenapiId,
     RoleId,
     CreatedAt,
 }

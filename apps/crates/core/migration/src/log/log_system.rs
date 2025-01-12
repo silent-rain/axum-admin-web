@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_log_system` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
                         `user_id` INT(20) NULL DEFAULT 0 COMMENT '请求用户ID',
                         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
                         `name` VARCHAR(50) NOT NULL COMMENT '日志记录器名称',
@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
                         `module_path` VARCHAR(100) NULL DEFAULT '' COMMENT '模块路径',
                         `target` VARCHAR(100) NULL DEFAULT '' COMMENT '描述发生此元数据所描述的跨度或事件的系统部分',
                         `file` VARCHAR(500) NULL DEFAULT '' COMMENT '文件',
-                        `line` INT(10) UNSIGNED NULL DEFAULT 0 COMMENT '报错行数',
+                        `line` INT(10) NULL DEFAULT 0 COMMENT '报错行数',
                         `level` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '日志级别',
                         `kind` VARCHAR(10) NOT NULL DEFAULT '' COMMENT '事件类型',
                         `is_event` BOOL NOT NULL DEFAULT FALSE COMMENT '是否为事件',
@@ -122,7 +122,7 @@ impl MigrationTrait for Migration {
                         `module_path` TEXT DEFAULT '', -- 模块路径
                         `target` TEXT DEFAULT '', -- 描述发生此元数据所描述的跨度或事件的系统部分
                         `file` TEXT DEFAULT '', -- 文件
-                        `line` INTEGER UNSIGNED DEFAULT 0, -- 报错行数
+                        `line` SMALLINT DEFAULT 0, -- 报错行数
                         `level` TEXT NOT NULL DEFAULT '', -- 日志级别
                         `kind` TEXT NOT NULL DEFAULT '', -- 事件类型
                         `is_event` BOOLEAN NOT NULL DEFAULT false, -- 是否为事件

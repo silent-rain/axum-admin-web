@@ -2,7 +2,7 @@
 -- 菜单表
 CREATE TABLE IF NOT EXISTS
     `t_perm_menu` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '菜单ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '菜单ID',
         `pid` INT(20) NULL DEFAULT 0 COMMENT '父菜单ID',
         `title` VARCHAR(20) NOT NULL COMMENT '菜单名称',
         `icon_class` VARCHAR(20) NULL DEFAULT '' COMMENT 'Icon图标类',
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS
         `is_hidden` TINYINT(1) NULL DEFAULT 1 COMMENT '是否隐藏(0:显示,1:隐藏)',
         `is_always_show_root` TINYINT(1) NULL DEFAULT 1 COMMENT '是否始终显示根菜单(0:隐藏,1:显示)',
         `permission` VARCHAR(200) NULL DEFAULT '' COMMENT '权限标识',
-        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+        `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS
 -- 菜单角色关系表
 CREATE TABLE IF NOT EXISTS
     `t_perm_menu_role_rel` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
         `menu_id` INT(10) NOT NULL COMMENT '菜单ID',
         `role_id` INT(10) NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS
 -- 令牌表
 CREATE TABLE IF NOT EXISTS
     `t_perm_token` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '令牌ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '令牌ID',
         `user_id` INT(20) NOT NULL COMMENT '用户ID',
         `token` VARCHAR(50) UNIQUE NOT NULL COMMENT '令牌',
         `passphrase` VARCHAR(20) NOT NULL COMMENT '口令',
@@ -56,9 +56,9 @@ CREATE TABLE IF NOT EXISTS
 -- 令牌角色关系表
 CREATE TABLE IF NOT EXISTS
     t_perm_token_role_rel (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `token_id` INT(11) NOT NULL COMMENT '令牌ID',
-        `role_id` INT(11) NOT NULL COMMENT '角色ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `token_id` INT NOT NULL COMMENT '令牌ID',
+        `role_id` INT NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`),
         UNIQUE KEY `uk_token_id_role_id` (`token_id`, `role_id`),
@@ -69,13 +69,13 @@ CREATE TABLE IF NOT EXISTS
 -- OpenApi接口表
 CREATE TABLE IF NOT EXISTS
     t_perm_openapi (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '接口ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '接口ID',
         `pid` INT(20) NULL DEFAULT 0 COMMENT '父ID',
         `category` TINYINT(1) NOT NULL COMMENT '类别,0:目录,1:接口',
         `name` VARCHAR(50) NOT NULL COMMENT '接口名称',
         `method` VARCHAR(50) NOT NULL COMMENT '请求类型',
         `path` VARCHAR(200) NOT NULL COMMENT '资源路径',
-        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+        `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -86,9 +86,9 @@ CREATE TABLE IF NOT EXISTS
 -- OpenApi接口角色关系表
 CREATE TABLE IF NOT EXISTS
     t_perm_openapi_role_rel (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `openapi_id` INT(11) NOT NULL COMMENT '接口ID',
-        `role_id` INT(11) NOT NULL COMMENT '角色ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `openapi_id` INT NOT NULL COMMENT '接口ID',
+        `role_id` INT NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`),
         UNIQUE KEY `uk_openapi_id_role_id` (`openapi_id`, `role_id`),

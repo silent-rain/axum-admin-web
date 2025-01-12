@@ -2,8 +2,8 @@
 -- 用户登录日志表
 CREATE TABLE IF NOT EXISTS
     `t_user_login_log` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `user_id` INT(11) NOT NULL COMMENT '用户ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `user_id` INT NOT NULL COMMENT '用户ID',
         `username` VARCHAR(32) NOT NULL COMMENT '用户名称',
         `token` VARCHAR(300) NULL DEFAULT '' COMMENT '登陆令牌',
         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '登录IP',
@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS
 -- API操作日志表
 CREATE TABLE IF NOT EXISTS
     `t_log_api_operation` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `user_id` INT(11) NULL DEFAULT 0 COMMENT '用户ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `user_id` INT NULL DEFAULT 0 COMMENT '用户ID',
         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
         `request_id` VARCHAR(32) NULL DEFAULT '' COMMENT '请求ID',
         `status_code` INT(10) NOT NULL COMMENT '请求状态码',
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS
 -- 系统日志表
 CREATE TABLE IF NOT EXISTS
     `t_log_system` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
         `user_id` INT(20) NULL DEFAULT 0 COMMENT '请求用户ID',
         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
         `name` VARCHAR(50) NOT NULL COMMENT '日志记录器名称',
@@ -70,8 +70,8 @@ CREATE TABLE IF NOT EXISTS
 -- TODO WEB日志表
 CREATE TABLE IF NOT EXISTS
     `t_log_web` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '日志ID',
-        `user_id` INT(11) NULL DEFAULT 0 COMMENT '用户ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '日志ID',
+        `user_id` INT NULL DEFAULT 0 COMMENT '用户ID',
         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
         `request_id` VARCHAR(32) NULL DEFAULT '' COMMENT '请求ID',
         `os_type` TINYINT(1) NOT NULL COMMENT '终端类型(0:未知, 1:安卓, 2:IOS, 3:WEB)',

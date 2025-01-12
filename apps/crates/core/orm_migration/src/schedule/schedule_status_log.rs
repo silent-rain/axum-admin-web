@@ -2,10 +2,12 @@
 //! Entity: [`entity::schedule::ScheduleStatusLog`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Index, Table},
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, Table},
+    DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -26,7 +28,7 @@ impl MigrationTrait for Migration {
                             .primary_key()
                             .auto_increment()
                             .not_null()
-                            .comment("事件日志ID"),
+                            .comment("状态日志ID"),
                     )
                     .col(
                         ColumnDef::new(ScheduleStatusLog::JobId)
@@ -47,8 +49,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(ScheduleStatusLog::Cost)
-                            .integer()
-                            .unsigned()
+                            .small_integer()
                             .not_null()
                             .comment("耗时,毫秒"),
                     )
@@ -70,33 +71,26 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(ScheduleStatusLog::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
             .await?;
 
-        if !manager
-            .has_index(ScheduleStatusLog::Table.to_string(), "idx_uuid")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .table(ScheduleStatusLog::Table)
-                        .name("idx_uuid")
-                        .col(ScheduleStatusLog::Uuid)
-                        .to_owned(),
-                )
-                .await?;
-        }
+        if_not_exists_create_index(
+            manager,
+            ScheduleStatusLog::Table,
+            vec![ScheduleStatusLog::JobId],
+        )
+        .await?;
+
+        if_not_exists_create_index(
+            manager,
+            ScheduleStatusLog::Table,
+            vec![ScheduleStatusLog::Uuid],
+        )
+        .await?;
 
         Ok(())
     }

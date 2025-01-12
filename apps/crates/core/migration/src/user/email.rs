@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_user_email` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '邮箱ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '邮箱ID',
                         `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
                         `email` VARCHAR(50) UNIQUE NOT NULL COMMENT '邮箱',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',

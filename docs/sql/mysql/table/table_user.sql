@@ -2,9 +2,9 @@
 -- 角色表
 CREATE TABLE IF NOT EXISTS
     `t_user_role` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '角色ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '角色ID',
         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '角色名称',
-        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+        `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -15,13 +15,13 @@ CREATE TABLE IF NOT EXISTS
 -- 用户信息表
 CREATE TABLE IF NOT EXISTS
     `t_user_base` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '用户ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '用户ID',
         `username` VARCHAR(32) UNIQUE NOT NULL COMMENT '用户名称',
         `real_name` VARCHAR(32) NULL DEFAULT '' COMMENT '真实姓名',
         `gender` TINYINT(1) NOT NULL COMMENT '性别(0:男,1:女,2:保密)',
         `password` VARCHAR(64) NOT NULL COMMENT '密码',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
-        `age` INT(11) NULL DEFAULT 0 COMMENT '年龄',
+        `age` INT NULL DEFAULT 0 COMMENT '年龄',
         `date_birth` VARCHAR(20) NULL DEFAULT '' COMMENT '出生日期',
         `avatar` VARCHAR(200) NULL DEFAULT '' COMMENT '头像URL',
         `intro` VARCHAR(200) NULL DEFAULT '' COMMENT '用户个人介绍',
@@ -29,10 +29,10 @@ CREATE TABLE IF NOT EXISTS
         `address` VARCHAR(200) NULL DEFAULT '' COMMENT '用户的居住或邮寄地址',
         `share_code` VARCHAR(16) NULL DEFAULT '' COMMENT '用户分享码',
         `preferences` VARCHAR(200) NULL DEFAULT '' COMMENT '偏好设置',
-        `department_id` INT(11) DEFAULT 0 COMMENT '所属部门ID',
-        `position_id` INT(11) DEFAULT 0 COMMENT '所属岗位ID',
-        `rank_id` INT(11) DEFAULT 0 COMMENT '所属职级ID',
-        `member_level_id` INT(11) DEFAULT 0 COMMENT '用户会员等级ID',
+        `department_id` INT DEFAULT 0 COMMENT '所属部门ID',
+        `position_id` INT DEFAULT 0 COMMENT '所属岗位ID',
+        `rank_id` INT DEFAULT 0 COMMENT '所属职级ID',
+        `member_level_id` INT DEFAULT 0 COMMENT '用户会员等级ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`)
@@ -49,7 +49,7 @@ CREATE INDEX idx_share_code ON t_user_base (`share_code`);
 -- 用户邮箱表
 CREATE TABLE IF NOT EXISTS
     `t_user_email` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '邮箱ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '邮箱ID',
         `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
         `email` VARCHAR(50) UNIQUE NOT NULL COMMENT '邮箱',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS
 -- 用户手机号表
 CREATE TABLE IF NOT EXISTS
     `t_user_phone` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '手机号ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '手机号ID',
         `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
         `phone` VARCHAR(16) UNIQUE NOT NULL COMMENT '手机号码',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS
 -- 用户区块链钱包表
 CREATE TABLE IF NOT EXISTS
     `t_user_blockchain_wallet` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '钱包ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '钱包ID',
         `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
         `wallet_address` VARCHAR(255) UNIQUE NOT NULL COMMENT '钱包地址',
         `mnemonic` VARCHAR(255) NULL DEFAULT '' COMMENT '助记词',
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS
 -- 用户角色关系表
 CREATE TABLE IF NOT EXISTS
     `t_user_role_rel` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
         `user_id` INT(10) NOT NULL COMMENT '用户ID',
         `role_id` INT(10) NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -100,10 +100,10 @@ CREATE UNIQUE INDEX uk_user_id_role_id ON t_user_role_rel (`user_id`, `role_id`)
 -- 用户会员等级表
 CREATE TABLE
     `t_user_member_level` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '会员等级ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '会员等级ID',
         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '会员等级名称',
-        `level` INT(11) UNSIGNED UNIQUE NOT NULL COMMENT '会员等级',
-        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+        `level` INT UNSIGNED UNIQUE NOT NULL COMMENT '会员等级',
+        `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '会员描述',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -136,8 +136,8 @@ CREATE TABLE IF NOT EXISTS
 -- 用户登录日志表
 CREATE TABLE IF NOT EXISTS
     `t_user_login_log` (
-        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `user_id` INT(11) NOT NULL COMMENT '用户ID',
+        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
+        `user_id` INT NOT NULL COMMENT '用户ID',
         `username` VARCHAR(32) NOT NULL COMMENT '用户名称',
         `token` VARCHAR(300) NULL DEFAULT '' COMMENT '登陆令牌',
         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '登录IP',

@@ -14,7 +14,7 @@ async fn mock_pool() -> Result<(), DbErr> {
     // 创建表并返回pool
     let sql = r#"CREATE TABLE `user` 
     (
-        `id` INT(11) NULL,
+        `id` INT NULL,
         `user_id` INT(10) NOT NULL,
         `status` INT(10) NOT NULL,
         PRIMARY KEY (`id`)
@@ -66,7 +66,7 @@ async fn mock_str() -> Result<(), DbErr> {
     // 创建表并返回pool
     let sql = r#"CREATE TABLE `user` 
     (
-        `id` INT(11) NULL,
+        `id` INT NULL,
         `user_id` INT(10) NOT NULL,
         `status` INT(10) NOT NULL,
         PRIMARY KEY (`id`)

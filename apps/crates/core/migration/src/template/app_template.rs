@@ -18,8 +18,8 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_app_template` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '模板ID',
-                        `user_id` INT(11) NOT NULL COMMENT '用户ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '模板ID',
+                        `user_id` INT NOT NULL COMMENT '用户ID',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

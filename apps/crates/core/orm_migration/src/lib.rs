@@ -6,6 +6,7 @@ mod permission;
 mod schedule;
 mod system;
 mod user;
+mod utils;
 
 pub mod template;
 

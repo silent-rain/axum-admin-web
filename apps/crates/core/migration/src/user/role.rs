@@ -18,9 +18,9 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_user_role` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '角色ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '角色ID',
                         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '角色名称',
-                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

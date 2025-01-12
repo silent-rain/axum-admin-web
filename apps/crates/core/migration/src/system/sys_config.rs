@@ -18,12 +18,12 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS
                     `t_sys_config` (
-                        `id` INT(11) AUTO_INCREMENT NOT NULL COMMENT '配置ID',
-                        `pid` INT(11) DEFAULT 0 COMMENT '父节点ID',
+                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '配置ID',
+                        `pid` INT DEFAULT 0 COMMENT '父节点ID',
                         `name` VARCHAR(64) NOT NULL COMMENT '配置名称',
                         `code` VARCHAR(64) UNIQUE NOT NULL COMMENT '配置编码(英文)',
                         `value` TEXT NULL COMMENT '配置值',
-                        `sort` INT(11) NULL DEFAULT 0 COMMENT '排序',
+                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
                         `desc` VARCHAR(200) DEFAULT '' COMMENT '配置描述',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
