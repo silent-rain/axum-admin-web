@@ -82,6 +82,14 @@ pub fn register() -> Router {
     // prometheus
     let (prometheus_layer, prometheus_metric_handle) = prometheus_layer_metric_handle();
 
+    let my_layers = ServiceBuilder::new()
+        .layer(ContextLayer::new()) // 上下文
+        .layer(SystemApiAuthLayer) // 系统接口权限中间件
+        .layer(OpenApiAuthLayer) // OpenApi权限中间件
+        .layer(CasbinAuthLayer) // RBAC 鉴权
+        .layer(ApiOperationLogLayer) // Api 操作日志中间件
+        .layer(axum::middleware::from_fn(empty_wrapper_layer)); // 空包装
+
     // 注意中间件加载顺序: Last in, first loading
     let layers = ServiceBuilder::new()
         // make sure to set request ids before the request reaches `TraceLayer`
@@ -99,12 +107,7 @@ pub fn register() -> Router {
         .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
         .layer(session_layer()) // session layer
-        .layer(ContextLayer::new()) // 上下文
-        // .layer(SystemApiAuthLayer) // 系统接口权限中间件
-        // .layer(OpenApiAuthLayer) // OpenApi权限中间件
-        // .layer(CasbinAuthLayer) // RBAC 鉴权
-        .layer(ApiOperationLogLayer) // Api 操作日志中间件
-        .layer(axum::middleware::from_fn(empty_wrapper_layer)) // 空包装
+        .layer(my_layers)
         .layer(DefaultBodyLimit::disable()) // Disable the default limit
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击
         // propagate the header to the response before the response reaches `TraceLayer`
