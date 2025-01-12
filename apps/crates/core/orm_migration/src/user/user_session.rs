@@ -59,6 +59,12 @@ impl MigrationTrait for Migration {
                             .comment("过期时间"),
                     )
                     .col(
+                        ColumnDef::new(UserSession::Data)
+                            .blob()
+                            .not_null()
+                            .comment("元数据"),
+                    )
+                    .col(
                         ColumnDef::new(UserSession::Desc)
                             .string()
                             .string_len(200)
@@ -116,6 +122,7 @@ pub enum UserSession {
     Username,
     SessionId,
     ExpiryDate,
+    Data,
     Desc,
     Status,
     CreatedAt,

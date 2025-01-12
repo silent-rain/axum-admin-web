@@ -23,6 +23,8 @@ pub struct Model {
     pub session_id: String,
     /// 描述信息
     pub expiry_date: DateTime,
+    /// 元数据
+    pub data: Vec<u8>,
     /// 描述信息
     pub desc: Option<String>,
     /// 登录状态是否有效(false:无效,true:有效)

@@ -53,6 +53,8 @@ pub struct CreateUserSessionReq {
     pub session_id: String,
     /// 描述信息
     pub expiry_date: DateTime,
+    /// 元数据
+    pub data: Vec<u8>,
     /// 描述信息
     pub desc: Option<String>,
 }
@@ -67,6 +69,8 @@ pub struct UpdateUserSessionReq {
     pub id: i32,
     /// 描述信息
     pub expiry_date: DateTime,
+    /// 元数据
+    pub data: Vec<u8>,
     /// 描述信息
     pub desc: Option<String>,
     /// 用户session状态

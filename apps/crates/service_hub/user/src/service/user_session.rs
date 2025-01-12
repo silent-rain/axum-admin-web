@@ -66,6 +66,7 @@ impl UserSessionService {
             username: Set(req.username),
             session_id: Set(req.session_id),
             expiry_date: Set(req.expiry_date),
+            data: Set(req.data),
             desc: Set(req.desc),
             ..Default::default()
         };
@@ -85,6 +86,7 @@ impl UserSessionService {
             id: Set(req.id),
             expiry_date: Set(req.expiry_date),
             desc: Set(req.desc),
+            data: Set(req.data),
             status: Set(req.status),
             ..Default::default()
         };

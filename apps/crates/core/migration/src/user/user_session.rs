@@ -23,6 +23,7 @@ impl MigrationTrait for Migration {
                         `username` VARCHAR(32) NOT NULL COMMENT '用户名称',
                         `session_id` VARCHAR(40) UNIQUE NOT NULL COMMENT '用户会话ID',
                         `expiry_date` DATETIME NOT NULL COMMENT '过期时间',
+                        `data` MEDIUMBLOB NOT NULL COMMENT '元数据',
                         `desc` VARCHAR(200) DEFAULT '' COMMENT '描述信息',
                         `status` BOOL NOT NULL DEFAULT FALSE COMMENT '登录状态是否有效(false:无效,true:有效)',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -47,6 +48,7 @@ impl MigrationTrait for Migration {
                         "username" VARCHAR(32) NOT NULL,
                         "session_id" VARCHAR(40) UNIQUE NOT NULL,
                         "expiry_date" TIMESTAMP NOT NULL,
+                        "data" BYTEA NOT NULL,
                         "desc" VARCHAR(200) DEFAULT '',
                         "status" BOOL NULL DEFAULT false,
                         "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -63,6 +65,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_user_session.username IS '用户名称';
                     COMMENT ON COLUMN t_user_session.session_id IS '用户会话ID';
                     COMMENT ON COLUMN t_user_session.expiry_date IS '过期时间';
+                    COMMENT ON COLUMN t_user_session.data IS '元数据';
                     COMMENT ON COLUMN t_user_session.desc IS '描述信息';
                     COMMENT ON COLUMN t_user_session.status IS '登录状态是否有效(false:无效,true:有效)';
                     COMMENT ON COLUMN t_user_session.created_at IS '创建时间';
@@ -81,6 +84,7 @@ impl MigrationTrait for Migration {
                         `username` VARCHAR(32) NOT NULL, -- 用户名称
                         `session_id` VARCHAR(40) UNIQUE NOT NULL, -- 用户会话ID
                         `expiry_date` TIMESTAMP NOT NULL, -- 过期时间
+                        `data` BLOB NOT NULL, -- 元数据
                         `desc` TEXT DEFAULT '', -- 描述信息
                         `status` BOOLEAN NOT NULL DEFAULT false, -- 登录状态是否有效(false:无效,true:有效)
                         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 创建时间
