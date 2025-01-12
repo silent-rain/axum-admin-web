@@ -11,6 +11,7 @@ pub mod system_api_auth;
 
 pub mod cors;
 pub mod prometheus;
+pub mod session;
 
 // pub mod template1;
 // pub mod template2;

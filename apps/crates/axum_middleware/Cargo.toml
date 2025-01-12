@@ -12,10 +12,12 @@ axum_context = { path = "../axum_context" }
 service_hub = { path = "../service_hub" }
 axum_response = { path = "../axum_response" }
 
-axum = { workspace = true }
 tokio = { workspace = true }
+axum = { workspace = true }
+axum-prometheus = { workspace = true }
 tower = { workspace = true }
 tower-http = { workspace = true, features = ["cors"] }
+tower-sessions = { workspace = true }
 http-body-util = { workspace = true }
 casbin = { workspace = true }
 futures = { workspace = true }
@@ -23,7 +25,6 @@ tracing = { workspace = true }
 serde_json = { workspace = true }
 bytes = { workspace = true }
 pin-project = { workspace = true }
-axum-prometheus = { workspace = true }
 
 
 [dev-dependencies]
