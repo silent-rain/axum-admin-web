@@ -8,8 +8,8 @@ use sea_orm_migration::{DbErr, SchemaManager};
 /// 设置索引
 ///
 /// 如果不存在则设置索引
-pub async fn if_not_exists_create_index<'a, T, C>(
-    manager: &SchemaManager<'a>,
+pub async fn if_not_exists_create_index<T, C>(
+    manager: &SchemaManager<'_>,
     table: T,
     cols: Vec<C>,
 ) -> Result<(), DbErr>
@@ -17,7 +17,7 @@ where
     T: IntoTableRef + Iden,
     C: IntoIndexColumn + Iden + IntoIden,
 {
-    if cols.len() == 0 {
+    if cols.is_empty() {
         return Ok(());
     }
 
@@ -41,8 +41,8 @@ where
 /// 设置联合索引
 ///
 /// 如果不存在则设置索引
-pub async fn if_not_exists_create_unique_index<'a, T, C>(
-    manager: &SchemaManager<'a>,
+pub async fn if_not_exists_create_unique_index<T, C>(
+    manager: &SchemaManager<'_>,
     table: T,
     cols: Vec<C>,
 ) -> Result<(), DbErr>
@@ -50,7 +50,7 @@ where
     T: IntoTableRef + Iden,
     C: IntoIndexColumn + Iden + IntoIden,
 {
-    if cols.len() == 0 {
+    if cols.is_empty() {
         return Ok(());
     }
 
