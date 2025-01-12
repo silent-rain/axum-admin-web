@@ -7,24 +7,23 @@ use crate::{
     dto::login::{BrowserInfo, LoginReq, LoginResp},
 };
 
-use database::PoolTrait;
-use system::ImageCaptchaDao;
-use user::{EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
-
 use code::{Error, ErrorMsg};
 use entity::{user::user_base, user::user_login_log};
 use jwt::encode_token;
+use system::ImageCaptchaDao;
+use user::{EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
+use utils::browser::parse_user_agent_async;
 
 use nject::injectable;
 use sea_orm::Set;
 use tracing::error;
-use utils::browser::parse_user_agent_async;
 
 /// 服务层
 #[injectable]
 pub struct LoginService {
-    db: Arc<dyn PoolTrait>,
     user_dao: UserBaseDao,
+    #[inject(|x: UserLoginLogDao| Arc::new(x))]
+    user_login_dao: Arc<UserLoginLogDao>,
     email_dao: EmailDao,
     phone_dao: PhoneDao,
     captcha_dao: ImageCaptchaDao,
@@ -193,7 +192,7 @@ impl LoginService {
         desc: Option<String>,
         login_status: user_login_log::enums::LoginStatus,
     ) {
-        let db = self.db.clone();
+        let user_login_dao = self.user_login_dao.clone();
 
         tokio::task::spawn(async move {
             let (device, system, browser) =
@@ -219,7 +218,6 @@ impl LoginService {
                 ..Default::default()
             };
 
-            let user_login_dao = UserLoginLogDao::new(db);
             let result = user_login_dao.create(data).await.map_err(|err| {
                 error!("添加登陆日志失败, err: {:#?}", err);
                 code::Error::DbAddError
