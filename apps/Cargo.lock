@@ -724,6 +724,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum_session"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "database",
+ "entity",
+ "sea-orm",
+ "time",
+ "tokio",
+ "tower-sessions",
+ "tracing",
+]
+
+[[package]]
 name = "axum_typed_multipart"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

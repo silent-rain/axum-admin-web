@@ -84,9 +84,9 @@ pub fn register() -> Router {
 
     let my_layers = ServiceBuilder::new()
         .layer(ContextLayer::new()) // 上下文
-        .layer(SystemApiAuthLayer) // 系统接口权限中间件
-        .layer(OpenApiAuthLayer) // OpenApi权限中间件
-        .layer(CasbinAuthLayer) // RBAC 鉴权
+        // .layer(SystemApiAuthLayer) // 系统接口权限中间件
+        // .layer(OpenApiAuthLayer) // OpenApi权限中间件
+        // .layer(CasbinAuthLayer) // RBAC 鉴权
         .layer(ApiOperationLogLayer) // Api 操作日志中间件
         .layer(axum::middleware::from_fn(empty_wrapper_layer)); // 空包装
 

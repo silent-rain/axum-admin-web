@@ -1,0 +1,64 @@
+//! 数据操作层
+
+use std::sync::Arc;
+
+use database::PoolTrait;
+use entity::user::{UserSession, user_session};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};
+
+pub struct UserSessionDao {
+    db: Arc<dyn PoolTrait>,
+}
+
+impl UserSessionDao {
+    pub fn new(db: Arc<dyn PoolTrait>) -> Self {
+        UserSessionDao { db }
+    }
+
+    /// 通过nsession_id获取详情信息
+    pub async fn info(&self, session_id: String) -> Result<Option<user_session::Model>, DbErr> {
+        UserSession::find()
+            .filter(user_session::Column::SessionId.eq(session_id))
+            .one(self.db.db())
+            .await
+    }
+
+    /// 添加详情信息
+    pub async fn create(
+        &self,
+        active_model: user_session::ActiveModel,
+    ) -> Result<user_session::Model, DbErr> {
+        active_model.insert(self.db.db()).await
+    }
+
+    /// 更新信息
+    pub async fn update(
+        &self,
+        session_id: String,
+        active_model: user_session::ActiveModel,
+    ) -> Result<u64, DbErr> {
+        let result = UserSession::update_many()
+            .set(active_model)
+            .filter(user_session::Column::SessionId.eq(session_id))
+            .exec(self.db.db())
+            .await?;
+
+        Ok(result.rows_affected)
+    }
+
+    /// 更新状态
+    pub async fn delete(&self, session_id: String) -> Result<u64, DbErr> {
+        let active_model = user_session::ActiveModel {
+            status: Set(false),
+            ..Default::default()
+        };
+
+        let result = UserSession::update_many()
+            .set(active_model)
+            .filter(user_session::Column::SessionId.eq(session_id))
+            .exec(self.db.db())
+            .await?;
+
+        Ok(result.rows_affected)
+    }
+}

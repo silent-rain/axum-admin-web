@@ -1,0 +1,23 @@
+[package]
+name = "axum_session"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+database = { path = "../core/database" }
+entity = { path = "../core/entity" }
+
+tower-sessions = { workspace = true }
+async-trait = { workspace = true }
+sea-orm = { workspace = true }
+tracing = { workspace = true }
+time = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = [
+    "macros",
+    "rt-multi-thread",
+    "test-util",
+] }
+anyhow = { workspace = true }

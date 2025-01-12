@@ -15,13 +15,14 @@ members = [
     "crates/core/cache",
 
     # 组件
-    "crates/axum_response",
     "crates/app_state",
     "crates/embed_asset",
+    "crates/axum_response",
     "crates/axum_mock",
     "crates/axum_context",
     "crates/axum_middleware",
     "crates/axum_validator",
+    "crates/axum_session",
     "crates/grpc_api",
     "crates/plugins",
     "crates/service_hub",

@@ -8,3 +8,4 @@ pub mod role;
 pub mod user_base;
 pub mod user_login_log;
 pub mod user_role_rel;
+pub mod user_session;

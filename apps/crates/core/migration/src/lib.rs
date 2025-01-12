@@ -27,6 +27,7 @@ impl MigratorTrait for Migrator {
             Box::new(user::member_level::Migration),
             Box::new(user::location::Migration),
             Box::new(user::user_login_log::Migration),
+            Box::new(user::user_session::Migration),
             // 权限管理
             Box::new(permission::menu::Migration),
             Box::new(permission::menu_role_rel::Migration),
