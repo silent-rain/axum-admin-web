@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS
                     `t_user_phone` (
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '手机号ID',
-                        `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
+                        `user_id` INT UNIQUE NOT NULL COMMENT '用户ID',
                         `phone` VARCHAR(16) UNIQUE NOT NULL COMMENT '手机号码',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

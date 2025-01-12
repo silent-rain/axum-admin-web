@@ -22,7 +22,7 @@ impl MigrationTrait for Migration {
                         `user_id` INT NULL DEFAULT 0 COMMENT '用户ID',
                         `username` VARCHAR(32) NULL DEFAULT '' COMMENT '用户名称',
                         `request_id` VARCHAR(36) NULL DEFAULT '' COMMENT '请求ID',
-                        `status_code` INT(10) NOT NULL COMMENT '请求状态码',
+                        `status_code` INT NOT NULL COMMENT '请求状态码',
                         `method` VARCHAR(10) NOT NULL COMMENT '请求方法',
                         `path` VARCHAR(500) NOT NULL COMMENT '请求地址路径',
                         `content_type` VARCHAR(100) NOT NULL COMMENT 'Content-Type',

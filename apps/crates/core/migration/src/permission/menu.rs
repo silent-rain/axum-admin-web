@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS
                     `t_perm_menu` (
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '菜单ID',
-                        `pid` INT(20) NULL DEFAULT 0 COMMENT '父菜单ID',
+                        `pid` INT NULL DEFAULT 0 COMMENT '父菜单ID',
                         `title` VARCHAR(20) NOT NULL COMMENT '菜单名称',
                         `icon_class` VARCHAR(20) NULL DEFAULT '' COMMENT 'Icon图标类',
                         `menu_type` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '菜单类型(0:菜单,1:按钮)',

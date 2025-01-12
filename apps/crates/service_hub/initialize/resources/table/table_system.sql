@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS
         `captcha_id` VARCHAR(40) UNIQUE NOT NULL COMMENT '验证码ID',
         `captcha` VARCHAR(10) NOT NULL COMMENT '验证码',
         `data` MEDIUMBLOB NOT NULL COMMENT '图片数据, Base64编码',
-        `expire` INT(4) UNSIGNED NOT NULL DEFAULT 1 COMMENT '过期时间,秒',
+        `expire` INT NOT NULL DEFAULT 1 COMMENT '过期时间,秒',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:失效,true:有效)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS
         `hash` VARCHAR(32) UNIQUE NOT NULL COMMENT '图片HASH值',
         `data` MEDIUMBLOB NOT NULL COMMENT '图片数据, Base64编码',
         `extension` VARCHAR(10) NOT NULL COMMENT '图片文件扩展名, 如svg, png',
-        `size` INT(10) NOT NULL COMMENT '图片文件大小，单位为字节',
+        `size` INT NOT NULL COMMENT '图片文件大小，单位为字节',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`)

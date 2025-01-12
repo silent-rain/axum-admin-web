@@ -15,8 +15,8 @@ async fn mock_pool() -> Result<(), DbErr> {
     let sql = r#"CREATE TABLE `user` 
     (
         `id` INT NULL,
-        `user_id` INT(10) NOT NULL,
-        `status` INT(10) NOT NULL,
+        `user_id` INT NOT NULL,
+        `status` INT NOT NULL,
         PRIMARY KEY (`id`)
     );"#;
     let result = pool.db().execute_unprepared(sql).await?;
@@ -67,8 +67,8 @@ async fn mock_str() -> Result<(), DbErr> {
     let sql = r#"CREATE TABLE `user` 
     (
         `id` INT NULL,
-        `user_id` INT(10) NOT NULL,
-        `status` INT(10) NOT NULL,
+        `user_id` INT NOT NULL,
+        `status` INT NOT NULL,
         PRIMARY KEY (`id`)
     );"#;
     let pool = Mock::from_str(sql).await?;

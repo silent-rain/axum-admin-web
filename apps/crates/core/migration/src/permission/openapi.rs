@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS
                     t_perm_openapi (
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '接口ID',
-                        `pid` INT(20) NULL DEFAULT 0 COMMENT '父ID',
+                        `pid` INT NULL DEFAULT 0 COMMENT '父ID',
                         `category` TINYINT(1) NOT NULL COMMENT '类别,0:目录,1:接口',
                         `name` VARCHAR(50) NOT NULL COMMENT '接口名称',
                         `method` VARCHAR(50) NOT NULL COMMENT '请求类型',

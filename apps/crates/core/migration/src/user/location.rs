@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS
                     `t_user_location` (
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '地理位置ID',
-                        `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
+                        `user_id` INT UNIQUE NOT NULL COMMENT '用户ID',
                         `province` VARCHAR(50) NOT NULL COMMENT '省份',
                         `city` VARCHAR(50) NOT NULL COMMENT '城市',
                         `district` VARCHAR(50) NOT NULL COMMENT '区/县',

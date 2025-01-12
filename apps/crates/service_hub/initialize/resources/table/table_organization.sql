@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     `t_org_department_role_rel` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `department_id` INT(10) NOT NULL COMMENT '部门ID',
-        `role_id` INT(10) NOT NULL COMMENT '角色ID',
+        `department_id` INT NOT NULL COMMENT '部门ID',
+        `role_id` INT NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`),
         UNIQUE KEY `uk_department_id_role_id` (`department_id`, `role_id`),
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS
     `t_org_rank` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '职级ID',
         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '职级名称',
-        `level` INT UNSIGNED UNIQUE NOT NULL COMMENT '职级等级',
+        `level` INT UNIQUE NOT NULL COMMENT '职级等级',
         `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '职级描述',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',

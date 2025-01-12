@@ -19,8 +19,8 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS
                     `t_user_role_rel` (
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                        `user_id` INT(10) NOT NULL COMMENT '用户ID',
-                        `role_id` INT(10) NOT NULL COMMENT '角色ID',
+                        `user_id` INT NOT NULL COMMENT '用户ID',
+                        `role_id` INT NOT NULL COMMENT '角色ID',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         PRIMARY KEY (`id`)
                     ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '用户角色关系表';

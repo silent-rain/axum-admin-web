@@ -24,7 +24,7 @@ impl MigrationTrait for Migration {
                         `data` MEDIUMBLOB NOT NULL COMMENT '文件数据, Base64编码',
                         `extension` VARCHAR(20) NOT NULL COMMENT '文件文件扩展名, 如svg, png',
                         `content_type` VARCHAR(20) NOT NULL COMMENT '内容类型, text/html',
-                        `size` INT(10) NOT NULL COMMENT '文件文件大小，单位为字节',
+                        `size` INT NOT NULL COMMENT '文件文件大小，单位为字节',
                         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                         PRIMARY KEY (`id`)

@@ -8,7 +8,7 @@ RENAME user_avatar;
 
 -- 修改字段名称
 ALTER TABLE token
-CHANGE user_id `user_id` INT(20) NOT NULL COMMENT '用户ID';
+CHANGE user_id `user_id` INT NOT NULL COMMENT '用户ID';
 
 -- 添加字段
 ALTER TABLE http_log

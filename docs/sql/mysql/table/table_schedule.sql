@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS
         `job_id` INT NOT NULL COMMENT '任务ID',
         `uuid` VARCHAR(50) NOT NULL COMMENT '任务调度ID',
         `error` TEXT COMMENT '失败信息',
-        `cost` INT(20) UNSIGNED NOT NULL COMMENT '耗时,毫秒',
+        `cost` INT NOT NULL COMMENT '耗时,毫秒',
         `status` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '任务状态(0:开始,1:完成,2:停止,3:移除)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

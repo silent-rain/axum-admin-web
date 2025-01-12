@@ -50,7 +50,7 @@ CREATE INDEX idx_share_code ON t_user_base (`share_code`);
 CREATE TABLE IF NOT EXISTS
     `t_user_email` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '邮箱ID',
-        `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
+        `user_id` INT UNIQUE NOT NULL COMMENT '用户ID',
         `email` VARCHAR(50) UNIQUE NOT NULL COMMENT '邮箱',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     `t_user_phone` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '手机号ID',
-        `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
+        `user_id` INT UNIQUE NOT NULL COMMENT '用户ID',
         `phone` VARCHAR(16) UNIQUE NOT NULL COMMENT '手机号码',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -74,11 +74,11 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     `t_user_blockchain_wallet` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '钱包ID',
-        `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
+        `user_id` INT UNIQUE NOT NULL COMMENT '用户ID',
         `wallet_address` VARCHAR(255) UNIQUE NOT NULL COMMENT '钱包地址',
         `mnemonic` VARCHAR(255) NULL DEFAULT '' COMMENT '助记词',
         `private_key` VARCHAR(255) NULL DEFAULT '' COMMENT '私钥',
-        `chain_id` INT(10) NULL DEFAULT 0 COMMENT '区块链ID',
+        `chain_id` INT NULL DEFAULT 0 COMMENT '区块链ID',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '描述信息',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -89,8 +89,8 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     `t_user_role_rel` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `user_id` INT(10) NOT NULL COMMENT '用户ID',
-        `role_id` INT(10) NOT NULL COMMENT '角色ID',
+        `user_id` INT NOT NULL COMMENT '用户ID',
+        `role_id` INT NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '用户角色关系表';
@@ -102,7 +102,7 @@ CREATE TABLE
     `t_user_member_level` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '会员等级ID',
         `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '会员等级名称',
-        `level` INT UNSIGNED UNIQUE NOT NULL COMMENT '会员等级',
+        `level` INT UNIQUE NOT NULL COMMENT '会员等级',
         `sort` INT NULL DEFAULT 0 COMMENT '排序',
         `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '会员描述',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
@@ -119,7 +119,7 @@ CREATE INDEX idx_level ON t_user_member_level (`level`);
 CREATE TABLE IF NOT EXISTS
     `t_user_location` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '地理位置ID',
-        `user_id` INT(10) UNIQUE NOT NULL COMMENT '用户ID',
+        `user_id` INT UNIQUE NOT NULL COMMENT '用户ID',
         `province` VARCHAR(50) NOT NULL COMMENT '省份',
         `city` VARCHAR(50) NOT NULL COMMENT '城市',
         `district` VARCHAR(50) NOT NULL COMMENT '区/县',

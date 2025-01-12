@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS
     `t_perm_menu` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '菜单ID',
-        `pid` INT(20) NULL DEFAULT 0 COMMENT '父菜单ID',
+        `pid` INT NULL DEFAULT 0 COMMENT '父菜单ID',
         `title` VARCHAR(20) NOT NULL COMMENT '菜单名称',
         `icon_class` VARCHAR(20) NULL DEFAULT '' COMMENT 'Icon图标类',
         `menu_type` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '菜单类型(0:菜单,1:按钮)',
@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     `t_perm_menu_role_rel` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `menu_id` INT(10) NOT NULL COMMENT '菜单ID',
-        `role_id` INT(10) NOT NULL COMMENT '角色ID',
+        `menu_id` INT NOT NULL COMMENT '菜单ID',
+        `role_id` INT NOT NULL COMMENT '角色ID',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         PRIMARY KEY (`id`),
         UNIQUE KEY `uk_menu_id_role_id` (`menu_id`, `role_id`),
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     `t_perm_token` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '令牌ID',
-        `user_id` INT(20) NOT NULL COMMENT '用户ID',
+        `user_id` INT NOT NULL COMMENT '用户ID',
         `token` VARCHAR(50) UNIQUE NOT NULL COMMENT '令牌',
         `passphrase` VARCHAR(20) NOT NULL COMMENT '口令',
         `permission` VARCHAR(20) NOT NULL COMMENT '权限范围:GET,POST,PUT,DELETE',
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     t_perm_openapi (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '接口ID',
-        `pid` INT(20) NULL DEFAULT 0 COMMENT '父ID',
+        `pid` INT NULL DEFAULT 0 COMMENT '父ID',
         `category` TINYINT(1) NOT NULL COMMENT '类别,0:目录,1:接口',
         `name` VARCHAR(50) NOT NULL COMMENT '接口名称',
         `method` VARCHAR(50) NOT NULL COMMENT '请求类型',
