@@ -7,7 +7,7 @@ use database::PoolTrait;
 use sea_orm::Set;
 use time::OffsetDateTime;
 use tower_sessions::{
-    SessionStore,
+    ExpiredDeletion, SessionStore,
     session::{Id, Record},
     session_store::{self, Error},
 };
@@ -42,6 +42,20 @@ impl DbStore {
         DbStore {
             user_session_dao: UserSessionDao::new(db),
         }
+    }
+}
+
+#[async_trait]
+impl ExpiredDeletion for DbStore {
+    async fn delete_expired(&self) -> session_store::Result<()> {
+        self.user_session_dao
+            .delete_expired()
+            .await
+            .map_err(|err| {
+                error!("delete expired session failed, err: {err}");
+                Error::Backend("delete expired session failed".to_string())
+            })?;
+        Ok(())
     }
 }
 

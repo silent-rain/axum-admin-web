@@ -2,6 +2,7 @@
 
 use std::sync::Arc;
 
+use chrono::Local;
 use database::PoolTrait;
 use entity::user::{UserSession, user_session};
 use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};
@@ -46,7 +47,7 @@ impl UserSessionDao {
         Ok(result.rows_affected)
     }
 
-    /// 更新状态
+    /// 删除session
     pub async fn delete(&self, session_id: String) -> Result<u64, DbErr> {
         let active_model = user_session::ActiveModel {
             status: Set(false),
@@ -56,6 +57,21 @@ impl UserSessionDao {
         let result = UserSession::update_many()
             .set(active_model)
             .filter(user_session::Column::SessionId.eq(session_id))
+            .exec(self.db.db())
+            .await?;
+
+        Ok(result.rows_affected)
+    }
+
+    pub async fn delete_expired(&self) -> Result<u64, DbErr> {
+        let active_model = user_session::ActiveModel {
+            status: Set(false),
+            ..Default::default()
+        };
+
+        let result = UserSession::update_many()
+            .set(active_model)
+            .filter(user_session::Column::ExpiryDate.lt(Local::now().naive_local()))
             .exec(self.db.db())
             .await?;
 
