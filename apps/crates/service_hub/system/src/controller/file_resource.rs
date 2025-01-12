@@ -27,8 +27,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetFileResourcesReq>,
     ) -> Responder<GetFileResourcesResp> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let (results, total) = image_resource_service.list(req).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let (results, total) = file_resource_service.list(req).await?;
 
         let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
@@ -39,8 +39,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetFileResourceReq>,
     ) -> Responder<GetFileResourceResp> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let result = image_resource_service.info(req).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let result = file_resource_service.info(req).await?;
 
         let resp = Response::data(result).to_json()?;
         Ok(resp)
@@ -51,8 +51,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateFileResourceReq>,
     ) -> Responder<UpdateFileResourceResp> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let _result = image_resource_service.update(req).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let _result = file_resource_service.update(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -63,8 +63,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteFileResourceReq>,
     ) -> Responder<DeleteFileResourceResp> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let _result = image_resource_service.delete(req).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let _result = file_resource_service.delete(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -75,8 +75,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<BatchDeleteFileResourceReq>,
     ) -> Responder<BatchDeleteFileResourceResp> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let _result = image_resource_service.batch_delete(req.ids.clone()).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let _result = file_resource_service.batch_delete(req.ids.clone()).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -89,8 +89,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         TypedMultipart(req): TypedMultipart<UploadFileReq>,
     ) -> Responder<UploadFileResp> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let _result = image_resource_service.upload_file(req).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let _result = file_resource_service.upload_file(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -101,8 +101,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         TypedMultipart(req): TypedMultipart<UploadFilesReq>,
     ) -> Responder<UploadFilesResp> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let _result = image_resource_service.upload_files(req).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let _result = file_resource_service.upload_files(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)
@@ -114,8 +114,8 @@ impl FileResourceController {
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<ShowImageReq>,
     ) -> Result<axum::response::Response<Body>, ResponseErr> {
-        let image_resource_service: FileResourceService = provider.provide();
-        let result = image_resource_service.info_by_hash(req).await?;
+        let file_resource_service: FileResourceService = provider.provide();
+        let result = file_resource_service.info_by_hash(req).await?;
 
         let img = result.data.to_vec();
 
