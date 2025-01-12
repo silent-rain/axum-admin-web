@@ -142,7 +142,7 @@ p, admin, /api/users, DELETE
 
 这些规则表示管理员角色可以对/api/users接口执行GET、POST、PUT和DELETE操作。
 
-1. 添加角色分配：将用户分配给相应的角色。例如，您可以将Alice分配给管理员角色：
+3. 添加角色分配：将用户分配给相应的角色。例如，您可以将Alice分配给管理员角色：
 
 ```text
 g, alice, admin

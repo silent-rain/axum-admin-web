@@ -86,3 +86,7 @@ cargo doc -p admin
 - 参数校验
   - [validation](https://dev.to/chaudharypraveen98/form-validation-in-rust-404l)
   - [validator](https://lib.rs/crates/validator)
+
+- web proto
+  - [stephenh/ts-proto](https://github.com/stephenh/ts-proto)
+  - [timostamm/protobuf-ts](https://github.com/timostamm/protobuf-ts)
