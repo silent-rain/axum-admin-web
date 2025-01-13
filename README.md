@@ -130,6 +130,9 @@
 - session 登录态管理
   - 结合登录日志进行管理
   - 封装自定义session库
+  - 登陆后设置session，设置cookies
+  - 上下文初始化，仅读取session
+  - 鉴权，仅读取session；
 
 ## 开发文档
 
