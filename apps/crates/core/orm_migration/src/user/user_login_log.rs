@@ -44,11 +44,11 @@ impl MigrationTrait for Migration {
                             .comment("用户名称"),
                     )
                     .col(
-                        ColumnDef::new(UserLoginLog::Token)
+                        ColumnDef::new(UserLoginLog::SessionId)
                             .string()
-                            .string_len(300)
-                            .null()
-                            .comment("登陆令牌"),
+                            .string_len(22)
+                            .not_null()
+                            .comment("用户会话ID"),
                     )
                     .col(
                         ColumnDef::new(UserLoginLog::RemoteAddr)
@@ -127,7 +127,8 @@ impl MigrationTrait for Migration {
             .await?;
         if_not_exists_create_index(manager, UserLoginLog::Table, vec![UserLoginLog::Username])
             .await?;
-        if_not_exists_create_index(manager, UserLoginLog::Table, vec![UserLoginLog::Token]).await?;
+        if_not_exists_create_index(manager, UserLoginLog::Table, vec![UserLoginLog::SessionId])
+            .await?;
         if_not_exists_create_index(
             manager,
             UserLoginLog::Table,
@@ -153,7 +154,7 @@ pub enum UserLoginLog {
     Id,
     UserId,
     Username,
-    Token,
+    SessionId,
     RemoteAddr,
     UserAgent,
     Device,

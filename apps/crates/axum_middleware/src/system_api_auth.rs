@@ -156,9 +156,9 @@ where
 
 impl<S> SystemApiAuthService<S> {
     /// 解析系统接口Token
-    fn parse_system_token(token: String) -> Result<(i32, String), code::ErrorMsg> {
+    fn parse_system_token(session_id: String) -> Result<(i32, String), code::ErrorMsg> {
         // 解码 Token
-        let claims = decode_token_with_verify(&token)
+        let claims = decode_token_with_verify(&session_id)
             .map_err(|err| code::Error::TokenDecode(err.to_string()).into_msg())?;
         Ok((claims.user_id, claims.username))
     }
@@ -185,9 +185,9 @@ impl<S> SystemApiAuthService<S> {
                 .with_msg("非法请求"));
         }
 
-        let token = authorization.replace(SYSTEM_API_AUTHORIZATION_BEARER, "");
+        let session_id = authorization.replace(SYSTEM_API_AUTHORIZATION_BEARER, "");
 
-        Ok(token)
+        Ok(session_id)
     }
 
     /// 获取用户权限
@@ -204,24 +204,33 @@ impl<S> SystemApiAuthService<S> {
     /// TODO 后期可调整为缓存
     async fn verify_user_login(
         provider: AInjectProvider,
-        token: String,
+        session_id: String,
     ) -> Result<i32, code::ErrorMsg> {
         let user_login_service: UserLoginLogService = provider.provide();
-        let user = user_login_service.info_by_token(token.clone()).await?;
+        let user = user_login_service
+            .info_by_session_id(session_id.clone())
+            .await?;
         if user.login_status == user_login_log::enums::LoginStatus::Disabled as i8 {
-            error!("user_id: {} token: {}, 当前登陆态已被禁用", user.id, token);
+            error!(
+                "user_id: {} session_id: {}, 当前登陆态已被禁用",
+                user.id, session_id
+            );
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("当前登陆态已被禁用, 请重新登陆"));
         }
         if user.login_status == user_login_log::enums::LoginStatus::Failed as i8 {
-            error!("user_id: {} token: {}, 无效鉴权", user.id, token);
+            error!(
+                "user_id: {} session_id: {}, 无效鉴权",
+                user.id,
+                session_id.clone()
+            );
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("无效鉴权, 请重新登陆"));
         }
         if user.login_status == user_login_log::enums::LoginStatus::Logout as i8 {
-            error!("user_id: {} token: {}, 已登出", user.id, token);
+            error!("user_id: {} session_id: {}, 已登出", user.id, session_id);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("已登出, 请重新登陆"));

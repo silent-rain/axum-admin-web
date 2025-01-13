@@ -7,6 +7,7 @@ use sea_orm::{
     DeriveRelation, EnumIter, PrimaryKeyTrait, Set,
 };
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 
 /// 用户session表
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -15,18 +16,12 @@ pub struct Model {
     /// session ID
     #[sea_orm(primary_key)]
     pub id: i32,
-    /// 用户ID
-    pub user_id: i32,
-    /// 用户名称
-    pub username: String,
     /// 用户会话ID
     pub session_id: String,
-    /// 描述信息
-    pub expiry_date: DateTime,
+    /// 过期时间
+    pub expiry_date: OffsetDateTime,
     /// 元数据
     pub data: Vec<u8>,
-    /// 描述信息
-    pub desc: Option<String>,
     /// 登录状态是否有效(false:无效,true:有效)
     pub status: bool,
     /// 创建时间

@@ -100,24 +100,30 @@ pub enum Error {
     #[error("获取密匙异常")]
     TokenEncode = 10256,
     #[error("鉴权解析失败, err: {0}")]
-    TokenDecode(String) = 10257,
+    TokenDecode(String),
     #[error("获取鉴权标识失败")]
-    HeadersNotAuthorization = 10258,
+    HeadersNotAuthorization,
     #[error("获取鉴权前缀失败")]
-    HeadersNotAuthorizationBearer = 10259,
+    HeadersNotAuthorizationBearer,
     #[error("获取inject provider实例失败")]
-    InjectAproviderObj = 10260,
+    InjectAproviderObj,
     #[error("当前登陆态已失效, 请重新登陆")]
     LoginStatusDisabled = 10261,
     #[error("用户添加失败")]
-    UserAddError = 10262,
+    UserAddError,
     #[error("获取鉴权标识失败")]
-    HeadersNotAuthorizationPassphrase = 10263,
+    HeadersNotAuthorizationPassphrase,
     #[error("Illegal Request")]
-    AuthIllegalRequest = 10266,
+    AuthIllegalRequest,
+
+    // SESSION
+    #[error("session id not found")]
+    SessionIdNotFound,
+    #[error("session id insert error, {0}")]
+    SessionIdInsertError(String),
 
     #[error("数据库初始化失败, 管理员已存在无需重复初始化")]
-    DbInitByAdminExistError = 10265,
+    DbInitByAdminExistError,
 
     // 工具箱
     #[error("User-Agent解析错误, {0}")]

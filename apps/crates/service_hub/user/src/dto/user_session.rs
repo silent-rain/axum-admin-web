@@ -2,8 +2,8 @@
 
 use entity::user::user_session;
 
-use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 use validator::Validate;
 
 /// 查询用户session列表 请求体
@@ -17,8 +17,6 @@ pub struct GetUserSessionsReq {
     pub start_time: Option<String>,
     /// 结束时间
     pub end_time: Option<String>,
-    /// 用户ID
-    pub user_id: Option<i32>,
     /// 用户会话ID
     pub session_id: Option<String>,
 }
@@ -45,18 +43,12 @@ pub struct GetUserSessionResp {
 /// 添加用户session 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct CreateUserSessionReq {
-    /// 用户ID
-    pub user_id: i32,
-    /// 用户名称
-    pub username: String,
     /// 用户会话ID
     pub session_id: String,
-    /// 描述信息
-    pub expiry_date: DateTime,
+    /// 过期时间
+    pub expiry_date: OffsetDateTime,
     /// 元数据
     pub data: Vec<u8>,
-    /// 描述信息
-    pub desc: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -67,12 +59,10 @@ pub struct CreateUserSessionResp {}
 pub struct UpdateUserSessionReq {
     /// session ID
     pub id: i32,
-    /// 描述信息
-    pub expiry_date: DateTime,
+    /// 过期时间
+    pub expiry_date: OffsetDateTime,
     /// 元数据
     pub data: Vec<u8>,
-    /// 描述信息
-    pub desc: Option<String>,
     /// 用户session状态
     pub status: bool,
 }

@@ -19,8 +19,8 @@ pub struct Model {
     pub user_id: i32,
     /// 用户名称
     pub username: String,
-    /// 登陆令牌
-    pub token: String,
+    /// 用户会话ID
+    pub session_id: String,
     /// 登录IP
     pub remote_addr: String,
     /// 用户代理

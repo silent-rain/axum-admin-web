@@ -33,9 +33,6 @@ impl UserSessionDao {
             .apply_if(req.end_time, |query, v| {
                 query.filter(user_session::Column::CreatedAt.lt(v))
             })
-            .apply_if(req.user_id, |query, v| {
-                query.filter(user_session::Column::UserId.eq(v))
-            })
             .apply_if(req.session_id, |query, v| {
                 query.filter(user_session::Column::SessionId.like(format!("{v}%")))
             });

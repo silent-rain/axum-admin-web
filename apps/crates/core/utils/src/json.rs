@@ -2,7 +2,7 @@
 
 use code::Error;
 
-use serde::{Deserialize, Deserializer, Serializer};
+use serde::{de::DeserializeOwned, Deserialize, Deserializer, Serializer};
 use tracing::error;
 
 /// 反序列化 vec 转 string
@@ -30,27 +30,63 @@ where
 {
     // 转换为JSON字符串
     let data = serde_json::to_string(src).map_err(|err| {
-        error!("转换为JSON字符串失败, error: {err:#?}");
+        error!("serialize to JSON string failed, error: {err:#?}");
         Error::JsonSerialization(err.to_string())
     })?;
 
     // 将JSON字符串反序列化为结构体
     let target: T = serde_json::from_str(&data).map_err(|err| {
-        error!("将JSON字符串反序列化为结构体失败, error: {err:#?}");
+        error!("failed to deserialize JSON string into struct, error: {err:#?}");
+        Error::JsonDeserialization(err.to_string())
+    })?;
+    Ok(target)
+}
+
+/// 将一个结构体转换为另一个结构体
+pub fn vec_to_struct<T>(src: &Vec<u8>) -> Result<T, Error>
+where
+    T: serde::de::DeserializeOwned,
+{
+    // 将JSON字符串反序列化为结构体
+    let target: T = serde_json::from_slice(&src).map_err(|err| {
+        error!("failed to deserialize JSON string into struct, error: {err:#?}");
         Error::JsonDeserialization(err.to_string())
     })?;
     Ok(target)
 }
 
 /// 将一个结构体转换为vec
-pub fn struct_to_vec<S, T>(src: &S) -> Result<Vec<u8>, Error>
+pub fn bincode_struct_to_vec<S>(src: &S) -> Result<Vec<u8>, Error>
 where
     S: serde::Serialize,
-    T: serde::de::DeserializeOwned,
 {
     let target: Vec<u8> = bincode::serialize(&src).map_err(|err| {
-        error!("将JSON字符串反序列化为结构体失败, error: {err:#?}");
-        Error::JsonConvert(err.to_string())
+        error!("serialize to JSON byte vector failed, error: {err:#?}");
+        Error::JsonSerialization(err.to_string())
+    })?;
+    Ok(target)
+}
+
+/// 将数据序列化
+pub fn serialize_to_vec<S>(src: &S) -> Result<Vec<u8>, Error>
+where
+    S: serde::Serialize,
+{
+    let target: Vec<u8> = serde_json::to_vec(src).map_err(|err| {
+        error!("serialize to JSON byte vector failed, error: {err:#?}");
+        Error::JsonSerialization(err.to_string())
+    })?;
+    Ok(target)
+}
+
+// 可以将 Vec<u8> 反序列化为任何实现了 Deserialize 特性的类型
+pub fn deserialize_from_vec<T>(data: Vec<u8>) -> Result<T, Error>
+where
+    T: DeserializeOwned,
+{
+    let target: T = serde_json::from_slice(&data).map_err(|err| {
+        error!("failed to deserialize vec into struct, error: {err:#?}");
+        Error::JsonDeserialization(err.to_string())
     })?;
     Ok(target)
 }

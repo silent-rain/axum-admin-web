@@ -11,6 +11,7 @@ jwt = { path = "../core/jwt" }
 axum_context = { path = "../axum_context" }
 service_hub = { path = "../service_hub" }
 axum_response = { path = "../axum_response" }
+axum_session = { path = "../axum_session" }
 
 tokio = { workspace = true }
 axum = { workspace = true }
@@ -18,6 +19,7 @@ axum-prometheus = { workspace = true }
 tower = { workspace = true }
 tower-http = { workspace = true, features = ["cors"] }
 tower-sessions = { workspace = true }
+
 http-body-util = { workspace = true }
 casbin = { workspace = true }
 futures = { workspace = true }

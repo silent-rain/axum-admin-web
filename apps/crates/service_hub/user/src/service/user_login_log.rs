@@ -31,9 +31,9 @@ impl UserLoginLogService {
                 .with_msg("查询登陆日志列表失败")
         })?;
 
-        // 重置 token 为空
+        // 重置 session_id 为空
         for item in results.iter_mut() {
-            item.token = "".to_string();
+            item.session_id = "".to_string();
         }
 
         Ok((results, total))
@@ -58,15 +58,18 @@ impl UserLoginLogService {
                     .with_msg("登陆日志不存在")
             })?;
 
-        result.token = "".to_string();
+        result.session_id = "".to_string();
         Ok(result)
     }
 
-    /// 根据Token获取详情信息
-    pub async fn info_by_token(&self, token: String) -> Result<user_login_log::Model, ErrorMsg> {
+    /// 根据SessionId获取详情信息
+    pub async fn info_by_session_id(
+        &self,
+        session_id: String,
+    ) -> Result<user_login_log::Model, ErrorMsg> {
         let mut result = self
             .user_login_dao
-            .info_by_token(token)
+            .info_by_session_id(session_id)
             .await
             .map_err(|err| {
                 error!("查询登陆日志信息失败, err: {:#?}", err);
@@ -80,7 +83,7 @@ impl UserLoginLogService {
                     .into_msg()
                     .with_msg("登陆日志不存在")
             })?;
-        result.token = "".to_string();
+        result.session_id = "".to_string();
         Ok(result)
     }
 
@@ -99,7 +102,7 @@ impl UserLoginLogService {
         let model = user_login_log::ActiveModel {
             user_id: Set(req.user_id),
             username: Set(req.username),
-            token: Set(req.token),
+            session_id: Set(req.session_id),
             remote_addr: Set(req.remote_addr),
             user_agent: Set(req.user_agent),
             device: Set(Some(device)),

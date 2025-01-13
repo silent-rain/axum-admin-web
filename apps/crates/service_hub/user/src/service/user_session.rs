@@ -62,12 +62,9 @@ impl UserSessionService {
     /// 添加数据
     pub async fn create(&self, req: CreateUserSessionReq) -> Result<user_session::Model, ErrorMsg> {
         let model = user_session::ActiveModel {
-            user_id: Set(req.user_id),
-            username: Set(req.username),
             session_id: Set(req.session_id),
             expiry_date: Set(req.expiry_date),
             data: Set(req.data),
-            desc: Set(req.desc),
             ..Default::default()
         };
         let result = self.user_session_dao.create(model).await.map_err(|err| {
@@ -85,7 +82,6 @@ impl UserSessionService {
         let model = user_session::ActiveModel {
             id: Set(req.id),
             expiry_date: Set(req.expiry_date),
-            desc: Set(req.desc),
             data: Set(req.data),
             status: Set(req.status),
             ..Default::default()

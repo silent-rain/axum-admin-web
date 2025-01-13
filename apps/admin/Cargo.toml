@@ -12,6 +12,7 @@ embed_asset = { path = "../crates/embed_asset" }
 inject = { path = "../crates/core/inject" }
 axum_response = { path = "../crates/axum_response" }
 axum_middleware = { path = "../crates/axum_middleware" }
+axum_session = { path = "../crates/axum_session" }
 axum_context = { path = "../crates/axum_context" }
 service_hub = { path = "../crates/service_hub" }
 app_state = { path = "../crates/app_state" }

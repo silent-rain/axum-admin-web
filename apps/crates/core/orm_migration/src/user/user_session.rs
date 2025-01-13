@@ -31,30 +31,15 @@ impl MigrationTrait for Migration {
                             .comment("自增ID"),
                     )
                     .col(
-                        ColumnDef::new(UserSession::UserId)
-                            .integer()
-                            .unique_key()
-                            .not_null()
-                            .comment("用户ID"),
-                    )
-                    .col(
-                        ColumnDef::new(UserSession::Username)
-                            .string()
-                            .string_len(32)
-                            .not_null()
-                            .comment("用户名称"),
-                    )
-                    .col(
                         ColumnDef::new(UserSession::SessionId)
                             .string()
-                            .string_len(40)
-                            .unique_key()
+                            .string_len(22)
                             .not_null()
                             .comment("用户会话ID"),
                     )
                     .col(
                         ColumnDef::new(UserSession::ExpiryDate)
-                            .date_time()
+                            .timestamp_with_time_zone()
                             .not_null()
                             .comment("过期时间"),
                     )
@@ -63,14 +48,6 @@ impl MigrationTrait for Migration {
                             .blob()
                             .not_null()
                             .comment("元数据"),
-                    )
-                    .col(
-                        ColumnDef::new(UserSession::Desc)
-                            .string()
-                            .string_len(200)
-                            .null()
-                            .default("")
-                            .comment("描述信息"),
                     )
                     .col(
                         ColumnDef::new(UserSession::Status)
@@ -97,7 +74,6 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if_not_exists_create_index(manager, UserSession::Table, vec![UserSession::UserId]).await?;
         if_not_exists_create_index(manager, UserSession::Table, vec![UserSession::Status]).await?;
         if_not_exists_create_index(manager, UserSession::Table, vec![UserSession::ExpiryDate])
             .await?;
@@ -118,12 +94,9 @@ pub enum UserSession {
     #[sea_orm(iden = "t_user_session")]
     Table,
     Id,
-    UserId,
-    Username,
     SessionId,
     ExpiryDate,
     Data,
-    Desc,
     Status,
     CreatedAt,
     UpdatedAt,

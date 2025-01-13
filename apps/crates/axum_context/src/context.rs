@@ -10,6 +10,8 @@ pub enum ApiAuthType {
 /// 上下文模型
 #[derive(Debug, Clone)]
 pub struct Context {
+    /// 用户会话ID
+    pub session_id: String,
     /// 用户ID
     pub user_id: i32,
     /// 用户名称
@@ -25,6 +27,7 @@ pub struct Context {
 impl Default for Context {
     fn default() -> Self {
         Self {
+            session_id: "".to_string(),
             user_id: 0,
             user_name: "".to_string(),
             user_login_id: 0,
@@ -36,6 +39,15 @@ impl Default for Context {
 
 /// 用户信息传递
 impl Context {
+    /// 获取用户会话ID
+    pub fn get_session_id(&self) -> String {
+        self.session_id.clone()
+    }
+    /// 设置用户会话ID
+    pub fn set_session_id(&mut self, session_id: String) {
+        self.session_id = session_id;
+    }
+
     /// 获取用户ID
     pub fn get_user_id(&self) -> i32 {
         self.user_id

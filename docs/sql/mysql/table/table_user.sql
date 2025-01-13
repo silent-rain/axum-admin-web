@@ -164,11 +164,8 @@ CREATE INDEX idx_login_status ON t_user_login_log (`login_status`);
 CREATE TABLE IF NOT EXISTS
     `t_user_session` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-        `user_id` INT NOT NULL COMMENT '用户ID',
-        `username` VARCHAR(32) NOT NULL COMMENT '用户名称',
-        `session` VARCHAR(40) DEFAULT '' COMMENT '登陆标识',
-        `expiry_date` DATETIME NOT NULL COMMENT '过期时间',
-        `desc` VARCHAR(200) DEFAULT '' COMMENT '描述信息',
+        `session` VARCHAR(22) DEFAULT '' COMMENT '登陆标识',
+        `expiry_date` TIMESTAMP NOT NULL COMMENT '过期时间',
         `status` BOOL NOT NULL DEFAULT FALSE COMMENT '登录状态是否有效(false:无效,true:有效)',
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

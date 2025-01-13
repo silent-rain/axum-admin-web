@@ -52,7 +52,7 @@ impl LoginService {
             self.add_login_log(
                 user.clone(),
                 browser_info,
-                "".to_owned(),
+                "".to_string(),
                 Some("用户已被禁用".to_owned()),
                 user_login_log::enums::LoginStatus::Failed,
             );
@@ -67,7 +67,7 @@ impl LoginService {
             self.add_login_log(
                 user.clone(),
                 browser_info,
-                "".to_owned(),
+                "".to_string(),
                 Some("账号或密码错误".to_owned()),
                 user_login_log::enums::LoginStatus::Failed,
             );
@@ -78,16 +78,19 @@ impl LoginService {
         }
 
         // 生成Token
-        let token = encode_token(user.id, user.username.clone()).map_err(|err| {
-            error!("生成密匙失败, err: {}", err);
-            Error::TokenEncode.into_msg().with_msg("生成密匙失败")
-        })?;
+        // TODO 待处理
+        // let token = encode_token(user.id, user.username.clone()).map_err(|err| {
+        //     error!("生成密匙失败, err: {}", err);
+        //     Error::TokenEncode.into_msg().with_msg("生成密匙失败")
+        // })?;
+
+        let session_id = "".to_string();
 
         // 添加登陆日志
         self.add_login_log(
             user.clone(),
             browser_info,
-            token.clone(),
+            session_id.clone(),
             None,
             user_login_log::enums::LoginStatus::Success,
         );
@@ -95,7 +98,7 @@ impl LoginService {
         // 返回Token
         Ok(LoginResp {
             user_id: user.id,
-            token,
+            session_id,
         })
     }
 
@@ -188,7 +191,7 @@ impl LoginService {
         &self,
         user: user_base::Model,
         browser_info: BrowserInfo,
-        token: String,
+        session_id: String,
         desc: Option<String>,
         login_status: user_login_log::enums::LoginStatus,
     ) {
@@ -207,7 +210,7 @@ impl LoginService {
             let data = user_login_log::ActiveModel {
                 user_id: Set(user.id),
                 username: Set(user.username),
-                token: Set(token),
+                session_id: Set(session_id),
                 remote_addr: Set(browser_info.remote_addr),
                 user_agent: Set(browser_info.user_agent),
                 login_status: Set(login_status as i8),

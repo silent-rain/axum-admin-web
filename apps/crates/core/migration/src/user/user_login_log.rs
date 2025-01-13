@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
                         `user_id` INT NOT NULL COMMENT '用户ID',
                         `username` VARCHAR(32) NOT NULL COMMENT '用户名称',
-                        `token` VARCHAR(300) NULL DEFAULT '' COMMENT '登陆令牌',
+                        `session_id` varchar(22) UNIQUE NOT NULL COMMENT '用户会话ID',
                         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '登录IP',
                         `user_agent` VARCHAR(256) NULL DEFAULT '' COMMENT '用户代理',
                         `device` VARCHAR(20) NULL DEFAULT '' COMMENT '设备',
@@ -36,7 +36,7 @@ impl MigrationTrait for Migration {
 
                     CREATE INDEX idx_user_id ON t_user_login_log (`user_id`);
                     CREATE INDEX idx_username ON t_user_login_log (`username`);
-                    CREATE INDEX idx_token ON t_user_login_log (`token`);
+                    CREATE INDEX idx_session_id ON t_user_login_log (`session_id`);
                     CREATE INDEX idx_login_status ON t_user_login_log (`login_status`);
                     ",
                 )
@@ -50,7 +50,7 @@ impl MigrationTrait for Migration {
                         "id" SERIAL PRIMARY KEY,
                         "user_id" INTEGER NOT NULL,
                         "username" VARCHAR(32) NOT NULL,
-                        "token" VARCHAR(300) DEFAULT '',
+                        `session_id` varchar(22) UNIQUE NOT NULL, -- 用户会话ID
                         "remote_addr" VARCHAR(64) DEFAULT '',
                         "user_agent" VARCHAR(256) DEFAULT '',
                         "device" VARCHAR(20) DEFAULT '',
@@ -64,14 +64,14 @@ impl MigrationTrait for Migration {
 
                     CREATE INDEX idx_t_user_login_log_user_id ON t_user_login_log ("user_id");
                     CREATE INDEX idx_t_user_login_log_username ON t_user_login_log ("username");
-                    CREATE INDEX idx_t_user_login_log_token ON t_user_login_log ("token");
+                    CREATE INDEX idx_t_user_login_log_session_id ON t_user_login_log ("session_id");
                     CREATE INDEX idx_t_user_login_log_login_status ON t_user_login_log ("login_status");
 
                     COMMENT ON TABLE t_user_login_log IS '用户登录日志表';
                     COMMENT ON COLUMN t_user_login_log.id IS '自增ID';
                     COMMENT ON COLUMN t_user_login_log.user_id IS '用户ID';
                     COMMENT ON COLUMN t_user_login_log.username IS '用户名称';
-                    COMMENT ON COLUMN t_user_login_log.token IS '登录令牌';
+                    COMMENT ON COLUMN t_user_login_log.session_id IS '登录令牌';
                     COMMENT ON COLUMN t_user_login_log.remote_addr IS '登录IP';
                     COMMENT ON COLUMN t_user_login_log.user_agent IS '用户代理';
                     COMMENT ON COLUMN t_user_login_log.device IS '设备';
@@ -93,7 +93,7 @@ impl MigrationTrait for Migration {
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 自增ID
                         `user_id` INTEGER NOT NULL, -- 用户ID
                         `username` TEXT NOT NULL, -- 用户名称
-                        `token` TEXT DEFAULT '', -- 登录令牌
+                        `session_id` varchar(22) UNIQUE NOT NULL, -- 用户会话ID
                         `remote_addr` TEXT DEFAULT '', -- 登录IP
                         `user_agent` TEXT DEFAULT '', -- 用户代理
                         `device` TEXT DEFAULT '', -- 设备
@@ -107,7 +107,7 @@ impl MigrationTrait for Migration {
 
                     CREATE INDEX idx_t_user_login_log_user_id ON t_user_login_log (`user_id`);
                     CREATE INDEX idx_t_user_login_log_username ON t_user_login_log (`username`);
-                    CREATE INDEX idx_t_user_login_log_token ON t_user_login_log (`token`);
+                    CREATE INDEX idx_t_user_login_log_session_id ON t_user_login_log (`session_id`);
                     CREATE INDEX idx_t_user_login_log_login_status ON t_user_login_log (`login_status`);
                     ",
                 )

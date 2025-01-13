@@ -65,13 +65,13 @@ impl UserLoginLogDao {
         UserLoginLog::find_by_id(id).one(self.db.db()).await
     }
 
-    /// 根据Token获取详情信息
-    pub async fn info_by_token(
+    /// 根据SessionId获取详情信息
+    pub async fn info_by_session_id(
         &self,
-        token: String,
+        session_id: String,
     ) -> Result<Option<user_login_log::Model>, DbErr> {
         UserLoginLog::find()
-            .filter(user_login_log::Column::Token.eq(token))
+            .filter(user_login_log::Column::SessionId.eq(session_id))
             .order_by_desc(user_login_log::Column::Id)
             .one(self.db.db())
             .await

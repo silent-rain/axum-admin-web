@@ -40,6 +40,7 @@ dependencies = [
  "axum_context",
  "axum_middleware",
  "axum_response",
+ "axum_session",
  "code",
  "colored",
  "database",
@@ -660,9 +661,15 @@ name = "axum_context"
 version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
+ "axum_response",
  "bytes",
+ "code",
+ "futures",
+ "serde_json",
  "tokio",
  "tower 0.5.2",
+ "tower-sessions",
+ "tracing",
 ]
 
 [[package]]
@@ -674,6 +681,7 @@ dependencies = [
  "axum-prometheus",
  "axum_context",
  "axum_response",
+ "axum_session",
  "bytes",
  "casbin",
  "code",
@@ -733,10 +741,13 @@ dependencies = [
  "database",
  "entity",
  "sea-orm",
+ "serde_json",
  "time",
  "tokio",
  "tower-sessions",
  "tracing",
+ "tracing-subscriber",
+ "utils",
 ]
 
 [[package]]
@@ -1504,6 +1515,7 @@ dependencies = [
  "sea-orm",
  "serde",
  "serde_repr",
+ "time",
 ]
 
 [[package]]
@@ -5617,6 +5629,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_repr",
+ "time",
  "tracing",
  "utils",
  "uuid",

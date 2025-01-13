@@ -3,6 +3,7 @@
 use std::{sync::Arc, time::Duration};
 
 use axum::{extract::DefaultBodyLimit, routing::get, Router};
+use database::PoolTrait;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -20,9 +21,9 @@ use axum_context::ContextLayer;
 use axum_middleware::{
     api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
     empty_wrapper_fn::empty_wrapper_layer, openapi_auth::OpenApiAuthLayer,
-    prometheus::prometheus_layer_metric_handle, session::session_layer,
-    system_api_auth::SystemApiAuthLayer,
+    prometheus::prometheus_layer_metric_handle, system_api_auth::SystemApiAuthLayer,
 };
+use axum_session::session_layer;
 use service_hub::{
     auth::AuthRouter, initialize::InitializeRouter, log::LogRouter,
     organization::OrganizationRouter, permission::PermissionRouter, public::HealthRouter,
@@ -65,7 +66,7 @@ pub async fn shutdown_signal() {
 }
 
 /// 注册路由
-pub fn register() -> Router {
+pub fn register(db_pool: Arc<(dyn PoolTrait)>) -> Router {
     // 速率限制
     //允许每个IP地址最多有五个请求的突发, 每两秒钟补充一种元素
     let governor_conf = Arc::new(
@@ -106,7 +107,7 @@ pub fn register() -> Router {
         .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(governor_layer) // 速率限制
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
-        .layer(session_layer()) // session layer
+        .layer(session_layer(db_pool)) // session layer
         .layer(my_layers)
         .layer(DefaultBodyLimit::disable()) // Disable the default limit
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击

@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use chrono::Local;
-use database::PoolTrait;
 use sea_orm::Set;
 use time::OffsetDateTime;
 use tower_sessions::{
@@ -14,7 +13,9 @@ use tower_sessions::{
 use tracing::error;
 
 use crate::dao::UserSessionDao;
+use database::PoolTrait;
 use entity::user::user_session;
+use utils::json::{serialize_to_vec, vec_to_struct};
 
 /// A session store that lives only in memory.
 ///
@@ -26,8 +27,9 @@ use entity::user::user_session;
 /// use tower_sessions::DbStore;
 /// DbStore::new();
 /// ```
+#[derive(Clone)]
 pub struct DbStore {
-    user_session_dao: UserSessionDao,
+    user_session_dao: Arc<UserSessionDao>,
 }
 
 impl std::fmt::Debug for DbStore {
@@ -39,9 +41,8 @@ impl std::fmt::Debug for DbStore {
 
 impl DbStore {
     pub fn new(db: Arc<dyn PoolTrait>) -> Self {
-        DbStore {
-            user_session_dao: UserSessionDao::new(db),
-        }
+        let user_session_dao = Arc::new(UserSessionDao::new(db));
+        DbStore { user_session_dao }
     }
 }
 
@@ -62,7 +63,7 @@ impl ExpiredDeletion for DbStore {
 #[async_trait]
 impl SessionStore for DbStore {
     async fn create(&self, record: &mut Record) -> session_store::Result<()> {
-        let data = self
+        let session_data = self
             .user_session_dao
             .info(record.id.to_string())
             .await
@@ -71,14 +72,20 @@ impl SessionStore for DbStore {
                 Error::Backend("read session failed".to_string())
             })?;
 
-        if data.is_some() {
+        if session_data.is_some() {
             // Session ID collision mitigation.
             record.id = Id::default();
         }
 
+        let bytes = serialize_to_vec(&record).map_err(|err| {
+            error!("data serialize to bytes failed, err: {err}");
+            Error::Encode("data serialize to bytes failed".to_string())
+        })?;
+
         let active_model = user_session::ActiveModel {
             session_id: Set(record.id.to_string()),
-            // expiry_date: Set(record.expiry_date),
+            expiry_date: Set(record.expiry_date),
+            data: Set(bytes),
             status: Set(true),
             created_at: Set(Local::now().naive_local()),
             ..Default::default()
@@ -97,25 +104,31 @@ impl SessionStore for DbStore {
 
     async fn save(&self, record: &Record) -> session_store::Result<()> {
         let session_id = record.id.to_string();
+        let bytes = serialize_to_vec(&record).map_err(|err| {
+            error!("data serialize to bytes failed, err: {err}");
+            Error::Encode("data serialize to bytes failed".to_string())
+        })?;
+
         let active_model = user_session::ActiveModel {
-            session_id: Set(session_id),
-            // expiry_date: Set(record.expiry_date.unix_timestamp()),
+            session_id: Set(session_id.to_string()),
+            expiry_date: Set(record.expiry_date),
+            data: Set(bytes),
             ..Default::default()
         };
 
-        // self.user_session_dao
-        //     .update(session_id, active_model)
-        //     .await
-        //     .map_err(|err| {
-        //         error!("update session failed, err: {err}");
-        //         Error::Backend("update session failed".to_string())
-        //     })?;
+        self.user_session_dao
+            .update(session_id, active_model)
+            .await
+            .map_err(|err| {
+                error!("update session failed, err: {err}");
+                Error::Backend("update session failed".to_string())
+            })?;
 
         Ok(())
     }
 
     async fn load(&self, session_id: &Id) -> session_store::Result<Option<Record>> {
-        let data = self
+        let session_data = self
             .user_session_dao
             .info(session_id.to_string())
             .await
@@ -124,7 +137,7 @@ impl SessionStore for DbStore {
                 Error::Backend("read session failed".to_string())
             })?;
 
-        let data = match data {
+        let session_data = match session_data {
             Some(v) => v,
             None => {
                 error!("invalid session, not found");
@@ -132,30 +145,29 @@ impl SessionStore for DbStore {
             }
         };
 
-        if !data.status {
+        if !session_data.status {
             error!("invalid session, already expired");
             return Ok(None);
         }
 
         // 再次判断是否过期
-        // if !is_active(data.expiry_date) {
-        //     error!("invalid session, already expired");
+        if !is_active(session_data.expiry_date) {
+            error!("invalid session, already expired");
 
-        //     // 删除过期会话
-        //     self.delete(&session_id).await?;
+            // 删除过期会话
+            self.delete(&session_id).await?;
 
-        //     return Err(Error::Backend(
-        //         "invalid session, already expired".to_string(),
-        //     ));
-        // }
+            return Err(Error::Backend(
+                "invalid session, already expired".to_string(),
+            ));
+        }
 
-        // Ok(Some(Record {
-        //     id: data.session_id,
-        //     expiry_date: data.expiry_date,
-        //     // data:data.id,
-        // }))
+        let data: Record = vec_to_struct(&session_data.data).map_err(|err| {
+            error!("deserialize to record failedd, err: {err}");
+            Error::Backend("deserialize to record failed".to_string())
+        })?;
 
-        Ok(None)
+        Ok(Some(data))
     }
 
     async fn delete(&self, session_id: &Id) -> session_store::Result<()> {
@@ -177,17 +189,35 @@ fn is_active(expiry_date: OffsetDateTime) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use std::cell::LazyCell;
+
     use time::Duration;
 
-    use database::{Options, Pool};
+    use database::mock::Mock;
+    use entity::user::UserSession;
 
     use super::*;
 
+    const LOGGER: LazyCell<()> = LazyCell::new(|| {
+        tracing_subscriber::fmt()
+            .compact()
+            .with_max_level(tracing::Level::TRACE)
+            .with_level(true)
+            .with_line_number(true)
+            .init();
+    });
+
+    async fn setup() -> anyhow::Result<Arc<dyn PoolTrait>> {
+        let _ = LOGGER;
+        let in_pool = Mock::from_entity(vec![UserSession]).await?;
+
+        Ok(in_pool)
+    }
+
     #[tokio::test]
     async fn test_create() -> anyhow::Result<()> {
-        let db_url = "sqlite::memory:".to_owned();
-        let pool = Pool::new(db_url, Options::default()).await?;
-        let store = DbStore::new(Arc::new(pool));
+        let pool = setup().await?;
+        let store = DbStore::new(pool);
 
         let mut record = Record {
             id: Default::default(),
@@ -195,16 +225,16 @@ mod tests {
             expiry_date: OffsetDateTime::now_utc() + Duration::minutes(30),
         };
         println!("record: {:#?}", record);
-        assert!(store.create(&mut record).await.is_ok());
+
+        store.create(&mut record).await.expect("create failed");
 
         Ok(())
     }
 
     #[tokio::test]
     async fn test_save() -> anyhow::Result<()> {
-        let db_url = "sqlite::memory:".to_owned();
-        let pool = Pool::new(db_url, Options::default()).await?;
-        let store = DbStore::new(Arc::new(pool));
+        let pool = setup().await?;
+        let store = DbStore::new(pool);
 
         let record = Record {
             id: Default::default(),
@@ -218,17 +248,18 @@ mod tests {
 
     #[tokio::test]
     async fn test_load() -> anyhow::Result<()> {
-        let db_url = "sqlite::memory:".to_owned();
-        let pool = Pool::new(db_url, Options::default()).await?;
-        let store = DbStore::new(Arc::new(pool));
+        let pool = setup().await?;
+        let store = DbStore::new(pool);
 
         let mut record = Record {
             id: Default::default(),
             data: Default::default(),
             expiry_date: OffsetDateTime::now_utc() + Duration::minutes(30),
         };
-        store.create(&mut record).await.unwrap();
-        let loaded_record = store.load(&record.id).await.unwrap();
+        store.create(&mut record).await?;
+
+        let loaded_record = store.load(&record.id).await?;
+
         assert_eq!(Some(record), loaded_record);
 
         Ok(())
@@ -236,27 +267,25 @@ mod tests {
 
     #[tokio::test]
     async fn test_delete() -> anyhow::Result<()> {
-        let db_url = "sqlite::memory:".to_owned();
-        let pool = Pool::new(db_url, Options::default()).await?;
-        let store = DbStore::new(Arc::new(pool));
+        let pool = setup().await?;
+        let store = DbStore::new(pool);
 
         let mut record = Record {
             id: Default::default(),
             data: Default::default(),
             expiry_date: OffsetDateTime::now_utc() + Duration::minutes(30),
         };
-        store.create(&mut record).await.unwrap();
+        store.create(&mut record).await?;
         assert!(store.delete(&record.id).await.is_ok());
-        assert_eq!(None, store.load(&record.id).await.unwrap());
+        assert_eq!(None, store.load(&record.id).await?);
 
         Ok(())
     }
 
     #[tokio::test]
     async fn test_create_id_collision() -> anyhow::Result<()> {
-        let db_url = "sqlite::memory:".to_owned();
-        let pool = Pool::new(db_url, Options::default()).await?;
-        let store = DbStore::new(Arc::new(pool));
+        let pool = setup().await?;
+        let store = DbStore::new(pool);
 
         let expiry_date = OffsetDateTime::now_utc() + Duration::minutes(30);
         let mut record1 = Record {
@@ -269,11 +298,29 @@ mod tests {
             data: Default::default(),
             expiry_date,
         };
-        store.create(&mut record1).await.unwrap();
+        store.create(&mut record1).await?;
         record2.id = record1.id; // Set the same ID for record2
-        store.create(&mut record2).await.unwrap();
+        store.create(&mut record2).await?;
         assert_ne!(record1.id, record2.id); // IDs should be different
 
         Ok(())
+    }
+
+    #[test]
+    fn test_offset_date_time() {
+        let expiry_date: OffsetDateTime = OffsetDateTime::now_utc();
+        println!("expiry_date: {:#?}", expiry_date);
+    }
+
+    #[test]
+    fn test_id_i64() {
+        let id: i128 = 3054030679301473300420946466309767635;
+        println!("id: {:#?}", id);
+
+        let id2: i64 = id as i64;
+
+        println!("id: {:#?}", id2);
+
+        assert!(id != (id2 as i128));
     }
 }
