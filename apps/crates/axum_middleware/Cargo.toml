@@ -11,7 +11,6 @@ jwt = { path = "../core/jwt" }
 axum_context = { path = "../axum_context" }
 service_hub = { path = "../service_hub" }
 axum_response = { path = "../axum_response" }
-axum_session = { path = "../axum_session" }
 
 tokio = { workspace = true }
 axum = { workspace = true }
@@ -30,8 +29,6 @@ pin-project = { workspace = true }
 
 
 [dev-dependencies]
-app_state = { path = "../app_state" }
-
 tokio = { workspace = true, features = [
     "macros",
     "rt-multi-thread",

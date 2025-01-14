@@ -9,7 +9,7 @@ use std::env;
 use tracing::info;
 
 async fn mock_pool() -> Result<(), DbErr> {
-    let pool = Mock::connect().await;
+    let pool = Mock::builder().await?.build();
 
     // 创建表并返回pool
     let sql = r#"CREATE TABLE `user` 
@@ -42,7 +42,7 @@ async fn mock_pool() -> Result<(), DbErr> {
 
 async fn mock_entity() -> Result<(), DbErr> {
     // 创建表并返回pool
-    let pool = Mock::from_entity(vec![User]).await?;
+    let pool = Mock::builder().await?.migration_entity(User).await?.build();
 
     // 插入数据
     let sql = r#"INSERT INTO user (id,user_id, status)
@@ -71,7 +71,7 @@ async fn mock_str() -> Result<(), DbErr> {
         `status` INT NOT NULL,
         PRIMARY KEY (`id`)
     );"#;
-    let pool = Mock::from_str(sql).await?;
+    let pool = Mock::builder().await?.migration_str(sql).await?.build();
 
     // 插入数据
     let sql = r#"INSERT INTO user (id,user_id, status)

@@ -43,12 +43,12 @@ where
 }
 
 /// 将一个结构体转换为另一个结构体
-pub fn vec_to_struct<T>(src: &Vec<u8>) -> Result<T, Error>
+pub fn vec_to_struct<T>(src: &[u8]) -> Result<T, Error>
 where
     T: serde::de::DeserializeOwned,
 {
     // 将JSON字符串反序列化为结构体
-    let target: T = serde_json::from_slice(&src).map_err(|err| {
+    let target: T = serde_json::from_slice(src).map_err(|err| {
         error!("failed to deserialize JSON string into struct, error: {err:#?}");
         Error::JsonDeserialization(err.to_string())
     })?;

@@ -7,53 +7,46 @@ use sea_orm_migration::{MigrationTrait, SchemaManager};
 
 use crate::{config::Level, Options, Pool, PoolTrait};
 
-#[derive(Debug, Default)]
-pub struct Mock {}
+pub struct Mock {
+    pool: Arc<dyn PoolTrait>,
+}
 
 impl Mock {
     /// 从迁移文件创建表
-    pub async fn from_migration(
+    pub async fn migration_migrations(
+        self,
         migrations: Vec<&dyn MigrationTrait>,
-    ) -> Result<Arc<dyn PoolTrait>, DbErr> {
-        let pool = Self::connect().await;
-
+    ) -> Result<Self, DbErr> {
         for migration in migrations {
-            let manager = SchemaManager::new(pool.db());
+            let manager = SchemaManager::new(self.pool.db());
             migration.up(&manager).await?;
         }
 
-        Ok(pool)
+        Ok(self)
     }
 
     /// 从实体创建表
-    pub async fn from_entity<E: EntityTrait>(
-        entities: Vec<E>,
-    ) -> Result<Arc<dyn PoolTrait>, DbErr> {
-        let pool = Self::connect().await;
-
-        let builder = pool.db().get_database_backend();
+    pub async fn migration_entity<E: EntityTrait>(self, entity: E) -> Result<Self, DbErr> {
+        let builder = self.pool.db().get_database_backend();
         let schema = Schema::new(builder);
-        for entity in entities {
-            pool.db()
-                .execute(builder.build(&schema.create_table_from_entity(entity)))
-                .await?;
-        }
+        self.pool
+            .db()
+            .execute(builder.build(&schema.create_table_from_entity(entity)))
+            .await?;
 
-        Ok(pool)
+        Ok(self)
     }
 
-    /// 从实体创建表
-    pub async fn from_str(sql: &str) -> Result<Arc<dyn PoolTrait>, DbErr> {
-        let pool = Self::connect().await;
+    /// 从sql字符串创建表
+    pub async fn migration_str(self, sql: &str) -> Result<Self, DbErr> {
+        let stmt = Statement::from_sql_and_values(self.pool.db().get_database_backend(), sql, []);
+        self.pool.db().execute(stmt).await?;
 
-        let stmt = Statement::from_sql_and_values(pool.db().get_database_backend(), sql, []);
-        pool.db().execute(stmt).await?;
-
-        Ok(pool)
+        Ok(self)
     }
 
     /// 连接数据库
-    pub async fn connect() -> Arc<dyn PoolTrait> {
+    async fn connect() -> Result<Arc<dyn PoolTrait>, DbErr> {
         // Connecting SQLite
         let db_url = "sqlite::memory:".to_string();
         let opt = Options {
@@ -61,9 +54,19 @@ impl Mock {
             logging_level: Level::Info,
             ..Default::default()
         };
-        let db = Pool::connect(db_url, opt).await.expect("db init failed");
+        let db = Pool::connect(db_url, opt).await?;
         let pool = Pool::form_connect(db);
 
-        Arc::new(pool)
+        Ok(Arc::new(pool))
+    }
+
+    /// 构建者
+    pub async fn builder() -> Result<Self, DbErr> {
+        let pool = Self::connect().await?;
+        Ok(Mock { pool })
+    }
+
+    pub fn build(self) -> Arc<dyn PoolTrait> {
+        self.pool
     }
 }

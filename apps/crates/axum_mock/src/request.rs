@@ -32,7 +32,10 @@ pub struct MockRequest {
 
 impl MockRequest {
     pub async fn new(routes: Router) -> Result<Self, Error> {
-        let pool = Mock::connect().await;
+        let pool = Mock::builder()
+            .await
+            .map_err(|err| Error::InitDb(err.to_string()))?
+            .build();
 
         let provider = Arc::new(InjectProvider::new(pool.clone()));
 
@@ -145,7 +148,7 @@ mod tests {
         let routes = Router::new()
             .route("/template/health", get(health))
             .route("/template/hello", get(hello));
-        let response: Response<()> = MockRequest::new(routes)
+        let response: Response<String> = MockRequest::new(routes)
             .await?
             .enabled_log(true)
             .get("/template/health", ())

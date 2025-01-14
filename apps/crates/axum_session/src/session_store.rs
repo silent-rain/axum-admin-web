@@ -6,9 +6,9 @@ use chrono::Local;
 use sea_orm::Set;
 use time::OffsetDateTime;
 use tower_sessions::{
-    ExpiredDeletion, SessionStore,
     session::{Id, Record},
     session_store::{self, Error},
+    ExpiredDeletion, SessionStore,
 };
 use tracing::error;
 
@@ -155,7 +155,7 @@ impl SessionStore for DbStore {
             error!("invalid session, already expired");
 
             // 删除过期会话
-            self.delete(&session_id).await?;
+            self.delete(session_id).await?;
 
             return Err(Error::Backend(
                 "invalid session, already expired".to_string(),
@@ -189,8 +189,6 @@ fn is_active(expiry_date: OffsetDateTime) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use std::cell::LazyCell;
-
     use time::Duration;
 
     use database::mock::Mock;
@@ -198,20 +196,14 @@ mod tests {
 
     use super::*;
 
-    const LOGGER: LazyCell<()> = LazyCell::new(|| {
-        tracing_subscriber::fmt()
-            .compact()
-            .with_max_level(tracing::Level::TRACE)
-            .with_level(true)
-            .with_line_number(true)
-            .init();
-    });
-
     async fn setup() -> anyhow::Result<Arc<dyn PoolTrait>> {
-        let _ = LOGGER;
-        let in_pool = Mock::from_entity(vec![UserSession]).await?;
+        let pool = Mock::builder()
+            .await?
+            .migration_entity(UserSession)
+            .await?
+            .build();
 
-        Ok(in_pool)
+        Ok(pool)
     }
 
     #[tokio::test]

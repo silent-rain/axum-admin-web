@@ -7,7 +7,7 @@
 cargo run --package orm_migration 
 
 # example
-cargo run --package orm_migration --example migration
+cargo run --package orm_migration --example orm_migration
 ```
 
 ## Running Migrator CLI

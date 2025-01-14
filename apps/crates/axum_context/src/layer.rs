@@ -88,7 +88,7 @@ where
 
             // See `axum::RequestExt` for how to run extractors directly from  a `Request`.
             let context = Context {
-                session_id: session_id,
+                session_id,
                 ..Default::default()
             };
 

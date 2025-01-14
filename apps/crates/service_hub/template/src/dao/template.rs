@@ -134,6 +134,7 @@ mod tests {
 
     use database::mock::Mock;
     use entity::template::AppTemplate;
+    use entity::user::UserBase;
 
     use sea_orm::DbBackend;
 
@@ -219,7 +220,7 @@ mod tests {
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"UPDATE `t_app_template` SET `id` = 1, `user_id` = 11, `status` = 1 WHERE `t_app_template`.`id` = 1"#;
+        let sql = r#"UPDATE `t_app_template` SET `id` = 1, `user_id` = 11, `status` = TRUE WHERE `t_app_template`.`id` = 1"#;
 
         assert_eq!(result, sql);
     }
@@ -266,7 +267,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_all() -> Result<(), DbErr> {
-        let pool = Mock::from_entity(vec![AppTemplate]).await?;
+        let pool = Mock::builder()
+            .await?
+            .migration_entity(UserBase)
+            .await?
+            .migration_entity(AppTemplate)
+            .await?
+            .build();
 
         let dao = AppTemplateDao { db: pool };
 
@@ -278,7 +285,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_info() -> Result<(), Box<DbErr>> {
-        let pool = Mock::from_entity(vec![AppTemplate]).await?;
+        let pool = Mock::builder()
+            .await?
+            .migration_entity(UserBase)
+            .await?
+            .migration_entity(AppTemplate)
+            .await?
+            .build();
 
         let dao = AppTemplateDao { db: pool };
 
@@ -289,7 +302,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_add() -> Result<(), DbErr> {
-        let pool = Mock::from_entity(vec![AppTemplate]).await?;
+        let pool = Mock::builder()
+            .await?
+            .migration_entity(UserBase)
+            .await?
+            .migration_entity(AppTemplate)
+            .await?
+            .build();
 
         let dao = AppTemplateDao { db: pool };
 

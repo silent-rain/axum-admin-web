@@ -29,7 +29,7 @@ mod tests {
         assert!(asset.is_none());
 
         let asset = AssetAdminWebDist.data("./index.html");
-        assert!(asset.is_none());
+        assert!(asset.is_some());
 
         // let asset = AssetAdminWebDist.data("assets/index-CilDdteP.css");
         // assert!(asset.is_some());

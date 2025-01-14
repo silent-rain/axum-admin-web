@@ -192,9 +192,13 @@ mod tests {
 
     #[tokio::test]
     async fn test_mock_add() -> Result<(), ErrorMsg> {
-        let pool = Mock::from_entity(vec![AppTemplate])
+        let pool = Mock::builder()
             .await
-            .expect("init mock db failed");
+            .map_err(|err| Error::DbInit(err.to_string()))?
+            .migration_entity(AppTemplate)
+            .await
+            .map_err(|err| Error::DbTableMigration(err.to_string()))?
+            .build();
 
         let dao = AppTemplateDao { db: pool };
 

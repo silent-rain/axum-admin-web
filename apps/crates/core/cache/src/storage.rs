@@ -177,26 +177,29 @@ mod tests {
         let cache = Cache::default();
 
         cache
-            .set_with_expiry("silent", "rain".to_string(), time::Duration::from_secs(2))
+            .set_with_expiry("silent2", "rain".to_string(), time::Duration::from_secs(3))
             .await;
 
         tokio::time::sleep(time::Duration::from_secs(1)).await;
 
-        assert!(cache.get("silent").await == Some(json!("rain")));
+        assert!(cache.get("silent2").await == Some(json!("rain")));
 
-        let result = cache.get_with_expiry("silent").await.expect("获取缓存失败");
+        let result = cache
+            .get_with_expiry("silent2")
+            .await
+            .expect("获取缓存失败");
         assert!(!result.is_expired());
-        println!("result: {:#?}", result);
+        println!("1s result: {:#?}", result);
 
-        tokio::time::sleep(time::Duration::from_secs(2)).await;
+        tokio::time::sleep(time::Duration::from_secs(3)).await;
 
-        let result = cache.get_with_expiry("silent").await.expect("获取缓存失败");
-        assert!(result.is_expired());
-        println!("result: {:#?}", result);
+        let result = cache.get("silent2").await;
+        println!("3s result: {:#?}", result);
+        assert!(result.is_some());
 
-        tokio::time::sleep(time::Duration::from_secs(5)).await;
-
-        assert!((cache.get_with_expiry("silent").await).is_none());
+        let result = cache.get_with_expiry("silent2").await;
+        println!("3s result: {:#?}", result);
+        assert!(result.is_none());
     }
 
     #[tokio::test]

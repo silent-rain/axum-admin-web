@@ -1,4 +1,4 @@
-//! 业务码
+// 业务码
 use std::io;
 
 use serde::{ser::Serializer, Serialize};
@@ -59,8 +59,10 @@ pub enum Error {
     DateTimeParseError(String),
 
     // 数据库操作
-    #[error("db not initialized!")]
-    DbNotInit = 10201,
+    #[error("db initialized error, {0}")]
+    DbInit(String) = 10201,
+    #[error("db not initialized")]
+    DbNotInit,
     #[error("查询数据失败")]
     DbQueryError,
     #[error("未查到数据")]
@@ -81,6 +83,8 @@ pub enum Error {
     DbDataExistError,
     #[error("数据已存在子项")]
     DbDataExistChildrenError,
+    #[error("db table migration error, {0}")]
+    DbTableMigration(String),
 
     // 验证码
     #[error("未知的验证码")]
