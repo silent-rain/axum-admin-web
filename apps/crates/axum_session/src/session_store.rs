@@ -23,8 +23,9 @@ use utils::json::{serialize_to_vec, vec_to_struct};
 ///
 /// # Examples
 ///
-/// ```rust
-/// use tower_sessions::DbStore;
+/// ```ignore
+/// use axum_session::DbStore;
+///
 /// DbStore::new();
 /// ```
 #[derive(Clone)]

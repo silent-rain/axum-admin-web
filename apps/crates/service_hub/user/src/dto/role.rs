@@ -107,10 +107,10 @@ mod tests {
     #[test]
     fn test_status() {
         let expected = UpdateRoleStatusReq {
-            status: true,
             id: 1,
+            status: true,
         };
-        let json_data = json!({ "status":1 });
+        let json_data = json!({ "id": 1, "status":true });
         let result: UpdateRoleStatusReq = serde_json::from_value(json_data).unwrap();
         assert!(expected == result);
     }

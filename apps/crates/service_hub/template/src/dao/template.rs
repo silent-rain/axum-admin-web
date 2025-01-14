@@ -134,7 +134,8 @@ mod tests {
 
     use database::mock::Mock;
     use entity::template::AppTemplate;
-    use entity::user::UserBase;
+    use orm_migration::template::app_template::Migration as MAppTemplate;
+    use orm_migration::user::user_base::Migration as MUserBase;
 
     use sea_orm::DbBackend;
 
@@ -176,7 +177,8 @@ mod tests {
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"INSERT INTO `t_app_template` (`id`, `user_id`, `status`) VALUES (1, 11, 1)"#;
+        let sql =
+            r#"INSERT INTO `t_app_template` (`id`, `user_id`, `status`) VALUES (1, 11, TRUE)"#;
 
         assert_eq!(result, sql);
     }
@@ -200,7 +202,7 @@ mod tests {
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"INSERT INTO `t_app_template` (`id`, `user_id`, `status`) VALUES (1, 11, 1), (2, 22, 0)"#;
+        let sql = r#"INSERT INTO `t_app_template` (`id`, `user_id`, `status`) VALUES (1, 11, TRUE), (2, 22, FALSE)"#;
 
         assert_eq!(result, sql);
     }
@@ -236,7 +238,7 @@ mod tests {
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"UPDATE `t_app_template` SET `status` = 0 WHERE `t_app_template`.`id` = 1"#;
+        let sql = r#"UPDATE `t_app_template` SET `status` = FALSE WHERE `t_app_template`.`id` = 1"#;
 
         assert_eq!(result, sql);
     }
@@ -269,9 +271,7 @@ mod tests {
     async fn test_mock_all() -> Result<(), DbErr> {
         let pool = Mock::builder()
             .await?
-            .migration_entity(UserBase)
-            .await?
-            .migration_entity(AppTemplate)
+            .migration_migrations(vec![&MUserBase, &MAppTemplate])
             .await?
             .build();
 
@@ -287,9 +287,7 @@ mod tests {
     async fn test_mock_info() -> Result<(), Box<DbErr>> {
         let pool = Mock::builder()
             .await?
-            .migration_entity(UserBase)
-            .await?
-            .migration_entity(AppTemplate)
+            .migration_migrations(vec![&MUserBase, &MAppTemplate])
             .await?
             .build();
 
@@ -304,9 +302,7 @@ mod tests {
     async fn test_mock_add() -> Result<(), DbErr> {
         let pool = Mock::builder()
             .await?
-            .migration_entity(UserBase)
-            .await?
-            .migration_entity(AppTemplate)
+            .migration_migrations(vec![&MUserBase, &MAppTemplate])
             .await?
             .build();
 

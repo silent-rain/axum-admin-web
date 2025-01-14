@@ -23,7 +23,7 @@ use service_hub::{
 };
 
 /// Api 操作日志中间件
-/// ```
+/// ```ignore
 /// use axum::Router;
 ///
 /// Router::new().layer(axum::middleware::from_fn(api_operation_log_middleware))

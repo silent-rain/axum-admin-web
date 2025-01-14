@@ -4910,6 +4910,7 @@ dependencies = [
  "grpc_api",
  "inject",
  "nject",
+ "orm_migration",
  "sea-orm",
  "serde",
  "serde_repr",

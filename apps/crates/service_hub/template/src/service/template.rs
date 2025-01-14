@@ -187,15 +187,17 @@ impl AppTemplateService {
 mod tests {
     use super::*;
 
+    use code::ErrorMsg;
     use database::mock::Mock;
-    use entity::template::AppTemplate;
+    use orm_migration::template::app_template;
+    use orm_migration::user::user_base;
 
     #[tokio::test]
     async fn test_mock_add() -> Result<(), ErrorMsg> {
         let pool = Mock::builder()
             .await
             .map_err(|err| Error::DbInit(err.to_string()))?
-            .migration_entity(AppTemplate)
+            .migration_migrations(vec![&user_base::Migration, &app_template::Migration])
             .await
             .map_err(|err| Error::DbTableMigration(err.to_string()))?
             .build();

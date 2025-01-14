@@ -1,11 +1,12 @@
 use sea_orm_migration::{async_trait, MigrationTrait, MigratorTrait};
 
-mod log;
-mod organization;
-mod permission;
-mod schedule;
-mod system;
-mod user;
+pub mod log;
+pub mod organization;
+pub mod permission;
+pub mod schedule;
+pub mod system;
+pub mod user;
+
 mod utils;
 
 pub mod template;

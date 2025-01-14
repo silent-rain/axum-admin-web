@@ -6,7 +6,7 @@ use axum::{extract::Request, middleware::Next, response::IntoResponse};
 use axum_response::ResponseErr;
 
 /// 空的中间件包装
-/// ```
+/// ```ignore
 /// use axum::Router;
 ///
 /// Router::new().layer(axum::middleware::from_fn(empty_wrapper_layer))

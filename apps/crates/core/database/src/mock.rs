@@ -26,6 +26,7 @@ impl Mock {
     }
 
     /// 从实体创建表
+    ///
     pub async fn migration_entity<E: EntityTrait>(self, entity: E) -> Result<Self, DbErr> {
         let builder = self.pool.db().get_database_backend();
         let schema = Schema::new(builder);
@@ -36,6 +37,25 @@ impl Mock {
 
         Ok(self)
     }
+
+    /// 从实体创建表
+    /// 失败的示例
+    // pub async fn migration_entities(
+    //     self,
+    //     entities: Vec<Box<&dyn EntityTrait>>,
+    // ) -> Result<Self, DbErr> {
+    //     let builder = self.pool.db().get_database_backend();
+    //     let schema = Schema::new(builder);
+    //     for entity in entities {
+    //         self.pool
+    //             .db()
+    //             .execute(builder.build(&schema.create_table_from_entity(entity)))
+    //             .await
+    //             .map_err(|err| Error::InitDb(err.to_string()))?;
+    //     }
+
+    //     Ok(self)
+    // }
 
     /// 从sql字符串创建表
     pub async fn migration_str(self, sql: &str) -> Result<Self, DbErr> {

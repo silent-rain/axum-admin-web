@@ -3,7 +3,7 @@
 use std::env;
 
 use database::Options;
-use migration::Migrator;
+use orm_migration::Migrator;
 
 use colored::Colorize;
 use dotenv::dotenv;
