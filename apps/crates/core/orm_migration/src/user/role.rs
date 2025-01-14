@@ -3,7 +3,7 @@
 
 use sea_orm::{
     sea_query::{ColumnDef, Expr, Table},
-    DeriveIden, DeriveMigrationName,
+    ConnectionTrait, DeriveIden, DeriveMigrationName,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -77,6 +77,21 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        let db = manager.get_connection();
+        // 预设数据
+        db.execute_unprepared(
+            "
+            INSERT INTO
+                t_user_role (`name`, `sort`, `status`)
+            VALUES
+                ('管理员', 1, 1),
+                ('普通用户', 1, 1),
+                ('开发工程师', 1, 1),
+                ('设计师', 1, 1),
+                ('客服人员', 1, 1);
+            ",
+        )
+        .await?;
         Ok(())
     }
 

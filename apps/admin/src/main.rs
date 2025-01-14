@@ -33,8 +33,9 @@ pub async fn main() -> anyhow::Result<()> {
     // let _guards = logger::Logger::build(&conf.logger).expect("初始化日志失败");
     tracing_subscriber::fmt()
         .compact()
-        .with_max_level(tracing::Level::TRACE)
+        .with_max_level(tracing::Level::DEBUG)
         .with_level(true)
+        .with_file(true)
         .with_line_number(true)
         .init();
 
