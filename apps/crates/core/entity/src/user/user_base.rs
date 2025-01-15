@@ -19,7 +19,7 @@ pub struct Model {
     pub username: String,
     /// 真实姓名
     pub real_name: Option<String>,
-    /// 性别(0:男,1:女,2:保密)
+    /// 性别(0:保密,1:女,2:男)
     pub gender: i8,
     /// 密码
     pub password: String,
@@ -127,12 +127,12 @@ pub mod enums {
     #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum Gender {
-        /// 男
-        Male = 0,
+        /// 保密
+        Undisclosed = 0,
         /// 女
         Female = 1,
-        /// 保密
-        Undisclosed = 2,
+        /// 男
+        Male = 2,
     }
 
     /// 注册用户类型

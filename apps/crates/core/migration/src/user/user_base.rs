@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '用户ID',
                         `username` VARCHAR(32) UNIQUE NOT NULL COMMENT '用户名称',
                         `real_name` VARCHAR(32) NULL DEFAULT '' COMMENT '真实姓名',
-                        `gender` TINYINT(1) NOT NULL COMMENT '性别(0:男,1:女,2:保密)',
+                        `gender` TINYINT(1) NOT NULL COMMENT '性别(0:保密,1:女,2:男)',
                         `password` VARCHAR(64) NOT NULL COMMENT '密码',
                         `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
                         `age` INT NULL DEFAULT 0 COMMENT '年龄',
@@ -86,7 +86,7 @@ impl MigrationTrait for Migration {
                     COMMENT ON COLUMN t_user_base.id IS '用户ID';
                     COMMENT ON COLUMN t_user_base.username IS '用户名称';
                     COMMENT ON COLUMN t_user_base.real_name IS '真实姓名';
-                    COMMENT ON COLUMN t_user_base.gender IS '性别(0:男,1:女,2:保密)';
+                    COMMENT ON COLUMN t_user_base.gender IS '性别(0:保密,1:女,2:男)';
                     COMMENT ON COLUMN t_user_base.password IS '密码';
                     COMMENT ON COLUMN t_user_base.status IS '状态(false:停用,true:正常)';
                     COMMENT ON COLUMN t_user_base.age IS '年龄';
@@ -115,7 +115,7 @@ impl MigrationTrait for Migration {
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 用户ID,自增
                         `username` VARCHAR(32) NOT NULL UNIQUE, -- 用户名,唯一
                         `real_name` VARCHAR(32) DEFAULT '', -- 真实姓名
-                        `gender` TINYINT NOT NULL, -- 性别
+                        `gender` TINYINT NOT NULL, -- 性别(0:保密,1:女,2:男)
                         `password` VARCHAR(64) NOT NULL, -- 密码
                         `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
                         `age` INTEGER DEFAULT 0, -- 年龄

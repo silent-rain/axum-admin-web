@@ -47,7 +47,7 @@ pub struct CreateUserBaseReq {
     pub username: String,
     /// 真实姓名
     pub real_name: Option<String>,
-    /// 性别(0:男,1:女,2:保密)
+    /// 性别(0:保密,1:女,2:男)
     pub gender: user_base::enums::Gender,
     /// 密码
     pub password: String,
@@ -91,7 +91,7 @@ pub struct UpdateUserBaseReq {
     pub username: String,
     /// 真实姓名
     pub real_name: Option<String>,
-    /// 性别(0:男,1:女,2:保密)
+    /// 性别(0:保密,1:女,2:男)
     pub gender: user_base::enums::Gender,
     /// 状态(false:停用,true:正常)
     pub status: bool,

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '用户ID',
         `username` VARCHAR(32) UNIQUE NOT NULL COMMENT '用户名称',
         `real_name` VARCHAR(32) NULL DEFAULT '' COMMENT '真实姓名',
-        `gender` TINYINT(1) NOT NULL COMMENT '性别(0:男,1:女,2:保密)',
+        `gender` TINYINT(1) NOT NULL COMMENT '性别(0:保密,1:女,2:男)',
         `password` VARCHAR(64) NOT NULL COMMENT '密码',
         `status` BOOL NOT NULL DEFAULT TRUE COMMENT '状态(false:停用,true:正常)',
         `age` INT NULL DEFAULT 0 COMMENT '年龄',
