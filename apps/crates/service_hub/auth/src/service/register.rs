@@ -43,12 +43,12 @@ impl RegisterService {
         }
 
         // 检测验证码
-        check_captcha(
-            &self.captcha_dao,
-            req.captcha_id.clone(),
-            req.captcha.clone(),
-        )
-        .await?;
+        // check_captcha(
+        //     &self.captcha_dao,
+        //     req.captcha_id.clone(),
+        //     req.captcha.clone(),
+        // )
+        // .await?;
 
         // 检查用户名, 查看用户名是否已注册
         self.check_username(req.username.clone()).await?;

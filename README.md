@@ -133,6 +133,7 @@
   - 登陆后设置session，设置cookies
   - 上下文初始化，仅读取session
   - 鉴权，仅读取session；
+- 日志响应body异常
 
 ## 开发文档
 

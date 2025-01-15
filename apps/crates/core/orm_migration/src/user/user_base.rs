@@ -48,9 +48,9 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(UserBase::Gender)
                             .tiny_integer()
-                            .null()
-                            .default(1)
-                            .comment("性别;1:男,2:女,3:保密"),
+                            .not_null()
+                            .default(0)
+                            .comment("性别(0:保密,1:女,2:男)"),
                     )
                     .col(
                         ColumnDef::new(UserBase::Password)
