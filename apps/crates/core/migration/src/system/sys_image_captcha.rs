@@ -43,7 +43,7 @@ impl MigrationTrait for Migration {
                         "captcha_id" VARCHAR(40) UNIQUE NOT NULL,
                         "captcha" VARCHAR(10) NOT NULL,
                         "data" BYTEA NOT NULL,
-                        "expire" INTEGER NOT NULL DEFAULT 1,
+                        "expire" SMALLINT NOT NULL DEFAULT 1,
                         "status" BOOL NOT NULL DEFAULT TRUE,
                         "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -73,7 +73,7 @@ impl MigrationTrait for Migration {
                         `captcha_id` TEXT UNIQUE NOT NULL, -- 验证码ID
                         `captcha` TEXT NOT NULL, -- 验证码
                         `data` BLOB NOT NULL, -- 图片数据, Base64编码
-                        `expire` INTEGER NOT NULL DEFAULT 1, -- 过期时间,秒
+                        `expire` SMALLINT NOT NULL DEFAULT 1, -- 过期时间,秒
                         `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:失效,true:有效)
                         `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间

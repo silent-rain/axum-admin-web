@@ -122,7 +122,6 @@ impl ImageCaptchaService {
         let result = CreateImageCaptchaResp {
             captcha_id: result.captcha_id,
             data: base_img,
-            expire: result.expire,
             created_at: result.created_at,
         };
         // TODO 后期调整日志级别

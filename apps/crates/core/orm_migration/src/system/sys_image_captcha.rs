@@ -53,7 +53,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(SysImageCaptcha::Expire)
-                            .integer()
+                            .small_integer()
                             .not_null()
                             .comment("过期时间,秒"),
                     )

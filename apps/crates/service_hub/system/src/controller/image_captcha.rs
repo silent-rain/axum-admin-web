@@ -10,9 +10,9 @@ use crate::{
     service::image_captcha::ImageCaptchaService,
 };
 
+use axum_response::{Responder, Response};
 use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct ImageCaptchaController;
@@ -43,19 +43,6 @@ impl ImageCaptchaController {
     }
 
     /// 获取验证码信息
-    // pub async fn info_by_captcha_id(
-    //     provider: Data<AInjectProvider>,
-    //     captcha_id: Path<String>,
-    // ) -> impl Responder {
-    //     let image_captcha_service: ImageCaptchaService = provider.provide();
-    //     let resp = image_captcha_service
-    //         .info_by_captcha_id(captcha_id.to_string())
-    //         .await;
-    //     match resp {
-    //         Ok(v) => Response::ok().data(v),
-    //         Err(err) => Response::err(err),
-    //     }
-    // }
     pub async fn info_by_captcha_id(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetInfoByCaptchaIdReq>,
@@ -70,12 +57,12 @@ impl ImageCaptchaController {
     /// 添加验证码
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
-        Json(req): Json<CreateImageCaptchaReq>,
+        Query(req): Query<CreateImageCaptchaReq>,
     ) -> Responder<CreateImageCaptchaResp> {
         let image_captcha_service: ImageCaptchaService = provider.provide();
-        let _result = image_captcha_service.create(req).await?;
+        let result = image_captcha_service.create(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 

@@ -22,7 +22,7 @@ pub struct Model {
     /// 图片数据, Base64编码
     pub data: Vec<u8>,
     /// 过期时间,秒
-    pub expire: u32,
+    pub expire: i16,
     /// 状态(false:无效验证码,true:有效验证码)
     pub status: bool,
     /// 创建时间

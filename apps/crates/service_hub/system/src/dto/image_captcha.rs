@@ -61,8 +61,6 @@ pub struct CreateImageCaptchaResp {
     pub captcha_id: String,
     /// 图片数据, Base64编码
     pub data: String,
-    /// 过期时间,秒
-    pub expire: u32,
     /// 创建时间
     pub created_at: NaiveDateTime,
 }
