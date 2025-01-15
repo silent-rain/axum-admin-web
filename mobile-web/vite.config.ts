@@ -20,7 +20,7 @@ export default defineConfig({
     },
   },
   plugins: [react()],
-  base: '/admin',
+  base: '/mobile',
   publicDir: 'public',
   resolve: {
     alias: {
@@ -29,7 +29,7 @@ export default defineConfig({
   },
   build: {
     target: 'modules', // 浏览器兼容目标
-    outDir: '../apps/admin/dist', // 打包输出路径
+    outDir: '../apps/mobile/dist', // 打包输出路径
     assetsDir: 'assets', // 静态资源存放路径
     cssCodeSplit: true, // 允许 css 代码拆分
     sourcemap: false, // 不生成 sourceMap 文件
