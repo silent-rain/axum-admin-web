@@ -19,9 +19,7 @@ pub struct GetDictDatasReq {
     /// 字典项标签
     pub lable: Option<String>,
     /// 字典维度ID
-    pub dimension_id: Option<i32>,
-    /// 字典维度编码
-    pub dimension_code: Option<String>,
+    pub dim_id: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -47,9 +45,7 @@ pub struct GetDictDataResp {
 #[derive(Serialize, Deserialize, Validate)]
 pub struct CreateDictDataReq {
     /// 字典维度ID
-    pub dimension_id: i32,
-    /// 字典维度编码
-    pub dimension_code: String,
+    pub dim_id: i32,
     /// 字典项标签
     #[validate(length(min = 2, message = "至少输入两个字符"))]
     pub lable: String,

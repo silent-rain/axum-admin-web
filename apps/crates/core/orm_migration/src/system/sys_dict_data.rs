@@ -31,17 +31,10 @@ impl MigrationTrait for Migration {
                             .comment("字典项ID"),
                     )
                     .col(
-                        ColumnDef::new(SysDictData::DimensionId)
+                        ColumnDef::new(SysDictData::DimId)
                             .integer()
                             .not_null()
                             .comment("字典维度ID"),
-                    )
-                    .col(
-                        ColumnDef::new(SysDictData::DimensionCode)
-                            .string()
-                            .string_len(64)
-                            .not_null()
-                            .comment("字典维度编码"),
                     )
                     .col(
                         ColumnDef::new(SysDictData::Label)
@@ -96,14 +89,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if_not_exists_create_index(manager, SysDictData::Table, vec![SysDictData::DimensionId])
-            .await?;
-        if_not_exists_create_index(
-            manager,
-            SysDictData::Table,
-            vec![SysDictData::DimensionCode],
-        )
-        .await?;
+        if_not_exists_create_index(manager, SysDictData::Table, vec![SysDictData::DimId]).await?;
         if_not_exists_create_index(manager, SysDictData::Table, vec![SysDictData::Label]).await?;
         Ok(())
     }
@@ -122,8 +108,7 @@ pub enum SysDictData {
     #[sea_orm(iden = "t_sys_dict_data")]
     Table,
     Id,
-    DimensionId,
-    DimensionCode,
+    DimId,
     Label,
     Value,
     Sort,

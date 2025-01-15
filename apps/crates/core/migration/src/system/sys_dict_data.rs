@@ -19,8 +19,7 @@ impl MigrationTrait for Migration {
                     CREATE TABLE IF NOT EXISTS
                     `t_sys_dict_data` (
                         `id` INT AUTO_INCREMENT NOT NULL COMMENT '字典项ID',
-                        `dimension_id` INT NOT NULL COMMENT '字典维度ID',
-                        `dimension_code` VARCHAR(64) NOT NULL COMMENT '字典维度编码',
+                        `dim_id` INT NOT NULL COMMENT '字典维度ID',
                         `label` VARCHAR(64) NOT NULL COMMENT '字典项标签',
                         `value` TEXT NOT NULL COMMENT '字典项值',
                         `sort` INT NULL DEFAULT 0 COMMENT '排序',
@@ -31,8 +30,7 @@ impl MigrationTrait for Migration {
                         PRIMARY KEY (`id`)
                     ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '字典数据表';
 
-                    CREATE INDEX idx_dimension_id ON t_sys_dict_data (`dimension_id`);
-                    CREATE INDEX idx_dimension_code ON t_sys_dict_data (`dimension_code`);
+                    CREATE INDEX idx_dim_id ON t_sys_dict_data (`dim_id`);
                     CREATE INDEX idx_label ON t_sys_dict_data (`label`);
                     ",
                 )
@@ -43,8 +41,7 @@ impl MigrationTrait for Migration {
                     r#"
                     CREATE TABLE IF NOT EXISTS "t_sys_dict_data" (
                         "id" SERIAL PRIMARY KEY,
-                        "dimension_id" INTEGER NOT NULL,
-                        "dimension_code" VARCHAR(64) NOT NULL,
+                        "dim_id" INTEGER NOT NULL,
                         "label" VARCHAR(64) NOT NULL,
                         "value" TEXT NOT NULL,
                         "sort" INTEGER DEFAULT 0,
@@ -54,14 +51,12 @@ impl MigrationTrait for Migration {
                         "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
                     );
 
-                    CREATE INDEX idx_t_sys_dict_data_dimension_id ON t_sys_dict_data ("dimension_id");
-                    CREATE INDEX idx_t_sys_dict_data_dimension_code ON t_sys_dict_data ("dimension_code");
+                    CREATE INDEX idx_t_sys_dict_data_dim_id ON t_sys_dict_data ("dim_id");
                     CREATE INDEX idx_t_sys_dict_data_label ON t_sys_dict_data ("label");
 
                     COMMENT ON TABLE t_sys_dict_data IS '字典数据表';
                     COMMENT ON COLUMN t_sys_dict_data.id IS '字典项ID';
-                    COMMENT ON COLUMN t_sys_dict_data.dimension_id IS '字典维度ID';
-                    COMMENT ON COLUMN t_sys_dict_data.dimension_code IS '字典维度编码';
+                    COMMENT ON COLUMN t_sys_dict_data.dim_id IS '字典维度ID';
                     COMMENT ON COLUMN t_sys_dict_data.label IS '字典项标签';
                     COMMENT ON COLUMN t_sys_dict_data.value IS '字典项值';
                     COMMENT ON COLUMN t_sys_dict_data.sort IS '排序';
@@ -78,8 +73,7 @@ impl MigrationTrait for Migration {
                     "
                     CREATE TABLE IF NOT EXISTS `t_sys_dict_data` ( -- 字典数据表
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 字典项ID
-                        `dimension_id` INTEGER NOT NULL, -- 字典维度ID
-                        `dimension_code` TEXT NOT NULL, -- 字典维度编码
+                        `dim_id` INTEGER NOT NULL, -- 字典维度ID
                         `label` TEXT NOT NULL, -- 字典项标签
                         `value` TEXT NOT NULL, -- 字典项值
                         `sort` INTEGER DEFAULT 0, -- 排序
@@ -89,8 +83,7 @@ impl MigrationTrait for Migration {
                         `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
                     );
                     
-                    CREATE INDEX idx_t_sys_dict_data_dimension_id ON t_sys_dict_data (`dimension_id`);
-                    CREATE INDEX idx_t_sys_dict_data_dimension_code ON t_sys_dict_data (`dimension_code`);
+                    CREATE INDEX idx_t_sys_dict_data_dim_id ON t_sys_dict_data (`dim_id`);
                     CREATE INDEX idx_t_sys_dict_data_label ON t_sys_dict_data (`label`);
                     ",
                 )

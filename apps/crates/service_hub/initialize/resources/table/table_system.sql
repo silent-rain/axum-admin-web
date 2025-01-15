@@ -61,8 +61,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     `t_sys_dict_data` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '字典项ID',
-        `dimension_id` INT NOT NULL COMMENT '字典维度ID',
-        `dimension_code` VARCHAR(64) NOT NULL COMMENT '字典维度编码',
+        `dim_id` INT NOT NULL COMMENT '字典维度ID',
         `lable` VARCHAR(64) NOT NULL COMMENT '字典项标签',
         `value` TEXT NOT NULL COMMENT '字典项值',
         `sort` INT NULL DEFAULT 0 COMMENT '排序',
@@ -71,7 +70,6 @@ CREATE TABLE IF NOT EXISTS
         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         PRIMARY KEY (`id`),
-        KEY `idx_dimension_id` (`dimension_id`),
-        KEY `idx_dimension_code` (`dimension_code`),
-        CONSTRAINT `fk_sys_dict_data_dimension_id` FOREIGN KEY (`dimension_id`) REFERENCES `t_sys_dict_dimension` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+        KEY `idx_dim_id` (`dim_id`),
+        CONSTRAINT `fk_sys_dict_data_dim_id` FOREIGN KEY (`dim_id`) REFERENCES `t_sys_dict_dimension` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT '字典数据表';

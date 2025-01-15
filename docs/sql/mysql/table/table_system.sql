@@ -80,8 +80,7 @@ CREATE INDEX idx_code ON t_sys_dict_dimension (`code`);
 CREATE TABLE IF NOT EXISTS
     `t_sys_dict_data` (
         `id` INT AUTO_INCREMENT NOT NULL COMMENT '字典项ID',
-        `dimension_id` INT NOT NULL COMMENT '字典维度ID',
-        `dimension_code` VARCHAR(64) NOT NULL COMMENT '字典维度编码',
+        `dim_id` INT NOT NULL COMMENT '字典维度ID',
         `label` VARCHAR(64) NOT NULL COMMENT '字典项标签',
         `value` TEXT NOT NULL COMMENT '字典项值',
         `sort` INT NULL DEFAULT 0 COMMENT '排序',
@@ -92,8 +91,6 @@ CREATE TABLE IF NOT EXISTS
         PRIMARY KEY (`id`)
     ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '字典数据表';
 
-CREATE INDEX idx_dimension_id ON t_sys_dict_data (`dimension_id`);
-
-CREATE INDEX idx_dimension_code ON t_sys_dict_data (`dimension_code`);
+CREATE INDEX idx_dim_id ON t_sys_dict_data (`dim_id`);
 
 CREATE INDEX idx_label ON t_sys_dict_data (`label`);

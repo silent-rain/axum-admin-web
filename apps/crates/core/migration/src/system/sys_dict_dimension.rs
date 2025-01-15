@@ -50,7 +50,7 @@ impl MigrationTrait for Migration {
                     );
 
                     CREATE INDEX idx_t_sys_dict_dimension_name ON t_sys_dict_dimension ("name");
-                    CREATE INDEX idx_t_sys_dict_dimension_code ON t_sys_dict_dimension ("code");
+                    CREATE INDEX idx_t_sys_dict_code ON t_sys_dict_dimension ("code");
 
                     COMMENT ON TABLE t_sys_dict_dimension IS '字典维度表';
                     COMMENT ON COLUMN t_sys_dict_dimension.id IS '字典维度ID';
@@ -80,7 +80,7 @@ impl MigrationTrait for Migration {
                     );
                     
                     CREATE INDEX idx_t_sys_dict_dimension_name ON t_sys_dict_dimension (`name`);
-                    CREATE INDEX idx_t_sys_dict_dimension_code ON t_sys_dict_dimension (`code`);
+                    CREATE INDEX idx_t_sys_dict_code ON t_sys_dict_dimension (`code`);
                     ",
                 )
                 .await?;
