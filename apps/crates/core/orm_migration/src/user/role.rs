@@ -1,9 +1,11 @@
 //! 角色表
 //! Entity: [`entity::user::Role`]
 
+use entity::user;
+
 use sea_orm::{
     sea_query::{ColumnDef, Expr, Table},
-    ConnectionTrait, DeriveIden, DeriveMigrationName,
+    DeriveIden, DeriveMigrationName, EntityTrait, Set,
 };
 use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
 
@@ -77,21 +79,43 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        let db = manager.get_connection();
         // 预设数据
-        db.execute_unprepared(
-            "
-            INSERT INTO
-                t_user_role (`name`, `sort`, `status`)
-            VALUES
-                ('管理员', 1, 1),
-                ('普通用户', 1, 1),
-                ('开发工程师', 1, 1),
-                ('设计师', 1, 1),
-                ('客服人员', 1, 1);
-            ",
-        )
+        let db = manager.get_connection();
+        user::Role::insert_many([
+            user::role::ActiveModel {
+                name: Set("管理员".to_string()),
+                sort: Set(Some(1)),
+                status: Set(true),
+                ..Default::default()
+            },
+            user::role::ActiveModel {
+                name: Set("普通用户".to_string()),
+                sort: Set(Some(1)),
+                status: Set(true),
+                ..Default::default()
+            },
+            user::role::ActiveModel {
+                name: Set("开发工程师".to_string()),
+                sort: Set(Some(1)),
+                status: Set(true),
+                ..Default::default()
+            },
+            user::role::ActiveModel {
+                name: Set("设计师".to_string()),
+                sort: Set(Some(1)),
+                status: Set(true),
+                ..Default::default()
+            },
+            user::role::ActiveModel {
+                name: Set("客服人员".to_string()),
+                sort: Set(Some(1)),
+                status: Set(true),
+                ..Default::default()
+            },
+        ])
+        .exec(db)
         .await?;
+
         Ok(())
     }
 

@@ -25,22 +25,38 @@ pub struct RegisterService {
 
 impl RegisterService {
     /// 根据不同的注册类型进行注册用户
-    pub async fn register(&self, data: RegisterReq) -> Result<user_base::Model, ErrorMsg> {
+    pub async fn register(&self, req: RegisterReq) -> Result<user_base::Model, ErrorMsg> {
+        // 参数校验, 防止被空刷验证码
+        match req.register_type {
+            user_base::enums::UserType::Phone => {
+                if req.phone.is_none() {
+                    error!("请输入手机号码");
+                    return Err(Error::InvalidParameter("请输入手机号码".to_string()).into_msg());
+                }
+            }
+            user_base::enums::UserType::Email => {
+                if req.email.is_none() {
+                    error!("请输入邮箱");
+                    return Err(Error::InvalidParameter("请输入邮箱".to_string()).into_msg());
+                }
+            }
+        }
+
         // 检测验证码
         check_captcha(
             &self.captcha_dao,
-            data.captcha_id.clone(),
-            data.captcha.clone(),
+            req.captcha_id.clone(),
+            req.captcha.clone(),
         )
         .await?;
 
         // 检查用户名, 查看用户名是否已注册
-        self.check_username(data.username.clone()).await?;
+        self.check_username(req.username.clone()).await?;
 
         // 根据不同注册类型进行注册
-        match data.register_type {
-            user_base::enums::UserType::Phone => self.register_phone(data).await,
-            user_base::enums::UserType::Email => self.register_email(data).await,
+        match req.register_type {
+            user_base::enums::UserType::Phone => self.register_phone(req).await,
+            user_base::enums::UserType::Email => self.register_email(req).await,
         }
     }
 

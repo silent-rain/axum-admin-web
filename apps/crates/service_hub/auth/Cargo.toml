@@ -18,6 +18,7 @@ user = { path = "../user" }
 system = { path = "../system" }
 
 axum = { workspace = true }
+tower-sessions = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }

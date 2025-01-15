@@ -76,22 +76,6 @@ impl MigrationTrait for Migration {
             }
         }
 
-        // 预设数据
-        let db = manager.get_connection();
-        db.execute_unprepared(
-            "
-            INSERT INTO
-                t_user_role (`name`, `sort`, `status`)
-            VALUES
-                ('管理员', 1, 1),
-                ('普通用户', 1, 1),
-                ('开发工程师', 1, 1),
-                ('设计师', 1, 1),
-                ('客服人员', 1, 1);
-            ",
-        )
-        .await?;
-
         Ok(())
     }
 

@@ -11,6 +11,7 @@ use axum::{extract::ConnectInfo, http::HeaderMap};
 use axum_response::{Responder, Response};
 use axum_validator::{Extension, Json};
 use inject::AInjectProvider;
+use tower_sessions::Session;
 
 /// 控制器
 pub struct LoginController;
@@ -19,6 +20,7 @@ impl LoginController {
     /// 登陆
     pub async fn login(
         Extension(provider): Extension<AInjectProvider>,
+        Extension(session): Extension<Session>,
         ConnectInfo(addr): ConnectInfo<SocketAddr>,
         headers: HeaderMap,
         Json(req): Json<LoginReq>,
@@ -34,7 +36,7 @@ impl LoginController {
         };
 
         let login_service: LoginService = provider.provide();
-        let result = login_service.login(browser_info, req).await?;
+        let result = login_service.login(req, browser_info, session).await?;
 
         let resp = Response::data(result).to_json()?;
         Ok(resp)

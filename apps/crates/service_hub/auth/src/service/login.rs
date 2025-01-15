@@ -11,6 +11,7 @@ use code::{Error, ErrorMsg};
 use entity::{user::user_base, user::user_login_log};
 use jwt::encode_token;
 use system::ImageCaptchaDao;
+use tower_sessions::{session::Id, Session};
 use user::{EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
 use utils::browser::parse_user_agent_async;
 
@@ -33,22 +34,26 @@ impl LoginService {
     /// 登陆
     pub async fn login(
         &self,
+        req: LoginReq,
         browser_info: BrowserInfo,
-        data: LoginReq,
+        session: Session,
     ) -> Result<LoginResp, ErrorMsg> {
         // 检测验证码
         check_captcha(
             &self.captcha_dao,
-            data.captcha_id.clone(),
-            data.captcha.clone(),
+            req.captcha_id.clone(),
+            req.captcha.clone(),
         )
-        .await?;
+        .await
+        .inspect_err(|err| {
+            error!("验证码校验失败, err: {err}");
+        })?;
 
         // 检测手机号码或邮件用户是否存在
-        let user = self.get_user(data.clone()).await?;
+        let user = self.get_user(req.clone()).await?;
         // 检查用户是否被禁用
         if !user.status {
-            // 添加登陆日志
+            error!("{} 用户已被禁用", user.id);
             self.add_login_log(
                 user.clone(),
                 browser_info,
@@ -56,14 +61,13 @@ impl LoginService {
                 Some("用户已被禁用".to_owned()),
                 user_login_log::enums::LoginStatus::Failed,
             );
-            error!("用户已被禁用");
             return Err(Error::LoginUserDisableError
                 .into_msg()
                 .with_msg("用户已被禁用"));
         }
         // 检测密码
-        if user.password != data.password {
-            // 添加失败登陆日志
+        if user.password != req.password {
+            error!("{} 账号或密码错误", user.id);
             self.add_login_log(
                 user.clone(),
                 browser_info,
@@ -71,7 +75,6 @@ impl LoginService {
                 Some("账号或密码错误".to_owned()),
                 user_login_log::enums::LoginStatus::Failed,
             );
-            error!("账号或密码错误");
             return Err(Error::LoginPasswordError
                 .into_msg()
                 .with_msg("账号或密码错误"));
@@ -83,6 +86,9 @@ impl LoginService {
         //     error!("生成密匙失败, err: {}", err);
         //     Error::TokenEncode.into_msg().with_msg("生成密匙失败")
         // })?;
+
+        let id = Id::default();
+        session.insert(&id.to_string(), "demo-1").await.unwrap();
 
         let session_id = "".to_string();
 

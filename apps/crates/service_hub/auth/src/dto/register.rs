@@ -26,8 +26,8 @@ pub struct RegisterReq {
     /// 真实姓名
     pub real_name: Option<String>,
     /// 性别(0:男,1:女,2:保密)
-    /// Enum: [`permission::enums::Gender`]
-    #[validate(range(min = 0, max = 3, message = "性别(0:男,1:女,2:保密)"))]
+    /// Enum: [`entity::user::user_base::enums::Gender`]
+    #[validate(range(min = 0, max = 3, message = "性别(0:保密,1:女,2:男)"))]
     pub gender: i8,
     /// 年龄
     /// TODO 待定，可以自己计算出来
