@@ -3,9 +3,8 @@
 use chrono::Local;
 use sea_orm::{
     prelude::{async_trait::async_trait, DateTime},
-    ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
-    DeriveRelation, EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait,
-    Set,
+    ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey, EntityTrait,
+    EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait, Set,
 };
 use serde::{Deserialize, Serialize};
 
@@ -56,21 +55,34 @@ pub struct Model {
     pub updated_at: DateTime,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::user_role_rel::Entity")]
-    UserRoleRel,
-    #[sea_orm(has_many = "super::phone::Entity")]
     UserPhone,
-    #[sea_orm(has_many = "super::email::Entity")]
     UserEmail,
-    #[sea_orm(has_many = "super::blockchain_wallet::Entity")]
     UserBlockchainWallet,
+    UserRole,
 }
 
-impl Related<super::user_role_rel::Entity> for Entity {
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::UserPhone => Entity::has_one(super::phone::Entity).into(),
+            Self::UserEmail => Entity::has_one(super::email::Entity).into(),
+            Self::UserBlockchainWallet => Entity::has_one(super::blockchain_wallet::Entity).into(),
+            Self::UserRole => Entity::has_many(super::role::Entity).into(),
+        }
+    }
+}
+
+impl Related<super::role::Entity> for Entity {
+    // 检查一个实体是否与另一个实体相关
     fn to() -> RelationDef {
-        Relation::UserRoleRel.def()
+        super::user_role_rel::Relation::UserRole.def()
+    }
+
+    // 检查一个实体是否通过另一个实体关联
+    fn via() -> Option<RelationDef> {
+        Some(super::user_role_rel::Relation::UserBase.def().rev())
     }
 }
 

@@ -300,11 +300,11 @@ mod tests {
                     .into(),
             )
             .filter(user_role_rel::Column::UserId.eq(10))
-            .order_by_asc(user_base::Column::Id)
+            .order_by_asc(role::Column::Id)
             .build(DbBackend::Postgres)
             .to_string();
 
-        let sql = r#"SELECT "t_user_role"."id" FROM "t_user_role" INNER JOIN "t_user_role_rel" ON "t_user_role_rel"."role_id" = "t_user_role"."id" WHERE "t_user_role_rel"."user_id" = 10 ORDER BY "t_user_base"."id" ASC"#;
+        let sql = r#"SELECT "t_user_role"."id" FROM "t_user_role" INNER JOIN "t_user_role_rel" ON "t_user_role_rel"."role_id" = "t_user_role"."id" WHERE "t_user_role_rel"."user_id" = 10 ORDER BY "t_user_role"."id" ASC"#;
         assert_eq!(result, sql);
     }
 }

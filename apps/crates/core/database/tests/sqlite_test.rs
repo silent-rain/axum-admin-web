@@ -9,7 +9,7 @@ use sea_orm::{DbErr, EntityTrait, Set};
 
 async fn testcase(db: &Pool) -> Result<(), DbErr> {
     let active_model = user::ActiveModel {
-        user_id: Set(1),
+        name: Set("zhangshan".to_string()),
         status: Set(true),
         ..Default::default()
     };
@@ -69,7 +69,7 @@ async fn test_info(db: &Pool) -> Result<user::Model, DbErr> {
 async fn test_insert(db: &Pool) -> Result<user::Model, DbErr> {
     let dao = UserDao { db };
     let data = user::ActiveModel {
-        user_id: Set(3),
+        name: Set("zhangshan".to_string()),
         status: Set(true),
         ..Default::default()
     };
@@ -81,7 +81,7 @@ async fn test_insert(db: &Pool) -> Result<user::Model, DbErr> {
 async fn test_insert2(db: &Pool) -> Result<user::Model, DbErr> {
     let dao = UserDao { db };
     let data = user::Model {
-        user_id: 2,
+        name: "zhangshan".to_string(),
         status: true,
         ..Default::default()
     };
@@ -97,7 +97,7 @@ async fn test_update(db: &Pool) -> Result<user::Model, DbErr> {
     let dao = UserDao { db };
     let data = user::ActiveModel {
         id: Set(2),
-        user_id: Set(222),
+        name: Set("zhangshan".to_string()),
         status: Set(false),
     };
     let result = dao.update(data).await.unwrap();
@@ -109,7 +109,7 @@ async fn test_update2(db: &Pool) -> Result<user::Model, DbErr> {
     let dao = UserDao { db };
     let data = user::Model {
         id: 1,
-        user_id: 111,
+        name: "zhangshan".to_string(),
         status: false,
     };
     let result = dao

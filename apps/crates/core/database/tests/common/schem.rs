@@ -21,17 +21,17 @@ pub async fn create_user_table(db: &Pool) -> Result<ExecResult, DbErr> {
                 .comment("ID"),
         )
         .col(
-            ColumnDef::new(user::Column::UserId)
+            ColumnDef::new(user::Column::Name)
                 .integer()
                 .not_null()
-                .comment("用户ID"),
+                .comment("用户名称"),
         )
         .col(
             ColumnDef::new(user::Column::Status)
                 .boolean()
                 .not_null()
                 .default(true)
-                .comment("状态,0:禁用,1:启用"),
+                .comment("状态,false:禁用,true:启用"),
         )
         .to_owned();
 

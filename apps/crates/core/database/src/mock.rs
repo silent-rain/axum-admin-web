@@ -38,20 +38,20 @@ impl Mock {
         Ok(self)
     }
 
-    /// 从实体创建表
-    /// 失败的示例
-    // pub async fn migration_entities(
-    //     self,
-    //     entities: Vec<Box<&dyn EntityTrait>>,
-    // ) -> Result<Self, DbErr> {
+    // 从实体创建表
+    // 失败的示例
+    // pub async fn migration_entities<E, I>(self, entities: I) -> Result<Self, DbErr>
+    // where
+    //     E: EntityTrait + Sized,
+    //     I: IntoIterator<Item = E>,
+    // {
     //     let builder = self.pool.db().get_database_backend();
     //     let schema = Schema::new(builder);
     //     for entity in entities {
     //         self.pool
     //             .db()
     //             .execute(builder.build(&schema.create_table_from_entity(entity)))
-    //             .await
-    //             .map_err(|err| Error::InitDb(err.to_string()))?;
+    //             .await?;
     //     }
 
     //     Ok(self)

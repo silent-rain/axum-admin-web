@@ -4,7 +4,7 @@ use sea_orm::{
 };
 
 #[derive(Clone, Default, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "user")]
+#[sea_orm(table_name = "role")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,

@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../admin-web"
+		}
+	],
+	"settings": {
+		"rust-analyzer.linkedProjects": [
+			"apps/Cargo.toml"
+		],
+		"Prettier-SQL.SQLFlavourOverride": "mysql",
+		"Prettier-SQL.keywordCase": "upper"
+	}
+}

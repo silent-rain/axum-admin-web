@@ -1,8 +1,8 @@
 //! 用户角色关系表
 
 use sea_orm::{
-    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, DeriveRelation,
-    EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait,
+    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, EntityTrait,
+    EnumIter, ForeignKeyAction, PrimaryKeyTrait, Related, RelationDef, RelationTrait,
 };
 use serde::{Deserialize, Serialize};
 
@@ -21,35 +21,47 @@ pub struct Model {
     pub created_at: DateTime,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "crate::user::role::Entity",
-        from = "Column::RoleId",
-        to = "crate::user::role::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Cascade"
-    )]
     UserRole,
-    #[sea_orm(
-        belongs_to = "crate::user::user_base::Entity",
-        from = "Column::UserId",
-        to = "crate::user::user_base::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Cascade"
-    )]
     UserBase,
 }
 
-impl Related<crate::user::role::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UserRole.def()
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::UserRole => {
+                // 检查关系是否属于实体
+                Entity::belongs_to(super::role::Entity)
+                    // 从实体建立关系
+                    .from(Column::RoleId)
+                    // 与实体建立关系
+                    .to(super::role::Column::Id)
+                    // 发生更新操作时对外键执行的操作
+                    .on_update(ForeignKeyAction::Cascade)
+                    // 发生删除操作时对外键执行的操作
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .into()
+            }
+            Self::UserBase => Entity::belongs_to(super::user_base::Entity)
+                .from(Column::UserId)
+                .to(super::user_base::Column::Id)
+                .on_update(ForeignKeyAction::Cascade)
+                .on_delete(ForeignKeyAction::Cascade)
+                .into(),
+        }
     }
 }
 
-impl Related<crate::user::user_base::Entity> for Entity {
+impl Related<super::user_base::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::UserBase.def()
+    }
+}
+
+impl Related<super::role::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserRole.def()
     }
 }
 

@@ -1,7 +1,7 @@
 //! Mock 测试
 
 mod common;
-use common::User;
+use common::{Role, User};
 
 use database::mock::Mock;
 use sea_orm::{ConnectionTrait, DbBackend, DbErr, EntityTrait, Statement};
@@ -42,7 +42,13 @@ async fn mock_pool() -> Result<(), DbErr> {
 
 async fn mock_entity() -> Result<(), DbErr> {
     // 创建表并返回pool
-    let pool = Mock::builder().await?.migration_entity(User).await?.build();
+    let pool = Mock::builder()
+        .await?
+        .migration_entity(User)
+        .await?
+        .migration_entity(Role)
+        .await?
+        .build();
 
     // 插入数据
     let sql = r#"INSERT INTO user (id,user_id, status)
