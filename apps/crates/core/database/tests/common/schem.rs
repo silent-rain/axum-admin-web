@@ -22,7 +22,7 @@ pub async fn create_user_table(db: &Pool) -> Result<ExecResult, DbErr> {
         )
         .col(
             ColumnDef::new(user::Column::Name)
-                .integer()
+                .string()
                 .not_null()
                 .comment("用户名称"),
         )

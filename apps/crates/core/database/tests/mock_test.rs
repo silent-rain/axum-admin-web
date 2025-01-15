@@ -15,16 +15,16 @@ async fn mock_pool() -> Result<(), DbErr> {
     let sql = r#"CREATE TABLE `user` 
     (
         `id` INT NULL,
-        `user_id` INT NOT NULL,
-        `status` INT NOT NULL,
+        `name` TEXT NOT NULL,
+        `status` BOOLEAN NOT NULL,
         PRIMARY KEY (`id`)
     );"#;
     let result = pool.db().execute_unprepared(sql).await?;
     info!("result1: {:#?}", result);
 
     // 插入数据
-    let sql = r#"INSERT INTO user (id,user_id, status)
-     VALUES (1,1,1);"#;
+    let sql = r#"INSERT INTO user (id,name, status)
+     VALUES (1,'zhangsan',true);"#;
     pool.db().execute_unprepared(sql).await?;
 
     // 查看数据
@@ -51,8 +51,8 @@ async fn mock_entity() -> Result<(), DbErr> {
         .build();
 
     // 插入数据
-    let sql = r#"INSERT INTO user (id,user_id, status)
-     VALUES (1,1,1);"#;
+    let sql = r#"INSERT INTO user (id,name, status)
+     VALUES (1,'zhangsan',1);"#;
     pool.db().execute_unprepared(sql).await?;
 
     // 查看数据
@@ -73,15 +73,15 @@ async fn mock_str() -> Result<(), DbErr> {
     let sql = r#"CREATE TABLE `user` 
     (
         `id` INT NULL,
-        `user_id` INT NOT NULL,
-        `status` INT NOT NULL,
+        `name` TEXT NOT NULL,
+        `status` BOOLEAN NOT NULL,
         PRIMARY KEY (`id`)
     );"#;
     let pool = Mock::builder().await?.migration_str(sql).await?.build();
 
     // 插入数据
-    let sql = r#"INSERT INTO user (id,user_id, status)
-     VALUES (1,1,1);"#;
+    let sql = r#"INSERT INTO user (id,name, status)
+     VALUES (1,'zhangsan',true);"#;
     pool.db().execute_unprepared(sql).await?;
 
     // 查看数据
