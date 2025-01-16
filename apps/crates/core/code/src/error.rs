@@ -38,6 +38,8 @@ pub enum Error {
     MissingJsonContentType,
     #[error("parse content-type error from header, {0}")]
     HeaderContentType(String),
+    #[error("attempt to convert a string to a HeaderValue, {0}")]
+    HeaderValue(String),
 
     // 数据处理异常
     /// Serialize the given data structure as a String of JSON.

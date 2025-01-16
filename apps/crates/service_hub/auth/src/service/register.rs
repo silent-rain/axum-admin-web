@@ -160,3 +160,17 @@ impl RegisterService {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_password() {
+        let password = sha2_256("123456");
+        assert_eq!(
+            password,
+            "da023f7090dd831097f8a534475b1c4fba2a9a6419968e52be7459e2533ac819"
+        );
+    }
+}

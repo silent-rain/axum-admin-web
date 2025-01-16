@@ -37,7 +37,7 @@ impl LoginService {
         req: LoginReq,
         browser_info: BrowserInfo,
         session: Session,
-    ) -> Result<LoginResp, ErrorMsg> {
+    ) -> Result<(LoginResp, String), ErrorMsg> {
         // 检测验证码
         check_captcha(
             &self.captcha_dao,
@@ -102,10 +102,7 @@ impl LoginService {
         );
 
         // 返回Token
-        Ok(LoginResp {
-            user_id: user.id,
-            session_id,
-        })
+        Ok((LoginResp { user_id: user.id }, session_id))
     }
 
     /// 获取用户信息

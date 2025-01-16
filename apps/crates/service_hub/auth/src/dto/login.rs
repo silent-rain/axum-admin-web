@@ -28,8 +28,6 @@ pub struct LoginReq {
 pub struct LoginResp {
     /// 用户ID
     pub user_id: i32,
-    /// session_id
-    pub session_id: String,
 }
 
 /// 浏览器信息

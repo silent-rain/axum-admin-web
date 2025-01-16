@@ -7,9 +7,13 @@ use crate::{
     LoginService,
 };
 
-use axum::{extract::ConnectInfo, http::HeaderMap};
-use axum_response::{Responder, Response};
+use axum::{
+    extract::ConnectInfo,
+    http::{HeaderMap, HeaderName, HeaderValue},
+};
+use axum_response::{Response, ResponseErr};
 use axum_validator::{Extension, Json};
+use code::Error;
 use inject::AInjectProvider;
 use tower_sessions::Session;
 
@@ -24,7 +28,7 @@ impl LoginController {
         ConnectInfo(addr): ConnectInfo<SocketAddr>,
         headers: HeaderMap,
         Json(req): Json<LoginReq>,
-    ) -> Responder<LoginResp> {
+    ) -> Result<(HeaderMap, Response<LoginResp>), ResponseErr> {
         let remote_addr = addr.ip().to_string();
         // Get the user agent from the request headers
         let user_agent = headers
@@ -36,9 +40,17 @@ impl LoginController {
         };
 
         let login_service: LoginService = provider.provide();
-        let result = login_service.login(req, browser_info, session).await?;
+        let (result, session_id) = login_service.login(req, browser_info, session).await?;
 
         let resp = Response::data(result).to_json()?;
-        Ok(resp)
+
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            HeaderName::from_static("session-id"),
+            HeaderValue::from_str(&session_id)
+                .map_err(|err| Error::HeaderValue(err.to_string()))?,
+        );
+
+        Ok((headers, resp))
     }
 }
