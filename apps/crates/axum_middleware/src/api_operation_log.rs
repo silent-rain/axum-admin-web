@@ -1,5 +1,4 @@
 //! Api 操作日志中间件
-//! 失败的示例： expected `Response<Body>`, found `Response<ResponseBody<...>>`
 use std::{boxed::Box, net::SocketAddr, task::Poll, time::Instant};
 
 use axum::{

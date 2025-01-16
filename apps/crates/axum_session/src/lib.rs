@@ -1,12 +1,13 @@
 //! axum session
+use std::sync::Arc;
+
 mod dao;
 mod session_store;
 
 use database::PoolTrait;
 pub use session_store::DbStore;
 
-use std::sync::Arc;
-
+pub use tower_sessions::Session;
 use tower_sessions::{cookie::time::Duration, Expiry, SessionManagerLayer};
 
 pub static SESSION_ID: &str = "session-id";

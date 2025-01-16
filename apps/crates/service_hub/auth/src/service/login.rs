@@ -79,13 +79,15 @@ impl LoginService {
                 .with_msg("账号或密码错误"));
         }
 
-        // TODO 错误信息优化
-        session.insert("user_id", user.id.clone()).await.unwrap();
+        session
+            .insert("user_id", user.id.clone())
+            .await
+            .map_err(|err| Error::SessionIdInsertError(err.to_string()))?;
         session
             .insert("username", user.username.clone())
             .await
-            .unwrap();
-        let session_id = session.id().unwrap().0.to_string();
+            .map_err(|err| Error::SessionIdInsertError(err.to_string()))?;
+        let session_id = session.id().ok_or(Error::SessionIdNotFound)?.0.to_string();
 
         // 添加登陆日志
         self.add_login_log(

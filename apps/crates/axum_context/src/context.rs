@@ -16,12 +16,12 @@ pub struct Context {
     pub user_id: i32,
     /// 用户名称
     pub user_name: String,
-    /// 登陆日志ID
-    pub user_login_id: i32,
-    /// 接口请求UUID
-    pub request_id: String,
+    /// 角色列表
+    pub role_ids: Vec<i32>,
     /// 接口鉴权类型
     pub api_auth_type: Option<ApiAuthType>,
+    /// 接口请求UUID
+    pub request_id: String,
 }
 
 impl Default for Context {
@@ -30,7 +30,7 @@ impl Default for Context {
             session_id: "".to_string(),
             user_id: 0,
             user_name: "".to_string(),
-            user_login_id: 0,
+            role_ids: vec![],
             request_id: "".to_string(),
             api_auth_type: None,
         }
@@ -64,13 +64,13 @@ impl Context {
     pub fn set_user_name(&mut self, user_name: String) {
         self.user_name = user_name;
     }
-    /// 获取登陆日志ID
-    pub fn get_user_login_id(&self) -> i32 {
-        self.user_login_id
+    /// 获取角色列表
+    pub fn get_role_ids(&self) -> Vec<i32> {
+        self.role_ids.clone()
     }
-    /// 设置登陆日志ID
-    pub fn set_user_login_id(&mut self, user_login_id: i32) {
-        self.user_login_id = user_login_id;
+    /// 设置角色列表
+    pub fn set_role_ids(&mut self, role_ids: Vec<i32>) {
+        self.role_ids = role_ids;
     }
 
     /// 获取接口鉴权类型

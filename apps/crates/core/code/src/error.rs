@@ -130,6 +130,8 @@ pub enum Error {
     AuthIllegalRequest,
 
     // SESSION
+    #[error("get session extension failed")]
+    SessionExtension,
     #[error("session id not found")]
     SessionIdNotFound,
     #[error("session id insert error, {0}")]

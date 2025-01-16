@@ -4,10 +4,13 @@ pub mod error;
 
 pub mod api_operation_log;
 pub mod api_operation_log_fn;
-pub mod casbin_auth;
 pub mod empty_wrapper_fn;
+
+// 鉴权
+pub mod casbin_auth;
+pub mod jwt_auth;
 pub mod openapi_auth;
-pub mod system_api_auth;
+pub mod session_auth;
 
 pub mod cors;
 pub mod prometheus;

@@ -1,9 +1,9 @@
 //! 常量
 
 /// 系统鉴权标识
-pub const SYSTEM_API_AUTHORIZATION: &str = "Authorization";
+pub const AUTHORIZATION: &str = "Authorization";
 /// 系统鉴权标识-前缀
-pub const SYSTEM_API_AUTHORIZATION_BEARER: &str = "Bearer ";
+pub const AUTHORIZATION_BEARER: &str = "Bearer ";
 
 /// OPEN API鉴权标识
 pub const OPENAPI_AUTHORIZATION: &str = "X-SR-Token";

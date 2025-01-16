@@ -1,4 +1,4 @@
-//! 系统接口权限中间件
+//! 系统接口JWT权限中间件
 use std::{boxed::Box, task::Poll};
 
 use axum::{body::Body, extract::Request, http::Response};
@@ -18,28 +18,28 @@ use service_hub::{
 };
 
 use crate::{
-    constant::{AUTH_WHITE_LIST, SYSTEM_API_AUTHORIZATION, SYSTEM_API_AUTHORIZATION_BEARER},
+    constant::{AUTHORIZATION, AUTHORIZATION_BEARER, AUTH_WHITE_LIST},
     error::create_error_response,
 };
 
-/// 系统接口权限中间件
+/// 系统接口JWT权限中间件
 #[derive(Clone)]
-pub struct SystemApiAuthLayer;
+pub struct SystemApiJwtAuthLayer;
 
-impl<S> Layer<S> for SystemApiAuthLayer {
-    type Service = SystemApiAuthService<S>;
+impl<S> Layer<S> for SystemApiJwtAuthLayer {
+    type Service = SystemApiJwtAuthService<S>;
 
     fn layer(&self, inner: S) -> Self::Service {
-        SystemApiAuthService { inner }
+        SystemApiJwtAuthService { inner }
     }
 }
 
 #[derive(Clone)]
-pub struct SystemApiAuthService<S> {
+pub struct SystemApiJwtAuthService<S> {
     inner: S,
 }
 
-impl<S> Service<Request> for SystemApiAuthService<S>
+impl<S> Service<Request> for SystemApiJwtAuthService<S>
 where
     S: Service<Request, Response = Response<Body>> + Clone + Send + 'static,
     S::Future: Send + 'static,
@@ -75,7 +75,7 @@ where
             }
 
             // 不存在系统鉴权标识时, 则直接通过
-            if req.headers().get(SYSTEM_API_AUTHORIZATION).is_none() {
+            if req.headers().get(AUTHORIZATION).is_none() {
                 let resp = inner.call(req).await?;
                 return Ok(resp);
             }
@@ -134,7 +134,7 @@ where
             // 设置上下文
             if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
                 ctx.set_user_id(permission.user_id);
-                ctx.set_user_login_id(user_login_id);
+                ctx.set_role_ids(user_login_id);
                 ctx.set_user_name(permission.username.clone());
                 ctx.set_api_auth_type(ApiAuthType::System);
             }
@@ -154,11 +154,11 @@ where
     }
 }
 
-impl<S> SystemApiAuthService<S> {
+impl<S> SystemApiJwtAuthService<S> {
     /// 解析系统接口Token
-    fn parse_system_token(session_id: String) -> Result<(i32, String), code::ErrorMsg> {
+    fn parse_system_token(token: String) -> Result<(i32, String), code::ErrorMsg> {
         // 解码 Token
-        let claims = decode_token_with_verify(&session_id)
+        let claims = decode_token_with_verify(&token)
             .map_err(|err| code::Error::TokenDecode(err.to_string()).into_msg())?;
         Ok((claims.user_id, claims.username))
     }
@@ -167,7 +167,7 @@ impl<S> SystemApiAuthService<S> {
     fn get_system_api_token<ReqBody>(req: &Request<ReqBody>) -> Result<String, code::ErrorMsg> {
         let authorization = req
             .headers()
-            .get(SYSTEM_API_AUTHORIZATION)
+            .get(AUTHORIZATION)
             .map_or("", |v| v.to_str().map_or("", |v| v));
 
         if authorization.is_empty() {
@@ -176,18 +176,18 @@ impl<S> SystemApiAuthService<S> {
                 .into_msg()
                 .with_msg("鉴权标识为空"));
         }
-        if !authorization.starts_with(SYSTEM_API_AUTHORIZATION_BEARER) {
+        if !authorization.starts_with(AUTHORIZATION_BEARER) {
             error!(
-                "用户请求参数缺失 {SYSTEM_API_AUTHORIZATION_BEARER}, 非法请求, authorization: {authorization}"
+                "用户请求参数缺失 {AUTHORIZATION_BEARER}, 非法请求, authorization: {authorization}"
             );
             return Err(code::Error::HeadersNotAuthorizationBearer
                 .into_msg()
                 .with_msg("非法请求"));
         }
 
-        let session_id = authorization.replace(SYSTEM_API_AUTHORIZATION_BEARER, "");
+        let token = authorization.replace(AUTHORIZATION_BEARER, "");
 
-        Ok(session_id)
+        Ok(token)
     }
 
     /// 获取用户权限
@@ -204,33 +204,24 @@ impl<S> SystemApiAuthService<S> {
     /// TODO 后期可调整为缓存
     async fn verify_user_login(
         provider: AInjectProvider,
-        session_id: String,
+        token: String,
     ) -> Result<i32, code::ErrorMsg> {
         let user_login_service: UserLoginLogService = provider.provide();
-        let user = user_login_service
-            .info_by_session_id(session_id.clone())
-            .await?;
+        let user = user_login_service.info_by_session_id(token.clone()).await?;
         if user.login_status == user_login_log::enums::LoginStatus::Disabled as i8 {
-            error!(
-                "user_id: {} session_id: {}, 当前登陆态已被禁用",
-                user.id, session_id
-            );
+            error!("user_id: {} token: {}, 当前登陆态已被禁用", user.id, token);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("当前登陆态已被禁用, 请重新登陆"));
         }
         if user.login_status == user_login_log::enums::LoginStatus::Failed as i8 {
-            error!(
-                "user_id: {} session_id: {}, 无效鉴权",
-                user.id,
-                session_id.clone()
-            );
+            error!("user_id: {} token: {}, 无效鉴权", user.id, token.clone());
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("无效鉴权, 请重新登陆"));
         }
         if user.login_status == user_login_log::enums::LoginStatus::Logout as i8 {
-            error!("user_id: {} session_id: {}, 已登出", user.id, session_id);
+            error!("user_id: {} token: {}, 已登出", user.id, token);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("已登出, 请重新登陆"));

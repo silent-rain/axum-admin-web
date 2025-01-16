@@ -1,3 +1,4 @@
+//! Casbin权限中间件
 //! RBAC 鉴权
 use std::{boxed::Box, task::Poll};
 
@@ -41,7 +42,7 @@ p, bob, /users/1/status, PUT
 g, alice, admin
 ";
 
-/// OpenApi接口鉴权
+/// Casbin权限中间件
 #[derive(Clone)]
 pub struct CasbinAuthLayer;
 
