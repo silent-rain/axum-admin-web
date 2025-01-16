@@ -1,4 +1,8 @@
-/*Mysql 速查表*/
+# MySql使用文档
+
+## Mysql 速查表
+
+```sql
 -- 创建数据库 
 CREATE DATABASE IF NOT EXISTS `axum_admin_web` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
@@ -25,10 +29,16 @@ ADD CONSTRAINT minor_order_trade_history_PK PRIMARY KEY (user_id, minor_order_id
 -- 删除字段
 ALTER TABLE 数据表名
 DROP 字段名;
+```
 
-/*
-# 备份数据库
+## 备份与恢复
+
+```sql
+-- 备份数据库
 mysqldump -uxxx -pxxx axum_admin_web > axum_admin_web.sql
-# 恢复数据库
+
+mysqldump --skip-opt  -h127.0.0.1 -P3306 -uone -p --single-transaction --default-character-set=utf8 -q axum_admin_web user_log  > ./user_log-bak_20250103.sql
+
+-- 恢复数据库
 mysql -uxxx -pxxx axum_admin_web < axum_admin_web.sql
- */
+```
