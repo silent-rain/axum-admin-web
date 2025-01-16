@@ -24,16 +24,20 @@ pub enum Error {
     RequestTimeout(String),
     /// invalid request parameter
     #[error("invalid request parameter, {0}")]
-    InvalidParameter(String) = 10105,
+    InvalidParameter(String),
     #[error("Validate Errorr, {0}")]
-    ValidateError(String),
-    #[error("Expected request with `Content-Type: application/json`")]
-    MissingJsonContentType,
-    #[error("Parse Request Body Error, {0}")]
-    ParseRequestBodyError(String) = 10108,
+    ValidateError(String) = 10106,
+
     /// config file parse error
     #[error("config file parse error, {0}")]
     ConfigFileParseError(String),
+
+    #[error("Parse Request Body Error, {0}")]
+    ParseRequestBodyError(String) = 10108,
+    #[error("Expected request with `Content-Type: application/json`")]
+    MissingJsonContentType,
+    #[error("parse content-type error from header, {0}")]
+    HeaderContentType(String),
 
     // 数据处理异常
     /// Serialize the given data structure as a String of JSON.

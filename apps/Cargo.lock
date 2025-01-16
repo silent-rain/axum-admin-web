@@ -629,6 +629,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "axum-streams"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e706938a2f02ac53dac79575d99819fa6285a5eae35b0fa27b959affb80c435"
+dependencies = [
+ "axum 0.8.1",
+ "bytes",
+ "futures",
+ "http 1.2.0",
+ "http-body",
+ "mime",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+]
+
+[[package]]
 name = "axum-test"
 version = "17.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1038,6 +1055,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8293772165d9345bdaaa39b45b2109591e63fe5e6fbc23c6ff930a048aa310b"
 dependencies = [
  "shlex",
+]
+
+[[package]]
+name = "cfb"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d38f2da7a0a2c4ccf0065be06397cc26a81f4e528be095826eee9d4adbb8c60f"
+dependencies = [
+ "byteorder",
+ "fnv",
+ "uuid",
 ]
 
 [[package]]
@@ -2391,6 +2419,15 @@ checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.2",
+]
+
+[[package]]
+name = "infer"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc150e5ce2330295b8616ce0e3f53250e53af31759a9dbedad1621ba29151847"
+dependencies = [
+ "cfb",
 ]
 
 [[package]]
@@ -4851,6 +4888,8 @@ name = "system"
 version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
+ "axum-extra",
+ "axum-streams",
  "axum_response",
  "axum_typed_multipart",
  "axum_validator",
@@ -4858,6 +4897,7 @@ dependencies = [
  "code",
  "database",
  "entity",
+ "infer",
  "inject",
  "nject",
  "sea-orm",

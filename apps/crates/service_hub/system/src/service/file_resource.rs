@@ -98,17 +98,24 @@ impl FileResourceService {
 
         let extension = file_extension(file_name.clone())?;
 
-        let content_type = req
-            .file
-            .metadata
-            .content_type
-            .map_or("".to_owned(), |v| v.to_string());
-
         let buffer = vec![];
         req.file
             .contents
             .write_all(&buffer)
             .map_err(|err| Error::UploadFileError(err.to_string()))?;
+
+        let mut content_type = req
+            .file
+            .metadata
+            .content_type
+            .map_or("".to_owned(), |v| v.to_string());
+
+        if content_type.is_empty() {
+            let file_kind = infer::get(&buffer).ok_or(Error::HeaderContentType(format!(
+                "{file_name} file type is known"
+            )))?;
+            content_type = file_kind.mime_type().to_string();
+        }
 
         let file_size = req.file.contents.bytes().count() as u16;
 
@@ -141,17 +148,24 @@ impl FileResourceService {
                 Error::RequestError("请求参数异常".to_string()).into_msg()
             })?;
 
-            let content_type = file_extension(file_name.clone())?;
-
-            let extension = file
-                .metadata
-                .content_type
-                .map_or("".to_owned(), |v| v.to_string());
+            let extension = file_extension(file_name.clone())?;
 
             let buffer = vec![];
             file.contents
                 .write_all(&buffer)
                 .map_err(|err| Error::UploadFileError(err.to_string()))?;
+
+            let mut content_type = file
+                .metadata
+                .content_type
+                .map_or("".to_owned(), |v| v.to_string());
+
+            if content_type.is_empty() {
+                let file_kind = infer::get(&buffer).ok_or(Error::HeaderContentType(format!(
+                    "{file_name} file type is known"
+                )))?;
+                content_type = file_kind.mime_type().to_string();
+            }
 
             let file_size = file.contents.bytes().count() as u16;
 

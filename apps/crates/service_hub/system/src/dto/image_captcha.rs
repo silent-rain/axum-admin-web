@@ -84,3 +84,10 @@ pub struct BatchDeleteImageCaptchaReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BatchDeleteImageCaptchaResp {}
+
+/// 获取图片 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct ShowCaptchaImageReq {
+    /// 验证码ID
+    pub captcha_id: String,
+}

@@ -5,7 +5,7 @@ use crate::{
     dao::image_captcha::ImageCaptchaDao,
     dto::image_captcha::{
         CreateImageCaptchaReq, CreateImageCaptchaResp, DeleteImageCaptchaReq, GetImageCaptchaReq,
-        GetImageCaptchasReq, GetInfoByCaptchaIdReq,
+        GetImageCaptchasReq, GetInfoByCaptchaIdReq, ShowCaptchaImageReq,
     },
 };
 
@@ -58,40 +58,6 @@ impl ImageCaptchaService {
             .ok_or_else(|| {
                 error!("验证码不存在");
                 Error::DbQueryEmptyError.into_msg().with_msg("验证码不存在")
-            })?;
-
-        Ok(result)
-    }
-
-    /// 通过captcha_id获取详情信息
-    pub async fn info_by_captcha_id(
-        &self,
-        req: GetInfoByCaptchaIdReq,
-    ) -> Result<sys_image_captcha::Model, ErrorMsg> {
-        let result = self
-            .image_captcha_dao
-            .info_by_captcha_id(req.captcha_id)
-            .await
-            .map_err(|err| {
-                error!("查询验证码信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询验证码信息失败")
-            })?
-            .ok_or_else(|| {
-                error!("验证码不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("验证码不存在")
-            })?;
-
-        // 验证码在使用后将其状态更新为无效
-        self.image_captcha_dao
-            .update_status(result.id, false)
-            .await
-            .map_err(|err| {
-                error!("更新验证码状态失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("更新验证码状态失败")
             })?;
 
         Ok(result)
@@ -155,6 +121,65 @@ impl ImageCaptchaService {
                 Error::DbBatchDeleteError
                     .into_msg()
                     .with_msg("批量删除验证码信息失败")
+            })?;
+
+        Ok(result)
+    }
+}
+
+impl ImageCaptchaService {
+    /// 通过captcha_id获取详情信息
+    pub async fn info_by_captcha_id(
+        &self,
+        req: GetInfoByCaptchaIdReq,
+    ) -> Result<sys_image_captcha::Model, ErrorMsg> {
+        let result = self
+            .image_captcha_dao
+            .info_by_captcha_id(req.captcha_id)
+            .await
+            .map_err(|err| {
+                error!("查询验证码信息失败, err: {:#?}", err);
+                Error::DbQueryError
+                    .into_msg()
+                    .with_msg("查询验证码信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("验证码不存在");
+                Error::DbQueryEmptyError.into_msg().with_msg("验证码不存在")
+            })?;
+
+        // 验证码在使用后将其状态更新为无效
+        self.image_captcha_dao
+            .update_status(result.id, false)
+            .await
+            .map_err(|err| {
+                error!("更新验证码状态失败, err: {:#?}", err);
+                Error::DbQueryError
+                    .into_msg()
+                    .with_msg("更新验证码状态失败")
+            })?;
+
+        Ok(result)
+    }
+
+    /// 通过captcha_id获取详情信息
+    pub async fn show_image(
+        &self,
+        req: ShowCaptchaImageReq,
+    ) -> Result<sys_image_captcha::Model, ErrorMsg> {
+        let result = self
+            .image_captcha_dao
+            .info_by_captcha_id(req.captcha_id)
+            .await
+            .map_err(|err| {
+                error!("查询验证码信息失败, err: {:#?}", err);
+                Error::DbQueryError
+                    .into_msg()
+                    .with_msg("查询验证码信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("验证码不存在");
+                Error::DbQueryEmptyError.into_msg().with_msg("验证码不存在")
             })?;
 
         Ok(result)

@@ -15,7 +15,7 @@ use tracing::error;
 use crate::dao::UserSessionDao;
 use database::PoolTrait;
 use entity::user::user_session;
-use utils::json::{serialize_to_vec, vec_to_struct};
+use utils::json::{serialize_to_vec, vec_deserialize};
 
 /// A session store that lives only in memory.
 ///
@@ -163,7 +163,7 @@ impl SessionStore for DbStore {
             ));
         }
 
-        let data: Record = vec_to_struct(&session_data.data).map_err(|err| {
+        let data: Record = vec_deserialize(&session_data.data).map_err(|err| {
             error!("deserialize to record failedd, err: {err}");
             Error::Backend("deserialize to record failed".to_string())
         })?;

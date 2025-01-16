@@ -11,7 +11,7 @@ use crate::{
     service::file_resource::FileResourceService,
 };
 
-use axum::body::Body;
+use axum::{body::Body, http::header};
 use axum_response::{Responder, Response, ResponseErr};
 use axum_typed_multipart::TypedMultipart;
 use axum_validator::{Extension, Json, Query};
@@ -108,6 +108,33 @@ impl FileResourceController {
         Ok(resp)
     }
 
+    /// 下载文件
+    pub async fn download(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<ShowImageReq>,
+    ) -> Result<axum::response::Response<Body>, ResponseErr> {
+        let filename = req.hash.clone();
+
+        let file_resource_service: FileResourceService = provider.provide();
+        let result = file_resource_service.info_by_hash(req).await?;
+
+        let file_bytes = result.data;
+
+        // 文件名称
+        let content_disposition = format!(
+            "attachment; filename=\"{:?}.{:?}\"",
+            filename, result.extension
+        );
+
+        let resp = axum::response::Response::builder()
+            .header("Content-Type", result.content_type)
+            .header(header::CONTENT_DISPOSITION, content_disposition)
+            .header(HEADERS_X_IMG, "true")
+            .body(Body::from(file_bytes))
+            .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
+        Ok(resp)
+    }
+
     /// 通过hash值获取图片
     /// TODO 待验证
     pub async fn show_image(
@@ -117,11 +144,13 @@ impl FileResourceController {
         let file_resource_service: FileResourceService = provider.provide();
         let result = file_resource_service.info_by_hash(req).await?;
 
-        let img = result.data.to_vec();
+        let file_bytes = result.data;
+
+        // TODO 添加图片类型校验
 
         let resp = axum::response::Response::builder()
             .header(HEADERS_X_IMG, "true")
-            .body(Body::from(img))
+            .body(Body::from(file_bytes))
             .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
         Ok(resp)
     }

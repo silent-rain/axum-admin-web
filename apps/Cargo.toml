@@ -44,6 +44,7 @@ axum_typed_multipart = "0.15"
 axum-test = "17.1"
 axum_static = "1.7"
 axum-prometheus = "0.8"
+axum-streams = "0.20"
 tower-sessions = "0.14"
 tower = "0.5"
 tower-http = "0.6"
@@ -61,7 +62,8 @@ num_cpus = "1.16"
 tokio-cron-scheduler = "0.13"
 http-body-util = "0.1"
 serde_urlencoded = "0.7"
-mime = "0.3"
+mime = "0.3"                  # mime type
+infer = "0.16"                # mime
 
 # 数据库`
 sea-orm = "1.1"

@@ -14,11 +14,14 @@ inject = { path = "../../core/inject" }
 
 
 axum = { workspace = true }
+axum-extra = { workspace = true }
+axum-streams = { workspace = true }
 axum_typed_multipart = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }
 tempfile = { workspace = true }
+infer = { workspace = true }
 
 tracing = { workspace = true }
 chrono = { workspace = true }

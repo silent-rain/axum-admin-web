@@ -91,6 +91,14 @@ where
             // 响应
             let resp = inner.call(req).await?;
 
+            let content_type = resp
+                .headers()
+                .get("Content-Type")
+                .map_or("".to_string(), |v| {
+                    v.to_str().map_or("".to_string(), |v| v.to_string())
+                })
+                .to_uppercase();
+
             let status_code = resp.status();
 
             let (parts, body) = resp.into_parts();
@@ -103,7 +111,7 @@ where
 
             // 创建响应体日志
             match api_log
-                .parse_resp_body(body_bytes.clone(), status_code)
+                .parse_resp_body(body_bytes.clone(), status_code, content_type)
                 .create_api_operation_log()
                 .await
             {
@@ -240,20 +248,29 @@ impl ApiOperationLog {
     }
 
     /// 解析响应体
-    fn parse_resp_body(mut self, req_body_bytes: Bytes, status_code: StatusCode) -> Self {
-        let body = Self::body_bytes_to_string(&req_body_bytes)
-            .map_or("body data parsing error ".to_string(), |v| v);
-        let cost = self.start_time.elapsed().as_millis() as i16;
-
+    fn parse_resp_body(
+        mut self,
+        req_body_bytes: Bytes,
+        status_code: StatusCode,
+        content_type: String,
+    ) -> Self {
         let data = self.data.map(|mut data| {
-            data.cost = cost;
-            // TODO 添加字符限制, 如果太大则进行省略
-            data.body = Some(body);
+            data.cost = self.start_time.elapsed().as_millis() as i16;
             data.http_type = log_api_operation::enums::HttpType::Resp;
+            data.content_type = content_type;
 
             // 图片body数据不入库
-            if data.content_type != "multipart/form-data".to_uppercase() {
-                data.body = None;
+            if data
+                .content_type
+                .to_uppercase()
+                .contains(&"image".to_uppercase())
+            {
+                data.body = Some(format!("data:{:#?};base64...", data.content_type));
+            } else {
+                // TODO 添加字符限制, 如果太大则进行省略
+                let body = Self::body_bytes_to_string(&req_body_bytes)
+                    .map_or("body data parsing error ".to_string(), |v| v);
+                data.body = Some(body);
             }
             data.status_code = status_code.as_u16() as i32;
 
