@@ -40,11 +40,8 @@ pub async fn main() -> anyhow::Result<()> {
         .init();
 
     // 初始化数据库
-    let db_pool = database::Pool::new(
-        app_config.postgresql.dns(),
-        app_config.postgresql.options.clone(),
-    )
-    .await?;
+    let db_pool =
+        database::Pool::new(app_config.mysql.dns(), app_config.mysql.options.clone()).await?;
 
     // 定时任务
     // TimerRegister::start(db_pool.clone());

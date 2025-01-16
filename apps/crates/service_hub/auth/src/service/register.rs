@@ -28,6 +28,7 @@ impl RegisterService {
     pub async fn register(&self, req: RegisterReq) -> Result<user_base::Model, ErrorMsg> {
         // 参数校验, 防止被空刷验证码
         match req.register_type {
+            // TODO 添加用户名登录
             user_base::enums::UserType::Phone => {
                 if req.phone.is_none() {
                     error!("请输入手机号码");
@@ -43,12 +44,12 @@ impl RegisterService {
         }
 
         // 检测验证码
-        // check_captcha(
-        //     &self.captcha_dao,
-        //     req.captcha_id.clone(),
-        //     req.captcha.clone(),
-        // )
-        // .await?;
+        check_captcha(
+            &self.captcha_dao,
+            req.captcha_id.clone(),
+            req.captcha.clone(),
+        )
+        .await?;
 
         // 检查用户名, 查看用户名是否已注册
         self.check_username(req.username.clone()).await?;

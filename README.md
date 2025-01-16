@@ -134,6 +134,11 @@
   - 上下文初始化，仅读取session
   - 鉴权，仅读取session；
 - 日志响应body异常
+- session auth
+  - login create seesion_id, set-cookies
+  - relogin  create seesion_id, set-cookies,old seesion_id set expire
+  - 中间件进行权限验证；
+- jwt auth
 
 ## 开发文档
 
