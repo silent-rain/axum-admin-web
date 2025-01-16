@@ -98,15 +98,18 @@ pub enum Error {
     #[error("验证码错误")]
     CaptchaInvalid,
 
+    #[error("base64 decode error, {0}")]
+    Base64Decode(String),
+
     // 鉴权
     #[error("账号或密码错误")]
-    LoginPasswordError = 10254,
+    LoginPasswordError,
     #[error("用户已被禁用")]
-    LoginUserDisableError = 10255,
+    LoginUserDisableError,
 
     // JWT
     #[error("获取密匙异常")]
-    TokenEncode = 10256,
+    TokenEncode,
     #[error("鉴权解析失败, err: {0}")]
     TokenDecode(String),
     #[error("获取鉴权标识失败")]
@@ -116,7 +119,7 @@ pub enum Error {
     #[error("获取inject provider实例失败")]
     InjectAproviderObj,
     #[error("当前登陆态已失效, 请重新登陆")]
-    LoginStatusDisabled = 10261,
+    LoginStatusDisabled,
     #[error("用户添加失败")]
     UserAddError,
     #[error("获取鉴权标识失败")]
@@ -135,11 +138,11 @@ pub enum Error {
 
     // 工具箱
     #[error("User-Agent解析错误, {0}")]
-    UserAgentParserError(String) = 10281,
+    UserAgentParserError(String) = 10381,
     #[error("Uuid解析失败, {0}")]
-    UuidParseError(String) = 10282,
+    UuidParseError(String),
     #[error("调度任务移除解析失败, {0}")]
-    ScheduleRemoveError(String) = 10283,
+    ScheduleRemoveError(String),
     #[error("Get Schedule Instance Error")]
     ScheduleInstance = 10284,
 
@@ -152,7 +155,7 @@ pub enum Error {
 
     // 文件或目录操作
     #[error("parse file extension failed, {0}")]
-    ParseFileExtension(String) = 10301,
+    ParseFileExtension(String) = 10501,
     #[error("获取目录失败")]
     FsReadDirError,
     #[error("获取上级目录失败")]

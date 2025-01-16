@@ -1,7 +1,6 @@
 //! 文件资源管理
 
 use crate::{
-    constant::HEADERS_X_IMG,
     dto::file_resource::{
         BatchDeleteFileResourceReq, BatchDeleteFileResourceResp, DeleteFileResourceReq,
         DeleteFileResourceResp, GetFileResourceReq, GetFileResourceResp, GetFileResourcesReq,
@@ -11,7 +10,10 @@ use crate::{
     service::file_resource::FileResourceService,
 };
 
-use axum::{body::Body, http::header};
+use axum::{
+    body::Body,
+    http::{header, HeaderMap, HeaderName, HeaderValue},
+};
 use axum_response::{Responder, Response, ResponseErr};
 use axum_typed_multipart::TypedMultipart;
 use axum_validator::{Extension, Json, Query};
@@ -129,18 +131,17 @@ impl FileResourceController {
         let resp = axum::response::Response::builder()
             .header("Content-Type", result.content_type)
             .header(header::CONTENT_DISPOSITION, content_disposition)
-            .header(HEADERS_X_IMG, "true")
             .body(Body::from(file_bytes))
             .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
         Ok(resp)
     }
 
     /// 通过hash值获取图片
-    /// TODO 待验证
+    /// 返回图片
     pub async fn show_image(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<ShowImageReq>,
-    ) -> Result<axum::response::Response<Body>, ResponseErr> {
+    ) -> Result<(HeaderMap, Vec<u8>), ResponseErr> {
         let file_resource_service: FileResourceService = provider.provide();
         let result = file_resource_service.info_by_hash(req).await?;
 
@@ -148,11 +149,13 @@ impl FileResourceController {
 
         // TODO 添加图片类型校验
 
-        let resp = axum::response::Response::builder()
-            .header(HEADERS_X_IMG, "true")
-            .body(Body::from(file_bytes))
-            .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
-        Ok(resp)
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            HeaderName::from_static("content-type"),
+            HeaderValue::from_static("image/jpeg"),
+        );
+
+        Ok((headers, file_bytes))
     }
 }
 

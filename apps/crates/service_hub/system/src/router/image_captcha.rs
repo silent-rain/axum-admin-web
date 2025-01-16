@@ -28,8 +28,7 @@ impl ImageCaptchaRouter {
                     "/batch_delete",
                     delete(ImageCaptchaController::batch_delete),
                 )
-                .route("/show_image", get(ImageCaptchaController::show_image))
-                .route("/show_image2", get(ImageCaptchaController::show_image2)),
+                .route("/show_image", get(ImageCaptchaController::show_image)),
         )
     }
 }

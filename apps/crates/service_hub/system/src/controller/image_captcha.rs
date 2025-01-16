@@ -1,9 +1,6 @@
 //! 图片验证码管理
 
-use std::io::{Bytes, Read};
-
 use crate::{
-    constant::HEADERS_X_IMG,
     dto::image_captcha::{
         BatchDeleteImageCaptchaReq, BatchDeleteImageCaptchaResp, CreateImageCaptchaReq,
         CreateImageCaptchaResp, DeleteImageCaptchaReq, DeleteImageCaptchaResp, GetImageCaptchaReq,
@@ -15,15 +12,12 @@ use crate::{
 
 use axum::{
     body::Body,
-    http::{header, HeaderMap, HeaderName, HeaderValue},
+    http::{HeaderMap, HeaderName, HeaderValue},
     response::IntoResponse,
 };
 use axum_response::{Responder, Response, ResponseErr};
 use axum_validator::{Extension, Json, Query};
-use code::Error;
 use inject::AInjectProvider;
-use tracing::error;
-use utils::json::{vec_deserialize, vec_to_string};
 
 /// 控制器
 pub struct ImageCaptchaController;
@@ -104,31 +98,8 @@ impl ImageCaptchaController {
     }
 
     /// 通过hash值获取图片
-    /// TODO 待验证
+    /// 返回图片
     pub async fn show_image(
-        Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<ShowCaptchaImageReq>,
-    ) -> Result<axum::response::Response<Vec<u8>>, ResponseErr> {
-        let image_captcha_service: ImageCaptchaService = provider.provide();
-        let result = image_captcha_service.show_image(req).await?;
-        let img = result.data;
-
-        let mut resp = axum::response::Response::new(img);
-        resp.headers_mut().insert(
-            HeaderName::from_static("Content-Type"),
-            HeaderValue::from_static("image/jpeg"),
-        );
-        // let resp = axum::response::Response::builder()
-        //     // .header(HEADERS_X_IMG, "true")
-        //     // .header("accept-ranges", "bytes")
-        //     .header("Content-Type", "image/jpeg")
-        //     .body(Body::from(img))
-        //     .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?
-        //     .into_response();
-        Ok(resp)
-    }
-
-    pub async fn show_image2(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<ShowCaptchaImageReq>,
     ) -> Result<(HeaderMap, Vec<u8>), ResponseErr> {
@@ -138,15 +109,26 @@ impl ImageCaptchaController {
 
         let mut headers = HeaderMap::new();
         headers.insert(
-            HeaderName::from_static("Content-Type"),
-            HeaderValue::from_static("image/jpeg"),
+            HeaderName::from_static("content-type"),
+            HeaderValue::from_static("image/png"),
         );
 
-        // headers.insert(
-        //     HeaderName::from_static(HEADERS_X_IMG),
-        //     HeaderValue::from_static("true"),
-        // );
         Ok((headers, img))
+    }
+
+    /// 返回图片
+    pub async fn show_image3(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<ShowCaptchaImageReq>,
+    ) -> impl IntoResponse {
+        let image_captcha_service: ImageCaptchaService = provider.provide();
+        let result = image_captcha_service.show_image(req).await.unwrap();
+        let img = result.data;
+
+        axum::response::Response::builder()
+            .header("Content-Type", "image/png") // 根据图片类型，可能是 image/jpeg 或其他
+            .body(Body::from(img))
+            .unwrap()
     }
 }
 

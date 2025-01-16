@@ -4893,6 +4893,7 @@ dependencies = [
  "axum_response",
  "axum_typed_multipart",
  "axum_validator",
+ "base64 0.22.1",
  "chrono",
  "code",
  "database",

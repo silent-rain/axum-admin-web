@@ -13,6 +13,7 @@ use code::{Error, ErrorMsg};
 use entity::system::sys_image_captcha;
 use utils::captcha::generate_captcha;
 
+use base64::{engine::general_purpose, Engine};
 use nject::injectable;
 use sea_orm::Set;
 use tracing::{error, warn};
@@ -73,10 +74,17 @@ impl ImageCaptchaService {
         let captcha_id = Uuid::new_v4().to_string();
         let expire = CAPTCHA_EXPIRE;
 
+        let img_bytes = general_purpose::STANDARD
+            .decode(base_img.clone().as_bytes())
+            .map_err(|err| {
+                error!("base64 decode error, err: {:#?}", err);
+                Error::Base64Decode(err.to_string()).into_msg()
+            })?;
+
         let model = sys_image_captcha::ActiveModel {
             captcha_id: Set(captcha_id),
             captcha: Set(captcha.clone()),
-            data: Set(base_img.clone().into_bytes()),
+            data: Set(img_bytes),
             expire: Set(expire),
             ..Default::default()
         };
@@ -87,7 +95,7 @@ impl ImageCaptchaService {
 
         let result = CreateImageCaptchaResp {
             captcha_id: result.captcha_id,
-            data: base_img,
+            data: format!("data:image/jpeg;base64,{}", base_img),
             created_at: result.created_at,
         };
         // TODO 后期调整日志级别
