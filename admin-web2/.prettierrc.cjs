@@ -13,4 +13,19 @@ module.exports = {
   htmlWhitespaceSensitivity: 'ignore', // 对HTML全局空白不敏感
   embeddedLanguageFormatting: 'auto', // 对引用代码进行格式化
   endOfLine: 'auto', // 不检查结束行形式
+  proseWrap: 'never',
+  overrides: [
+    {
+      files: '.prettierrc',
+      options: {
+        parser: 'json',
+      },
+    },
+    {
+      files: 'document.ejs',
+      options: {
+        parser: 'html',
+      },
+    },
+  ],
 }
