@@ -9,9 +9,8 @@ use crate::{
 
 use code::{Error, ErrorMsg};
 use entity::{user::user_base, user::user_login_log};
-use jwt::encode_token;
 use system::ImageCaptchaDao;
-use tower_sessions::{session::Id, Session};
+use tower_sessions::Session;
 use user::{EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
 use utils::browser::parse_user_agent_async;
 
@@ -37,7 +36,7 @@ impl LoginService {
         req: LoginReq,
         browser_info: BrowserInfo,
         session: Session,
-    ) -> Result<(LoginResp, String), ErrorMsg> {
+    ) -> Result<LoginResp, ErrorMsg> {
         // 检测验证码
         check_captcha(
             &self.captcha_dao,
@@ -80,17 +79,13 @@ impl LoginService {
                 .with_msg("账号或密码错误"));
         }
 
-        // 生成Token
-        // TODO 待处理
-        // let token = encode_token(user.id, user.username.clone()).map_err(|err| {
-        //     error!("生成密匙失败, err: {}", err);
-        //     Error::TokenEncode.into_msg().with_msg("生成密匙失败")
-        // })?;
-
-        let id = Id::default();
-        session.insert(&id.to_string(), "demo-1").await.unwrap();
-
-        let session_id = "".to_string();
+        // TODO 错误信息优化
+        session.insert("user_id", user.id.clone()).await.unwrap();
+        session
+            .insert("username", user.username.clone())
+            .await
+            .unwrap();
+        let session_id = session.id().unwrap().0.to_string();
 
         // 添加登陆日志
         self.add_login_log(
@@ -102,7 +97,7 @@ impl LoginService {
         );
 
         // 返回Token
-        Ok((LoginResp { user_id: user.id }, session_id))
+        Ok(LoginResp { user_id: user.id })
     }
 
     /// 获取用户信息

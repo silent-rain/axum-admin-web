@@ -218,6 +218,9 @@ mod tests {
             expiry_date: OffsetDateTime::now_utc() + Duration::minutes(30),
         };
         println!("record: {:#?}", record);
+        println!("record id: {:#?}", record.id);
+        println!("record id string: {:#?}", record.id.to_string());
+        println!("record id.0 string: {:#?}", record.id.0.to_string());
 
         store.create(&mut record).await.expect("create failed");
 
