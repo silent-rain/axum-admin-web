@@ -12,9 +12,9 @@ pub const OPENAPI_PASSPHRASE: &str = "X-SR-Passphrase";
 
 /// 请求白名单
 pub const AUTH_WHITE_LIST: [&str; 5] = [
-    "/api/v1/health",
-    "/api/v1/auth/captcha",
-    "/api/v1/auth/login",
-    "/api/v1/auth/register",
-    "/api/v1/initialize/table",
+    "/health",
+    "/auth/captcha",
+    "/auth/login",
+    "/auth/register",
+    "/initialize/table",
 ];
