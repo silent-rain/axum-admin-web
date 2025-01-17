@@ -101,17 +101,21 @@ pub struct DeleteRoleResp {}
 #[cfg(test)]
 mod tests {
     use super::*;
+    use code::Error;
 
     use serde_json::json;
 
     #[test]
-    fn test_status() {
+    fn test_status() -> Result<(), Error> {
         let expected = UpdateRoleStatusReq {
             id: 1,
             status: true,
         };
         let json_data = json!({ "id": 1, "status":true });
-        let result: UpdateRoleStatusReq = serde_json::from_value(json_data).unwrap();
+        let result: UpdateRoleStatusReq = serde_json::from_value(json_data)
+            .map_err(|err| Error::JsonDeserialization(err.to_string()))?;
         assert!(expected == result);
+
+        Ok(())
     }
 }

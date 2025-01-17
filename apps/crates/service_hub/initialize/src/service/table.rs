@@ -36,7 +36,7 @@ impl TableService {
 
         if admin.is_some() {
             error!("管理员已存在无需重复初始化");
-            return Err(Error::DbInitByAdminExistError
+            return Err(Error::DbDataInit
                 .into_msg()
                 .with_msg("管理员已存在无需重复初始化"));
         }

@@ -47,7 +47,9 @@ where
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         if !json_content_type(req.headers()) {
-            return Err(ResponseErr::new(Error::MissingJsonContentType));
+            return Err(ResponseErr::new(Error::HeaderContentType(
+                "expected request with `Content-Type: application/json`".to_string(),
+            )));
         }
 
         let bytes = Bytes::from_request(req, state)

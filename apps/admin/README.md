@@ -90,3 +90,6 @@ cargo doc -p admin
 - web proto
   - [stephenh/ts-proto](https://github.com/stephenh/ts-proto)
   - [timostamm/protobuf-ts](https://github.com/timostamm/protobuf-ts)
+
+- curd 设计参考
+  - <https://github.com/zenlex/crustd/blob/main/src/crud_traits.rs>

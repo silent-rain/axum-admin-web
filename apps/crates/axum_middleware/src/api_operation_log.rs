@@ -136,7 +136,7 @@ where
     let bytes = body
         .collect()
         .await
-        .map_err(|err| Error::ParseRequestBodyError(err.to_string()).into_msg())?
+        .map_err(|err| Error::RequestBodyError(err.to_string()).into_msg())?
         .to_bytes();
     Ok(bytes)
 }

@@ -8,6 +8,7 @@
 
 - 语言: Rust
 - 后端框架: Axum
+- 前端框架: React
 - 数据库框架: Sea-Orm
 - 日志框架: Tracing
 
@@ -119,26 +120,12 @@
   - <https://github.com/tokio-rs/axum/discussions/608>
 - 如何托管 SPA 文件并将文件嵌入到可执行文件中？
   - <https://github.com/tokio-rs/axum/discussions/1309>
-- curd 设计参考
-  - <https://github.com/zenlex/crustd/blob/main/src/crud_traits.rs>
+
 - 定时器-用户任务
 - doc 文档，细化为接口文档；
 - 用户权限封装；
 - 文件上传表
-  - 图片展示接口验证
   - 添加文件下载接口
-- session 登录态管理
-  - 结合登录日志进行管理
-  - 封装自定义session库
-  - 登陆后设置session，设置cookies
-  - 上下文初始化，仅读取session
-  - 鉴权，仅读取session；
-- 日志响应body异常
-- session auth
-  - login create seesion_id, set-cookies
-  - relogin  create seesion_id, set-cookies,old seesion_id set expire
-  - 中间件进行权限验证；
-- jwt auth
 
 ## 开发文档
 

@@ -16,6 +16,10 @@ pub enum Error {
     /// internal server error
     #[error("internal server error, {0}")]
     InternalServer(String),
+    #[error("Validate Errorr, {0}")]
+    ValidateError(String) = 10106,
+
+    // 请求头与请求参数
     /// request error
     #[error("request error, {0}")]
     RequestError(String),
@@ -25,21 +29,16 @@ pub enum Error {
     /// invalid request parameter
     #[error("invalid request parameter, {0}")]
     InvalidParameter(String),
-    #[error("Validate Errorr, {0}")]
-    ValidateError(String) = 10106,
-
-    /// config file parse error
-    #[error("config file parse error, {0}")]
-    ConfigFileParseError(String),
-
-    #[error("Parse Request Body Error, {0}")]
-    ParseRequestBodyError(String) = 10108,
-    #[error("Expected request with `Content-Type: application/json`")]
-    MissingJsonContentType,
+    #[error("parse request body error, {0}")]
+    RequestBodyError(String),
     #[error("parse content-type error from header, {0}")]
     HeaderContentType(String),
     #[error("attempt to convert a string to a HeaderValue, {0}")]
     HeaderValue(String),
+
+    /// config file parse error
+    #[error("config file parse error, {0}")]
+    ConfigFileParseError(String),
 
     // 数据处理异常
     /// Serialize the given data structure as a String of JSON.
@@ -91,6 +90,8 @@ pub enum Error {
     DbDataExistChildrenError,
     #[error("db table migration error, {0}")]
     DbTableMigration(String),
+    #[error("数据库数据初始化失败")]
+    DbDataInit,
 
     // 验证码
     #[error("未知的验证码")]
@@ -140,9 +141,6 @@ pub enum Error {
     SessionIdInsertError(String),
     #[error("session id delete error, {0}")]
     SessionIdDeleteError(String),
-
-    #[error("数据库初始化失败, 管理员已存在无需重复初始化")]
-    DbInitByAdminExistError,
 
     // 工具箱
     #[error("User-Agent解析错误, {0}")]
