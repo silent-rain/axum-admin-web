@@ -183,6 +183,10 @@ pub enum Error {
     #[error("failed to generate user sharing code")]
     GenerateUserShareCore,
 
+    // 组件错误集
+    #[error("{0}")]
+    CasbinError(#[from] casbin::error::Error),
+
     /// 自定义错误
     #[error("自定义错误")]
     CustomError = 65535,

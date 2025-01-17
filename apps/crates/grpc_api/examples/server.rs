@@ -28,7 +28,7 @@ impl Greeter for MyGreeter {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "0.0.0.0:50051".parse().unwrap();
+    let addr = "0.0.0.0:50051".parse()?;
     let greeter = MyGreeter::default();
 
     let (_, health_service) = tonic_health::server::health_reporter();

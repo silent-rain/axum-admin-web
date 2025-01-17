@@ -1,14 +1,14 @@
-use std::{io::Result, path::PathBuf};
+use std::path::PathBuf;
 
-fn main() -> Result<()> {
+fn main() -> anyhow::Result<()> {
     // trigger rebuild if "proto" folder change
     print!("cargo:rerun-if-changed=./proto");
 
-    //let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+    //let out_dir = PathBuf::from(env::var("OUT_DIR")?;
     let out_dir = PathBuf::from(std::env!("CARGO_MANIFEST_DIR"))
         .join("src")
         .join("proto");
-    std::fs::create_dir_all(&out_dir).unwrap();
+    std::fs::create_dir_all(&out_dir)?;
 
     tonic_build::configure()
         // 现实启用当 .proto 文件变化时自动重编译

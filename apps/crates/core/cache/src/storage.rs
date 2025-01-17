@@ -207,6 +207,7 @@ mod tests {
         let t1 = Instant::now()
             .checked_add(time::Duration::from_secs(2))
             .unwrap();
+
         println!("t1 {:#?}", t1.elapsed().as_secs());
         tokio::time::sleep(time::Duration::from_secs(1)).await;
         println!("t1 {:#?}", t1.elapsed().as_secs());
@@ -221,23 +222,23 @@ mod tests {
         println!("t2 {:#?}", t2.elapsed().as_secs());
 
         println!("{}", t1 > t2);
-        println!("{}", t2 > t1)
+        println!("{}", t2 > t1);
     }
 
     #[tokio::test]
     async fn test_instant2() {
         let t2 = Instant::now();
         println!("t1 {:#?}", t2.elapsed());
-        let t2 = t2.checked_sub(time::Duration::from_secs(2));
-        println!("t1 {:#?}", t2.unwrap().elapsed());
+        let t2 = t2.checked_sub(time::Duration::from_secs(2)).unwrap();
+        println!("t1 {:#?}", t2.elapsed());
     }
 
     #[tokio::test]
     async fn test_instant3() {
         let t2 = Instant::now();
         println!("t1 {:#?}", t2.elapsed());
-        let t2 = t2.checked_add(time::Duration::from_secs(2));
-        println!("t1 {:#?}", t2.unwrap().elapsed());
+        let t2 = t2.checked_add(time::Duration::from_secs(2)).unwrap();
+        println!("t1 {:#?}", t2.elapsed());
     }
 
     #[tokio::test]

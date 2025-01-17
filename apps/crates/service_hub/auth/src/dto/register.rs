@@ -54,11 +54,12 @@ pub struct RegisterResp {}
 mod tests {
     use super::*;
 
+    use code::Error;
     use serde_json::json;
     use utils::json::struct_to_struct;
 
     #[test]
-    fn test_register_type() {
+    fn test_register_type() -> Result<(), Error> {
         let expected = RegisterReq {
             phone: Some("phone".to_owned()),
             email: Some("email".to_owned()),
@@ -87,14 +88,16 @@ mod tests {
             "captcha_id":"captcha_id",
             "captcha": "captcha",
         });
-        let result: RegisterReq = struct_to_struct(&body).unwrap();
+        let result: RegisterReq = struct_to_struct(&body)?;
         println!("expected: {:#?}", expected);
         println!("result: {:#?}", result);
-        assert!(expected == result)
+        assert!(expected == result);
+
+        Ok(())
     }
 
     #[test]
-    fn test_register_type_by_none() {
+    fn test_register_type_by_none() -> Result<(), Error> {
         let expected = RegisterReq {
             phone: Some("phone".to_owned()),
             email: None,
@@ -123,13 +126,15 @@ mod tests {
             "captcha_id":"captcha_id",
             "captcha": "captcha",
         });
-        let result: RegisterReq = struct_to_struct(&body).unwrap();
+        let result: RegisterReq = struct_to_struct(&body)?;
 
-        assert!(expected == result)
+        assert!(expected == result);
+
+        Ok(())
     }
 
     #[test]
-    fn test_register_type_by_missing_field() {
+    fn test_register_type_by_missing_field() -> Result<(), Error> {
         let expected = RegisterReq {
             phone: Some("phone".to_owned()),
             email: None,
@@ -158,9 +163,11 @@ mod tests {
             // "captcha_id":"captcha_id",
             // "captcha": "captcha",
         });
-        let result: RegisterReq = struct_to_struct(&body).unwrap();
+        let result: RegisterReq = struct_to_struct(&body)?;
         println!("expected: {:#?}", expected);
         println!("result: {:#?}", result);
-        assert!(expected == result)
+        assert!(expected == result);
+
+        Ok(())
     }
 }

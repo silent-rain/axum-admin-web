@@ -1149,6 +1149,7 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 name = "code"
 version = "0.1.0"
 dependencies = [
+ "casbin",
  "serde",
  "thiserror 2.0.11",
 ]
@@ -1928,6 +1929,7 @@ dependencies = [
 name = "grpc_api"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "prost",
  "serde",
  "tokio",

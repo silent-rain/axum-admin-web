@@ -11,7 +11,12 @@ pub fn vec_to_string<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Strin
         error!("failed to deserialize vec into string, error: {err:#?}");
         Error::JsonDeserialization(err.to_string())
     })?;
-    Ok(serde_json::to_string(&v).unwrap())
+
+    let result = serde_json::to_string(&v).map_err(|err| {
+        error!("failed to serialize vec into string, error: {err:#?}");
+        Error::JsonSerialization(err.to_string())
+    })?;
+    Ok(result)
 }
 
 /// 序列化 i8 转 bool

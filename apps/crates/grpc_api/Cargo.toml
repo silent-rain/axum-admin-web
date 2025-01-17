@@ -17,3 +17,4 @@ tonic-reflection = { workspace = true }
 
 [build-dependencies]
 tonic-build = { workspace = true }
+anyhow = { workspace = true }

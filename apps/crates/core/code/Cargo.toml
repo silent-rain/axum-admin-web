@@ -6,3 +6,5 @@ edition = "2021"
 [dependencies]
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
+
+casbin = { workspace = true }

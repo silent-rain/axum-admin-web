@@ -16,13 +16,3 @@ pub fn local_time() -> OffsetTime<Vec<FormatItem<'static>>> {
     // 本地时间
     OffsetTime::new(offset, time_format)
 }
-/*
-pub fn layer<S, F>(
-    local_time: OffsetTime<F>,
-    config: logger::Options,
-) -> Box<dyn Layer<S> + Send + Sync + 'static>
-where
-    S: Subscriber,
-    for<'a> S: LookupSpan<'a>,
-    F: Formattable + Send + Sync + 'static,
-*/
