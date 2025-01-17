@@ -8,10 +8,7 @@ use code::Error;
 use futures::future::BoxFuture;
 use std::task::Poll;
 use tower::{Layer, Service};
-use tower_sessions::{session::Id, Session};
-use tracing::error;
-
-const HEADER_SESSION_ID: &str = "x-session-id";
+use tower_sessions::Session;
 
 /// 上下文中间件
 #[derive(Debug, Default, Clone)]
@@ -58,33 +55,23 @@ where
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
         Box::pin(async move {
-            let (session, header_session_id) = match Self::get_session_id(&req) {
-                Ok(v) => v,
-                Err(err) => {
-                    return Ok(create_error_response(err));
+            // Session
+            let session = match req.extensions().get::<Session>() {
+                Some(v) => v,
+                None => {
+                    return Ok(create_error_response(Error::SessionExtension.into_msg()));
                 }
             };
-
-            // 添加 session_id
-            let mut session_id = header_session_id;
-            if session_id.is_empty() {
-                error!("headers not session id");
-                let new_session_id = Id::default();
-                // session
-                //     .insert(new_session_id.to_string().as_str(), true)
-                //     .await
-                //     .map_err(|err| Error::SessionIdInsertError(err.to_string()))?;
-                match session
-                    .insert(new_session_id.to_string().as_str(), true)
-                    .await
-                    .map_err(|err| Error::SessionIdInsertError(err.to_string()))
-                {
-                    Ok(v) => v,
-                    Err(err) => return Ok(create_error_response(err.into())),
-                };
-
-                session_id = new_session_id.to_string();
-            }
+            let session_id = match session.id() {
+                Some(v) => v.0.to_string(),
+                None => {
+                    return Ok(create_error_response(
+                        Error::SessionIdNotFound
+                            .into_msg()
+                            .with_msg("权限异常, 请重新登陆"),
+                    ))
+                }
+            };
 
             // See `axum::RequestExt` for how to run extractors directly from  a `Request`.
             let context = Context {
@@ -97,24 +84,5 @@ where
             let resp = inner.call(req).await?;
             Ok(resp)
         })
-    }
-}
-
-impl<S> ContextService<S> {
-    /// 获取 session id
-    fn get_session_id(req: &Request) -> Result<(&Session, String), code::ErrorMsg> {
-        let header_session_id = req
-            .headers()
-            .get(HEADER_SESSION_ID)
-            .map_or("", |v| v.to_str().map_or("", |v| v));
-
-        // Session
-        let session = req.extensions().get::<Session>().ok_or_else(|| {
-            Error::SessionIdNotFound
-                .into_msg()
-                .with_msg("session extension  error")
-        })?;
-
-        Ok((session, header_session_id.to_string()))
     }
 }
