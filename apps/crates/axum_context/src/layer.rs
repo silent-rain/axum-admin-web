@@ -63,7 +63,7 @@ where
                 }
             };
             let session_id = match session.id() {
-                Some(v) => v.0.to_string(),
+                Some(v) => v.to_string(),
                 None => {
                     return Ok(create_error_response(
                         Error::SessionIdNotFound

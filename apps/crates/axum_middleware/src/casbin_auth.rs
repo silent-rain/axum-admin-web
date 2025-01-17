@@ -108,7 +108,10 @@ where
             // Casbin
             let mut cb = match Casbin::new(inject_provider).await {
                 Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
+                Err(err) => {
+                    error!("{err}");
+                    return Ok(create_error_response(err));
+                }
             };
             // 执行
             match cb
@@ -116,7 +119,10 @@ where
                 .await
             {
                 Ok(v) => v,
-                Err(err) => return Ok(create_error_response(err)),
+                Err(err) => {
+                    error!("{err}");
+                    return Ok(create_error_response(err));
+                }
             };
 
             // 响应
@@ -207,19 +213,28 @@ impl Casbin {
         self.enforcer
             .add_policies(p_policies)
             .await
-            .map_err(|err| Error::CasbinError(err))?;
+            .map_err(|err| {
+                error!("add policies error, {err}");
+                Error::CasbinError(err)
+            })?;
         // 添加角色
         self.enforcer
             .add_grouping_policies(g_policies)
             .await
-            .map_err(|err| Error::CasbinError(err))?;
+            .map_err(|err| {
+                error!("add grouping policies error, {err}");
+                Error::CasbinError(err)
+            })?;
 
         // 执行权限检查
         // ("alice", "/users", "GET")
         let result = self
             .enforcer
             .enforce((user_id.clone(), path.clone(), method.clone()))
-            .map_err(|err| Error::CasbinError(err))?;
+            .map_err(|err| {
+                error!("enforce error, {err}");
+                Error::CasbinError(err)
+            })?;
 
         // 权限判断
         if !result {

@@ -184,7 +184,7 @@ pub enum Error {
     GenerateUserShareCore,
 
     // 组件错误集
-    #[error("{0}")]
+    #[error("permission error, {0}")]
     CasbinError(#[from] casbin::error::Error),
 
     /// 自定义错误

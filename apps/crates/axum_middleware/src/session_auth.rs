@@ -66,7 +66,7 @@ where
                 }
             };
             let session_id = match session.id() {
-                Some(v) => v.0.to_string(),
+                Some(v) => v.to_string(),
                 None => {
                     return Ok(create_error_response(
                         Error::SessionIdNotFound
@@ -114,8 +114,8 @@ impl<S> SessionAuthService<S> {
         provider: AInjectProvider,
         session_id: String,
     ) -> Result<i32, code::ErrorMsg> {
-        let user_login_service: UserLoginLogService = provider.provide();
-        let user = user_login_service
+        let user_login_log_service: UserLoginLogService = provider.provide();
+        let user = user_login_log_service
             .info_by_session_id(session_id.clone())
             .await?;
 
@@ -144,6 +144,6 @@ impl<S> SessionAuthService<S> {
                 .into_msg()
                 .with_msg("已登出, 请重新登陆"));
         }
-        Ok(user.id)
+        Ok(user.user_id)
     }
 }

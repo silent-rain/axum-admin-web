@@ -31,7 +31,7 @@ impl Logoutervice {
     ) -> Result<(), ErrorMsg> {
         let user_id = ctx.get_user_id();
         let username = ctx.get_user_name();
-        let session_id = session.id().ok_or(Error::SessionIdNotFound)?.0.to_string();
+        let session_id = session.id().ok_or(Error::SessionIdNotFound)?.to_string();
 
         // 添加登陆日志
         add_login_log(
