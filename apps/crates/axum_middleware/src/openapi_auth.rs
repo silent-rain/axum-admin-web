@@ -5,13 +5,10 @@ use axum::{body::Body, extract::Request, http::Response};
 use axum_context::{ApiAuthType, Context};
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
-use tracing::{error, info};
+use tracing::error;
 
 use code::Error;
-use service_hub::{
-    inject::AInjectProvider,
-    user::{cached::UserCached, dto::user_base::UserPermission, UserBaseService},
-};
+use service_hub::{inject::AInjectProvider, permission::TokenService};
 
 use crate::{
     constant::{AUTH_WHITE_LIST, OPENAPI_AUTHORIZATION, OPENAPI_PASSPHRASE},
@@ -55,13 +52,11 @@ where
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
         Box::pin(async move {
-            // 全局依赖
-            let inject_provider = match req.extensions().get::<AInjectProvider>() {
-                Some(v) => v.clone(),
-                None => {
-                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
-                }
-            };
+            // 不存在Openapi鉴权标识时, 则直接通过
+            if req.headers().get(OPENAPI_AUTHORIZATION).is_none() {
+                let resp = inner.call(req).await?;
+                return Ok(resp);
+            }
 
             // 白名单放行
             let path = req.uri().path();
@@ -70,12 +65,7 @@ where
                 return Ok(resp);
             }
 
-            // 不存在Openapi鉴权标识时, 则直接通过
-            if req.headers().get(OPENAPI_AUTHORIZATION).is_none() {
-                let resp = inner.call(req).await?;
-                return Ok(resp);
-            }
-            // 获取 Openapi 鉴权
+            // 获取 Openapi 鉴权标识
             let (openapi_token, passphras) = match Self::get_openapi_token(&req) {
                 Ok(v) => v,
                 Err(err) => {
@@ -83,55 +73,36 @@ where
                     return Ok(create_error_response(err));
                 }
             };
-            // 获取缓存
-            if let Ok(permission) =
-                UserCached::get_user_openapi_api_auth(openapi_token.clone()).await
-            {
-                // 设置上下文
-                if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
-                    ctx.set_user_id(permission.user_id);
-                    ctx.set_user_name(permission.username.clone());
-                    ctx.set_api_auth_type(ApiAuthType::Openapi);
-                }
-                info!(
-                    "auth user req, cached, auth_type: {:?}, user_id: {}, username: {}",
-                    ApiAuthType::Openapi,
-                    permission.user_id,
-                    permission.username
-                );
-                let resp = inner.call(req).await?;
-                return Ok(resp);
-            }
 
-            // 获取用户权限
-            let permission = match Self::user_permission(
-                inject_provider.clone(),
-                openapi_token.clone(),
-                passphras,
-            )
-            .await
-            {
-                Ok(v) => v,
-                Err(err) => {
-                    error!("获取权限失败, err: {:#?}", err);
-                    return Ok(create_error_response(err));
+            // 全局依赖
+            let inject_provider = match req.extensions().get::<AInjectProvider>() {
+                Some(v) => v.clone(),
+                None => {
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
                 }
             };
 
+            // 获取用户权限
+            let user_id =
+                match Self::get_user_id(inject_provider.clone(), openapi_token.clone(), passphras)
+                    .await
+                {
+                    Ok(v) => v,
+                    Err(err) => {
+                        error!(
+                            "{} 获取用户信息失败, err: {:#?}",
+                            openapi_token.clone(),
+                            err
+                        );
+                        return Ok(create_error_response(err));
+                    }
+                };
+
             // 设置上下文
             if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
-                ctx.set_user_id(permission.user_id);
-                ctx.set_user_name(permission.username.clone());
+                ctx.set_user_id(user_id);
                 ctx.set_api_auth_type(ApiAuthType::Openapi);
             }
-            // 设置缓存
-            UserCached::set_user_openapi_api_auth(openapi_token, permission.clone()).await;
-            info!(
-                "auth user req, auth_type: {:?}, user_id: {}, username: {}",
-                ApiAuthType::Openapi,
-                permission.user_id,
-                permission.username
-            );
 
             // 响应
             let resp = inner.call(req).await?;
@@ -141,17 +112,19 @@ where
 }
 
 impl<S> OpenApiAuthService<S> {
-    /// 获取用户权限
-    async fn user_permission(
+    /// 获取用户ID
+    ///
+    /// 注意 `info_by_token` 会检查 token 状态
+    async fn get_user_id(
         provider: AInjectProvider,
         openapi_token: String,
         passphrase: String,
-    ) -> Result<UserPermission, code::ErrorMsg> {
-        let user_service: UserBaseService = provider.provide();
-        let user = user_service
-            .get_token_user_permission(openapi_token, passphrase)
+    ) -> Result<i32, code::ErrorMsg> {
+        let token_service: TokenService = provider.provide();
+        let user = token_service
+            .info_by_token(openapi_token, passphrase)
             .await?;
-        Ok(user)
+        Ok(user.user_id)
     }
 
     /// 获取OPEN API鉴权标识Token

@@ -2,21 +2,15 @@
 use std::{boxed::Box, task::Poll};
 
 use axum::{body::Body, extract::Request, http::Response};
-use axum_context::{ApiAuthType, Context};
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tower_sessions::Session;
-use tracing::{error, info};
+use tracing::error;
 
+use axum_context::{ApiAuthType, Context};
 use code::Error;
 use entity::user::user_login_log;
-use jwt::decode_token_with_verify;
-use service_hub::{
-    inject::AInjectProvider,
-    user::{
-        cached::UserCached, dto::user_base::UserPermission, UserBaseService, UserLoginLogService,
-    },
-};
+use service_hub::{inject::AInjectProvider, user::UserLoginLogService};
 
 use crate::{constant::AUTH_WHITE_LIST, error::create_error_response};
 
@@ -91,61 +85,19 @@ where
             };
 
             // 验证用户登陆状态
-            let (user_id, username) =
-                match Self::verify_user_login_staus(inject_provider.clone(), session_id.clone())
-                    .await
-                {
-                    Ok(v) => v,
-                    Err(err) => {
-                        return Ok(create_error_response(err));
-                    }
-                };
-
-            // 验证用户所在状态
-
-            // 获取缓存
-            if let Ok(permission) = UserCached::get_user_system_api_auth(user_id).await {
-                // 设置上下文
-                if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
-                    ctx.set_user_id(permission.user_id);
-                    ctx.set_user_name(permission.username.clone());
-                    ctx.set_role_ids(permission.role_ids.clone());
-                    ctx.set_api_auth_type(ApiAuthType::System);
-                }
-                info!(
-                    "auth user req, cached, auth_type: {:?}, user_id: {}, username: {}",
-                    ApiAuthType::System,
-                    permission.user_id,
-                    permission.username
-                );
-                let resp = inner.call(req).await?;
-                return Ok(resp);
-            }
-
-            // 获取用户权限
-            let permission = match Self::user_permission(inject_provider.clone(), user_id).await {
+            let user_id = match Self::get_user_id(inject_provider.clone(), session_id.clone()).await
+            {
                 Ok(v) => v,
                 Err(err) => {
-                    error!("获取权限失败, err: {:#?}", err);
                     return Ok(create_error_response(err));
                 }
             };
 
             // 设置上下文
             if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
-                ctx.set_user_id(permission.user_id);
-                // ctx.set_role_ids(user_id);
-                ctx.set_user_name(permission.username.clone());
+                ctx.set_user_id(user_id);
                 ctx.set_api_auth_type(ApiAuthType::System);
             }
-            // 设置缓存
-            UserCached::set_user_system_api_auth(user_id, permission.clone()).await;
-            info!(
-                "auth user req, auth_type: {:?}, user_id: {}, username: {}",
-                ApiAuthType::System,
-                permission.user_id,
-                permission.username
-            );
 
             // 响应
             let resp = inner.call(req).await?;
@@ -155,13 +107,13 @@ where
 }
 
 impl<S> SessionAuthService<S> {
-    /// 验证用户登陆状态
+    /// 获取用户ID
     ///
-    /// TODO 后期可调整为缓存
-    async fn verify_user_login_staus(
+    /// 同时验证用户登陆状态, 非正常登录态则重新登录
+    async fn get_user_id(
         provider: AInjectProvider,
         session_id: String,
-    ) -> Result<(i32, String), code::ErrorMsg> {
+    ) -> Result<i32, code::ErrorMsg> {
         let user_login_service: UserLoginLogService = provider.provide();
         let user = user_login_service
             .info_by_session_id(session_id.clone())
@@ -192,19 +144,6 @@ impl<S> SessionAuthService<S> {
                 .into_msg()
                 .with_msg("已登出, 请重新登陆"));
         }
-        Ok((user.id, user.username))
-    }
-
-    /// 检查用户登状态
-    ///
-
-    /// 获取用户角色列表
-    async fn get_role_ids(
-        provider: AInjectProvider,
-        user_id: i32,
-    ) -> Result<UserPermission, code::ErrorMsg> {
-        let user_service: UserBaseService = provider.provide();
-        let user = user_service.get_sys_user_permission(user_id).await?;
-        Ok(user)
+        Ok(user.id)
     }
 }

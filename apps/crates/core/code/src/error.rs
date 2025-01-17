@@ -114,6 +114,8 @@ pub enum Error {
     TokenEncode,
     #[error("鉴权解析失败, err: {0}")]
     TokenDecode(String),
+    #[error("Token has been disabled")]
+    TokenDisabed,
     #[error("获取鉴权标识失败")]
     HeadersNotAuthorization,
     #[error("获取鉴权前缀失败")]
@@ -136,6 +138,8 @@ pub enum Error {
     SessionIdNotFound,
     #[error("session id insert error, {0}")]
     SessionIdInsertError(String),
+    #[error("session id delete error, {0}")]
+    SessionIdDeleteError(String),
 
     #[error("数据库初始化失败, 管理员已存在无需重复初始化")]
     DbInitByAdminExistError,

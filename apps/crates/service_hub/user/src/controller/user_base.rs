@@ -3,16 +3,17 @@
 use crate::{
     dto::user_base::{
         CreateUserBaseReq, CreateUserBaseResp, DeleteUserBaseReq, DeleteUserBaseResp,
-        GetUserBaseReq, GetUserBaseResp, GetUserBasesReq, GetUserBasesResp, ProfileReq,
-        ProfileResp, RolesReq, RolesResp, UpdateShareCodeReq, UpdateShareCodeResp,
-        UpdateUserBaseReq, UpdateUserBaseResp, UpdateUserBaseStatusReq, UpdateUserBaseStatusResp,
+        GetCheckUsernameReq, GetCheckUsernameResp, GetUserBaseReq, GetUserBaseResp,
+        GetUserBasesReq, GetUserBasesResp, ProfileReq, ProfileResp, RolesReq, RolesResp,
+        UpdateShareCodeReq, UpdateShareCodeResp, UpdateUserBaseReq, UpdateUserBaseResp,
+        UpdateUserBaseStatusReq, UpdateUserBaseStatusResp,
     },
     service::user_base::UserBaseService,
 };
 
-use axum_validator::{Extension, Json, Query};
 use axum_context::Context;
 use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 use tracing::warn;
 
@@ -94,6 +95,18 @@ impl UserBaseController {
 }
 
 impl UserBaseController {
+    /// 检查用户名称是否存在
+    pub async fn check_username(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<GetCheckUsernameReq>,
+    ) -> Responder<GetCheckUsernameResp> {
+        let user_base_service: UserBaseService = provider.provide();
+        user_base_service.check_username(req).await?;
+
+        let resp = Response::<()>::ok().to_json()?;
+        Ok(resp)
+    }
+
     /// 更新用户分享码
     pub async fn update_share_code(
         Extension(provider): Extension<AInjectProvider>,

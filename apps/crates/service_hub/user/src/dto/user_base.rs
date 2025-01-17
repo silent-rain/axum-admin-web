@@ -87,8 +87,6 @@ pub struct CreateUserBaseResp {}
 pub struct UpdateUserBaseReq {
     /// 用户ID
     pub id: i32,
-    /// 用户名称
-    pub username: String,
     /// 真实姓名
     pub real_name: Option<String>,
     /// 性别(0:保密,1:女,2:男)
@@ -199,3 +197,12 @@ pub struct UserPermission {
     pub username: String,
     pub role_ids: Vec<i32>,
 }
+
+/// 查询用户信息 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+pub struct GetCheckUsernameReq {
+    pub username: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetCheckUsernameResp {}

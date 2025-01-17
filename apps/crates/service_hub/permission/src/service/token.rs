@@ -76,6 +76,14 @@ impl TokenService {
                 Error::DbQueryEmptyError.into_msg().with_msg("令牌不存在")
             })?;
 
+        // TODO 到期时间判断
+
+        // 状态判断
+        if !result.status {
+            error!("user_id: {}, Token 已被禁用", result.user_id);
+            return Err(code::Error::TokenDisabed.into_msg());
+        }
+
         // 屏蔽口令
         result.passphrase = "".to_string();
         Ok(result)

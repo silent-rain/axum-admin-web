@@ -2,20 +2,16 @@
 use crate::{
     dao::{user_base::UserBaseDao, user_role_rel::UserRoleRelDao},
     dto::user_base::{
-        CreateUserBaseReq, DeleteUserBaseReq, GetUserBaseReq, GetUserBasesReq, ProfileResp,
-        RolesReq, UpdateShareCodeReq, UpdateUserBaseReq, UpdateUserBaseStatusReq, UserPermission,
+        CreateUserBaseReq, DeleteUserBaseReq, GetCheckUsernameReq, GetUserBaseReq, GetUserBasesReq,
+        ProfileResp, RolesReq, UpdateShareCodeReq, UpdateUserBaseReq, UpdateUserBaseStatusReq,
     },
 };
 
 use code::{Error, ErrorMsg};
-use entity::{
-    permission::token,
-    user::{role, user_base, user_role_rel},
-};
+use entity::user::{role, user_base, user_role_rel};
 
 use base64::Engine;
 use nject::injectable;
-use permission::TokenDao;
 use sea_orm::Set;
 use tracing::error;
 use utils::crypto::sha2_256;
@@ -29,7 +25,6 @@ const SHARE_CODE_COUNT: i32 = 100;
 pub struct UserBaseService {
     user_base_dao: UserBaseDao,
     user_role_rel_dao: UserRoleRelDao,
-    token_dao: TokenDao,
 }
 
 impl UserBaseService {
@@ -64,10 +59,8 @@ impl UserBaseService {
                 Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
-                error!("用户信息不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("用户信息不存在")
+                error!("user_id: {}, 用户不存在", req.id);
+                Error::DbQueryEmptyError.into_msg().with_msg("用户不存在")
             })?;
 
         // 屏蔽敏感信息
@@ -106,37 +99,39 @@ impl UserBaseService {
 /// 事务处理
 impl UserBaseService {
     /// 后台添加用户信息及对应用户信息的角色
-    pub async fn create(&self, data: CreateUserBaseReq) -> Result<user_base::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateUserBaseReq) -> Result<user_base::Model, ErrorMsg> {
         // 检查用户名, 查看用户名是否已注册
-        self.check_username_exist(data.username.clone(), None)
-            .await?;
+        self.check_username(GetCheckUsernameReq {
+            username: req.username.clone(),
+        })
+        .await?;
 
         // 密码加密
-        let password = sha2_256(&data.password);
+        let password = sha2_256(&req.password);
 
         let model = user_base::ActiveModel {
-            username: Set(data.username),
-            real_name: Set(data.real_name),
-            gender: Set(data.gender as i8),
+            username: Set(req.username),
+            real_name: Set(req.real_name),
+            gender: Set(req.gender as i8),
             password: Set(password),
-            status: Set(data.status),
-            age: Set(data.age),
-            date_birth: Set(data.date_birth),
-            avatar: Set(data.avatar),
-            intro: Set(data.intro),
-            desc: Set(data.desc),
-            address: Set(data.address),
-            preferences: Set(data.preferences),
-            department_id: Set(data.department_id),
-            position_id: Set(data.position_id),
-            rank_id: Set(data.rank_id),
-            member_level_id: Set(data.member_level_id),
+            status: Set(req.status),
+            age: Set(req.age),
+            date_birth: Set(req.date_birth),
+            avatar: Set(req.avatar),
+            intro: Set(req.intro),
+            desc: Set(req.desc),
+            address: Set(req.address),
+            preferences: Set(req.preferences),
+            department_id: Set(req.department_id),
+            position_id: Set(req.position_id),
+            rank_id: Set(req.rank_id),
+            member_level_id: Set(req.member_level_id),
             ..Default::default()
         };
 
         let result = self
             .user_base_dao
-            .add_user(model, data.role_ids)
+            .add_user(model, req.role_ids)
             .await
             .map_err(|err| {
                 error!("添加用户信息失败, err: {:#?}", err);
@@ -147,10 +142,6 @@ impl UserBaseService {
 
     /// 后台更新用户信息及对应用户信息的角色
     pub async fn update(&self, req: UpdateUserBaseReq) -> Result<(), ErrorMsg> {
-        // 检查用户名, 查看用户名是否已注册
-        self.check_username_exist(req.username.clone(), Some(req.id))
-            .await?;
-
         // 获取原角色列表
         let (user_role_rels, _) = self
             .user_role_rel_dao
@@ -168,7 +159,6 @@ impl UserBaseService {
 
         let model = user_base::ActiveModel {
             id: Set(req.id),
-            username: Set(req.username),
             real_name: Set(req.real_name),
             gender: Set(req.gender as i8),
             status: Set(req.status),
@@ -193,35 +183,6 @@ impl UserBaseService {
                 Error::DbUpdateError.into_msg().with_msg("更新用户信息失败")
             })?;
 
-        Ok(())
-    }
-
-    /// 检查用户名称是否存在
-    async fn check_username_exist(
-        &self,
-        username: String,
-        current_id: Option<i32>,
-    ) -> Result<(), ErrorMsg> {
-        let result = self
-            .user_base_dao
-            .info_by_username(username)
-            .await
-            .map_err(|err| {
-                error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
-            })?;
-
-        // 存在
-        if let Some(model) = result {
-            if current_id.is_none() || Some(model.id) != current_id {
-                error!("用户名称已存在");
-                return Err(Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("用户名称已存在"));
-            }
-        }
-
-        // 不存在
         Ok(())
     }
 
@@ -314,6 +275,29 @@ impl UserBaseService {
 
 /// 权限相关
 impl UserBaseService {
+    /// 检查用户名称是否存在
+    pub async fn check_username(&self, req: GetCheckUsernameReq) -> Result<(), ErrorMsg> {
+        let result = self
+            .user_base_dao
+            .info_by_username(req.username)
+            .await
+            .map_err(|err| {
+                error!("查询用户信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+            })?;
+
+        // 存在
+        if let Some(_model) = result {
+            error!("用户名称已存在");
+            return Err(Error::DbDataExistError
+                .into_msg()
+                .with_msg("用户名称已存在"));
+        }
+
+        // 不存在
+        Ok(())
+    }
+
     /// 获取用户信息个人信息
     pub async fn profile(&self, id: i32) -> Result<ProfileResp, ErrorMsg> {
         let user = self
@@ -352,96 +336,8 @@ impl UserBaseService {
         Ok((results, total))
     }
 
-    /// 获取系统用户权限
-    pub async fn get_sys_user_permission(&self, user_id: i32) -> Result<UserPermission, ErrorMsg> {
-        // 获取用户信息
-        let user = self.get_user(user_id).await?;
-
-        let (user_role_rels, _) = self
-            .user_role_rel_dao
-            .list_by_user_id(user_id)
-            .await
-            .map_err(|err| {
-                error!("获取用户角色关系列表失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("获取用户角色关系列表失败")
-            })?;
-        let role_ids: Vec<i32> = user_role_rels.iter().map(|v| v.role_id).collect();
-
-        Ok(UserPermission {
-            user_id: user.id,
-            username: user.username,
-            role_ids,
-        })
-    }
-
-    /// 获取Token用户权限
-    pub async fn get_token_user_permission(
-        &self,
-        openapi_token: String,
-        passphrase: String,
-    ) -> Result<UserPermission, ErrorMsg> {
-        // 获取token信息
-        let token = self.get_token_user(openapi_token, passphrase).await?;
-        let user_id = token.user_id;
-
-        // 获取用户信息
-        let user = self.get_user(user_id).await?;
-
-        let (user_role_rels, _) = self
-            .user_role_rel_dao
-            .list_by_user_id(user_id)
-            .await
-            .map_err(|err| {
-                error!("获取用户角色关系列表失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("获取用户角色关系列表失败")
-            })?;
-        let role_ids: Vec<i32> = user_role_rels.iter().map(|v| v.role_id).collect();
-
-        Ok(UserPermission {
-            user_id: user.id,
-            username: user.username,
-            role_ids,
-        })
-    }
-
-    /// 获取token信息
-    ///
-    /// TODO 使用 Token_service？
-    async fn get_token_user(
-        &self,
-        openapi_token: String,
-        passphrase: String,
-    ) -> Result<token::Model, ErrorMsg> {
-        let token = self
-            .token_dao
-            .info_by_token(openapi_token.clone(), passphrase)
-            .await
-            .map_err(|err| {
-                error!("openapi_token: {openapi_token}, 查询用户令牌失败, err: {err}",);
-                Error::DbQueryError.into_msg().with_msg("查询用户令牌失败")
-            })?
-            .ok_or_else(|| {
-                error!("openapi_token: {openapi_token}, 用户令牌不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("用户令牌不存在")
-            })?;
-        if token.status {
-            error!("openapi_token: {}, 用户令牌已被禁用", openapi_token.clone());
-            return Err(code::Error::LoginStatusDisabled
-                .into_msg()
-                .with_msg("用户令牌已被禁用"));
-        }
-
-        Ok(token)
-    }
-
     /// 获取用户信息
-    async fn get_user(&self, user_id: i32) -> Result<user_base::Model, ErrorMsg> {
+    async fn info_checked(&self, user_id: i32) -> Result<user_base::Model, ErrorMsg> {
         let user = self
             .user_base_dao
             .info(user_id)

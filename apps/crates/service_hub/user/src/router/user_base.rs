@@ -32,7 +32,8 @@ impl UserBaseRouter {
                     put(UserBaseController::update_share_code),
                 )
                 .route("/{id}/profile", get(UserBaseController::profile))
-                .route("/{id}/roles", get(UserBaseController::roles)),
+                .route("/{id}/roles", get(UserBaseController::roles))
+                .route("/check-username", get(UserBaseController::check_username)),
         )
     }
 }
