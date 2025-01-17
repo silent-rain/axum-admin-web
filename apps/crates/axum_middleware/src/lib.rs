@@ -8,6 +8,7 @@ pub mod empty_wrapper_fn;
 
 // 鉴权
 pub mod casbin_auth;
+pub mod check_auth;
 pub mod jwt_auth;
 pub mod openapi_auth;
 pub mod session_auth;

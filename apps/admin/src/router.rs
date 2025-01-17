@@ -19,9 +19,10 @@ use tracing::warn;
 
 use axum_context::ContextLayer;
 use axum_middleware::{
-    api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer, cors::cors_layer,
-    empty_wrapper_fn::empty_wrapper_layer, openapi_auth::OpenApiAuthLayer,
-    prometheus::prometheus_layer_metric_handle, session_auth::SessionAuthLayer,
+    api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer,
+    check_auth::CheckAuthLayer, cors::cors_layer, empty_wrapper_fn::empty_wrapper_layer,
+    openapi_auth::OpenApiAuthLayer, prometheus::prometheus_layer_metric_handle,
+    session_auth::SessionAuthLayer,
 };
 use axum_session::session_layer;
 use service_hub::{
@@ -88,6 +89,7 @@ pub fn register(db_pool: Arc<(dyn PoolTrait)>) -> Router {
         // .layer(SessionAuthLayer) // Session权限中间件
         // .layer(OpenApiAuthLayer) // OpenApi权限中间件
         // .layer(CasbinAuthLayer) // Casbin权限中间件
+        .layer(CheckAuthLayer) // 权限检查中间件
         .layer(ApiOperationLogLayer) // Api 操作日志中间件
         .layer(axum::middleware::from_fn(empty_wrapper_layer)); // 空包装
 

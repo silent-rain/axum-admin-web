@@ -337,7 +337,7 @@ impl UserBaseService {
     }
 
     /// 获取用户信息
-    async fn info_checked(&self, user_id: i32) -> Result<user_base::Model, ErrorMsg> {
+    pub async fn info_checked(&self, user_id: i32) -> Result<user_base::Model, ErrorMsg> {
         let user = self
             .user_base_dao
             .info(user_id)
@@ -350,6 +350,7 @@ impl UserBaseService {
                 error!("user_id: {user_id}, 用户不存在");
                 Error::DbQueryEmptyError.into_msg().with_msg("用户不存在")
             })?;
+
         if !user.status {
             error!("user_id: {user_id}, 用户已被禁用");
             return Err(code::Error::LoginStatusDisabled
