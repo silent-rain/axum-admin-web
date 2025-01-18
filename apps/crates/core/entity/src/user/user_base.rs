@@ -138,12 +138,18 @@ pub mod enums {
     /// 注册用户类型
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
     pub enum UserType {
+        /// 用户名
+        #[serde(rename = "base")]
+        Base,
         /// 手机号码
         #[serde(rename = "phone")]
         Phone,
         /// 邮箱
         #[serde(rename = "email")]
         Email,
+        /// 区块链钱包
+        #[serde(rename = "blockchain_wallet")]
+        BlockchainWallet,
     }
 
     impl Default for UserType {
@@ -170,6 +176,8 @@ pub mod enums {
             match value {
                 UserType::Phone => "phone".to_owned(),
                 UserType::Email => "email".to_owned(),
+                UserType::Base => "base".to_owned(),
+                UserType::BlockchainWallet => "blockchain_wallet".to_owned(),
             }
         }
     }

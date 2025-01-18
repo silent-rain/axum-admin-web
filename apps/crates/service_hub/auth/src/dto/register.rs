@@ -14,6 +14,8 @@ pub struct RegisterReq {
     pub phone: Option<String>,
     /// 邮箱
     pub email: Option<String>,
+    /// 区块链钱包
+    pub blockchain_wallet: Option<String>,
 
     /// 密码
     #[validate(length(min = 6, message = "密码至少需要6个字符"))]
@@ -63,6 +65,7 @@ mod tests {
         let expected = RegisterReq {
             phone: Some("phone".to_owned()),
             email: Some("email".to_owned()),
+            blockchain_wallet: None,
             register_type: user_base::enums::UserType::Phone,
             username: "username".to_owned(),
             real_name: Some("real_name".to_owned()),
@@ -101,6 +104,7 @@ mod tests {
         let expected = RegisterReq {
             phone: Some("phone".to_owned()),
             email: None,
+            blockchain_wallet: None,
             register_type: user_base::enums::UserType::Phone,
             username: "username".to_owned(),
             real_name: Some("real_name".to_owned()),
@@ -138,6 +142,7 @@ mod tests {
         let expected = RegisterReq {
             phone: Some("phone".to_owned()),
             email: None,
+            blockchain_wallet: None,
             register_type: user_base::enums::UserType::Phone,
             username: "username".to_owned(),
             real_name: Some("real_name".to_owned()),

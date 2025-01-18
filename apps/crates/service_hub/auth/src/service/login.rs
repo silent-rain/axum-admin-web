@@ -9,7 +9,7 @@ use code::{Error, ErrorMsg};
 use entity::{user::user_base, user::user_login_log};
 use system::ImageCaptchaDao;
 use tower_sessions::Session;
-use user::{EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
+use user::{BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
 
 use crate::{
     common::captcha::check_captcha,
@@ -21,11 +21,12 @@ use crate::{
 #[injectable]
 pub struct LoginService {
     user_dao: UserBaseDao,
-    #[inject(|x: UserLoginLogDao| Arc::new(x))]
-    user_login_log_dao: Arc<UserLoginLogDao>,
     email_dao: EmailDao,
     phone_dao: PhoneDao,
+    blockchain_wallet_dao: BlockchainWalletDao,
     captcha_dao: ImageCaptchaDao,
+    #[inject(|x: UserLoginLogDao| Arc::new(x))]
+    user_login_log_dao: Arc<UserLoginLogDao>,
 }
 
 impl LoginService {
@@ -112,8 +113,12 @@ impl LoginService {
     /// 获取用户信息
     async fn get_user(&self, data: LoginReq) -> Result<user_base::Model, ErrorMsg> {
         let user_id = match data.user_type {
+            user_base::enums::UserType::Base => self.get_user_base(data).await?,
             user_base::enums::UserType::Phone => self.get_user_phone(data).await?,
             user_base::enums::UserType::Email => self.get_user_email(data).await?,
+            user_base::enums::UserType::BlockchainWallet => {
+                self.get_user_blockchain_wallet(data).await?
+            }
         };
 
         // 查询用户
@@ -131,6 +136,36 @@ impl LoginService {
             })?;
 
         Ok(result)
+    }
+
+    /// 获取用户名用户
+    async fn get_user_base(&self, req: LoginReq) -> Result<i32, ErrorMsg> {
+        let username = match req.username.clone() {
+            Some(v) => v,
+            None => {
+                return Err(code::Error::InvalidParameter(
+                    "请求参数错误, 用户名或密码 不能为空".to_string(),
+                )
+                .into_msg())
+            }
+        };
+
+        let user = self
+            .user_dao
+            .info_by_username(username)
+            .await
+            .map_err(|err| {
+                error!("查询用户信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("该用户名或密码不存在");
+                Error::DbQueryEmptyError
+                    .into_msg()
+                    .with_msg("该用户名或密码不存在")
+            })?;
+
+        Ok(user.id)
     }
 
     /// 获取用户手机号
@@ -188,6 +223,34 @@ impl LoginService {
                 Error::DbQueryEmptyError
                     .into_msg()
                     .with_msg("该用户邮箱不存在")
+            })?;
+
+        Ok(user.user_id)
+    }
+
+    /// 获取区块链钱包
+    async fn get_user_blockchain_wallet(&self, data: LoginReq) -> Result<i32, ErrorMsg> {
+        let blockchain_wallet = match data.blockchain_wallet.clone() {
+            Some(v) => v,
+            None => {
+                return Err(
+                    code::Error::InvalidParameter("请求参数错误, 钱包不能为空".to_string())
+                        .into_msg(),
+                )
+            }
+        };
+
+        let user = self
+            .blockchain_wallet_dao
+            .info_by_wallet_address(blockchain_wallet)
+            .await
+            .map_err(|err| {
+                error!("查询用户信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("该钱包不存在");
+                Error::DbQueryEmptyError.into_msg().with_msg("该钱包不存在")
             })?;
 
         Ok(user.user_id)

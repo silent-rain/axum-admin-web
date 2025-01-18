@@ -10,10 +10,14 @@ use validator::Validate;
 pub struct LoginReq {
     /// 注册用户类型
     pub user_type: user_base::enums::UserType,
+    /// 用户名
+    pub username: Option<String>,
     /// 手机号码
     pub phone: Option<String>,
     /// 邮箱
     pub email: Option<String>,
+    /// 区块链钱包
+    pub blockchain_wallet: Option<String>,
 
     /// 登陆密码
     pub password: String,
