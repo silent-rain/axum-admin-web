@@ -1,0 +1,17 @@
+[tasks.clean]
+command = "cargo"
+args = ["clean"]
+
+
+[tasks.mobile-dev]
+description = "Runs the rust compiler."
+category = "Build Dev"
+command = "cargo"
+args = ["tauri", "dev"]
+
+[tasks.mobile-android-dev]
+description = "Runs the rust compiler."
+category = "Build Dev"
+env = { "CC_aarch64_linux_android" = "$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
+command = "cargo"
+args = ["tauri", "android", "dev"]
