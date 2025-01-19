@@ -1,0 +1,22 @@
+[package]
+name = "requests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+tokio = { workspace = true, features = [] }
+reqwest = { workspace = true, features = [
+    "blocking",
+    "json",
+    "multipart",
+    "cookies",
+    "rustls-tls",
+] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
+anyhow = { workspace = true }

@@ -13,6 +13,7 @@ members = [
     "crates/core/utils",
     "crates/core/logger",
     "crates/core/cache",
+    "crates/core/requests",
 
     # 组件
     "crates/app_state",
