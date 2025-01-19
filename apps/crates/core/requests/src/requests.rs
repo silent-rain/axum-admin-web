@@ -6,9 +6,9 @@ use reqwest::{
     multipart::{Form, Part},
 };
 use serde::{Deserialize, Serialize};
-
-use error::Error;
 use uuid::Uuid;
+
+use crate::error::Error;
 
 /// 客户端
 pub struct Client {

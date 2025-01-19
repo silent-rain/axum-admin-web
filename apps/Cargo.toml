@@ -26,8 +26,9 @@ members = [
     "crates/axum_session",
     "crates/grpc_api",
     "crates/plugins",
-    "crates/service_hub",
     "crates/timer",
+    "crates/service_hub",
+    "crates/service_hub/comfyui",
 
     # 应用
     "admin",

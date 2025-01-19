@@ -25,6 +25,9 @@ log = { path = "log" }
 initialize = { path = "initialize" }
 
 
+comfyui = { path = "comfyui" }
+
+
 [dev-dependencies]
 tokio = { workspace = true, features = [
     "macros",
