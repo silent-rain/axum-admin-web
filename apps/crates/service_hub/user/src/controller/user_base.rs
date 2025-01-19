@@ -120,7 +120,6 @@ impl UserBaseController {
     }
 
     /// 获取用户信息个人信息
-    /// TODO 待修复 Context
     pub async fn profile(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<ProfileReq>,
