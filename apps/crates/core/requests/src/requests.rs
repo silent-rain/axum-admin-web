@@ -11,6 +11,7 @@ use uuid::Uuid;
 use crate::error::Error;
 
 /// 客户端
+#[derive(Default)]
 pub struct Client {
     timeout: Duration,
     headers: HeaderMap,
@@ -55,8 +56,6 @@ impl Client {
         (): Into<Req>,
         Resp: for<'a> Deserialize<'a>,
     {
-        let params: Req = params.into();
-
         let resp = self
             .client
             .get(url)

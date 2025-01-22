@@ -142,13 +142,13 @@ impl Casbin {
         // 加载模型
         let m = DefaultModel::from_str(MODEL)
             .await
-            .map_err(|err| Error::CasbinError(err))?;
+            .map_err(Error::CasbinError)?;
         // 加载策略
         let adapter = MemoryAdapter::default();
         // 创建 Enforcer
         let enforcer = Enforcer::new(m, adapter)
             .await
-            .map_err(|err| Error::CasbinError(err))?;
+            .map_err(Error::CasbinError)?;
 
         Ok(Casbin {
             inject_provider: inject_provider.clone(),
@@ -230,7 +230,7 @@ impl Casbin {
         // ("alice", "/users", "GET")
         let result = self
             .enforcer
-            .enforce((user_id.clone(), path.clone(), method.clone()))
+            .enforce((user_id, path.clone(), method.clone()))
             .map_err(|err| {
                 error!("enforce error, {err}");
                 Error::CasbinError(err)
@@ -243,12 +243,7 @@ impl Casbin {
         }
 
         // 设置缓存
-        UserCached::set_user_openapi_access_permission(
-            user_id.clone(),
-            path.clone(),
-            method.clone(),
-        )
-        .await;
+        UserCached::set_user_openapi_access_permission(user_id, path.clone(), method.clone()).await;
 
         info!("openapi access permission, user_id: {user_id}, method: {method}, path: {path}");
 
