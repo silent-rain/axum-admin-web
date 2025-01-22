@@ -35,7 +35,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "app_state",
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum-extra",
  "axum_context",
  "axum_middleware",
@@ -448,7 +448,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 name = "auth"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_context",
  "axum_response",
  "axum_validator",
@@ -512,11 +512,11 @@ dependencies = [
 
 [[package]]
 name = "axum"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6d6fd624c75e18b3b4c6b9caf42b1afe24437daaee904069137d8bab077be8b8"
+checksum = "efea76243612a2436fb4074ba0cf3ba9ea29efdeb72645d8fc63f116462be1de"
 dependencies = [
- "axum-core 0.5.0",
+ "axum-core 0.5.1",
  "bytes",
  "form_urlencoded",
  "futures-util",
@@ -567,12 +567,12 @@ dependencies = [
 
 [[package]]
 name = "axum-core"
-version = "0.5.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "df1362f362fd16024ae199c1970ce98f9661bf5ef94b9808fee734bc3698b733"
+checksum = "eab1b0df7cded837c40dacaa2e1c33aa17c84fc3356ae67b5645f1e83190753e"
 dependencies = [
  "bytes",
- "futures-util",
+ "futures-core",
  "http 1.2.0",
  "http-body",
  "http-body-util",
@@ -587,12 +587,12 @@ dependencies = [
 
 [[package]]
 name = "axum-extra"
-version = "0.10.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "460fc6f625a1f7705c6cf62d0d070794e94668988b1c38111baeec177c715f7b"
+checksum = "543f0799d22486525744f06a3580b64f3e51d97aba73ea0e09040969c0034722"
 dependencies = [
- "axum 0.8.1",
- "axum-core 0.5.0",
+ "axum 0.8.2",
+ "axum-core 0.5.1",
  "bytes",
  "cookie",
  "futures-util",
@@ -614,7 +614,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42e1a6651f119707ec6c416f38fdb5be223707627fe6d47f912850634c106215"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "bytes",
  "futures-core",
  "http 1.2.0",
@@ -634,7 +634,7 @@ version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e706938a2f02ac53dac79575d99819fa6285a5eae35b0fa27b959affb80c435"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "bytes",
  "futures",
  "http 1.2.0",
@@ -654,7 +654,7 @@ dependencies = [
  "anyhow",
  "assert-json-diff",
  "auto-future",
- "axum 0.8.1",
+ "axum 0.8.2",
  "bytes",
  "bytesize",
  "cookie",
@@ -679,7 +679,7 @@ dependencies = [
 name = "axum_context"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "bytes",
  "code",
@@ -695,7 +695,7 @@ dependencies = [
 name = "axum_middleware"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum-prometheus",
  "axum_context",
  "axum_response",
@@ -720,7 +720,7 @@ dependencies = [
 name = "axum_mock"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum-test",
  "axum_response",
  "database",
@@ -741,7 +741,7 @@ name = "axum_response"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "axum 0.8.1",
+ "axum 0.8.2",
  "code",
  "serde",
  "serde_json",
@@ -775,7 +775,7 @@ checksum = "760cf4fe5d984ade7a516ef405df575e6c9fcfab49f20dc64589daa9a447b60a"
 dependencies = [
  "anyhow",
  "async-trait",
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_typed_multipart_macros",
  "bytes",
  "chrono",
@@ -806,7 +806,7 @@ dependencies = [
 name = "axum_validator"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "code",
  "mime",
@@ -919,9 +919,9 @@ dependencies = [
 
 [[package]]
 name = "borsh"
-version = "1.5.4"
+version = "1.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fb65153674e51d3a42c8f27b05b9508cea85edfaade8aa46bc8fc18cecdfef3"
+checksum = "5430e3be710b68d984d1391c854eb431a9d548640711faa54eecb1df93db91cc"
 dependencies = [
  "borsh-derive",
  "cfg_aliases",
@@ -929,9 +929,9 @@ dependencies = [
 
 [[package]]
 name = "borsh-derive"
-version = "1.5.4"
+version = "1.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a396e17ad94059c650db3d253bb6e25927f1eb462eede7e7a153bb6e75dce0a7"
+checksum = "f8b668d39970baad5356d7c83a86fee3a539e6f93bf6764c97368243e17a0487"
 dependencies = [
  "once_cell",
  "proc-macro-crate",
@@ -1050,9 +1050,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.9"
+version = "1.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8293772165d9345bdaaa39b45b2109591e63fe5e6fbc23c6ff930a048aa310b"
+checksum = "13208fcbb66eaeffe09b99fffbe1af420f00a7b35aa99ad683dfc1aa76145229"
 dependencies = [
  "shlex",
 ]
@@ -1107,9 +1107,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.26"
+version = "4.5.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8eb5e908ef3a6efbe1ed62520fb7287959888c88485abe072543190ecc66783"
+checksum = "769b0145982b4b48713e01ec42d61614425f27b7058bda7180a3a41f30104796"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -1117,9 +1117,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.26"
+version = "4.5.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96b01801b5fc6a0a232407abc821660c9c6d25a1cafc0d4f85f29fb8d9afc121"
+checksum = "1b26884eb4b57140e4d2d93652abfa49498b938b3c9179f9fc487b0acc3edad7"
 dependencies = [
  "anstream",
  "anstyle",
@@ -2014,7 +2014,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "http 1.2.0",
- "indexmap 2.7.0",
+ "indexmap 2.7.1",
  "slab",
  "tokio",
  "tokio-util",
@@ -2510,9 +2510,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.7.0"
+version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
+checksum = "8c9c992b02b5b4c94ea26e32fe5bccb7aa7d9f390ab5c1221ff895bc7ea8b652"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.2",
@@ -2542,7 +2542,7 @@ dependencies = [
 name = "initialize"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "axum_validator",
  "code",
@@ -2588,9 +2588,9 @@ dependencies = [
 
 [[package]]
 name = "ipnet"
-version = "2.10.1"
+version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddc24109865250148c2e0f3d25d4f0f479571723792d3802153c60922a4fb708"
+checksum = "469fb0b9cefa57e3ef31275ee7cacb78f2fdca44e4765491884a2b119d4eb130"
 
 [[package]]
 name = "is_terminal_polyfill"
@@ -2722,9 +2722,9 @@ checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
 
 [[package]]
 name = "listenfd"
-version = "1.0.1"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0500463acd96259d219abb05dc57e5a076ef04b2db9a2112846929b5f174c96"
+checksum = "b87bc54a4629b4294d0b3ef041b64c40c611097a677d9dc07b2c67739fe39dba"
 dependencies = [
  "libc",
  "uuid",
@@ -2758,7 +2758,7 @@ dependencies = [
 name = "log"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "axum_validator",
  "code",
@@ -2892,7 +2892,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "12779523996a67c13c84906a876ac6fe4d07a6e1adb54978378e13f199251a62"
 dependencies = [
  "base64 0.22.1",
- "indexmap 2.7.0",
+ "indexmap 2.7.1",
  "metrics",
  "metrics-util",
  "quanta",
@@ -3312,7 +3312,7 @@ dependencies = [
 name = "organization"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "axum_validator",
  "code",
@@ -3453,7 +3453,7 @@ checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 name = "permission"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "axum_validator",
  "code",
@@ -3478,7 +3478,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b4c5cc86750666a3ed20bdaf5ca2a0344f9c67674cae0515bec2da16fbaa47db"
 dependencies = [
  "fixedbitset",
- "indexmap 2.7.0",
+ "indexmap 2.7.1",
 ]
 
 [[package]]
@@ -3761,7 +3761,7 @@ dependencies = [
 name = "public"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "embed_asset",
  "serde",
@@ -4327,9 +4327,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.38.43"
+version = "0.38.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a78891ee6bf2340288408954ac787aa063d8e8817e9f53abb37c695c6d834ef6"
+checksum = "fdb5bc1ae2baa591800df16c9ca78619bf65c0488b41b96ccec5d11220d8c154"
 dependencies = [
  "bitflags",
  "errno",
@@ -4434,7 +4434,7 @@ dependencies = [
 name = "schedule"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_response",
  "axum_validator",
  "code",
@@ -4671,9 +4671,9 @@ dependencies = [
 
 [[package]]
 name = "semver"
-version = "1.0.24"
+version = "1.0.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3cb6eb87a131f756572d7fb904f6e7b68633f09cca868c5df1c4b8d1a694bbba"
+checksum = "f79dfe2d285b0488816f30e700a7438c5a73d816b5b7d3ac72fbc48b0d185e03"
 
 [[package]]
 name = "serde"
@@ -4697,9 +4697,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.135"
+version = "1.0.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b0d7ba2887406110130a978386c4e1befb98c674b4fba677954e4db976630d9"
+checksum = "930cfb6e6abf99298aaad7d29abbef7a9999a9a8806a40088f55f0dcec03146b"
 dependencies = [
  "itoa",
  "memchr 2.7.4",
@@ -4746,7 +4746,7 @@ version = "0.9.34+deprecated"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a8b1a1a2ebf674015cc02edccce75287f1a0130d394307b36743c2f5d504b47"
 dependencies = [
- "indexmap 2.7.0",
+ "indexmap 2.7.1",
  "itoa",
  "ryu",
  "serde",
@@ -4972,7 +4972,7 @@ dependencies = [
  "futures-util",
  "hashbrown 0.15.2",
  "hashlink 0.10.0",
- "indexmap 2.7.0",
+ "indexmap 2.7.1",
  "log 0.4.25",
  "memchr 2.7.4",
  "once_cell",
@@ -5236,7 +5236,7 @@ dependencies = [
 name = "system"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum-extra",
  "axum-streams",
  "axum_response",
@@ -5311,7 +5311,7 @@ dependencies = [
 name = "template"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum-extra",
  "axum-test",
  "axum_mock",
@@ -5589,7 +5589,7 @@ version = "0.22.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ae48d6208a266e853d946088ed816055e556cc6028c5e8e2b84d9fa5dd7c7f5"
 dependencies = [
- "indexmap 2.7.0",
+ "indexmap 2.7.1",
  "toml_datetime",
  "winnow",
 ]
@@ -5706,7 +5706,7 @@ version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "151b5a3e3c45df17466454bb74e9ecedecc955269bdedbf4d150dfa393b55a36"
 dependencies = [
- "axum-core 0.5.0",
+ "axum-core 0.5.1",
  "cookie",
  "futures-util",
  "http 1.2.0",
@@ -5782,7 +5782,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce8cce604865576b7751b7a6bc3058f754569a60d689328bb74c52b1d87e355b"
 dependencies = [
  "async-trait",
- "axum-core 0.5.0",
+ "axum-core 0.5.1",
  "base64 0.22.1",
  "futures",
  "http 1.2.0",
@@ -5814,7 +5814,7 @@ version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57a2ccff6830fa835371af7541e561a90e4c07b84f72991ebac4b3cb6790dc0d"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "forwarded-header-value",
  "governor",
  "http 1.2.0",
@@ -6042,7 +6042,7 @@ dependencies = [
 name = "user"
 version = "0.1.0"
 dependencies = [
- "axum 0.8.1",
+ "axum 0.8.2",
  "axum_context",
  "axum_response",
  "axum_validator",
@@ -6110,9 +6110,9 @@ dependencies = [
 
 [[package]]
 name = "uuid"
-version = "1.12.0"
+version = "1.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "744018581f9a3454a9e15beb8a33b017183f1e7c0cd170232a2d1453b23a51c4"
+checksum = "b3758f5e68192bb96cc8f9b7e2c2cfdabb435499a28499a42f8f984092adad4b"
 dependencies = [
  "getrandom 0.2.15",
  "serde",
@@ -6120,9 +6120,9 @@ dependencies = [
 
 [[package]]
 name = "validator"
-version = "0.19.0"
+version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0b4a29d8709210980a09379f27ee31549b73292c87ab9899beee1c0d3be6303"
+checksum = "43fb22e1a008ece370ce08a3e9e4447a910e92621bb49b85d6e48a45397e7cfa"
 dependencies = [
  "idna",
  "once_cell",
@@ -6136,9 +6136,9 @@ dependencies = [
 
 [[package]]
 name = "validator_derive"
-version = "0.19.0"
+version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bac855a2ce6f843beb229757e6e570a42e837bcb15e5f449dd48d5747d41bf77"
+checksum = "b7df16e474ef958526d1205f6dda359fdfab79d9aa6d54bafcb92dcd07673dca"
 dependencies = [
  "darling",
  "once_cell",
@@ -6150,9 +6150,9 @@ dependencies = [
 
 [[package]]
 name = "valuable"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
+checksum = "ba73ea9cf16a25df0c8caa16c51acb937d5712a8429db78a3ee29d5dcacd3a65"
 
 [[package]]
 name = "value-bag"
