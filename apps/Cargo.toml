@@ -57,15 +57,15 @@ tonic-reflection = "0.12"
 tonic-build = "0.12"
 reqwest = "0.12"
 prost = "0.13"
-validator = "0.19"
-validator_derive = "0.19"
+validator = "0.20"
+validator_derive = "0.20"
 listenfd = "1.0"
 num_cpus = "1.16"
 tokio-cron-scheduler = "0.13"
 http-body-util = "0.1"
 serde_urlencoded = "0.7"
 mime = "0.3"                  # mime type
-infer = "0.16"                # mime
+infer = "0.19"                # mime
 
 # 数据库`
 sea-orm = "1.1"
