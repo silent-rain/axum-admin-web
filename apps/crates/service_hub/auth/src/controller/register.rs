@@ -19,7 +19,7 @@ impl RegisterController {
         Json(req): Json<RegisterReq>,
     ) -> Responder<RegisterResp> {
         let register_service: RegisterService = provider.provide();
-        let _result = register_service.register(req).await?;
+        register_service.register(req).await?;
 
         let resp = Response::<()>::ok().with_msg("注册成功").to_json()?;
         Ok(resp)
