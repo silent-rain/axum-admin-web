@@ -8,9 +8,11 @@ use reqwest::{
 };
 use uuid::Uuid;
 
-use crate::dto::api_clients::{ImageViewReq, UploadImage, UploadMaskImage, UploadMaskImageReq};
-
-use super::{client::ComfyUIClient, error::Error};
+use super::{
+    client::ComfyUIClient,
+    dto::{ImageViewReq, UploadImage, UploadMaskImage, UploadMaskImageReq},
+    error::Error,
+};
 
 impl ComfyUIClient {
     /// 上传图片
@@ -112,11 +114,10 @@ impl ComfyUIClient {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::api_clients::dto::ImageOriginalRef;
 
     use anyhow::Ok;
     use tokio::io::AsyncWriteExt;
-
-    use crate::dto::api_clients::ImageOriginalRef;
 
     const BASE_API: &str = "http://127.0.0.1:8188/api";
 

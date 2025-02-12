@@ -1,6 +1,7 @@
 //! api clients
 
 pub mod client;
+pub mod dto;
 pub mod error;
 pub mod image;
 pub mod model;

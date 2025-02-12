@@ -1,8 +1,6 @@
 //! 系统相关接口
 
-use crate::dto::api_clients::SystemStats;
-
-use super::{client::ComfyUIClient, error::Error};
+use super::{client::ComfyUIClient, dto::SystemStats, error::Error};
 
 impl ComfyUIClient {
     /// 系统统计信息

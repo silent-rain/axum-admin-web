@@ -4,10 +4,10 @@ use std::collections::HashMap;
 
 use reqwest::StatusCode;
 
-use super::client::ComfyUIClient;
-pub use super::error::Error;
-use crate::dto::api_clients::{
-    History, PromptReq, PromptResult, QueueList as Queues, QueueRemaining,
+use super::{
+    client::ComfyUIClient,
+    dto::{History, PromptReq, PromptResult, QueueList as Queues, QueueRemaining},
+    error::Error,
 };
 
 impl ComfyUIClient {
