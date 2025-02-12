@@ -4,6 +4,28 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+inject = { path = "../../core/inject" }
+
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tracing = { workspace = true }
+nject = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+reqwest = { workspace = true, features = [
+    "blocking",
+    "json",
+    "multipart",
+    "cookies",
+    "rustls-tls",
+] }
+tokio = { workspace = true, features = [] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = [
+    "macros",
+    "rt-multi-thread",
+    "test-util",
+    "fs",
+] }
+anyhow = { workspace = true }

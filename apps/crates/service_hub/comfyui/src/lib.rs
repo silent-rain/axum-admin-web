@@ -1,4 +1,5 @@
 //! 模板管理
+pub mod api_clients;
 pub mod dto;
 
 pub(crate) mod dao;
