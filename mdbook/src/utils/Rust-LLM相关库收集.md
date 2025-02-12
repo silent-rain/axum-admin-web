@@ -3,6 +3,7 @@
 ## candle
 
 ```toml
+[dependencies]
 # candle-datasets = "0.8"      # 不支持 android
 # candle-flash-attn = "0.8"    # 不支持 android
 # candle-kernels = "0.8"       # 不支持 android, need CUDA installed
@@ -16,8 +17,21 @@ tokenizers = "0.21"         # 标记文本
 parquet = "53.2"            # 列式存储数据文件格式
 # image = "0.25"              # 图像处理库 不支持 android
 
-# build
-bindgen_cuda = "0.1"
+[build-dependencies]
+# cc = "1.1"
+bindgen_cuda = { version = "0.1", optional = true }
+
+[features]
+default = []
+cuda = [
+    "candle-core/cuda",
+    "candle-nn/cuda",
+    "candle-transformers/cuda",
+    "dep:bindgen_cuda",
+]
+cudnn = ["candle-core/cudnn"]
+# flash-attn = ["cuda", "candle-transformers/flash-attn", "dep:candle-flash-attn"]
+metal = ["candle-core/metal", "candle-nn/metal"]
 ```
 
 ## burn
@@ -45,7 +59,6 @@ bindgen_cuda = "0.1"
 
 # encoding_rs = "0.8.34"
 # llama-cpp-2 = "0.1.83" # 原始绑定使用较复杂, android 编译失败
-# llama-cpp-2 = { path = "llama-cpp-rs/llama-cpp-2" } # 本地依赖, 最新 llama.cpp android 编译失败
 # llama-cpp-2 = { path = "llama-cpp-rs/llama-cpp-2" } # 本地依赖, 最新 llama.cpp android 编译失败
 # llama-cpp-2 = { git = "https://github.com/utilityai/llama-cpp-rs.git" } # 魔改后可以支持 android 编译
 
