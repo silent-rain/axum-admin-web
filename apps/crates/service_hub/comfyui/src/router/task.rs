@@ -26,7 +26,7 @@ impl ComfyUITaskRouter {
                 .route("/queues", get(ComfyUITaskController::queues))
                 .route("/clear_queue", post(ComfyUITaskController::clear_queue))
                 .route("/delete_queue", post(ComfyUITaskController::delete_queue))
-                .route("/interrupt", get(ComfyUITaskController::interrupt)),
+                .route("/interrupt", post(ComfyUITaskController::interrupt)),
         )
     }
 }

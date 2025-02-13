@@ -1,0 +1,37 @@
+//！ ComfyUI 系统管理
+
+use code::{Error, ErrorMsg};
+use nject::injectable;
+use tracing::error;
+
+use crate::{
+    api_clients::{
+        client::ComfyUIClient,
+        dto::{PromptResult, QueueRemaining, Queues, SystemStats},
+    },
+    dto::task::{DeleteQueueReq, HistoryReq, HistoryResp, PushPromptReq},
+};
+
+/// 服务层
+#[injectable]
+pub struct ComfyUISystemService {}
+
+impl ComfyUISystemService {
+    /// 获取 ComfyUI 客户端
+    fn comfyui_client(&self) -> ComfyUIClient {
+        ComfyUIClient::new()
+        // .with_base_api(base_api)
+    }
+
+    /// 获取系统统计信息
+    pub async fn system_stats(&self) -> Result<SystemStats, ErrorMsg> {
+        let result = self.comfyui_client().system_stats().await.map_err(|err| {
+            error!("获取系统统计信息失败, err: {err}");
+            Error::ComfyUIError(err.to_string())
+                .into_msg()
+                .with_msg("获取系统统计信息失败")
+        })?;
+
+        Ok(result)
+    }
+}
