@@ -40,13 +40,31 @@ cargo outdated
 
 cargo-asm 可以显示 Rust 函数的汇编代码，这可以帮助你确定哪些函数和模块被实际使用。虽然这种方法比较繁琐，但对于某些复杂的项目，它可能是一个有用的工具。
 
-安装
-cargo-asm
-
 ```shell
 # 安装
 cargo install cargo-asm
 
 # 运行
 cargo asm <function_name>
+```
+
+## cargo-workspace-analyzer 工作区分析工具
+
+这个分析器可用于查找循环依赖。它会高亮显示那些形成循环的包。通过定期运行分析器，可以在更早的发现并解决循环依赖问题。
+
+生成的图表还可以提供一些关于包的耦合度的度量：
+
+- 传入耦合度
+- 传出耦合度
+- 不稳定性指标
+
+```shell
+# 安装
+cargo install cargo-workspace-analyzer
+sudo npm install -g @mermaid-js/mermaid-cli
+sudo pnpm add -g @mermaid-js/mermaid-cli
+
+# 运行
+cd path/to/your/workspace
+cargo-workspace-analyzer
 ```
