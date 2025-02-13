@@ -147,4 +147,16 @@ pub struct Queues {
     pub queue_pending: Vec<Value>,
 }
 
+/// 获取 Checkpoint 模型列表 响应体
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct Embedding {
+    pub name: String,
+}
 
+/// 获取 model 模型列表 响应体
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct Model {
+    pub name: String,
+    #[serde(rename = "pathIndex")]
+    pub path_index: i32,
+}

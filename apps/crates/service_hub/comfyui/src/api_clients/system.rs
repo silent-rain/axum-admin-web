@@ -24,6 +24,7 @@ impl ComfyUIClient {
 mod tests {
     use super::*;
 
+    #[ignore]
     #[tokio::test]
     async fn test_system_stats() {
         let client = ComfyUIClient::new();

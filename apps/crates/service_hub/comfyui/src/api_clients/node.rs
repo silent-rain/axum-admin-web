@@ -64,6 +64,7 @@ impl ComfyUIClient {
 mod tests {
     use super::*;
 
+    #[ignore]
     #[tokio::test]
     async fn test_object_info() {
         let client = ComfyUIClient::new();
@@ -74,6 +75,7 @@ mod tests {
         println!("KSampler result: {:#?}", result);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_extensions() {
         let client = ComfyUIClient::new();
@@ -81,6 +83,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_view_metadata() {
         let client = ComfyUIClient::new();

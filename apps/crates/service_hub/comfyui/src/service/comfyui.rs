@@ -34,7 +34,7 @@ impl ComfyUIService {
     }
 
     /// 发布绘图任务
-    /// 
+    ///
     /// TODO 数据入库?
     pub async fn push_prompt(&self, req: PushPromptReq) -> Result<PromptResult, ErrorMsg> {
         let result = self.comfyui_client().prompt(req).await.map_err(|err| {
@@ -66,20 +66,20 @@ impl ComfyUIService {
     /// 获取所有历史任务数据
     ///
     /// TODO 优化接口返回
-    pub async fn history(&self, req: HistoryReq) -> Result<HistoryResp, ErrorMsg> {
-        let result = self
-            .comfyui_client()
-            .history(req.prompt_id.as_deref())
-            .await
-            .map_err(|err| {
-                error!("获取所有历史任务数据失败, err: {err}");
-                Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("获取所有历史任务数据失败")
-            })?;
+    // pub async fn history(&self, req: HistoryReq) -> Result<HistoryResp, ErrorMsg> {
+    //     let result = self
+    //         .comfyui_client()
+    //         .history(req.prompt_id.as_deref())
+    //         .await
+    //         .map_err(|err| {
+    //             error!("获取所有历史任务数据失败, err: {err}");
+    //             Error::ComfyUIError(err.to_string())
+    //                 .into_msg()
+    //                 .with_msg("获取所有历史任务数据失败")
+    //         })?;
 
-        Ok(result)
-    }
+    //     Ok(result)
+    // }
 
     /// 获取所有的队列
     pub async fn queues(&self) -> Result<Queues, ErrorMsg> {

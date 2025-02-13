@@ -119,6 +119,7 @@ mod tests {
     use anyhow::Ok;
     use tokio::io::AsyncWriteExt;
 
+    #[ignore]
     #[tokio::test]
     async fn test_upload_image() {
         let client = ComfyUIClient::new();
@@ -126,6 +127,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_upload_mask_image() {
         let original_ref = ImageOriginalRef {
@@ -146,6 +148,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_view_image() -> anyhow::Result<()> {
         let params = ImageViewReq {

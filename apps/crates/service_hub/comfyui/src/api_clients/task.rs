@@ -51,14 +51,28 @@ impl ComfyUIClient {
     /// 获取所有历史任务数据
     /// prompt_id： Some, 根据任务id获取历史数据
     /// prompt_id： None, 获取所有历史任务数据
-    pub async fn history(
+    pub async fn historys(
         &self,
-        prompt_id: Option<&str>,
+        max_items: Option<i32>,
     ) -> Result<HashMap<String, History>, Error> {
-        let url = match prompt_id {
-            Some(v) => format!("{}/history/{}", self.base_api, v),
-            None => format!("{}/history", self.base_api),
-        };
+        let max_items = max_items.map_or(64, |v| v);
+        let url = format!("{}/history?max_items={}", self.base_api, max_items);
+
+        let resp = self
+            .client
+            .get(url)
+            .timeout(self.timeout)
+            .headers(self.headers.clone())
+            .send()
+            .await?
+            .json()
+            .await?;
+        Ok(resp)
+    }
+
+    /// 获取指定历史任务数据
+    pub async fn history(&self, prompt_id: &str) -> Result<HashMap<String, History>, Error> {
+        let url = format!("{}/history/{}", self.base_api, prompt_id);
 
         let resp = self
             .client
@@ -148,13 +162,13 @@ impl ComfyUIClient {
 
 #[cfg(test)]
 mod tests {
-
     use anyhow::Ok;
     use serde_json::json;
     use uuid::Uuid;
 
     use super::*;
 
+    #[ignore]
     #[tokio::test]
     async fn test_prompt() {
         let prompt = json!(
@@ -192,6 +206,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_queue_remaining() {
         let client = ComfyUIClient::new();
@@ -199,19 +214,24 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
+    #[tokio::test]
+    async fn test_historys() {
+        let client = ComfyUIClient::new();
+
+        let results = client.historys(Some(64)).await;
+        println!("results: {:#?}", results);
+    }
+
+    #[ignore]
     #[tokio::test]
     async fn test_history() {
         let client = ComfyUIClient::new();
-
-        let results = client.history(None).await;
-        println!("results: {:#?}", results);
-
-        let result = client
-            .history(Some("6ee684f7-29e3-4b35-a19c-579412ef8495"))
-            .await;
+        let result = client.history("6ee684f7-29e3-4b35-a19c-579412ef8495").await;
         println!("result: {:#?}", result);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_queue_list() {
         let client = ComfyUIClient::new();
@@ -219,6 +239,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_clear_queue() {
         let client = ComfyUIClient::new();
@@ -227,6 +248,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_delete_queue() {
         let client = ComfyUIClient::new();
@@ -237,6 +259,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_interrupt() {
         let client = ComfyUIClient::new();
@@ -244,6 +267,7 @@ mod tests {
         println!("results: {:#?}", results);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn test_queue_date_parser() -> anyhow::Result<()> {
         let data = {

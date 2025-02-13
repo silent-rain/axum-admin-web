@@ -39,16 +39,16 @@ impl ComfyUIController {
     }
 
     /// 获取所有历史任务数据
-    pub async fn history(
-        Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<HistoryReq>,
-    ) -> Responder<HistoryResp> {
-        let comfy_uiservice: ComfyUIService = provider.provide();
-        let result = comfy_uiservice.history(req).await?;
+    // pub async fn history(
+    //     Extension(provider): Extension<AInjectProvider>,
+    //     Query(req): Query<HistoryReq>,
+    // ) -> Responder<HistoryResp> {
+    //     let comfy_uiservice: ComfyUIService = provider.provide();
+    //     let result = comfy_uiservice.history(req).await?;
 
-        let resp = Response::data(result).to_json()?;
-        Ok(resp)
-    }
+    //     let resp = Response::data(result).to_json()?;
+    //     Ok(resp)
+    // }
 
     /// 获取所有的队列
     pub async fn queues(Extension(provider): Extension<AInjectProvider>) -> Responder<QueuesResp> {
