@@ -24,11 +24,9 @@ impl ComfyUIClient {
 mod tests {
     use super::*;
 
-    const BASE_API: &str = "http://127.0.0.1:8188/api";
-
     #[tokio::test]
     async fn test_embeddings() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.embeddings().await;
         println!("results: {:#?}", results);
     }

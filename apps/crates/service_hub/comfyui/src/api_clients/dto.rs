@@ -89,7 +89,7 @@ pub struct ImageViewReq {
     pub subfolder: String, // 上传图片的目标子文件夹， clipspace/pasted
 }
 
-/// 历史任务输出的图片结构
+/// 历史任务输出的图片结构 响应体
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct Image {
     pub filename: String,  // 文件名称
@@ -97,16 +97,17 @@ pub struct Image {
     pub subfolder: String, // 上传图片的目标子文件夹， clipspace/pasted
 }
 
+/// 历史记录输出
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
-pub struct Output {
+pub struct HistoryOutput {
     pub images: Vec<Image>,
 }
 
-/// 历史任务数据
+/// 历史任务数据 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct History {
     pub prompt: Vec<Value>,
-    pub outputs: HashMap<String, Output>,
+    pub outputs: HashMap<String, HistoryOutput>,
     pub status: Value,
     pub meta: Value,
 }
@@ -116,20 +117,20 @@ pub struct ExecInfo {
     pub queue_remaining: i32,
 }
 
-/// 获取服务器当前剩余任务列队的数量
+/// 获取服务器当前剩余任务列队的数量 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct QueueRemaining {
     pub exec_info: ExecInfo,
 }
 
-/// 绘图任务的下发接口
+/// 绘图任务的下发接口 请求体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct PromptReq {
     pub client_id: String,
     pub prompt: Value,
 }
 
-/// 绘图任务的下发接口
+/// 绘图任务的下发接口 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct PromptResult {
     pub prompt_id: String,
@@ -137,11 +138,13 @@ pub struct PromptResult {
     pub node_errors: Value,
 }
 
-/// 队列列表
+/// 队列列表 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
-pub struct QueueList {
+pub struct Queues {
     /// 当前正在运行的节点队列
     pub queue_running: Vec<Value>,
     /// 待执行的工作流队列
     pub queue_pending: Vec<Value>,
 }
+
+

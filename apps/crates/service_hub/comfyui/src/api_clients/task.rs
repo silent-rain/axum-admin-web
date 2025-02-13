@@ -6,7 +6,7 @@ use reqwest::StatusCode;
 
 use super::{
     client::ComfyUIClient,
-    dto::{History, PromptReq, PromptResult, QueueList as Queues, QueueRemaining},
+    dto::{History, PromptReq, PromptResult, QueueRemaining, Queues},
     error::Error,
 };
 
@@ -75,7 +75,7 @@ impl ComfyUIClient {
     /// 获取所有的队列
     ///
     /// 获取详细任务队列信息，正在运行的以及挂起的
-    pub async fn queue_list(&self) -> Result<Queues, Error> {
+    pub async fn queues(&self) -> Result<Queues, Error> {
         let url = format!("{}/queue", self.base_api);
 
         let resp = self
@@ -155,8 +155,6 @@ mod tests {
 
     use super::*;
 
-    const BASE_API: &str = "http://127.0.0.1:8188/api";
-
     #[tokio::test]
     async fn test_prompt() {
         let prompt = json!(
@@ -189,21 +187,21 @@ mod tests {
         let client_id = Uuid::new_v4().to_string().replace("-", "");
         let payload = PromptReq { prompt, client_id };
 
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.prompt(payload).await;
         println!("results: {:#?}", results);
     }
 
     #[tokio::test]
     async fn test_queue_remaining() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.queue_remaining().await;
         println!("results: {:#?}", results);
     }
 
     #[tokio::test]
     async fn test_history() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
 
         let results = client.history(None).await;
         println!("results: {:#?}", results);
@@ -216,14 +214,14 @@ mod tests {
 
     #[tokio::test]
     async fn test_queue_list() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
-        let results = client.queue_list().await;
+        let client = ComfyUIClient::new();
+        let results = client.queues().await;
         println!("results: {:#?}", results);
     }
 
     #[tokio::test]
     async fn test_clear_queue() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
 
         let results = client.clear_queue().await;
         println!("results: {:#?}", results);
@@ -231,7 +229,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_delete_queue() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
 
         // 删除指定队列
         let prompt_ids = vec!["3260b56f-755b-4c17-af12-c5ad1c72c2c7".to_string()];
@@ -241,7 +239,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_interrupt() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.interrupt().await;
         println!("results: {:#?}", results);
     }

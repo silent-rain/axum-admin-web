@@ -4,12 +4,22 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+database = { path = "../../core/database" }
+entity = { path = "../../core/entity" }
+code = { path = "../../core/code" }
 inject = { path = "../../core/inject" }
+axum_response = { path = "../../axum_response" }
+axum_validator = { path = "../../axum_validator" }
 
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-tracing = { workspace = true }
+axum = { workspace = true }
+validator = { workspace = true, features = ["derive"] }
+sea-orm = { workspace = true }
 nject = { workspace = true }
+
+tracing = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_repr = { workspace = true }
+serde_json = { workspace = true }
 thiserror = { workspace = true }
 uuid = { workspace = true, features = ["v4"] }
 reqwest = { workspace = true, features = [

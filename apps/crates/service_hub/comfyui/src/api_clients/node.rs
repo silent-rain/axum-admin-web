@@ -64,11 +64,9 @@ impl ComfyUIClient {
 mod tests {
     use super::*;
 
-    const BASE_API: &str = "http://127.0.0.1:8188/api";
-
     #[tokio::test]
     async fn test_object_info() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.object_info(None).await;
         println!("results: {:#?}", results);
 
@@ -78,14 +76,14 @@ mod tests {
 
     #[tokio::test]
     async fn test_extensions() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.extensions().await;
         println!("results: {:#?}", results);
     }
 
     #[tokio::test]
     async fn test_view_metadata() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.view_metadata().await;
         println!("results: {:#?}", results);
     }

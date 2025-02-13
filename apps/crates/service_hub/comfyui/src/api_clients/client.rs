@@ -12,6 +12,9 @@ use reqwest::header::{HeaderMap, HeaderValue};
 
 pub use super::error::Error;
 
+/// 默认使用本地部署的接口
+const DEFAULT_BASE_API: &str = "http://127.0.0.1:8188/api";
+
 pub struct ComfyUIClient {
     pub client: reqwest::Client,
     pub headers: HeaderMap,
@@ -20,17 +23,29 @@ pub struct ComfyUIClient {
 }
 
 impl ComfyUIClient {
-    pub fn new(base_api: String) -> Self {
+    pub fn new() -> Self {
         let mut headers = HeaderMap::new();
         headers.insert("Content-Type", HeaderValue::from_static("application/json"));
 
-        let client = reqwest::Client::new();
-
         ComfyUIClient {
-            base_api,
+            base_api: DEFAULT_BASE_API.to_string(),
             timeout: Duration::from_secs(5),
-            client,
             headers,
+            client: reqwest::Client::new(),
         }
+    }
+
+    /// 指定接口
+    pub fn with_base_api(mut self, base_api: &str) -> Self {
+        self.base_api = base_api.to_string();
+
+        self
+    }
+
+    /// 请求超时时间
+    pub fn with_timeout(mut self, timeout: Duration) -> Self {
+        self.timeout = timeout;
+
+        self
     }
 }

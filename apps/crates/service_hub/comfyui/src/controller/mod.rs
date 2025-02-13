@@ -1,2 +1,2 @@
 //! 控制器层
-pub mod local;
+pub mod comfyui;

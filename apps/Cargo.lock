@@ -1207,15 +1207,24 @@ name = "comfyui"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "axum 0.8.1",
+ "axum_response",
+ "axum_validator",
+ "code",
+ "database",
+ "entity",
  "inject",
  "nject",
  "reqwest",
+ "sea-orm",
  "serde",
  "serde_json",
+ "serde_repr",
  "thiserror 2.0.11",
  "tokio",
  "tracing",
  "uuid",
+ "validator",
 ]
 
 [[package]]

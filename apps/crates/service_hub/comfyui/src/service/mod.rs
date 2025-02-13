@@ -1,2 +1,2 @@
 //! 服务层
-pub mod local;
+pub mod comfyui;

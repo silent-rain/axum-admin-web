@@ -119,11 +119,9 @@ mod tests {
     use anyhow::Ok;
     use tokio::io::AsyncWriteExt;
 
-    const BASE_API: &str = "http://127.0.0.1:8188/api";
-
     #[tokio::test]
     async fn test_upload_image() {
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.upload_image("./assets/OIG3.jpeg".to_string()).await;
         println!("results: {:#?}", results);
     }
@@ -143,7 +141,7 @@ mod tests {
             original_ref: original_ref.to_string(),
         };
 
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.upload_mask_image(data).await;
         println!("results: {:#?}", results);
     }
@@ -155,7 +153,7 @@ mod tests {
             r#type: "temp".to_string(),
             subfolder: "".to_string(),
         };
-        let client = ComfyUIClient::new(BASE_API.to_string());
+        let client = ComfyUIClient::new();
         let results = client.view_image(params).await?;
 
         println!("result empty: {:?}", results.is_empty());

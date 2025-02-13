@@ -187,6 +187,10 @@ pub enum Error {
     #[error("permission error, {0}")]
     CasbinError(#[from] casbin::error::Error),
 
+    // SDK API
+    #[error("comfyui error, {0}")]
+    ComfyUIError(String) = 30001,
+
     /// 自定义错误
     #[error("自定义错误")]
     CustomError = 65535,
