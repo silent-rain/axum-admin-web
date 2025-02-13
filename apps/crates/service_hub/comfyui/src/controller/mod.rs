@@ -1,2 +1,2 @@
 //! 控制器层
-pub mod comfyui;
+pub mod task;

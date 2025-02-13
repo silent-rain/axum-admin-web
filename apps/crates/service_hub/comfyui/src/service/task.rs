@@ -1,4 +1,4 @@
-//! ComfyUI 服务
+//! ComfyUI 任务管理
 
 use code::{Error, ErrorMsg};
 use nject::injectable;
@@ -9,24 +9,14 @@ use crate::{
         client::ComfyUIClient,
         dto::{PromptResult, QueueRemaining, Queues},
     },
-    dto::comfyui::{DeleteQueueReq, HistoryReq, HistoryResp, PushPromptReq},
+    dto::task::{DeleteQueueReq, HistoryReq, HistoryResp, PushPromptReq},
 };
-
-/*
-全局配置:
-- base_api
-- 超时时间
-- 模型列表
-- lora列表
-
-过程数据是否入库呢? 便于回溯? 服务器端,重启服务后历史信息会丢失
-*/
 
 /// 服务层
 #[injectable]
-pub struct ComfyUIService {}
+pub struct ComfyUITaskService {}
 
-impl ComfyUIService {
+impl ComfyUITaskService {
     /// 获取 ComfyUI 客户端
     fn comfyui_client(&self) -> ComfyUIClient {
         ComfyUIClient::new()

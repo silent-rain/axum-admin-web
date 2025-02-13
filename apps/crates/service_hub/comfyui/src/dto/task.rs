@@ -1,4 +1,4 @@
-//! ComfyUI 服务
+//! ComfyUI 任务管理
 
 use serde::{Deserialize, Serialize};
 use validator::Validate;

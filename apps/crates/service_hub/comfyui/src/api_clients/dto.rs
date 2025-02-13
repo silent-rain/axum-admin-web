@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use validator::Validate;
 
 /// 系统信息
 #[derive(Debug, Serialize, Deserialize)]
@@ -64,7 +65,7 @@ pub struct UploadImage {
 }
 
 /// 上传蒙版图片 请求体
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UploadMaskImageReq {
     pub image: String,        // 文件名称
     pub r#type: String,       // 上传图片的目标文件夹， "input"
@@ -81,7 +82,7 @@ pub struct UploadMaskImage {
 }
 
 /// 图片预览 请求体
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct ImageViewReq {
     pub filename: String, // 文件名称
     pub r#type: String,   // 上传图片的目标文件夹， "input"
@@ -124,7 +125,7 @@ pub struct QueueRemaining {
 }
 
 /// 绘图任务的下发接口 请求体
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct PromptReq {
     pub client_id: String,
     pub prompt: Value,
