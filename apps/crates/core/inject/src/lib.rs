@@ -8,12 +8,12 @@ use nject::provider;
 #[provider]
 pub struct InjectProvider {
     #[provide(Arc<dyn PoolTrait>, |x| x.clone())]
-    adb: Arc<dyn PoolTrait>,
+    db: Arc<dyn PoolTrait>,
 }
 
 impl InjectProvider {
     pub fn new(db: Arc<dyn PoolTrait>) -> Self {
-        InjectProvider { adb: db }
+        InjectProvider { db }
     }
 }
 
