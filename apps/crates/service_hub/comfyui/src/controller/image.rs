@@ -30,6 +30,8 @@ impl ComfyUIImageController {
     }
 
     /// 上传蒙版图片, 一般用于局部重绘
+    ///
+    /// TODO 对该接口进行简化, 例如指定上传目录, 前端仅传递图片即可
     pub async fn upload_mask_image(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UploadMaskImageReq>,
