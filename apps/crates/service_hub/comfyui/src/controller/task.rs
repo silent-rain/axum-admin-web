@@ -2,12 +2,12 @@
 
 use axum::Extension;
 use axum_response::{Responder, Response};
-use axum_validator::Query;
+use axum_validator::{Json, Query};
 use inject::AInjectProvider;
 
 use crate::dto::task::{
-    DeleteQueueReq, HistoryReq, HistoryResp, PushPromptReq, PushPromptResp, QueueRemainingResp,
-    QueuesResp,
+    DeleteQueueReq, HistoryReq, HistoryResp, HistorysReq, HistorysResp, PushPromptReq,
+    PushPromptResp, QueueRemainingResp, QueuesResp,
 };
 use crate::ComfyUITaskService;
 
@@ -18,7 +18,7 @@ impl ComfyUITaskController {
     /// 发布绘图任务
     pub async fn push_prompt(
         Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<PushPromptReq>,
+        Json(req): Json<PushPromptReq>,
     ) -> Responder<PushPromptResp> {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let result = comfyui_task_service.push_prompt(req).await?;
@@ -39,28 +39,28 @@ impl ComfyUITaskController {
     }
 
     /// 获取所有历史任务数据
-    // pub async fn historys(
-    //     Extension(provider): Extension<AInjectProvider>,
-    //     Query(req): Query<HistoryReq>,
-    // ) -> Responder<HistoryResp> {
-    //     let comfyui_task_service: ComfyUITaskService = provider.provide();
-    //     let result = comfyui_task_service.historys(req).await?;
+    pub async fn historys(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<HistorysReq>,
+    ) -> Responder<HistorysResp> {
+        let comfyui_task_service: ComfyUITaskService = provider.provide();
+        let (result, total) = comfyui_task_service.historys(req).await?;
 
-    //     let resp = Response::data(result).to_json()?;
-    //     Ok(resp)
-    // }
+        let resp = Response::data_list(result, total).to_json()?;
+        Ok(resp)
+    }
 
     /// 获取指定历史任务数据
-    // pub async fn history(
-    //     Extension(provider): Extension<AInjectProvider>,
-    //     Query(req): Query<HistoryReq>,
-    // ) -> Responder<HistoryResp> {
-    //     let comfyui_task_service: ComfyUITaskService = provider.provide();
-    //     let result = comfyui_task_service.history(req).await?;
+    pub async fn history(
+        Extension(provider): Extension<AInjectProvider>,
+        Query(req): Query<HistoryReq>,
+    ) -> Responder<HistoryResp> {
+        let comfyui_task_service: ComfyUITaskService = provider.provide();
+        let result = comfyui_task_service.history(req).await?;
 
-    //     let resp = Response::data(result).to_json()?;
-    //     Ok(resp)
-    // }
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
+    }
 
     /// 获取所有的队列
     pub async fn queues(Extension(provider): Extension<AInjectProvider>) -> Responder<QueuesResp> {
@@ -83,7 +83,7 @@ impl ComfyUITaskController {
     /// 删除队列
     pub async fn delete_queue(
         Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<DeleteQueueReq>,
+        Json(req): Json<DeleteQueueReq>,
     ) -> Responder<()> {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let _result = comfyui_task_service.delete_queue(req).await?;

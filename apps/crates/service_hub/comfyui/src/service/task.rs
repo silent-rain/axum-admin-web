@@ -9,7 +9,7 @@ use crate::{
         client::ComfyUIClient,
         dto::{PromptResult, QueueRemaining, Queues},
     },
-    dto::task::{DeleteQueueReq, HistoryReq, HistoryResp, PushPromptReq},
+    dto::task::{DeleteQueueReq, History, HistoryReq, HistorysReq, PushPromptReq},
 };
 
 /// 服务层
@@ -20,6 +20,7 @@ impl ComfyUITaskService {
     /// 获取 ComfyUI 客户端
     fn comfyui_client(&self) -> ComfyUIClient {
         ComfyUIClient::new()
+        // TODO 待修复 从数据库中读取 base_api config 表 or user_config?
         // .with_base_api(base_api)
     }
 
@@ -54,22 +55,64 @@ impl ComfyUITaskService {
     }
 
     /// 获取所有历史任务数据
-    ///
-    /// TODO 优化接口返回
-    // pub async fn history(&self, req: HistoryReq) -> Result<HistoryResp, ErrorMsg> {
-    //     let result = self
-    //         .comfyui_client()
-    //         .history(req.prompt_id.as_deref())
-    //         .await
-    //         .map_err(|err| {
-    //             error!("获取所有历史任务数据失败, err: {err}");
-    //             Error::ComfyUIError(err.to_string())
-    //                 .into_msg()
-    //                 .with_msg("获取所有历史任务数据失败")
-    //         })?;
+    pub async fn historys(&self, req: HistorysReq) -> Result<(Vec<History>, u64), ErrorMsg> {
+        let result = self
+            .comfyui_client()
+            .historys(req.max_items)
+            .await
+            .map_err(|err| {
+                error!("获取所有历史任务数据失败, err: {err}");
+                Error::ComfyUIError(err.to_string())
+                    .into_msg()
+                    .with_msg("获取所有历史任务数据失败")
+            })?;
 
-    //     Ok(result)
-    // }
+        let imgs = Vec::<History>::new();
+        for (prompt_id, raw_history) in result {
+            let mut img = History {
+                prompt_id,
+                images: vec![],
+            };
+            for (_i, output) in raw_history.outputs {
+                img.images.extend(output.images);
+            }
+        }
+
+        let total = imgs.len() as u64;
+        Ok((imgs, total))
+    }
+
+    /// 获取所有历史任务数据
+    pub async fn history(&self, req: HistoryReq) -> Result<History, ErrorMsg> {
+        let result = self
+            .comfyui_client()
+            .history(&req.prompt_id)
+            .await
+            .map_err(|err| {
+                error!("获取所有历史任务数据失败, err: {err}");
+                Error::ComfyUIError(err.to_string())
+                    .into_msg()
+                    .with_msg("获取所有历史任务数据失败")
+            })?;
+
+        let imgs = Vec::<History>::new();
+        for (prompt_id, raw_history) in result {
+            let mut img = History {
+                prompt_id,
+                images: vec![],
+            };
+            for (_i, output) in raw_history.outputs {
+                img.images.extend(output.images);
+            }
+        }
+        if imgs.is_empty() {
+            return Ok(History {
+                prompt_id: "".to_string(),
+                images: vec![],
+            });
+        }
+        Ok(imgs[0].clone())
+    }
 
     /// 获取所有的队列
     pub async fn queues(&self) -> Result<Queues, ErrorMsg> {

@@ -15,7 +15,7 @@ impl ComfyUIClient {
     // ws://127.0.0.1:8188/ws
 
     /// 发布绘图任务
-    /// 此接口只做任务下发，返回任务ID信息。
+    /// 此接口只做任务下发, 返回任务ID信息。
     pub async fn prompt(&self, payload: PromptReq) -> Result<PromptResult, Error> {
         let url = format!("{}/prompt", self.base_api);
 
@@ -88,7 +88,7 @@ impl ComfyUIClient {
 
     /// 获取所有的队列
     ///
-    /// 获取详细任务队列信息，正在运行的以及挂起的
+    /// 获取详细任务队列信息, 正在运行的以及挂起的
     pub async fn queues(&self) -> Result<Queues, Error> {
         let url = format!("{}/queue", self.base_api);
 
@@ -105,7 +105,7 @@ impl ComfyUIClient {
     }
 
     /// 清空队列
-    /// 清除所有等待的列队, 执行中的任务无法清除，无返回信息则为成功.
+    /// 清除所有等待的列队, 执行中的任务无法清除, 无返回信息则为成功.
     pub async fn clear_queue(&self) -> Result<bool, Error> {
         let url = format!("{}/queue", self.base_api);
 

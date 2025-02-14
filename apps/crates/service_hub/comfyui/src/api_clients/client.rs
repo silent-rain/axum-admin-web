@@ -22,8 +22,8 @@ pub struct ComfyUIClient {
     pub base_api: String,
 }
 
-impl ComfyUIClient {
-    pub fn new() -> Self {
+impl Default for ComfyUIClient {
+    fn default() -> Self {
         let mut headers = HeaderMap::new();
         headers.insert("Content-Type", HeaderValue::from_static("application/json"));
 
@@ -33,6 +33,12 @@ impl ComfyUIClient {
             headers,
             client: reqwest::Client::new(),
         }
+    }
+}
+
+impl ComfyUIClient {
+    pub fn new() -> Self {
+        ComfyUIClient::default()
     }
 
     /// 指定接口

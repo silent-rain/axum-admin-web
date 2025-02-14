@@ -1,10 +1,10 @@
-//！ ComfyUI 系统管理
+//! ComfyUI 系统管理
 
 use axum::Extension;
 use axum_response::{Responder, Response};
 use inject::AInjectProvider;
 
-use crate::dto::task::PushPromptResp;
+use crate::dto::system::SystemStatsResp;
 use crate::service::system::ComfyUISystemService;
 
 /// 控制器
@@ -14,7 +14,7 @@ impl ComfyUISystemController {
     /// 获取系统统计信息
     pub async fn system_stats(
         Extension(provider): Extension<AInjectProvider>,
-    ) -> Responder<PushPromptResp> {
+    ) -> Responder<SystemStatsResp> {
         let comfyui_system_service: ComfyUISystemService = provider.provide();
         let result = comfyui_system_service.system_stats().await?;
 

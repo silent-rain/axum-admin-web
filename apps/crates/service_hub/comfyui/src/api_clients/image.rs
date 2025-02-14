@@ -47,7 +47,7 @@ impl ComfyUIClient {
         Ok(resp)
     }
 
-    /// 上传蒙版图片，一般用于局部重绘
+    /// 上传蒙版图片, 一般用于局部重绘
     pub async fn upload_mask_image(
         &self,
         data: UploadMaskImageReq,
@@ -86,7 +86,7 @@ impl ComfyUIClient {
 
     /// 图片的在线预览接口, 返回图片 Bytes 字节
     ///
-    /// 上传图像，生图图像，蒙蔽图像，均通过该接口预览
+    /// 上传图像, 生图图像, 蒙蔽图像, 均通过该接口预览
     pub async fn view_image(&self, params: ImageViewReq) -> Result<Vec<u8>, Error> {
         let url = format!("{}/view", self.base_api);
 
@@ -161,7 +161,7 @@ mod tests {
 
         println!("result empty: {:?}", results.is_empty());
 
-        // 打开一个文件进行写操作，如果文件不存在则创建它
+        // 打开一个文件进行写操作, 如果文件不存在则创建它
         let mut file = tokio::fs::File::create("./assets/view.png").await?;
 
         // 将二进制数据写入文件

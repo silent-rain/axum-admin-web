@@ -1,16 +1,10 @@
-//！ ComfyUI 系统管理
+//! ComfyUI 系统管理
 
 use code::{Error, ErrorMsg};
 use nject::injectable;
 use tracing::error;
 
-use crate::{
-    api_clients::{
-        client::ComfyUIClient,
-        dto::{PromptResult, QueueRemaining, Queues, SystemStats},
-    },
-    dto::task::{DeleteQueueReq, HistoryReq, HistoryResp, PushPromptReq},
-};
+use crate::api_clients::{client::ComfyUIClient, dto::SystemStats};
 
 /// 服务层
 #[injectable]

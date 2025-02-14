@@ -6,16 +6,22 @@ pub mod dto;
 pub(crate) mod dao;
 
 pub(crate) mod service;
-pub use service::system::ComfyUISystemService;
-pub use service::task::ComfyUITaskService;
+pub use service::{
+    image::ComfyUIImageService, model::ComfyUIModelService, node::ComfyUINodeService,
+    system::ComfyUISystemService, task::ComfyUITaskService,
+};
 
 pub(crate) mod controller;
-pub use controller::system::ComfyUISystemController;
-pub use controller::task::ComfyUITaskController;
+pub use controller::{
+    image::ComfyUIImageController, model::ComfyUIModelController, node::ComfyUINodeController,
+    system::ComfyUISystemController, task::ComfyUITaskController,
+};
 
 pub(crate) mod router;
-pub use router::task::ComfyUITaskRouter;
-pub use router::ComfyUIRouter;
+pub use router::{
+    image::ComfyUIImageRouter, model::ComfyUIModelRouter, node::ComfyUINodeRouter,
+    system::ComfyUISystemRouter, task::ComfyUITaskRouter, ComfyUIRouter,
+};
 
 /*
 全局配置:

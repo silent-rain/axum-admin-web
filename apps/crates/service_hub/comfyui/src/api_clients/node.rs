@@ -26,7 +26,7 @@ impl ComfyUIClient {
         Ok(resp)
     }
 
-    /// 获取扩展节点文件列表
+    /// 获取扩展节点列表
     pub async fn extensions(&self) -> Result<Vec<String>, Error> {
         let url = format!("{}/extensions", self.base_api);
 

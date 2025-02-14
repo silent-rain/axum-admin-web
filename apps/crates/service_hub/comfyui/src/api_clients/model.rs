@@ -7,7 +7,7 @@ use super::{
 };
 
 impl ComfyUIClient {
-    /// 获取连续的词向量文件列表
+    /// 获取连续的词向量模型列表
     pub async fn old_embeddings(&self) -> Result<Vec<String>, Error> {
         let url = format!("{}/embeddings", self.base_api);
 
@@ -23,7 +23,7 @@ impl ComfyUIClient {
         Ok(resp)
     }
 
-    /// 获取连续的词向量文件列表
+    /// 获取连续的词向量模型列表
     /// - experiment
     pub async fn embeddings(&self) -> Result<Vec<Embedding>, Error> {
         let url = format!("{}/experiment/models/embeddings", self.base_api);
@@ -74,7 +74,7 @@ impl ComfyUIClient {
         Ok(resp)
     }
 
-    /// 获取 vae 模型列表
+    /// 获取 Vae 模型列表
     /// - experiment
     pub async fn vaes(&self) -> Result<Vec<Model>, Error> {
         let url = format!("{}/experiment/models/vae", self.base_api);

@@ -7,7 +7,7 @@ use serde_json::Value;
 use validator::Validate;
 
 /// 系统信息
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct System {
     pub os: String,
     pub ram_total: u64,
@@ -20,7 +20,7 @@ pub struct System {
 }
 
 /// 设备信息
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Device {
     pub name: String,
     pub r#type: String,
@@ -32,7 +32,7 @@ pub struct Device {
 }
 
 /// 系统统计信息 响应体
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct SystemStats {
     pub system: System,
     pub devices: Vec<Device>,
@@ -42,8 +42,8 @@ pub struct SystemStats {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct ImageOriginalRef {
     pub filename: String,  // 文件名称
-    pub r#type: String,    // 上传图片的目标文件夹， "input"
-    pub subfolder: String, // 上传图片的目标子文件夹， clipspace/pasted
+    pub r#type: String,    // 上传图片的目标文件夹,  "input"
+    pub subfolder: String, // 上传图片的目标子文件夹,  clipspace/pasted
 }
 
 impl std::fmt::Display for ImageOriginalRef {
@@ -60,16 +60,16 @@ impl std::fmt::Display for ImageOriginalRef {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct UploadImage {
     pub name: String,      // 文件名称
-    pub r#type: String,    // 上传图片的目标文件夹， "input"
-    pub subfolder: String, // 上传图片的目标子文件夹， clipspace/pasted
+    pub r#type: String,    // 上传图片的目标文件夹,  "input"
+    pub subfolder: String, // 上传图片的目标子文件夹,  clipspace/pasted
 }
 
 /// 上传蒙版图片 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UploadMaskImageReq {
     pub image: String,        // 文件名称
-    pub r#type: String,       // 上传图片的目标文件夹， "input"
-    pub subfolder: String,    // 上传图片的目标子文件夹， clipspace/pasted
+    pub r#type: String,       // 上传图片的目标文件夹,  "input"
+    pub subfolder: String,    // 上传图片的目标子文件夹,  clipspace/pasted
     pub original_ref: String, // 原图引用
 }
 
@@ -77,25 +77,25 @@ pub struct UploadMaskImageReq {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct UploadMaskImage {
     pub name: String,      // 文件名称
-    pub r#type: String,    // 上传图片的目标文件夹， "input"
-    pub subfolder: String, // 上传图片的目标子文件夹， clipspace/pasted
+    pub r#type: String,    // 上传图片的目标文件夹,  "input"
+    pub subfolder: String, // 上传图片的目标子文件夹,  clipspace/pasted
 }
 
 /// 图片预览 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct ImageViewReq {
     pub filename: String, // 文件名称
-    pub r#type: String,   // 上传图片的目标文件夹， "input"
+    pub r#type: String,   // 上传图片的目标文件夹,  "input"
     // pub rand: f32,         // 随机数
-    pub subfolder: String, // 上传图片的目标子文件夹， clipspace/pasted
+    pub subfolder: String, // 上传图片的目标子文件夹,  clipspace/pasted
 }
 
 /// 历史任务输出的图片结构 响应体
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct Image {
     pub filename: String,  // 文件名称
-    pub r#type: String,    // 上传图片的目标文件夹， "input"
-    pub subfolder: String, // 上传图片的目标子文件夹， clipspace/pasted
+    pub r#type: String,    // 上传图片的目标文件夹,  "input"
+    pub subfolder: String, // 上传图片的目标子文件夹,  clipspace/pasted
 }
 
 /// 历史记录输出
