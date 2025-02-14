@@ -8,7 +8,6 @@ database = { path = "../../core/database" }
 entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
 utils = { path = "../../core/utils" }
-jwt = { path = "../../core/jwt" }
 inject = { path = "../../core/inject" }
 axum_response = { path = "../../axum_response" }
 axum_context = { path = "../../axum_context" }

@@ -1,5 +1,7 @@
 //! 应用服务
 
+pub use inject;
+
 // 快速复制的模板
 pub use template;
 
@@ -13,4 +15,4 @@ pub use schedule;
 pub use system;
 pub use user;
 
-pub use inject;
+pub use comfyui;

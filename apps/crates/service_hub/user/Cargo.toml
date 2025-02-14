@@ -14,9 +14,6 @@ axum_response = { path = "../../axum_response" }
 axum_context = { path = "../../axum_context" }
 axum_validator = { path = "../../axum_validator" }
 
-permission = { path = "../permission" }
-
-
 axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }

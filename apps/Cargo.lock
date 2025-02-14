@@ -457,7 +457,6 @@ dependencies = [
  "database",
  "entity",
  "inject",
- "jwt",
  "nject",
  "sea-orm",
  "serde",
@@ -626,23 +625,6 @@ dependencies = [
  "tokio",
  "tower 0.5.2",
  "tower-http",
-]
-
-[[package]]
-name = "axum-streams"
-version = "0.20.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e706938a2f02ac53dac79575d99819fa6285a5eae35b0fa27b959affb80c435"
-dependencies = [
- "axum 0.8.1",
- "bytes",
- "futures",
- "http",
- "http-body",
- "mime",
- "tokio",
- "tokio-stream",
- "tokio-util",
 ]
 
 [[package]]
@@ -5303,8 +5285,6 @@ name = "system"
 version = "0.1.0"
 dependencies = [
  "axum 0.8.1",
- "axum-extra",
- "axum-streams",
  "axum_response",
  "axum_typed_multipart",
  "axum_validator",
@@ -6119,7 +6099,6 @@ dependencies = [
  "entity",
  "inject",
  "nject",
- "permission",
  "regex 1.11.1",
  "rust_decimal",
  "sea-orm",
