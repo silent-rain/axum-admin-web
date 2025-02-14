@@ -9,6 +9,7 @@ pub use pagination::Pagination;
 mod pool;
 pub use pool::{Pool, PoolTrait};
 pub use sea_orm::DatabaseConnection;
+pub mod mdb;
 
 mod config;
 pub use config::{Config, Options};

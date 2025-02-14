@@ -74,7 +74,6 @@ impl Pool {
     }
 
     /// 设置 Time Zone
-    #[allow(unused)]
     async fn set_time_zone(db: &DatabaseConnection) -> Result<(), DbErr> {
         if db.get_database_backend() == DatabaseBackend::MySql {
             let stmt = sea_orm::Statement::from_string(
