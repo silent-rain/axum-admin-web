@@ -26,7 +26,7 @@ use axum_middleware::{
 };
 use axum_session::session_layer;
 use service_hub::{
-    auth::AuthRouter, initialize::InitializeRouter, log::LogRouter,
+    auth::AuthRouter, comfyui::ComfyUIRouter, initialize::InitializeRouter, log::LogRouter,
     organization::OrganizationRouter, permission::PermissionRouter, public::HealthRouter,
     schedule::ScheduleRouter, system::SystemRouter, template::TemplateRouter, user::UserRouter,
 };
@@ -85,10 +85,10 @@ pub fn register(db_pool: Arc<(dyn PoolTrait)>) -> Router {
     let (prometheus_layer, prometheus_metric_handle) = prometheus_layer_metric_handle();
 
     let my_layers = ServiceBuilder::new()
-        .layer(ContextLayer::new()) // 上下文
-        .layer(SessionAuthLayer) // Session权限中间件
-        .layer(OpenApiAuthLayer) // OpenApi权限中间件
-        .layer(CheckAuthLayer) // 权限检查中间件
+        // .layer(ContextLayer::new()) // 上下文
+        // .layer(SessionAuthLayer) // Session权限中间件
+        // .layer(OpenApiAuthLayer) // OpenApi权限中间件
+        // .layer(CheckAuthLayer) // 权限检查中间件
         // .layer(CasbinAuthLayer) // Casbin权限中间件
         .layer(ApiOperationLogLayer) // Api 操作日志中间件
         .layer(axum::middleware::from_fn(empty_wrapper_layer)); // 空包装
@@ -126,6 +126,7 @@ pub fn register(db_pool: Arc<(dyn PoolTrait)>) -> Router {
         .merge(ScheduleRouter::register()) // 定时任务管理
         .merge(LogRouter::register()) // 日志管理
         .merge(InitializeRouter::register()) // 库表资源初始化管理
+        .merge(ComfyUIRouter::register()) // ComfyUI 管理
         .merge(TemplateRouter::register()) // 模板管理
         .route(
             "/metrics",

@@ -17,9 +17,11 @@ impl ComfyUIRouter {
         Router::new().nest(
             "/comfyui",
             Router::new()
-                .merge(task::ComfyUITaskRouter::register()) // ComfyUI 任务管理
+                .merge(image::ComfyUIImageRouter::register()) // ComfyUI 图片管理
+                .merge(model::ComfyUIModelRouter::register()) // ComfyUI 模型管理
+                .merge(node::ComfyUINodeRouter::register()) // ComfyUI 节点管理
                 .merge(system::ComfyUISystemRouter::register()) // ComfyUI 系统管理
-                .merge(model::ComfyUIModelRouter::register()), // ComfyUI 模型管理
+                .merge(task::ComfyUITaskRouter::register()), // ComfyUI 任务管理
         )
     }
 }

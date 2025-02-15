@@ -67,7 +67,7 @@ impl ComfyUITaskService {
                     .with_msg("获取所有历史任务数据失败")
             })?;
 
-        let imgs = Vec::<History>::new();
+        let mut imgs = Vec::<History>::new();
         for (prompt_id, raw_history) in result {
             let mut img = History {
                 prompt_id,
@@ -76,6 +76,7 @@ impl ComfyUITaskService {
             for (_i, output) in raw_history.outputs {
                 img.images.extend(output.images);
             }
+            imgs.push(img);
         }
 
         let total = imgs.len() as u64;
@@ -95,7 +96,7 @@ impl ComfyUITaskService {
                     .with_msg("获取所有历史任务数据失败")
             })?;
 
-        let imgs = Vec::<History>::new();
+        let mut imgs = Vec::<History>::new();
         for (prompt_id, raw_history) in result {
             let mut img = History {
                 prompt_id,
@@ -104,6 +105,7 @@ impl ComfyUITaskService {
             for (_i, output) in raw_history.outputs {
                 img.images.extend(output.images);
             }
+            imgs.push(img);
         }
         if imgs.is_empty() {
             return Ok(History {

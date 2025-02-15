@@ -2,3 +2,6 @@
 
 /logs
 dist/*
+
+upload/images/*
+!upload/images/.gitignore

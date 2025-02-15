@@ -67,7 +67,7 @@ impl ComfyUIClient {
         let part = Part::stream(file_bytes.clone()).file_name(format!("{file_name}.{extension}"));
         let form: Form = Form::new()
             .text("type", data.r#type)
-            .text("subfolder", data.subfolder)
+            .text("subfolder", data.subfolder.map_or("".to_string(), |v| v))
             .text("original_ref", data.original_ref)
             .part("image", part);
 
@@ -132,20 +132,37 @@ mod tests {
     async fn test_upload_mask_image() {
         let original_ref = ImageOriginalRef {
             filename: "7a721506-a062-431c-836e-16b19747df50.jpeg".to_string(),
-            r#type: "".to_string(),
-            subfolder: "input".to_string(),
+            r#type: "input".to_string(),
+            subfolder: "".to_string(),
         };
 
         let data = UploadMaskImageReq {
-            image: "./assets/ComfyUI_00033.png".to_string(),
+            image: "./assets/OIG3_MASK.png".to_string(),
             r#type: "input".to_string(),
-            subfolder: "clipspace".to_string(),
+            subfolder: Some("clipspace".to_string()),
             original_ref: original_ref.to_string(),
         };
 
         let client = ComfyUIClient::new();
         let results = client.upload_mask_image(data).await;
         println!("results: {:#?}", results);
+    }
+
+    #[ignore]
+    #[tokio::test]
+    async fn test_upload_mask_image2() {
+        let data = UploadMaskImageReq {
+            image: "./assets/OIG3_MASK.png".to_string(),
+            r#type: "input".to_string(),
+            subfolder: Some("clipspace".to_string()),
+            original_ref: "".to_string(),
+        };
+
+        let client = ComfyUIClient::new();
+        let results = client.upload_mask_image(data).await;
+        println!("results: {:#?}", results);
+
+        assert!(results.is_err())
     }
 
     #[ignore]

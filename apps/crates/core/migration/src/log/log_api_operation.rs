@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
                         `path` VARCHAR(500) NOT NULL COMMENT '请求地址路径',
                         `content_type` VARCHAR(100) NOT NULL COMMENT 'Content-Type',
                         `query` VARCHAR(500) NULL DEFAULT '' COMMENT '请求参数',
-                        `body` TEXT NULL COMMENT '请求体/响应体',
+                        `body` MEDIUMTEXT NULL COMMENT '请求体/响应体',
                         `remote_addr` VARCHAR(64) NULL DEFAULT '' COMMENT '请求IP',
                         `user_agent` VARCHAR(256) NULL DEFAULT '' COMMENT '用户代理',
                         `cost` SMALLINT NOT NULL COMMENT '耗时,毫秒',

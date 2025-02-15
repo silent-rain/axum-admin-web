@@ -1,6 +1,6 @@
 //! 文件资源管理
 
-use std::io::{Read, Write};
+use std::io::Read;
 
 use crate::{
     dao::file_resource::FileResourceDao,
@@ -98,10 +98,10 @@ impl FileResourceService {
 
         let extension = file_extension(file_name.clone())?;
 
-        let buffer = vec![];
+        let mut buffer = vec![];
         req.file
             .contents
-            .write_all(&buffer)
+            .read_to_end(&mut buffer)
             .map_err(|err| Error::UploadFileError(err.to_string()))?;
 
         let mut content_type = req
@@ -150,9 +150,9 @@ impl FileResourceService {
 
             let extension = file_extension(file_name.clone())?;
 
-            let buffer = vec![];
+            let mut buffer = vec![];
             file.contents
-                .write_all(&buffer)
+                .read_to_end(&mut buffer)
                 .map_err(|err| Error::UploadFileError(err.to_string()))?;
 
             let mut content_type = file

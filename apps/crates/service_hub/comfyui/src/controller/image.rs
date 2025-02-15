@@ -5,7 +5,6 @@ use axum::http::{HeaderMap, HeaderName, HeaderValue};
 use axum::Extension;
 use axum_response::{Responder, Response, ResponseErr};
 use axum_typed_multipart::TypedMultipart;
-use axum_validator::Json;
 use inject::AInjectProvider;
 
 use crate::dto::image::{
@@ -34,8 +33,7 @@ impl ComfyUIImageController {
     /// TODO 对该接口进行简化, 例如指定上传目录, 前端仅传递图片即可
     pub async fn upload_mask_image(
         Extension(provider): Extension<AInjectProvider>,
-        Json(req): Json<UploadMaskImageReq>,
-        // TypedMultipart(req): TypedMultipart<UploadFileReq>,
+        TypedMultipart(req): TypedMultipart<UploadMaskImageReq>,
     ) -> Responder<UploadMaskImageResp> {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
         let result = comfyui_image_service.upload_mask_image(req).await?;

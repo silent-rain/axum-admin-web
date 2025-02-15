@@ -8,7 +8,7 @@ use crate::ComfyUINodeController;
 pub struct ComfyUINodeRouter;
 
 impl ComfyUINodeRouter {
-    /// 注册`ComfyUI 系统管理`路由
+    /// 注册`ComfyUI 节点管理`路由
     pub fn register() -> Router {
         Router::new().nest(
             "/nodes",

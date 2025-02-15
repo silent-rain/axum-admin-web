@@ -88,7 +88,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(LogApiOperation::Body)
-                            .text()
+                            .text() // MEDIUMTEXT
                             .null()
                             .comment("请求体/响应体"),
                     )

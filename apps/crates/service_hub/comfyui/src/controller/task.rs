@@ -28,6 +28,8 @@ impl ComfyUITaskController {
     }
 
     /// 获取服务器当前剩余任务列队的数量
+    ///
+    /// 同时包含正在运行的任务
     pub async fn queue_remaining(
         Extension(provider): Extension<AInjectProvider>,
     ) -> Responder<QueueRemainingResp> {

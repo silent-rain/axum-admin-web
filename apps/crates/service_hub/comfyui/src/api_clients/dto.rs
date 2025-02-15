@@ -67,10 +67,10 @@ pub struct UploadImage {
 /// 上传蒙版图片 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UploadMaskImageReq {
-    pub image: String,        // 文件名称
-    pub r#type: String,       // 上传图片的目标文件夹,  "input"
-    pub subfolder: String,    // 上传图片的目标子文件夹,  clipspace/pasted
-    pub original_ref: String, // 原图引用
+    pub image: String,             // 文件名称
+    pub r#type: String,            // 上传图片的目标文件夹,  "input"
+    pub subfolder: Option<String>, // 上传图片的目标子文件夹,  clipspace/pasted
+    pub original_ref: String,      // 原图引用
 }
 
 /// 上传蒙版图片 响应体

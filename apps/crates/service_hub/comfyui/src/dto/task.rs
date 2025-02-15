@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::api_clients::dto::Image;
+use crate::api_clients::dto::{Image, Queues};
 pub use crate::api_clients::dto::{PromptReq as PushPromptReq, PromptResult, QueueRemaining};
 
 /// 发布绘图任务 响应体
@@ -56,7 +56,7 @@ pub struct HistoryResp {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct QueuesResp {
     #[serde(flatten)]
-    pub data: HistoryResp,
+    pub data: Queues,
 }
 
 /// 删除队列 请求体
