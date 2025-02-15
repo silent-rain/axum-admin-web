@@ -8,7 +8,8 @@ use axum_typed_multipart::TypedMultipart;
 use inject::AInjectProvider;
 
 use crate::dto::image::{
-    ImageViewReq, UploadImageReq, UploadImageResp, UploadMaskImageReq, UploadMaskImageResp,
+    ImageViewReq, UploadImageAndMaskReq, UploadImageReq, UploadImageResp, UploadMaskImageReq,
+    UploadMaskImageResp,
 };
 use crate::service::image::ComfyUIImageService;
 
@@ -29,14 +30,24 @@ impl ComfyUIImageController {
     }
 
     /// 上传蒙版图片, 一般用于局部重绘
-    ///
-    /// TODO 对该接口进行简化, 例如指定上传目录, 前端仅传递图片即可
-    pub async fn upload_mask_image(
+    pub async fn upload_mask(
         Extension(provider): Extension<AInjectProvider>,
         TypedMultipart(req): TypedMultipart<UploadMaskImageReq>,
     ) -> Responder<UploadMaskImageResp> {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
-        let result = comfyui_image_service.upload_mask_image(req).await?;
+        let result = comfyui_image_service.upload_mask(req).await?;
+
+        let resp = Response::data(result).to_json()?;
+        Ok(resp)
+    }
+
+    /// 同时上传图片与图片对应的蒙版, 一般用于局部重绘
+    pub async fn upload_image_and_mask(
+        Extension(provider): Extension<AInjectProvider>,
+        TypedMultipart(req): TypedMultipart<UploadImageAndMaskReq>,
+    ) -> Responder<UploadMaskImageResp> {
+        let comfyui_image_service: ComfyUIImageService = provider.provide();
+        let result = comfyui_image_service.upload_image_and_mask(req).await?;
 
         let resp = Response::data(result).to_json()?;
         Ok(resp)

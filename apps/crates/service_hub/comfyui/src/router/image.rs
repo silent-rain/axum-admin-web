@@ -17,9 +17,10 @@ impl ComfyUIImageRouter {
             "/images",
             Router::new()
                 .route("/upload_image", post(ComfyUIImageController::upload_image))
+                .route("/upload_mask", post(ComfyUIImageController::upload_mask))
                 .route(
-                    "/upload_mask_image",
-                    post(ComfyUIImageController::upload_mask_image),
+                    "/upload_image_and_mask",
+                    post(ComfyUIImageController::upload_image_and_mask),
                 )
                 .route("/view_image", get(ComfyUIImageController::view_image)),
         )

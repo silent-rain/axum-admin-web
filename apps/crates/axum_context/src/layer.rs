@@ -9,6 +9,7 @@ use futures::future::BoxFuture;
 use std::task::Poll;
 use tower::{Layer, Service};
 use tower_sessions::Session;
+use tracing::error;
 
 /// 上下文中间件
 #[derive(Debug, Default, Clone)]
@@ -65,11 +66,10 @@ where
             let session_id = match session.id() {
                 Some(v) => v.to_string(),
                 None => {
+                    error!("获取会话异常");
                     return Ok(create_error_response(
-                        Error::SessionIdNotFound
-                            .into_msg()
-                            .with_msg("权限异常, 请重新登陆"),
-                    ))
+                        Error::SessionIdNotFound.into_msg().with_msg("获取会话异常"),
+                    ));
                 }
             };
 

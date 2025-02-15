@@ -26,7 +26,7 @@ pub struct UploadImageResp {
 /// 上传蒙版图片 请求体
 #[derive(TryFromMultipart)]
 pub struct UploadMaskImageReq {
-    /// 文件路径
+    /// 图片
     #[form_data(limit = "5MiB")]
     pub image: FieldData<NamedTempFile>,
     pub r#type: String,            // 上传图片的目标文件夹,  "input"
@@ -34,9 +34,26 @@ pub struct UploadMaskImageReq {
     pub original_ref: String,      // 原图引用
 }
 
+/// 同时上传图片与图片对应的蒙版 请求体
+#[derive(TryFromMultipart)]
+pub struct UploadImageAndMaskReq {
+    /// 图片
+    #[form_data(limit = "5MiB")]
+    pub image: FieldData<NamedTempFile>,
+    /// 图片蒙版
+    pub image_mask: FieldData<NamedTempFile>,
+}
+
+/// 同时上传图片与图片对应的蒙版
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct UploadImageAndMask {
+    pub image: UploadImage,
+    pub image_mask: UploadMaskImage,
+}
+
 /// 上传蒙版图片 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct UploadMaskImageResp {
     #[serde(flatten)]
-    pub data: UploadMaskImage,
+    pub data: UploadImageAndMask,
 }
