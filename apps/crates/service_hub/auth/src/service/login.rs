@@ -48,7 +48,7 @@ impl LoginService {
             error!("验证码校验失败, err: {err}");
         })?;
 
-        let session_id = session.id().ok_or(Error::SessionIdNotFound)?.0.to_string();
+        let session_id = session.id().ok_or(Error::SessionIdNotFound)?.to_string();
 
         // 检测手机号码或邮件用户是否存在
         let user = self.get_user(req.clone()).await?;

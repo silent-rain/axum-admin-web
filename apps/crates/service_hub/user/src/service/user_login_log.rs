@@ -78,10 +78,10 @@ impl UserLoginLogService {
                     .with_msg("查询登陆日志信息失败")
             })?
             .ok_or_else(|| {
-                error!("登陆日志不存在");
+                error!("未查询到登陆信息，请重新登陆");
                 Error::DbQueryEmptyError
                     .into_msg()
-                    .with_msg("登陆日志不存在")
+                    .with_msg("未查询到登陆信息，请重新登陆")
             })?;
         result.session_id = "".to_string();
         Ok(result)

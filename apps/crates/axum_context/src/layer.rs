@@ -1,15 +1,12 @@
 //! 中间件
 //! 初始化 Context
 
-use crate::{error::create_error_response, Context};
+use crate::Context;
 
 use axum::{body::Body, extract::Request, http::Response};
-use code::Error;
 use futures::future::BoxFuture;
 use std::task::Poll;
 use tower::{Layer, Service};
-use tower_sessions::Session;
-use tracing::error;
 
 /// 上下文中间件
 #[derive(Debug, Default, Clone)]
@@ -56,26 +53,8 @@ where
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
         Box::pin(async move {
-            // Session
-            let session = match req.extensions().get::<Session>() {
-                Some(v) => v,
-                None => {
-                    return Ok(create_error_response(Error::SessionExtension.into_msg()));
-                }
-            };
-            let session_id = match session.id() {
-                Some(v) => v.to_string(),
-                None => {
-                    error!("获取会话异常");
-                    return Ok(create_error_response(
-                        Error::SessionIdNotFound.into_msg().with_msg("获取会话异常"),
-                    ));
-                }
-            };
-
             // See `axum::RequestExt` for how to run extractors directly from  a `Request`.
             let context = Context {
-                session_id,
                 ..Default::default()
             };
 

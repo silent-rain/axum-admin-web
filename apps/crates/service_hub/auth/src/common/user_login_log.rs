@@ -36,7 +36,7 @@ pub fn add_login_log(
         let data = user_login_log::ActiveModel {
             user_id: Set(user_id),
             username: Set(username),
-            session_id: Set(session_id),
+            session_id: Set(session_id.clone()),
             remote_addr: Set(browser_info.remote_addr),
             user_agent: Set(browser_info.user_agent),
             login_status: Set(login_status as i8),
@@ -48,7 +48,10 @@ pub fn add_login_log(
         };
 
         let result = user_login_dao.create(data).await.map_err(|err| {
-            error!("添加登陆日志失败, err: {:#?}", err);
+            error!(
+                "添加登陆日志失败, session_id: {:#?}, err: {:#?}",
+                session_id, err
+            );
             code::Error::DbAddError
                 .into_msg()
                 .with_msg("添加登陆日志失败")

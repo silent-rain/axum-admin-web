@@ -259,7 +259,6 @@ impl ApiOperationLog {
             data.content_type = content_type;
 
             // 图片body数据不入库
-            error!("=========================: {:#?}", data.content_type);
             if data
                 .content_type
                 .to_uppercase()

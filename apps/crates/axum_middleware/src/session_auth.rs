@@ -68,11 +68,11 @@ where
             let session_id = match session.id() {
                 Some(v) => v.to_string(),
                 None => {
-                    error!("权限异常, 请重新登陆");
+                    error!("获取用户信息失败, 请重新登陆");
                     return Ok(create_error_response(
                         Error::SessionIdNotFound
                             .into_msg()
-                            .with_msg("权限异常, 请重新登陆"),
+                            .with_msg("获取用户信息失败, 请重新登陆"),
                     ));
                 }
             };
@@ -96,6 +96,7 @@ where
 
             // 设置上下文
             if let Some(ctx) = req.extensions_mut().get_mut::<Context>() {
+                ctx.set_session_id(session_id);
                 ctx.set_user_id(user_id);
                 ctx.set_api_auth_type(ApiAuthType::System);
             }

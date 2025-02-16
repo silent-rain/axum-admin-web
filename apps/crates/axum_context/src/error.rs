@@ -9,6 +9,7 @@ use tracing::error;
 use axum_response::ResponseErr;
 use code::{Error, ErrorMsg};
 
+#[allow(unused)]
 pub(crate) fn create_error_response(err: ErrorMsg) -> Response<Body> {
     let err: ResponseErr = err.into();
     let data = serde_json::to_string(&err)

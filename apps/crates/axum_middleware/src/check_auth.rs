@@ -11,6 +11,7 @@ use service_hub::{
     inject::AInjectProvider,
     user::{dto::user_base::RolesReq, UserBaseService},
 };
+use tracing::warn;
 
 use crate::{constant::AUTH_WHITE_LIST, error::create_error_response};
 
@@ -86,7 +87,11 @@ where
                     return Ok(create_error_response(err));
                 }
             };
-            ctx.set_user_name(username);
+            ctx.set_user_name(username.clone());
+
+            // 打印用户鉴权信息
+            let session_id = ctx.get_session_id();
+            warn!("check_auth: user_id: {user_id}, username: {username}, session_id: {session_id}");
 
             // 获取角色
             let role_ids = match Self::get_role(inject_provider, user_id).await {
