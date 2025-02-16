@@ -18,7 +18,7 @@ pub fn session_layer(db: Arc<dyn PoolTrait>) -> SessionManagerLayer<DbStore> {
 
     SessionManagerLayer::new(session_store)
         .with_name(SESSION_ID)
-        .with_secure(true)
+        .with_secure(false)
         .with_always_save(false)
         .with_expiry(Expiry::OnInactivity(Duration::hours(24)))
 }
