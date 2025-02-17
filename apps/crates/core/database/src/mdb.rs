@@ -2,5 +2,8 @@
 
 use crate::PoolTrait;
 
-pub trait DbPoolTrait: PoolTrait {}
-pub trait AppDbPoolTrait: PoolTrait {}
+/// 定义主业务数据库类型
+pub trait MainDB: PoolTrait {}
+
+/// 定义配置数据库类型
+pub trait ConfigDB: PoolTrait {}
