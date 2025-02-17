@@ -21,6 +21,8 @@ impl InjectProvider {
         let mdb = Mdb::new(main_db.clone(), config_db);
         InjectProvider { db: main_db, mdb }
     }
+
+    
 }
 
 pub type AInjectProvider = Arc<InjectProvider>;
