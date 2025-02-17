@@ -49,7 +49,10 @@ pub async fn main() -> anyhow::Result<()> {
     let state = Arc::new(AppState {});
 
     // Using an Arc to share the provider across multiple threads.
-    let inject_provider = Arc::new(InjectProvider::new(Arc::new(db_pool.clone())));
+    let inject_provider = Arc::new(InjectProvider::new(
+        Arc::new(db_pool.clone()),
+        Arc::new(db_pool.clone()),
+    ));
 
     // Build our application by creating our router.
     let app = Router::new()

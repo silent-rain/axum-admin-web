@@ -37,7 +37,7 @@ impl MockRequest {
             .map_err(|err| Error::InitDb(err.to_string()))?
             .build();
 
-        let provider = Arc::new(InjectProvider::new(pool.clone()));
+        let provider = Arc::new(InjectProvider::new(pool.clone(), pool.clone()));
 
         // Build an application with a route.
         let app = Router::new().merge(routes).layer(Extension(provider));

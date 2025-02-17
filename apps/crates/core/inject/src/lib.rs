@@ -5,15 +5,21 @@ use database::PoolTrait;
 
 use nject::provider;
 
+pub mod mdb;
+use mdb::Mdb;
+
 #[provider]
 pub struct InjectProvider {
     #[provide(Arc<dyn PoolTrait>, |x| x.clone())]
     db: Arc<dyn PoolTrait>,
+    #[provide]
+    mdb: Mdb,
 }
 
 impl InjectProvider {
-    pub fn new(db: Arc<dyn PoolTrait>) -> Self {
-        InjectProvider { db }
+    pub fn new(main_db: Arc<dyn PoolTrait>, config_db: Arc<dyn PoolTrait>) -> Self {
+        let mdb = Mdb::new(main_db.clone(), config_db);
+        InjectProvider { db: main_db, mdb }
     }
 }
 
