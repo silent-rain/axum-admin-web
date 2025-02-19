@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum_response::Response;
-use database::{mock::Mock, PoolTrait};
+use database::{mock::Mock, Mdb, PoolTrait};
 use inject::InjectProvider;
 use migration::Migrator;
 
@@ -32,12 +32,14 @@ pub struct MockRequest {
 
 impl MockRequest {
     pub async fn new(routes: Router) -> Result<Self, Error> {
-        let pool = Mock::builder()
+        let main_db = Mock::builder()
             .await
             .map_err(|err| Error::InitDb(err.to_string()))?
             .build();
 
-        let provider = Arc::new(InjectProvider::new(pool.clone(), pool.clone()));
+        let db_pool = Mdb::new(main_db.clone(), main_db.clone());
+
+        let provider = Arc::new(InjectProvider::new(db_pool.clone()));
 
         // Build an application with a route.
         let app = Router::new().merge(routes).layer(Extension(provider));
@@ -46,7 +48,7 @@ impl MockRequest {
         let server = TestServer::new(app).map_err(|err| Error::InitTestServer(err.to_string()))?;
 
         Ok(MockRequest {
-            pool,
+            pool: db_pool.main_db.clone(),
             server,
             log_level: tracing::Level::WARN,
         })

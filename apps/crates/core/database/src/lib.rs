@@ -14,3 +14,6 @@ mod config;
 pub use config::{Config, Options};
 
 pub mod mock;
+
+pub mod mdb;
+pub use mdb::Mdb;

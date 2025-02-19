@@ -13,7 +13,7 @@ pub trait PoolTrait: Send + Sync {
     fn db(&self) -> &DatabaseConnection;
 
     /// 关闭数据库实例
-    fn close(self) -> Pin<Box<dyn Future<Output = Result<(), DbErr>> + Send>>;
+    fn close(&self) -> Pin<Box<dyn Future<Output = Result<(), DbErr>> + Send>>;
 }
 
 /// 数据库连接池
@@ -102,8 +102,9 @@ impl PoolTrait for Pool {
     }
 
     /// 关闭数据库实例
-    fn close(self) -> Pin<Box<dyn Future<Output = Result<(), DbErr>> + Send>> {
-        Box::pin(async move { self.db.close().await })
+    fn close(&self) -> Pin<Box<dyn Future<Output = Result<(), DbErr>> + Send>> {
+        let db = self.db.clone();
+        Box::pin(async move { db.close().await })
     }
 }
 

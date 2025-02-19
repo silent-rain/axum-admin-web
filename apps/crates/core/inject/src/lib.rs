@@ -1,12 +1,9 @@
 //! 依赖注入
 use std::sync::Arc;
 
-use database::PoolTrait;
+use database::{Mdb, PoolTrait};
 
 use nject::provider;
-
-pub mod mdb;
-use mdb::Mdb;
 
 #[provider]
 pub struct InjectProvider {
@@ -17,12 +14,12 @@ pub struct InjectProvider {
 }
 
 impl InjectProvider {
-    pub fn new(main_db: Arc<dyn PoolTrait>, config_db: Arc<dyn PoolTrait>) -> Self {
-        let mdb = Mdb::new(main_db.clone(), config_db);
-        InjectProvider { db: main_db, mdb }
+    pub fn new(db_pool: Mdb) -> Self {
+        InjectProvider {
+            db: db_pool.main_db.clone(),
+            mdb: db_pool,
+        }
     }
-
-    
 }
 
 pub type AInjectProvider = Arc<InjectProvider>;

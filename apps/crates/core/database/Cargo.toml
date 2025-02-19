@@ -13,14 +13,16 @@ sea-orm = { workspace = true, features = [
     "runtime-tokio-rustls",
 ] }
 sea-orm-migration = { workspace = true }
+tokio = { workspace = true }
 
 log = { workspace = true }
+tracing = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 async-trait = { workspace = true }
+colored = { workspace = true }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["full"] }
-tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = [
     "env-filter",
     "time",
