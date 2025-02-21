@@ -68,11 +68,11 @@ where
 }
 
 fn json_content_type(headers: &HeaderMap) -> bool {
-    let content_type = if let Some(content_type) = headers.get(header::CONTENT_TYPE) {
+    let content_type = match headers.get(header::CONTENT_TYPE) { Some(content_type) => {
         content_type
-    } else {
+    } _ => {
         return false;
-    };
+    }};
 
     let content_type = if let Ok(content_type) = content_type.to_str() {
         content_type

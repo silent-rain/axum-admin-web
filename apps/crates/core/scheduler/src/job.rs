@@ -83,7 +83,7 @@ where
     fn create_decorated_run<JobRun>(
         &self,
         mut run: JobRun,
-    ) -> impl FnMut(Uuid, JobScheduler) -> Pin<Box<dyn Future<Output = ()> + Send>>
+    ) -> impl FnMut(Uuid, JobScheduler) -> Pin<Box<dyn Future<Output = ()> + Send>> + use<JobRun, DB>
     where
         JobRun: FnMut(Uuid, JobScheduler) -> Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>
             + Send

@@ -138,16 +138,16 @@ impl Cache {
 
     /// 获取缓存条目，如果过期则移除。
     pub async fn get_with_expiry(&self, key: &str) -> Option<Entry> {
-        if let Some(entry) = self.cache.get(&key.to_string()).await {
+        match self.cache.get(&key.to_string()).await { Some(entry) => {
             if entry.is_expired() {
                 self.cache.remove(&key.to_string()).await; // 如果过期，则移除缓存条目。
                 None
             } else {
                 Some(entry) // 如果未过期，则返回缓存条目。
             }
-        } else {
+        } _ => {
             None // 如果缓存条目不存在，则返回None。
-        }
+        }}
     }
 
     /// 移除缓存

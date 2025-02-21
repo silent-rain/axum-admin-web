@@ -101,7 +101,8 @@ async fn mock_str() -> Result<(), DbErr> {
 // cargo test --package database --test mock_test -- --nocapture
 #[tokio::test]
 async fn main() -> Result<(), DbErr> {
-    env::set_var("RUST_BACKTRACE", "1");
+    // TODO: Audit that the environment access only happens in single-threaded code.
+    unsafe { env::set_var("RUST_BACKTRACE", "1") };
 
     tracing_subscriber::fmt()
         .compact()
