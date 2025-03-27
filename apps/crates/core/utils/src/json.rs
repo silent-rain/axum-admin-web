@@ -2,7 +2,7 @@
 
 use code::Error;
 
-use serde::{de::DeserializeOwned, Deserialize, Deserializer, Serializer};
+use serde::{Deserialize, Deserializer, Serializer, de::DeserializeOwned};
 use tracing::error;
 
 /// 反序列化 vec 转 string
@@ -72,13 +72,16 @@ where
 /// 将一个结构体转换为vec
 pub fn bincode_struct_to_vec<S>(src: &S) -> Result<Vec<u8>, Error>
 where
-    S: serde::Serialize,
+    S: serde::Serialize + bincode::Encode,
 {
-    let target: Vec<u8> = bincode::serialize(&src).map_err(|err| {
+    let config = bincode::config::standard();
+
+    let encoded: Vec<u8> = bincode::encode_to_vec(&src, config).map_err(|err| {
         error!("serialize to JSON byte vector failed, error: {err:#?}");
         Error::JsonSerialization(err.to_string())
     })?;
-    Ok(target)
+
+    Ok(encoded)
 }
 
 /// 将数据序列化

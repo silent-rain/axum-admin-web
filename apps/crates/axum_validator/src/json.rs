@@ -4,7 +4,7 @@ use std::ops::Deref;
 use axum::{
     body::Bytes,
     extract::{FromRequest, Request},
-    http::{header, HeaderMap},
+    http::{HeaderMap, header},
 };
 
 use serde::de::DeserializeOwned;
@@ -68,11 +68,12 @@ where
 }
 
 fn json_content_type(headers: &HeaderMap) -> bool {
-    let content_type = match headers.get(header::CONTENT_TYPE) { Some(content_type) => {
-        content_type
-    } _ => {
-        return false;
-    }};
+    let content_type = match headers.get(header::CONTENT_TYPE) {
+        Some(content_type) => content_type,
+        _ => {
+            return false;
+        }
+    };
 
     let content_type = if let Ok(content_type) = content_type.to_str() {
         content_type
@@ -85,9 +86,6 @@ fn json_content_type(headers: &HeaderMap) -> bool {
     } else {
         return false;
     };
-
-    let is_json_content_type = mime.type_() == "application"
-        && (mime.subtype() == "json" || mime.suffix().is_some_and(|name| name == "json"));
-
-    is_json_content_type
+    mime.type_() == "application"
+        && (mime.subtype() == "json" || mime.suffix().is_some_and(|name| name == "json"))
 }

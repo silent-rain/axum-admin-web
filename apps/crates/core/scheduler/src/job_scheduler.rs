@@ -25,8 +25,7 @@ impl JobScheduler {
                 let sched = TokioJobScheduler::new()
                     .await
                     .map_err(|err| Error::InitScheduleInstance(err.to_string()))?;
-                let sched = GLOBAL_SCHED.get_or_init(|| sched.clone());
-                sched
+                GLOBAL_SCHED.get_or_init(|| sched.clone())
             }
         };
 
