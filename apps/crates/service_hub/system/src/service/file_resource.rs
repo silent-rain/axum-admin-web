@@ -116,8 +116,7 @@ impl FileResourceService {
             )))?;
             content_type = file_kind.mime_type().to_string();
         }
-
-        let file_size = req.file.contents.bytes().count() as u16;
+        let file_size = buffer.len() as u16;
 
         let hash = Uuid::new_v4().to_string().replace('-', "");
 
@@ -167,7 +166,7 @@ impl FileResourceService {
                 content_type = file_kind.mime_type().to_string();
             }
 
-            let file_size = file.contents.bytes().count() as u16;
+            let file_size = buffer.len() as u16;
 
             let hash = Uuid::new_v4().to_string().replace('-', "");
 

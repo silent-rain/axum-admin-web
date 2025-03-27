@@ -76,7 +76,7 @@ where
 {
     let config = bincode::config::standard();
 
-    let encoded: Vec<u8> = bincode::encode_to_vec(&src, config).map_err(|err| {
+    let encoded: Vec<u8> = bincode::encode_to_vec(src, config).map_err(|err| {
         error!("serialize to JSON byte vector failed, error: {err:#?}");
         Error::JsonSerialization(err.to_string())
     })?;
