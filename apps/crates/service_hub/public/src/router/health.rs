@@ -1,6 +1,6 @@
 //! 健康检查
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use crate::controller::health::HealthController;
 
