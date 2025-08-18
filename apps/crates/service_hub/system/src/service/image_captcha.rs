@@ -1,5 +1,14 @@
 //! 图片验证码管理
 
+use base64::{Engine, engine::general_purpose};
+use log::{error, warn};
+use nject::injectable;
+use sea_orm::Set;
+use uuid::Uuid;
+
+use code::{Error, ErrorMsg};
+use utils::captcha::generate_captcha;
+
 use crate::{
     constant::CAPTCHA_EXPIRE,
     dao::image_captcha::ImageCaptchaDao,
@@ -7,17 +16,8 @@ use crate::{
         CreateImageCaptchaReq, CreateImageCaptchaResp, DeleteImageCaptchaReq, GetImageCaptchaReq,
         GetImageCaptchasReq, GetInfoByCaptchaIdReq, ShowCaptchaImageReq,
     },
+    entity::image_captcha,
 };
-
-use code::{Error, ErrorMsg};
-use entity::system::sys_image_captcha;
-use utils::captcha::generate_captcha;
-
-use base64::{engine::general_purpose, Engine};
-use nject::injectable;
-use sea_orm::Set;
-use tracing::{error, warn};
-use uuid::Uuid;
 
 /// 服务层
 #[injectable]
@@ -30,7 +30,7 @@ impl ImageCaptchaService {
     pub async fn list(
         &self,
         req: GetImageCaptchasReq,
-    ) -> Result<(Vec<sys_image_captcha::Model>, u64), ErrorMsg> {
+    ) -> Result<(Vec<image_captcha::Model>, u64), ErrorMsg> {
         let (results, total) = self.image_captcha_dao.list(req).await.map_err(|err| {
             error!("查询验证码列表失败, err: {:#?}", err);
             Error::DbQueryError
@@ -42,10 +42,7 @@ impl ImageCaptchaService {
     }
 
     /// 获取详情数据
-    pub async fn info(
-        &self,
-        req: GetImageCaptchaReq,
-    ) -> Result<sys_image_captcha::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetImageCaptchaReq) -> Result<image_captcha::Model, ErrorMsg> {
         let result = self
             .image_captcha_dao
             .info(req.id)
@@ -81,7 +78,7 @@ impl ImageCaptchaService {
                 Error::Base64Decode(err.to_string()).into_msg()
             })?;
 
-        let model = sys_image_captcha::ActiveModel {
+        let model = image_captcha::ActiveModel {
             captcha_id: Set(captcha_id),
             captcha: Set(captcha.clone()),
             data: Set(img_bytes),
@@ -140,7 +137,7 @@ impl ImageCaptchaService {
     pub async fn info_by_captcha_id(
         &self,
         req: GetInfoByCaptchaIdReq,
-    ) -> Result<sys_image_captcha::Model, ErrorMsg> {
+    ) -> Result<image_captcha::Model, ErrorMsg> {
         let result = self
             .image_captcha_dao
             .info_by_captcha_id(req.captcha_id)
@@ -174,7 +171,7 @@ impl ImageCaptchaService {
     pub async fn show_image(
         &self,
         req: ShowCaptchaImageReq,
-    ) -> Result<sys_image_captcha::Model, ErrorMsg> {
+    ) -> Result<image_captcha::Model, ErrorMsg> {
         let result = self
             .image_captcha_dao
             .info_by_captcha_id(req.captcha_id)

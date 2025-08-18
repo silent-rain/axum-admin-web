@@ -1,15 +1,15 @@
 //! 登陆
 
-use entity::user::user_base;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use user::enums::user_base::UserType;
 
 /// 登陆 请求体
 #[derive(Default, Clone, Deserialize, Validate)]
 pub struct LoginReq {
     /// 注册用户类型
-    pub user_type: user_base::enums::UserType,
+    pub user_type: UserType,
     /// 用户名
     pub username: Option<String>,
     /// 手机号码

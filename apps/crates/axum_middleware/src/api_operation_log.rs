@@ -14,10 +14,12 @@ use tower::{Layer, Service};
 use tracing::error;
 
 use code::{Error, ErrorMsg};
-use entity::log::log_api_operation;
 use service_hub::{
-    inject::AInjectProvider, log::dto::api_operation::CreateApiOperationReq,
-    log::ApiOperationService,
+    inject::AInjectProvider,
+    log::{
+        ApiOperationService, dto::api_operation::CreateApiOperationReq,
+        enums::log_api_operation::HttpType,
+    },
 };
 
 use crate::error::create_error_response;
@@ -222,7 +224,7 @@ impl ApiOperationLog {
             remote_addr,
             user_agent,
             cost: 0,
-            http_type: log_api_operation::enums::HttpType::Req,
+            http_type: HttpType::Req,
             desc: None,
         });
 
@@ -255,7 +257,7 @@ impl ApiOperationLog {
     ) -> Self {
         let data = self.data.map(|mut data| {
             data.cost = self.start_time.elapsed().as_millis() as i16;
-            data.http_type = log_api_operation::enums::HttpType::Resp;
+            data.http_type = HttpType::Resp;
             data.content_type = content_type;
 
             // 图片body数据不入库

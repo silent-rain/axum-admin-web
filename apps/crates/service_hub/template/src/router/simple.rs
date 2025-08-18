@@ -1,5 +1,8 @@
 //! 简单示例
-use axum::{routing::get, Router};
+use axum::{
+    Router,
+    routing::{get, post},
+};
 use axum_extra::extract::cookie::Key;
 
 use crate::controller::simple::SimpleController;
@@ -11,6 +14,8 @@ impl SimpleRouter {
     /// 注册路由
     pub fn register() -> Router {
         let router = Router::new()
+            .route("/say-hello", get(SimpleController::say_hello))
+            .route("/say-hi", post(SimpleController::say_hi))
             .route(
                 "/check_cookie/{user_id}",
                 get(SimpleController::check_cookie).with_state(Key::generate()),

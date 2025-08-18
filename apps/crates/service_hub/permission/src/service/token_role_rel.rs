@@ -1,15 +1,16 @@
 //! 令牌角色关系管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::token_role_rel::TokenRoleRelDao,
     dto::token_role_rel::{BatchCreateTokenRoleRelReq, GetTokenRoleRelsReq},
+    entity::token_role_rel,
 };
-
-use code::{Error, ErrorMsg};
-use entity::permission::token_role_rel;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

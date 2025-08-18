@@ -1,11 +1,11 @@
 //! 会员等级管理
 
-use crate::controller::member_level::MemberLevelController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::member_level::MemberLevelController;
 
 /// 路由器
 pub struct MemberLevelRouter;

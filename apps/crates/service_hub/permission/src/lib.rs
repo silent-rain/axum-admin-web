@@ -1,5 +1,7 @@
 //! 权限管理
 pub mod dto;
+pub mod entity;
+pub mod enums;
 
 pub(crate) mod dao;
 pub use dao::{
@@ -23,7 +25,6 @@ pub use controller::{
 
 pub(crate) mod router;
 pub use router::{
-    menu::MenuRouter, menu_role_rel::MenuRoleRelRouter, openapi::OpenapiRouter,
+    PermissionRouter, menu::MenuRouter, menu_role_rel::MenuRoleRelRouter, openapi::OpenapiRouter,
     openapi_role_rel::OpenapiRoleRelRouter, token::TokenRouter, token_role_rel::TokenRoleRelRouter,
-    PermissionRouter,
 };

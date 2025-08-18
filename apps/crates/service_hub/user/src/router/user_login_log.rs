@@ -1,8 +1,8 @@
 //! 登陆日志管理
 
-use crate::controller::user_login_log::UserLoginLogController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::user_login_log::UserLoginLogController;
 
 /// 路由器
 pub struct UserLoginLogRouter;
@@ -12,10 +12,12 @@ impl UserLoginLogRouter {
     pub fn register() -> Router {
         Router::new().nest(
             "/user-login-logs",
-            Router::new().route(
-                "/",
-                get(UserLoginLogController::list).post(UserLoginLogController::create),
-            ),
+            Router::new()
+                .route(
+                    "/",
+                    get(UserLoginLogController::list).post(UserLoginLogController::create),
+                )
+                .route("/{id}", get(UserLoginLogController::info)),
         )
     }
 }

@@ -1,17 +1,19 @@
 //! ComfyUI 图片管理
 
+use axum::Extension;
 use axum::extract::Query;
 use axum::http::{HeaderMap, HeaderName, HeaderValue};
-use axum::Extension;
 use axum_response::{Responder, Response, ResponseErr};
 use axum_typed_multipart::TypedMultipart;
 use inject::AInjectProvider;
 
-use crate::dto::image::{
-    ImageViewReq, UploadImageAndMaskReq, UploadImageReq, UploadImageResp, UploadMaskImageReq,
-    UploadMaskImageResp,
+use crate::{
+    dto::image::{
+        ImageViewReq, UploadImageAndMaskReq, UploadImageReq, UploadImageResp, UploadMaskImageReq,
+        UploadMaskImageResp,
+    },
+    service::image::ComfyUIImageService,
 };
-use crate::service::image::ComfyUIImageService;
 
 /// 控制器
 pub struct ComfyUIImageController;

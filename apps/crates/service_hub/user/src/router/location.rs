@@ -1,8 +1,8 @@
 //! 用户地理位置管理
 
-use crate::controller::location::LocationController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::location::LocationController;
 
 /// 路由器
 pub struct LocationRouter;

@@ -1,9 +1,9 @@
 //! 角色管理
 
-use entity::user::role;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::role;
 
 /// 查询角色列表 请求体
 #[derive(Default, Deserialize, Validate)]

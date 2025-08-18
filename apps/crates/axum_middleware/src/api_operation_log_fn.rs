@@ -16,10 +16,12 @@ use tracing::error;
 use axum_context::Context;
 use axum_response::ResponseErr;
 use code::{Error, ErrorMsg};
-use entity::log::log_api_operation;
 use service_hub::{
     inject::AInjectProvider,
-    log::{dto::api_operation::CreateApiOperationReq, ApiOperationService},
+    log::{
+        ApiOperationService, dto::api_operation::CreateApiOperationReq,
+        enums::log_api_operation::HttpType,
+    },
 };
 
 /// Api 操作日志中间件
@@ -169,7 +171,7 @@ impl ApiOperationLog {
             remote_addr,
             user_agent,
             cost: 0,
-            http_type: log_api_operation::enums::HttpType::Req,
+            http_type: HttpType::Req,
             desc: None,
         });
 
@@ -203,7 +205,7 @@ impl ApiOperationLog {
             data.cost = cost;
             // TODO 添加字符限制, 如果太大则进行省略
             data.body = Some(body);
-            data.http_type = log_api_operation::enums::HttpType::Resp;
+            data.http_type = HttpType::Resp;
 
             // 图片body数据不入库
             if data.content_type != "multipart/form-data".to_uppercase() {

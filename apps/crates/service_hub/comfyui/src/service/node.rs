@@ -1,9 +1,9 @@
 //! ComfyUI 节点管理
 
 use code::{Error, ErrorMsg};
+use log::error;
 use nject::injectable;
 use serde_json::Value;
-use tracing::error;
 
 use crate::{api_clients::client::ComfyUIClient, dto::node::ObjectInfoReq};
 

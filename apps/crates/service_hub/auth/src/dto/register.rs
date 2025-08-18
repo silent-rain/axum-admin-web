@@ -1,15 +1,15 @@
 //! 注册
 
-use entity::user::user_base;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use user::enums::user_base::UserType;
 
 /// 注册用户
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct RegisterReq {
     /// 注册用户类型
-    pub register_type: user_base::enums::UserType,
+    pub register_type: UserType,
     /// 手机号码
     pub phone: Option<String>,
     /// 邮箱
@@ -28,7 +28,7 @@ pub struct RegisterReq {
     /// 真实姓名
     pub real_name: Option<String>,
     /// 性别(0:保密,1:女,2:男)
-    /// Enum: [`entity::user::user_base::enums::Gender`]
+    /// Enum: [`entity::user::Gender`]
     #[validate(range(min = 0, max = 2, message = "性别(0:保密,1:女,2:男)"))]
     pub gender: i8,
     /// 年龄
@@ -66,7 +66,7 @@ mod tests {
             phone: Some("phone".to_owned()),
             email: Some("email".to_owned()),
             blockchain_wallet: None,
-            register_type: user_base::enums::UserType::Phone,
+            register_type: UserType::Phone,
             username: "username".to_owned(),
             real_name: Some("real_name".to_owned()),
             gender: 11,
@@ -105,7 +105,7 @@ mod tests {
             phone: Some("phone".to_owned()),
             email: None,
             blockchain_wallet: None,
-            register_type: user_base::enums::UserType::Phone,
+            register_type: UserType::Phone,
             username: "username".to_owned(),
             real_name: Some("real_name".to_owned()),
             gender: 1,
@@ -143,7 +143,7 @@ mod tests {
             phone: Some("phone".to_owned()),
             email: None,
             blockchain_wallet: None,
-            register_type: user_base::enums::UserType::Phone,
+            register_type: UserType::Phone,
             username: "username".to_owned(),
             real_name: Some("real_name".to_owned()),
             gender: 11,

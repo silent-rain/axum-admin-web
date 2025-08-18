@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::log::log_system;
+use crate::entity::log_system;
 
 /// 查询系统日志列表 请求体
 #[derive(Default, Deserialize, Validate)]

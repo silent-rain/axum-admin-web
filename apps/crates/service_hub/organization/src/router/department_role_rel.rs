@@ -1,11 +1,12 @@
 //! 部门角色关系管理
 
+use axum::{
+    Router,
+    routing::{delete, get, post},
+};
+
 use crate::controller::department_role_rel::DepartmentRoleRelController;
 
-use axum::{
-    routing::{delete, get, post},
-    Router,
-};
 /// 路由器
 pub struct DepartmentRoleRelRouter;
 

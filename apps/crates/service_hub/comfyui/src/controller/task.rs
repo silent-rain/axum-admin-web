@@ -5,11 +5,13 @@ use axum_response::{Responder, Response};
 use axum_validator::{Json, Query};
 use inject::AInjectProvider;
 
-use crate::dto::task::{
-    DeleteQueueReq, HistoryReq, HistoryResp, HistorysReq, HistorysResp, PushPromptReq,
-    PushPromptResp, QueueRemainingResp, QueuesResp,
+use crate::{
+    ComfyUITaskService,
+    dto::task::{
+        DeleteQueueReq, HistoryReq, HistoryResp, HistorysReq, HistorysResp, PushPromptReq,
+        PushPromptResp, QueueRemainingResp, QueuesResp,
+    },
 };
-use crate::ComfyUITaskService;
 
 /// 控制器
 pub struct ComfyUITaskController;

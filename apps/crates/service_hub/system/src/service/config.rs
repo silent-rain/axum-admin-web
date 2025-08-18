@@ -1,19 +1,20 @@
 //! 配置管理
+
+use nject::injectable;
+use sea_orm::{DbErr::RecordNotUpdated, Set};
+use log::error;
+
+use code::{Error, ErrorMsg};
+use database::utils::GenericTree;
+
 use crate::{
     dao::config::ConfigDao,
     dto::config::{
         CreateConfigReq, DeleteConfigReq, GetConfigReq, GetConfigsReq, UpdateConfigReq,
         UpdateConfigStatusReq,
     },
+    entity::config,
 };
-
-use code::{Error, ErrorMsg};
-use entity::system::sys_config;
-use entity::utils::GenericTree;
-
-use nject::injectable;
-use sea_orm::{DbErr::RecordNotUpdated, Set};
-use tracing::error;
 
 /// 服务层
 #[injectable]
@@ -23,10 +24,7 @@ pub struct ConfigService {
 
 impl ConfigService {
     /// 获取列表数据
-    pub async fn list(
-        &self,
-        req: GetConfigsReq,
-    ) -> Result<(Vec<sys_config::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetConfigsReq) -> Result<(Vec<config::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
             return self.config_dao.all().await.map_err(|err| {
@@ -44,7 +42,7 @@ impl ConfigService {
     }
 
     /// 获取树列表数据
-    pub async fn tree(&self) -> Result<Vec<GenericTree<sys_config::Model>>, ErrorMsg> {
+    pub async fn tree(&self) -> Result<Vec<GenericTree<config::Model>>, ErrorMsg> {
         let (results, _total) = self.config_dao.all().await.map_err(|err| {
             error!("查询配置列表失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("查询配置列表失败")
@@ -57,7 +55,7 @@ impl ConfigService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, req: GetConfigReq) -> Result<sys_config::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetConfigReq) -> Result<config::Model, ErrorMsg> {
         let result = self
             .config_dao
             .info(req.id)
@@ -75,11 +73,11 @@ impl ConfigService {
     }
 
     /// 添加数据
-    pub async fn create(&self, req: CreateConfigReq) -> Result<sys_config::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateConfigReq) -> Result<config::Model, ErrorMsg> {
         // 查询配置编码是否存在
         self.check_code_exist(req.code.clone(), None).await?;
 
-        let model = sys_config::ActiveModel {
+        let model = config::ActiveModel {
             pid: Set(req.pid),
             name: Set(req.name),
             code: Set(req.code),
@@ -103,7 +101,7 @@ impl ConfigService {
         self.check_code_exist(req.code.clone(), Some(req.id))
             .await?;
 
-        let model = sys_config::ActiveModel {
+        let model = config::ActiveModel {
             id: Set(req.id),
             pid: Set(req.pid),
             name: Set(req.name),

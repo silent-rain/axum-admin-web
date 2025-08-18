@@ -1,19 +1,19 @@
 //! 用户session管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::{DbErr::RecordNotUpdated, Set};
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::user_session::UserSessionDao,
     dto::user_session::{
         CreateUserSessionReq, DeleteUserSessionReq, GetUserSessionReq, GetUserSessionsReq,
         UpdateUserSessionReq, UpdateUserSessionStatusReq,
     },
+    entity::user_session,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::user_session;
-use sea_orm::DbErr::RecordNotUpdated;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

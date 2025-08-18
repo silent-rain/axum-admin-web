@@ -2,15 +2,17 @@
 
 use std::sync::Arc;
 
-use crate::dto::web_log::GetWebLogsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::log::{log_web, LogWeb};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::web_log::GetWebLogsReq,
+    entity::{LogWebEntity, log_web},
 };
 
 /// 数据访问
@@ -24,7 +26,7 @@ impl WebLogDao {
     pub async fn list(&self, req: GetWebLogsReq) -> Result<(Vec<log_web::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = LogWeb::find()
+        let states = LogWebEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(log_web::Column::CreatedAt.gte(v))
             })
@@ -55,7 +57,7 @@ impl WebLogDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<log_web::Model>, DbErr> {
-        LogWeb::find_by_id(id).one(self.db.db()).await
+        LogWebEntity::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加详情信息
@@ -69,7 +71,7 @@ impl WebLogDao {
     /// 更新数据
     pub async fn update(&self, active_model: log_web::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = LogWeb::update_many()
+        let result = LogWebEntity::update_many()
             .set(active_model)
             .filter(log_web::Column::Id.eq(id))
             .exec(self.db.db())

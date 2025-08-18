@@ -1,18 +1,19 @@
 //! 字典数据管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::{DbErr::RecordNotUpdated, Set};
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::dict_data::DictDataDao,
     dto::dict_data::{
         CreateDictDataReq, DeleteDictDataReq, GetDictDataReq, GetDictDatasReq, UpdateDictDataReq,
         UpdateDictDataStatusReq,
     },
+    entity::dict_data,
 };
-
-use code::{Error, ErrorMsg};
-use entity::system::sys_dict_data;
-
-use nject::injectable;
-use sea_orm::{DbErr::RecordNotUpdated, Set};
-use tracing::error;
 
 /// 服务层
 #[injectable]
@@ -25,7 +26,7 @@ impl DictDataService {
     pub async fn list(
         &self,
         req: GetDictDatasReq,
-    ) -> Result<(Vec<sys_dict_data::Model>, u64), ErrorMsg> {
+    ) -> Result<(Vec<dict_data::Model>, u64), ErrorMsg> {
         let (results, total) = self.dict_data_dao.list(req).await.map_err(|err| {
             error!("查询字典数据列表失败, err: {:#?}", err);
             Error::DbQueryError
@@ -37,7 +38,7 @@ impl DictDataService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, req: GetDictDataReq) -> Result<sys_dict_data::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetDictDataReq) -> Result<dict_data::Model, ErrorMsg> {
         let result = self
             .dict_data_dao
             .info(req.id)
@@ -59,7 +60,7 @@ impl DictDataService {
     }
 
     /// 添加数据
-    pub async fn create(&self, req: CreateDictDataReq) -> Result<sys_dict_data::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateDictDataReq) -> Result<dict_data::Model, ErrorMsg> {
         // 查询字典数据是否已存在
         let dict_data = self
             .dict_data_dao
@@ -76,7 +77,7 @@ impl DictDataService {
                 .with_msg("字典标签已存在"));
         }
 
-        let model = sys_dict_data::ActiveModel {
+        let model = dict_data::ActiveModel {
             dim_id: Set(req.dim_id),
             lable: Set(req.lable),
             value: Set(req.value),
@@ -97,7 +98,7 @@ impl DictDataService {
 
     /// 更新字典数据
     pub async fn update(&self, req: UpdateDictDataReq) -> Result<u64, ErrorMsg> {
-        let model = sys_dict_data::ActiveModel {
+        let model = dict_data::ActiveModel {
             id: Set(req.id),
             lable: Set(req.lable),
             value: Set(req.value),

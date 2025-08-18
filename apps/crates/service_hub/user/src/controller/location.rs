@@ -1,5 +1,10 @@
 //! 用户地理位置管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::location::{
         CreateLocationReq, CreateLocationResp, DeleteLocationReq, DeleteLocationResp,
@@ -8,10 +13,6 @@ use crate::{
     },
     service::location::LocationService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use axum_response::{Responder, Response};
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct LocationController;

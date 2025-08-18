@@ -1,8 +1,9 @@
 //! 登陆日志管理
-use entity::user::user_login_log::{self, enums::LoginStatus};
 
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{entity::user_login_log, enums::user_login_log::LoginStatus};
 
 /// 查询登陆日志列表 请求体
 #[derive(Default, Deserialize, Serialize, Validate)]

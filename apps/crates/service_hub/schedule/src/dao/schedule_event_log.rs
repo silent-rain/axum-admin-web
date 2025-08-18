@@ -2,15 +2,17 @@
 
 use std::sync::Arc;
 
-use crate::dto::schedule_event_log::GetScheduleEventLogsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::schedule::{schedule_event_log, ScheduleEventLog};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::schedule_event_log::GetScheduleEventLogsReq,
+    entity::{ScheduleEventLogEntity, schedule_event_log},
 };
 
 /// 数据访问
@@ -27,7 +29,7 @@ impl ScheduleEventLogDao {
     ) -> Result<(Vec<schedule_event_log::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = ScheduleEventLog::find()
+        let states = ScheduleEventLogEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(schedule_event_log::Column::CreatedAt.gte(v))
             })
@@ -55,7 +57,9 @@ impl ScheduleEventLogDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<schedule_event_log::Model>, DbErr> {
-        ScheduleEventLog::find_by_id(id).one(self.db.db()).await
+        ScheduleEventLogEntity::find_by_id(id)
+            .one(self.db.db())
+            .await
     }
 
     /// 添加详情信息
@@ -68,7 +72,7 @@ impl ScheduleEventLogDao {
 
     /// 按主键删除
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = ScheduleEventLog::delete_by_id(id)
+        let result = ScheduleEventLogEntity::delete_by_id(id)
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)

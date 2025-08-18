@@ -12,5 +12,5 @@ embed_asset = { path = "../../embed_asset" }
 axum = { workspace = true }
 tower-http = { workspace = true, features = ["fs"] }
 
-tracing = { workspace = true }
+log = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

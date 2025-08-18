@@ -2,6 +2,8 @@
 
 pub mod api_clients;
 pub mod dto;
+pub mod entity;
+pub mod enums;
 
 pub(crate) mod dao;
 
@@ -19,8 +21,8 @@ pub use controller::{
 
 pub(crate) mod router;
 pub use router::{
-    image::ComfyUIImageRouter, model::ComfyUIModelRouter, node::ComfyUINodeRouter,
-    system::ComfyUISystemRouter, task::ComfyUITaskRouter, ComfyUIRouter,
+    ComfyUIRouter, image::ComfyUIImageRouter, model::ComfyUIModelRouter, node::ComfyUINodeRouter,
+    system::ComfyUISystemRouter, task::ComfyUITaskRouter,
 };
 
 /*

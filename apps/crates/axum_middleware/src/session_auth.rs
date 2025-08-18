@@ -9,8 +9,11 @@ use tracing::error;
 
 use axum_context::{ApiAuthType, Context};
 use code::Error;
-use entity::user::user_login_log;
-use service_hub::{inject::AInjectProvider, user::UserLoginLogService};
+// use entity::user::user_login_log;
+use service_hub::{
+    inject::AInjectProvider,
+    user::{UserLoginLogService, enums::user_login_log::LoginStatus},
+};
 
 use crate::{constant::AUTH_WHITE_LIST, error::create_error_response};
 
@@ -121,7 +124,7 @@ impl<S> SessionAuthService<S> {
             .info_by_session_id(session_id.clone())
             .await?;
 
-        if user.login_status == user_login_log::enums::LoginStatus::Disabled as i8 {
+        if user.login_status == LoginStatus::Disabled as i8 {
             error!(
                 "user_id: {} session_id: {}, 当前登陆已被禁用",
                 user.id, session_id
@@ -130,7 +133,7 @@ impl<S> SessionAuthService<S> {
                 .into_msg()
                 .with_msg("当前登陆已被禁用, 请重新登陆"));
         }
-        if user.login_status == user_login_log::enums::LoginStatus::Failed as i8 {
+        if user.login_status == LoginStatus::Failed as i8 {
             error!(
                 "user_id: {} session_id: {}, 无效鉴权",
                 user.id,
@@ -140,7 +143,7 @@ impl<S> SessionAuthService<S> {
                 .into_msg()
                 .with_msg("登陆失败, 请重新登陆"));
         }
-        if user.login_status == user_login_log::enums::LoginStatus::Logout as i8 {
+        if user.login_status == LoginStatus::Logout as i8 {
             error!("user_id: {} session_id: {}, 已登出", user.id, session_id);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()

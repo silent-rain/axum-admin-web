@@ -1,11 +1,11 @@
 //! 配置管理
 
-use crate::controller::config::ConfigController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::config::ConfigController;
 
 /// 路由器
 pub struct ConfigRouter;

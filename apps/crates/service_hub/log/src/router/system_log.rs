@@ -1,8 +1,8 @@
 //! 系统日志
 
-use crate::controller::system_log::SystemLogController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::system_log::SystemLogController;
 
 /// 路由器
 pub struct SystemLogRouter;

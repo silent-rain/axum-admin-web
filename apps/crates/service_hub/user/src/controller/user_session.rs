@@ -1,5 +1,10 @@
 //! 用户session管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::user_session::{
         CreateUserSessionReq, CreateUserSessionResp, DeleteUserSessionReq, DeleteUserSessionResp,
@@ -9,10 +14,6 @@ use crate::{
     },
     service::user_session::UserSessionService,
 };
-
-use axum_response::{Responder, Response};
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct UserSessionController;

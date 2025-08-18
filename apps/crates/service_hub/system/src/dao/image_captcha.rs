@@ -1,16 +1,16 @@
 //! 图片验证码管理
 use std::sync::Arc;
 
-use crate::dto::image_captcha::GetImageCaptchasReq;
-
-use database::{Pagination, PoolTrait};
-use entity::system::{sys_image_captcha, SysImageCaptcha};
 use nject::injectable;
-
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait, Set,
 };
+
+use database::{Pagination, PoolTrait};
+
+use crate::dto::image_captcha::GetImageCaptchasReq;
+use crate::entity::{ImageCaptchaEntity, image_captcha};
 
 /// 数据访问
 #[injectable]
@@ -23,15 +23,15 @@ impl ImageCaptchaDao {
     pub async fn list(
         &self,
         req: GetImageCaptchasReq,
-    ) -> Result<(Vec<sys_image_captcha::Model>, u64), DbErr> {
+    ) -> Result<(Vec<image_captcha::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = SysImageCaptcha::find()
+        let states = ImageCaptchaEntity::find()
             .apply_if(req.start_time, |query, v| {
-                query.filter(sys_image_captcha::Column::CreatedAt.gte(v))
+                query.filter(image_captcha::Column::CreatedAt.gte(v))
             })
             .apply_if(req.end_time, |query, v| {
-                query.filter(sys_image_captcha::Column::CreatedAt.lt(v))
+                query.filter(image_captcha::Column::CreatedAt.lt(v))
             });
 
         let total = states.clone().count(self.db.db()).await?;
@@ -40,7 +40,7 @@ impl ImageCaptchaDao {
         }
 
         let results = states
-            .order_by_desc(sys_image_captcha::Column::Id)
+            .order_by_desc(image_captcha::Column::Id)
             .offset(page.offset())
             .limit(page.page_size())
             .all(self.db.db())
@@ -49,9 +49,9 @@ impl ImageCaptchaDao {
         Ok((results, total))
     }
     /// 获取详情信息
-    pub async fn info(&self, id: i32) -> Result<Option<sys_image_captcha::Model>, DbErr> {
-        SysImageCaptcha::find()
-            .filter(sys_image_captcha::Column::Id.eq(id))
+    pub async fn info(&self, id: i32) -> Result<Option<image_captcha::Model>, DbErr> {
+        ImageCaptchaEntity::find()
+            .filter(image_captcha::Column::Id.eq(id))
             .one(self.db.db())
             .await
     }
@@ -60,9 +60,9 @@ impl ImageCaptchaDao {
     pub async fn info_by_captcha_id(
         &self,
         captcha_id: String,
-    ) -> Result<Option<sys_image_captcha::Model>, DbErr> {
-        SysImageCaptcha::find()
-            .filter(sys_image_captcha::Column::CaptchaId.eq(captcha_id))
+    ) -> Result<Option<image_captcha::Model>, DbErr> {
+        ImageCaptchaEntity::find()
+            .filter(image_captcha::Column::CaptchaId.eq(captcha_id))
             .one(self.db.db())
             .await
     }
@@ -70,19 +70,19 @@ impl ImageCaptchaDao {
     /// 添加详情信息
     pub async fn create(
         &self,
-        active_model: sys_image_captcha::ActiveModel,
-    ) -> Result<sys_image_captcha::Model, DbErr> {
+        active_model: image_captcha::ActiveModel,
+    ) -> Result<image_captcha::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
     /// 更新信息
-    pub async fn update(&self, data: sys_image_captcha::Model) -> Result<u64, DbErr> {
+    pub async fn update(&self, data: image_captcha::Model) -> Result<u64, DbErr> {
         // Into ActiveModel
-        let pear: sys_image_captcha::ActiveModel = data.clone().into();
+        let pear: image_captcha::ActiveModel = data.clone().into();
 
-        let result = SysImageCaptcha::update_many()
+        let result = ImageCaptchaEntity::update_many()
             .set(pear)
-            .filter(sys_image_captcha::Column::Id.eq(data.id))
+            .filter(image_captcha::Column::Id.eq(data.id))
             .exec(self.db.db())
             .await?;
 
@@ -91,7 +91,7 @@ impl ImageCaptchaDao {
 
     /// 更新状态
     pub async fn update_status(&self, id: i32, status: bool) -> Result<(), DbErr> {
-        let active_model = sys_image_captcha::ActiveModel {
+        let active_model = image_captcha::ActiveModel {
             id: Set(id),
             status: Set(status),
             ..Default::default()
@@ -102,14 +102,16 @@ impl ImageCaptchaDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = SysImageCaptcha::delete_by_id(id).exec(self.db.db()).await?;
+        let result = ImageCaptchaEntity::delete_by_id(id)
+            .exec(self.db.db())
+            .await?;
         Ok(result.rows_affected)
     }
 
     /// 按主键批量删除
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = SysImageCaptcha::delete_many()
-            .filter(sys_image_captcha::Column::Id.is_in(ids))
+        let result = ImageCaptchaEntity::delete_many()
+            .filter(image_captcha::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)

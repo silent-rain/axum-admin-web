@@ -1,16 +1,16 @@
 //! 模板管理
 
 use axum::{
-    routing::{delete, get, post, put},
     Router,
+    routing::{delete, get, post, put},
 };
 
-use crate::controller::template::AppTemplateController;
+use crate::controller::template::TemplateController;
 
 /// 路由器
-pub struct AppTemplateRouter;
+pub struct TemplateRouter;
 
-impl AppTemplateRouter {
+impl TemplateRouter {
     /// 注册路由
     pub fn register() -> Router {
         Router::new().nest(
@@ -18,17 +18,17 @@ impl AppTemplateRouter {
             Router::new()
                 .route(
                     "/",
-                    get(AppTemplateController::list).post(AppTemplateController::create),
+                    get(TemplateController::list).post(TemplateController::create),
                 )
                 .route(
                     "/{id}",
-                    get(AppTemplateController::info)
-                        .put(AppTemplateController::update)
-                        .delete(AppTemplateController::delete),
+                    get(TemplateController::info)
+                        .put(TemplateController::update)
+                        .delete(TemplateController::delete),
                 )
-                .route("/batch_create", post(AppTemplateController::batch_create))
-                .route("/batch_delete", delete(AppTemplateController::batch_delete))
-                .route("/{id}/status", put(AppTemplateController::update_status)),
+                .route("/batch_create", post(TemplateController::batch_create))
+                .route("/batch_delete", delete(TemplateController::batch_delete))
+                .route("/{id}/status", put(TemplateController::update_status)),
         )
     }
 }
@@ -37,22 +37,22 @@ impl AppTemplateRouter {
 mod tests {
     use axum_mock::Error;
     use axum_mock::MockRequest;
-    use entity::template::AppTemplate;
 
-    use crate::dto::template::GetAppTemplatesResp;
+    use crate::dto::template::GetTemplatesResp;
+    use crate::entity::TemplateEntity;
 
     use super::*;
 
     #[tokio::test]
     async fn test_router_all() -> Result<(), Error> {
-        let mut request = MockRequest::new(AppTemplateRouter::register())
+        let mut request = MockRequest::new(TemplateRouter::register())
             .await?
-            .from_entity(vec![AppTemplate])
+            .from_entity(vec![TemplateEntity])
             .await?
             .enabled_log(true);
 
         let response = request
-            .get::<(), GetAppTemplatesResp>("/app-templates/list", ())
+            .get::<(), GetTemplatesResp>("/app-templates/list", ())
             .await?;
         println!("response: {:#?}", response);
 

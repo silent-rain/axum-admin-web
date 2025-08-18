@@ -1,9 +1,12 @@
 //! 任务调度作业管理
 
-use entity::schedule::schedule_job;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{
+    entity::schedule_job,
+    enums::schedule_job::{JobType, Source, Status},
+};
 
 /// 查询任务调度列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -49,9 +52,9 @@ pub struct CreateScheduleJobReq {
     /// 任务名称
     pub name: String,
     /// 任务来源(0:用户定义,1:系统内部)
-    pub source: schedule_job::enums::Source,
+    pub source: Source,
     /// 任务类型,0:任务调度,1:即时任务
-    pub job_type: schedule_job::enums::JobType,
+    pub job_type: JobType,
     /// 系统任务编码
     pub sys_code: Option<String>,
     /// cron表达式
@@ -89,7 +92,7 @@ pub struct UpdateScheduleJobStatusReq {
     /// 任务调度ID
     pub id: i32,
     /// 任务状态(0:下线,1:上线)
-    pub status: schedule_job::enums::Status,
+    pub status: Status,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -1,11 +1,11 @@
 //! 用户角色关系管理
 
-use crate::controller::user_role_rel::UserRoleRelController;
-
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
+
+use crate::controller::user_role_rel::UserRoleRelController;
 
 /// 路由器
 pub struct UserRoleRelRouter;

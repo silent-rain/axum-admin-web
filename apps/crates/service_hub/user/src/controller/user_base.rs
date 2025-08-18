@@ -1,21 +1,21 @@
 //! 用户信息管理
 
+use axum_context::Context;
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+use log::warn;
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::user_base::{
         CreateUserBaseReq, CreateUserBaseResp, DeleteUserBaseReq, DeleteUserBaseResp,
         GetCheckUsernameReq, GetCheckUsernameResp, GetUserBaseReq, GetUserBaseResp,
         GetUserBasesReq, GetUserBasesResp, ProfileReq, ProfileResp, RolesReq, RolesResp,
-        UpdateShareCodeReq, UpdateShareCodeResp, UpdateUserBaseReq, UpdateUserBaseResp,
-        UpdateUserBaseStatusReq, UpdateUserBaseStatusResp,
+        UpdateUserBaseReq, UpdateUserBaseResp, UpdateUserBaseStatusReq, UpdateUserBaseStatusResp,
     },
     service::user_base::UserBaseService,
 };
-
-use axum_context::Context;
-use axum_response::{Responder, Response};
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use tracing::warn;
 
 /// 控制器
 pub struct UserBaseController;
@@ -102,18 +102,6 @@ impl UserBaseController {
     ) -> Responder<GetCheckUsernameResp> {
         let user_base_service: UserBaseService = provider.provide();
         user_base_service.check_username(req).await?;
-
-        let resp = Response::<()>::ok().to_json()?;
-        Ok(resp)
-    }
-
-    /// 更新用户分享码
-    pub async fn update_share_code(
-        Extension(provider): Extension<AInjectProvider>,
-        Json(req): Json<UpdateShareCodeReq>,
-    ) -> Responder<UpdateShareCodeResp> {
-        let user_base_service: UserBaseService = provider.provide();
-        user_base_service.update_share_code(req).await?;
 
         let resp = Response::<()>::ok().to_json()?;
         Ok(resp)

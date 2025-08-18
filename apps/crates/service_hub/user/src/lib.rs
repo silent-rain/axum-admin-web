@@ -1,6 +1,8 @@
 //! 用户信息管理
 pub mod cached;
 pub mod dto;
+pub mod entity;
+pub mod enums;
 
 pub(crate) mod dao;
 pub use dao::{
@@ -27,8 +29,8 @@ pub use controller::{
 
 pub(crate) mod router;
 pub use router::{
-    blockchain_wallet::BlockchainWalletRouter, email::EmailRouter, location::LocationRouter,
-    phone::PhoneRouter, role::RoleRouter, user_base::UserBaseRouter,
+    UserRouter, blockchain_wallet::BlockchainWalletRouter, email::EmailRouter,
+    location::LocationRouter, phone::PhoneRouter, role::RoleRouter, user_base::UserBaseRouter,
     user_login_log::UserLoginLogRouter, user_role_rel::UserRoleRelRouter,
-    user_session::UserSessionRouter, UserRouter,
+    user_session::UserSessionRouter,
 };

@@ -2,16 +2,17 @@
 
 use std::net::SocketAddr;
 
-use crate::{
-    dto::login::{BrowserInfo, LoginReq, LoginResp},
-    LoginService,
-};
-
 use axum::{extract::ConnectInfo, http::HeaderMap};
 use axum_response::{Responder, Response};
 use axum_validator::{Extension, Json};
-use inject::AInjectProvider;
 use tower_sessions::Session;
+
+use inject::AInjectProvider;
+
+use crate::{
+    LoginService,
+    dto::login::{BrowserInfo, LoginReq, LoginResp},
+};
 
 /// 控制器
 pub struct LoginController;

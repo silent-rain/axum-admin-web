@@ -1,15 +1,16 @@
 //! 菜单角色关系管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::menu_role_rel::MenuRoleRelDao,
     dto::menu_role_rel::{BatchCreateMenuRoleRelReq, GetMenuRoleRelsReq},
+    entity::menu_role_rel,
 };
-
-use code::{Error, ErrorMsg};
-use entity::permission::menu_role_rel;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

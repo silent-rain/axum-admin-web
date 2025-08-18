@@ -1,5 +1,10 @@
 //! 菜单角色关系管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::menu_role_rel::{
         BatchCreateMenuRoleRelReq, BatchCreateMenuRoleRelResp, BatchDeleteMenuRoleRelReq,
@@ -7,10 +12,6 @@ use crate::{
     },
     service::menu_role_rel::MenuRoleRelService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct MenuRoleRelController;

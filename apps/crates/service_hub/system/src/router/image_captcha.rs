@@ -1,11 +1,11 @@
 //! 图片验证码管理
 
-use crate::controller::image_captcha::ImageCaptchaController;
-
 use axum::{
-    routing::{delete, get},
     Router,
+    routing::{delete, get},
 };
+
+use crate::controller::image_captcha::ImageCaptchaController;
 
 /// 路由器
 pub struct ImageCaptchaRouter;

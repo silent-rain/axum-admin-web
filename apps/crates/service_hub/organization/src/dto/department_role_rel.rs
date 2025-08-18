@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::organization::department_role_rel;
+use crate::entity::department_role_rel;
 
 /// 查询部门角色关系列表 请求体
 #[derive(Default, Deserialize, Validate)]

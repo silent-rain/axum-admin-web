@@ -1,15 +1,17 @@
 //! 任务调度作业管理
 use std::sync::Arc;
 
-use crate::dto::schedule_job::GetScheduleJobsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::schedule::{schedule_job, ScheduleJob};
 use nject::injectable;
-
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait, Set,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::schedule_job::GetScheduleJobsReq,
+    entity::{ScheduleJobEntity, schedule_job},
 };
 
 /// 数据访问
@@ -26,7 +28,7 @@ impl ScheduleJobDao {
     ) -> Result<(Vec<schedule_job::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = ScheduleJob::find()
+        let states = ScheduleJobEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(schedule_job::Column::CreatedAt.gte(v))
             })
@@ -60,12 +62,12 @@ impl ScheduleJobDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<schedule_job::Model>, DbErr> {
-        ScheduleJob::find_by_id(id).one(self.db.db()).await
+        ScheduleJobEntity::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过名称获取详情信息
     pub async fn info_by_name(&self, name: String) -> Result<Option<schedule_job::Model>, DbErr> {
-        ScheduleJob::find()
+        ScheduleJobEntity::find()
             .filter(schedule_job::Column::Name.eq(name))
             .one(self.db.db())
             .await
@@ -82,7 +84,7 @@ impl ScheduleJobDao {
     /// 更新数据
     pub async fn update(&self, active_model: schedule_job::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = ScheduleJob::update_many()
+        let result = ScheduleJobEntity::update_many()
             .set(active_model)
             .filter(schedule_job::Column::Id.eq(id))
             .exec(self.db.db())
@@ -104,7 +106,9 @@ impl ScheduleJobDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = ScheduleJob::delete_by_id(id).exec(self.db.db()).await?;
+        let result = ScheduleJobEntity::delete_by_id(id)
+            .exec(self.db.db())
+            .await?;
         Ok(result.rows_affected)
     }
 }

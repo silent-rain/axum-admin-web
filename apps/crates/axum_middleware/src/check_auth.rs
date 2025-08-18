@@ -9,7 +9,7 @@ use axum_context::Context;
 use code::Error;
 use service_hub::{
     inject::AInjectProvider,
-    user::{dto::user_base::RolesReq, UserBaseService},
+    user::{UserBaseService, dto::user_base::RolesReq},
 };
 use tracing::warn;
 
@@ -116,7 +116,7 @@ impl<S> CheckAuthService<S> {
         user_id: i32,
     ) -> Result<(i32, String), code::ErrorMsg> {
         let user_base_service: UserBaseService = provider.provide();
-        let user = user_base_service.info_checked(user_id).await?;
+        let user = user_base_service.checked_user(user_id).await?;
 
         Ok((user.id, user.username))
     }

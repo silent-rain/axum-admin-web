@@ -1,5 +1,10 @@
 //! 配置管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::config::{
         CreateConfigReq, CreateConfigResp, DeleteConfigReq, DeleteConfigResp, GetConfigReq,
@@ -8,10 +13,6 @@ use crate::{
     },
     service::config::ConfigService,
 };
-
-use axum_response::{Responder, Response};
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct ConfigController;

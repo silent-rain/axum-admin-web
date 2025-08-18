@@ -4,12 +4,11 @@ use std::sync::Arc;
 
 use axum_context::Context;
 use tower_sessions::Session;
-use user::UserLoginLogDao;
-
-use code::{Error, ErrorMsg};
-use entity::user::user_login_log;
 
 use nject::injectable;
+
+use code::{Error, ErrorMsg};
+use user::{UserLoginLogDao, enums::user_login_log::LoginStatus};
 
 use crate::{common::user_login_log::add_login_log, dto::login::BrowserInfo};
 
@@ -41,7 +40,7 @@ impl Logoutervice {
             browser_info,
             session_id.clone(),
             "登出",
-            user_login_log::enums::LoginStatus::Success,
+            LoginStatus::Success,
         );
 
         // 删除session

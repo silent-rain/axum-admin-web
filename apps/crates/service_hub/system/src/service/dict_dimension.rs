@@ -1,18 +1,19 @@
 //! 字典维度管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::{DbErr::RecordNotUpdated, Set};
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::dict_dimension::DictDimensionDao,
     dto::dict_dimension::{
         CreateDictDimensionReq, DeleteDictDimensionReq, GetDictDimensionReq, GetDictDimensionsReq,
         UpdateDictDimensionReq, UpdateDictDimensionStatusReq,
     },
+    entity::dict_dimension,
 };
-
-use code::{Error, ErrorMsg};
-use entity::system::sys_dict_dimension;
-
-use nject::injectable;
-use sea_orm::{DbErr::RecordNotUpdated, Set};
-use tracing::error;
 
 /// 服务层
 #[injectable]
@@ -25,7 +26,7 @@ impl DictDimensionService {
     pub async fn list(
         &self,
         req: GetDictDimensionsReq,
-    ) -> Result<(Vec<sys_dict_dimension::Model>, u64), ErrorMsg> {
+    ) -> Result<(Vec<dict_dimension::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
             return self.dict_dimension_dao.all().await.map_err(|err| {
@@ -47,10 +48,7 @@ impl DictDimensionService {
     }
 
     /// 获取详情数据
-    pub async fn info(
-        &self,
-        req: GetDictDimensionReq,
-    ) -> Result<sys_dict_dimension::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetDictDimensionReq) -> Result<dict_dimension::Model, ErrorMsg> {
         let result = self
             .dict_dimension_dao
             .info(req.id)
@@ -75,14 +73,14 @@ impl DictDimensionService {
     pub async fn create(
         &self,
         req: CreateDictDimensionReq,
-    ) -> Result<sys_dict_dimension::Model, ErrorMsg> {
+    ) -> Result<dict_dimension::Model, ErrorMsg> {
         // 查询字典维度名称是否已存在
         self.check_name_exist(req.name.clone(), None).await?;
 
         // 查询字典维度编码是否存在
         self.check_code_exist(req.code.clone(), None).await?;
 
-        let model = sys_dict_dimension::ActiveModel {
+        let model = dict_dimension::ActiveModel {
             name: Set(req.name),
             code: Set(req.code),
             sort: Set(req.sort),
@@ -110,7 +108,7 @@ impl DictDimensionService {
         self.check_code_exist(req.code.clone(), Some(req.id))
             .await?;
 
-        let model = sys_dict_dimension::ActiveModel {
+        let model = dict_dimension::ActiveModel {
             id: Set(req.id),
             name: Set(req.name),
             code: Set(req.code),

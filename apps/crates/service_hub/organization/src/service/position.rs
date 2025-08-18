@@ -1,18 +1,19 @@
 //! 岗位管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::position::PositionDao,
     dto::position::{
         CreatePositionReq, DeletePositionReq, GetPositionReq, GetPositionsReq, UpdatePositionReq,
         UpdatePositionStatusReq,
     },
+    entity::position,
 };
-
-use code::{Error, ErrorMsg};
-use entity::organization::position;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

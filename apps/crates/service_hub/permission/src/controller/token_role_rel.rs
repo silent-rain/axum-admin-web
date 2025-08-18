@@ -1,5 +1,10 @@
 //! 令牌角色关系管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::token_role_rel::{
         BatchCreateTokenRoleRelReq, BatchCreateTokenRoleRelResp, BatchDeleteTokenRoleRelReq,
@@ -7,10 +12,6 @@ use crate::{
     },
     service::token_role_rel::TokenRoleRelService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct TokenRoleRelController;

@@ -1,5 +1,10 @@
 //! OpenApi接口管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::openapi::{
         CreateOpenapiReq, CreateOpenapiResp, DeleteOpenapiReq, DeleteOpenapiResp, GetOpenapiReq,
@@ -8,10 +13,6 @@ use crate::{
     },
     service::openapi::OpenapiService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct OpenapiController;

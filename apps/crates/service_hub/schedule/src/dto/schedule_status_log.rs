@@ -1,9 +1,9 @@
 //! 任务调度状态日志管理
 
-use entity::schedule::schedule_status_log;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{entity::schedule_status_log, enums::schedule_job::Status};
 
 /// 查询任务调度状态日志列表
 #[derive(Default, Deserialize, Validate)]
@@ -66,7 +66,7 @@ pub struct UpdateScheduleStatusLogReq {
     /// 耗时,毫秒
     pub cost: u64,
     /// 任务状态,0:失败,1:成功
-    pub status: schedule_status_log::enums::Status,
+    pub status: Status,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -78,7 +78,7 @@ pub struct UpdateScheduleStatusLogSatausReq {
     /// 状态日志ID
     pub id: i32,
     /// 任务状态,0:失败,1:成功
-    pub status: schedule_status_log::enums::Status,
+    pub status: Status,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

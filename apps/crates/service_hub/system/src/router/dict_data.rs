@@ -1,11 +1,11 @@
 //! 字典数据管理
 
-use crate::controller::dict_data::DictDataController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::dict_data::DictDataController;
 
 /// 路由器
 pub struct DictDataRouter;

@@ -1,9 +1,9 @@
 //! 字典数据管理
 
-use entity::system::sys_dict_data;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::dict_data;
 
 /// 查询字典数据列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -24,7 +24,7 @@ pub struct GetDictDatasReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDatasResp {
-    pub data_list: Vec<sys_dict_data::Model>,
+    pub data_list: Vec<dict_data::Model>,
     pub total: u64,
 }
 
@@ -38,7 +38,7 @@ pub struct GetDictDataReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDataResp {
     #[serde(flatten)]
-    data: sys_dict_data::Model,
+    data: dict_data::Model,
 }
 
 /// 添加字典数据 请求体

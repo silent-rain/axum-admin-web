@@ -1,18 +1,19 @@
 //! 菜单管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+use database::utils::GenericTree;
+
 use crate::{
     dao::menu::MenuDao,
     dto::menu::{
         CreateMenuReq, DeleteMenuReq, GetMenuReq, GetMenusReq, UpdateMenuReq, UpdateMenuStatusReq,
     },
+    entity::menu,
 };
-
-use code::{Error, ErrorMsg};
-use entity::permission::menu;
-use entity::utils::GenericTree;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

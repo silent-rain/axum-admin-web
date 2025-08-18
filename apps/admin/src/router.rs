@@ -2,18 +2,18 @@
 
 use std::{sync::Arc, time::Duration};
 
-use axum::{extract::DefaultBodyLimit, routing::get, Router};
+use axum::{Router, extract::DefaultBodyLimit, routing::get};
 use database::PoolTrait;
 use tokio::signal;
 use tower::ServiceBuilder;
-use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
+use tower_governor::{GovernorLayer, governor::GovernorConfigBuilder};
 use tower_http::{
+    ServiceBuilderExt,
     compression::CompressionLayer,
     limit::RequestBodyLimitLayer,
     request_id::MakeRequestUuid,
     timeout::TimeoutLayer,
     trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer},
-    ServiceBuilderExt,
 };
 use tracing::warn;
 
@@ -70,16 +70,29 @@ pub async fn shutdown_signal() {
 pub fn register(db_pool: Arc<(dyn PoolTrait)>) -> Router {
     // 速率限制
     //允许每个IP地址最多有五个请求的突发, 每两秒钟补充一种元素
+    // Allow bursts with up to five requests per IP address
+    // and replenishes one element every two seconds
+    // We Box it because Axum 0.6 requires all Layers to be Clone
+    // and thus we need a static reference to it
     let governor_conf = Arc::new(
         GovernorConfigBuilder::default()
             .per_second(2)
-            .burst_size(500)
+            .burst_size(5)
             .finish()
             .expect("init governor config failed"),
     );
-    let governor_layer = GovernorLayer {
-        config: governor_conf,
-    };
+
+    let governor_limiter = governor_conf.limiter().clone();
+    let governor_layer = GovernorLayer::new(governor_conf);
+    let interval = Duration::from_secs(60);
+    // a separate background task to clean up
+    std::thread::spawn(move || {
+        loop {
+            std::thread::sleep(interval);
+            tracing::info!("rate limiting storage size: {}", governor_limiter.len());
+            governor_limiter.retain_recent();
+        }
+    });
 
     // prometheus
     let (prometheus_layer, prometheus_metric_handle) = prometheus_layer_metric_handle();

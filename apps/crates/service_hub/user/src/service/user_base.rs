@@ -1,24 +1,20 @@
 //! 用户信息管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+use utils::crypto::sha2_256;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::{user_base::UserBaseDao, user_role_rel::UserRoleRelDao},
     dto::user_base::{
         CreateUserBaseReq, DeleteUserBaseReq, GetCheckUsernameReq, GetUserBaseReq, GetUserBasesReq,
-        ProfileResp, RolesReq, UpdateShareCodeReq, UpdateUserBaseReq, UpdateUserBaseStatusReq,
+        ProfileResp, RolesReq, UpdateUserBaseReq, UpdateUserBaseStatusReq,
     },
+    entity::{role, user_base, user_role_rel},
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::{role, user_base, user_role_rel};
-
-use base64::Engine;
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
-use utils::crypto::sha2_256;
-use uuid::Uuid;
-
-/// 用户分享码生成次数
-const SHARE_CODE_COUNT: i32 = 100;
 
 /// 服务层
 #[injectable]
@@ -120,12 +116,6 @@ impl UserBaseService {
             avatar: Set(req.avatar),
             intro: Set(req.intro),
             desc: Set(req.desc),
-            address: Set(req.address),
-            preferences: Set(req.preferences),
-            department_id: Set(req.department_id),
-            position_id: Set(req.position_id),
-            rank_id: Set(req.rank_id),
-            member_level_id: Set(req.member_level_id),
             ..Default::default()
         };
 
@@ -167,12 +157,6 @@ impl UserBaseService {
             avatar: Set(req.avatar),
             intro: Set(req.intro),
             desc: Set(req.desc),
-            address: Set(req.address),
-            preferences: Set(req.preferences),
-            department_id: Set(req.department_id),
-            position_id: Set(req.position_id),
-            rank_id: Set(req.rank_id),
-            member_level_id: Set(req.member_level_id),
             ..Default::default()
         };
         self.user_base_dao
@@ -210,66 +194,6 @@ impl UserBaseService {
         }
 
         (add_role_ids, del_role_ids)
-    }
-}
-
-impl UserBaseService {
-    /// 更新用户分享码
-    pub async fn update_share_code(&self, req: UpdateShareCodeReq) -> Result<(), ErrorMsg> {
-        // 获取分享码
-        let mut share_code = String::new();
-        for _i in 0..SHARE_CODE_COUNT {
-            let share_code_uuid = Uuid::new_v4().to_string().replace('-', "");
-            let share_code_hash =
-                base64::engine::general_purpose::STANDARD.encode(&share_code_uuid);
-            let half_share_code = share_code_hash[0..16].to_string();
-
-            // 检查分享码是否存在
-            if !self.check_share_code_exist(half_share_code.clone()).await? {
-                share_code = half_share_code.to_string();
-                break;
-            }
-        }
-
-        if share_code.is_empty() {
-            error!("生成用户分享码失败, 请重试");
-            return Err(Error::GenerateUserShareCore
-                .into_msg()
-                .with_msg("生成用户分享码失败, 请重试"));
-        }
-
-        self.user_base_dao
-            .update_share_code(req.id, share_code)
-            .await
-            .map_err(|err| {
-                error!("更新用户分享码失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新用户分享码失败")
-            })?;
-
-        Ok(())
-    }
-
-    /// 检查分享码是否存在
-    async fn check_share_code_exist(&self, share_code: String) -> Result<bool, ErrorMsg> {
-        let result = self
-            .user_base_dao
-            .info_by_share_code(share_code)
-            .await
-            .map_err(|err| {
-                error!("查询用户分享码失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("查询用户分享码失败")
-            })?;
-
-        if result.is_some() {
-            error!("用户分享码已存在");
-            return Ok(true);
-        }
-
-        Ok(false)
     }
 }
 
@@ -336,8 +260,8 @@ impl UserBaseService {
         Ok((results, total))
     }
 
-    /// 获取用户信息
-    pub async fn info_checked(&self, user_id: i32) -> Result<user_base::Model, ErrorMsg> {
+    /// 检查用户
+    pub async fn checked_user(&self, user_id: i32) -> Result<user_base::Model, ErrorMsg> {
         let user = self
             .user_base_dao
             .info(user_id)

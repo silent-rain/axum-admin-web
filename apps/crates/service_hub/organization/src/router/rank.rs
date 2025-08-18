@@ -1,11 +1,11 @@
 //! 职级管理
 
-use crate::controller::rank::RankController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::rank::RankController;
 
 /// 路由器
 pub struct RankRouter;

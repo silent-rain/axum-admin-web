@@ -1,11 +1,11 @@
 //! OpenApi接口管理
 
-use crate::controller::openapi::OpenapiController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::openapi::OpenapiController;
 
 /// 路由器
 pub struct OpenapiRouter;

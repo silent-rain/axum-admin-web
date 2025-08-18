@@ -1,5 +1,10 @@
 //! OpenApi接口角色关系管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::openapi_role_rel::{
         BatchCreateOpenapiRoleRelReq, BatchCreateOpenapiRoleRelResp, BatchDeleteOpenapiRoleRelReq,
@@ -7,10 +12,6 @@ use crate::{
     },
     service::openapi_role_rel::OpenapiRoleRelService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct OpenapiRoleRelController;

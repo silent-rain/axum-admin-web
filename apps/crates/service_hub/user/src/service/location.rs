@@ -1,17 +1,18 @@
 //! 用户地理位置管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::location::LocationDao,
     dto::location::{
         CreateLocationReq, DeleteLocationReq, GetLocationReq, GetLocationsReq, UpdateLocationReq,
     },
+    entity::location,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::location;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

@@ -1,16 +1,17 @@
 //! 登陆日志管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+use utils::browser::parse_user_agent_async;
+
 use crate::{
     dao::user_login_log::UserLoginLogDao,
     dto::user_login_log::{CreateUserLoginLogReq, GetUserLoginLogReq, GetUserLoginLogsReq},
+    entity::user_login_log,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::user_login_log;
-use utils::browser::parse_user_agent_async;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

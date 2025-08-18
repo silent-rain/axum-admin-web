@@ -1,15 +1,16 @@
 //! 用户邮箱管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::email::EmailDao,
     dto::email::{CreateEmailReq, DeleteEmailReq, GetEmailReq, GetEmailsReq, UpdateEmailReq},
+    entity::email,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::email;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

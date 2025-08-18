@@ -1,21 +1,24 @@
 //! 任务调度作业管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::{DbErr::RecordNotUpdated, Set};
+use uuid::Uuid;
+
+use scheduler::JobScheduler;
+
 use crate::{
+    ScheduleStatusLogDao,
     dao::schedule_job::ScheduleJobDao,
     dto::schedule_job::{
         CreateScheduleJobReq, DeleteScheduleJobReq, GetScheduleJobReq, GetScheduleJobsReq,
         UpdateScheduleJobReq, UpdateScheduleJobStatusReq,
     },
-    ScheduleStatusLogDao,
+    entity::schedule_job,
+    enums::schedule_job::Source,
 };
 
 use code::{Error, ErrorMsg};
-use entity::schedule::schedule_job;
-use scheduler::JobScheduler;
-
-use nject::injectable;
-use sea_orm::{DbErr::RecordNotUpdated, Set};
-use tracing::error;
-use uuid::Uuid;
 
 /// 服务层
 #[injectable]
@@ -189,7 +192,7 @@ impl ScheduleJobService {
     /// 删除数据
     pub async fn delete(&self, req: DeleteScheduleJobReq) -> Result<u64, ErrorMsg> {
         let job = self.info(GetScheduleJobReq { id: req.id }).await?;
-        if job.source == schedule_job::enums::Source::System as i8 {
+        if job.source == Source::System as i8 {
             error!("系统任务不允许删除");
             return Err(Error::DbDeleteError
                 .into_msg()

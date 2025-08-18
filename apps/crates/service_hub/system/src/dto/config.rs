@@ -1,9 +1,9 @@
 //! 配置管理
 
-use entity::system::sys_config;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::config;
 
 /// 查询配置列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -24,7 +24,7 @@ pub struct GetConfigsReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetConfigsResp {
-    pub data_list: Vec<sys_config::Model>,
+    pub data_list: Vec<config::Model>,
     pub total: u64,
 }
 
@@ -38,7 +38,7 @@ pub struct GetConfigReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetConfigResp {
     #[serde(flatten)]
-    data: sys_config::Model,
+    data: config::Model,
 }
 
 /// 添加配置 请求体
@@ -111,7 +111,7 @@ pub struct DeleteConfigResp {}
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ConfigTreeItem {
     #[serde(flatten)]
-    pub data: sys_config::Model,
+    pub data: config::Model,
     pub children: Vec<ConfigTreeItem>,
 }
 

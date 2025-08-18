@@ -3,17 +3,19 @@ use std::{boxed::Box, task::Poll};
 
 use axum::{body::Body, extract::Request, http::Response};
 use axum_context::{ApiAuthType, Context};
-use entity::user::user_login_log;
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::error;
 
 use code::Error;
 use jwt::decode_token_with_verify;
-use service_hub::{inject::AInjectProvider, user::UserLoginLogService};
+use service_hub::{
+    inject::AInjectProvider,
+    user::{UserLoginLogService, enums::user_login_log::LoginStatus},
+};
 
 use crate::{
-    constant::{AUTHORIZATION, AUTHORIZATION_BEARER, AUTH_WHITE_LIST},
+    constant::{AUTH_WHITE_LIST, AUTHORIZATION, AUTHORIZATION_BEARER},
     error::create_error_response,
 };
 
@@ -156,19 +158,19 @@ impl<S> SystemApiJwtAuthService<S> {
     ) -> Result<i32, code::ErrorMsg> {
         let user_login_service: UserLoginLogService = provider.provide();
         let user = user_login_service.info_by_session_id(token.clone()).await?;
-        if user.login_status == user_login_log::enums::LoginStatus::Disabled as i8 {
+        if user.login_status == LoginStatus::Disabled as i8 {
             error!("user_id: {} token: {}, 当前登陆态已被禁用", user.id, token);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("当前登陆态已被禁用, 请重新登陆"));
         }
-        if user.login_status == user_login_log::enums::LoginStatus::Failed as i8 {
+        if user.login_status == LoginStatus::Failed as i8 {
             error!("user_id: {} token: {}, 无效鉴权", user.id, token.clone());
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()
                 .with_msg("无效鉴权, 请重新登陆"));
         }
-        if user.login_status == user_login_log::enums::LoginStatus::Logout as i8 {
+        if user.login_status == LoginStatus::Logout as i8 {
             error!("user_id: {} token: {}, 已登出", user.id, token);
             return Err(code::Error::LoginStatusDisabled
                 .into_msg()

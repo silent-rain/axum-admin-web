@@ -1,11 +1,11 @@
 //! 用户session管理
 
-use crate::controller::user_session::UserSessionController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::user_session::UserSessionController;
 
 /// 路由器
 pub struct UserSessionRouter;

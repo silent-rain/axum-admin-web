@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::permission::token_role_rel;
+use crate::entity::token_role_rel;
 
 /// 查询令牌角色关系列表
 #[derive(Default, Deserialize, Validate)]

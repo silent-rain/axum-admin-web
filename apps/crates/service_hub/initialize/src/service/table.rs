@@ -1,18 +1,18 @@
 //! 库表初始化
 
+use log::error;
+use nject::injectable;
+
+use code::{Error, ErrorMsg};
+use embed_asset::EmbedAssetTrait;
+use user::entity::user_base;
+use utils::crypto::sha2_256;
+
 use crate::{
     asset::{AssetDbTable, AssetDbTableData},
     dao::table::TableDao,
     dto::table::{CreateTableReq, TableDataSql},
 };
-
-use code::{Error, ErrorMsg};
-use embed_asset::EmbedAssetTrait;
-use entity::user::user_base;
-
-use nject::injectable;
-use tracing::error;
-use utils::crypto::sha2_256;
 
 /// 服务层
 #[injectable]

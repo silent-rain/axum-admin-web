@@ -1,11 +1,11 @@
 //! 角色管理
 
-use crate::controller::role::RoleController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::role::RoleController;
 
 /// 路由器
 pub struct RoleRouter;

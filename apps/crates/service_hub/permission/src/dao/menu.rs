@@ -1,15 +1,17 @@
 //! 菜单管理
 use std::sync::Arc;
 
-use crate::dto::menu::GetMenusReq;
-
-use database::{Pagination, PoolTrait};
-use entity::{permission::menu, permission::Menu};
 use nject::injectable;
-
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait, Set,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::menu::GetMenusReq,
+    entity::{MenuEntity, menu},
 };
 
 /// 数据访问
@@ -21,7 +23,7 @@ pub struct MenuDao {
 impl MenuDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<menu::Model>, u64), DbErr> {
-        let results = Menu::find()
+        let results = MenuEntity::find()
             .order_by_asc(menu::Column::Id)
             .all(self.db.db())
             .await?;
@@ -33,7 +35,7 @@ impl MenuDao {
     pub async fn list(&self, req: GetMenusReq) -> Result<(Vec<menu::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = Menu::find()
+        let states = MenuEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(menu::Column::CreatedAt.gte(v))
             })
@@ -61,7 +63,7 @@ impl MenuDao {
 
     /// 获取父ID下的所有子列表
     pub async fn children(&self, pid: i32) -> Result<Vec<menu::Model>, DbErr> {
-        Menu::find()
+        MenuEntity::find()
             .filter(menu::Column::Pid.eq(pid))
             .all(self.db.db())
             .await
@@ -69,7 +71,7 @@ impl MenuDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<menu::Model>, DbErr> {
-        Menu::find_by_id(id).one(self.db.db()).await
+        MenuEntity::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加详情信息
@@ -80,7 +82,7 @@ impl MenuDao {
     /// 更新数据
     pub async fn update(&self, active_model: menu::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = Menu::update_many()
+        let result = MenuEntity::update_many()
             .set(active_model)
             .filter(menu::Column::Id.eq(id))
             .exec(self.db.db())
@@ -102,7 +104,7 @@ impl MenuDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = Menu::delete_by_id(id).exec(self.db.db()).await?;
+        let result = MenuEntity::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

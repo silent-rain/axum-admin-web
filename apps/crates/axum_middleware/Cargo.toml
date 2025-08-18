@@ -6,7 +6,6 @@ edition = "2024"
 
 [dependencies]
 code = { path = "../core/code" }
-entity = { path = "../core/entity" }
 jwt = { path = "../core/jwt" }
 axum_context = { path = "../axum_context" }
 service_hub = { path = "../service_hub" }

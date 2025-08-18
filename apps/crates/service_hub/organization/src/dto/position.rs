@@ -1,9 +1,9 @@
 //! 岗位管理
 
-use entity::organization::position;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::position;
 
 /// 查询岗位列表 请求体
 #[derive(Default, Deserialize, Validate)]

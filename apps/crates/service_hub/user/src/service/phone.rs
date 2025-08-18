@@ -1,15 +1,16 @@
 //! 用户手机号管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::phone::PhoneDao,
     dto::phone::{CreatePhoneReq, DeletePhoneReq, GetPhoneReq, GetPhonesReq, UpdatePhoneReq},
+    entity::phone,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::phone;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

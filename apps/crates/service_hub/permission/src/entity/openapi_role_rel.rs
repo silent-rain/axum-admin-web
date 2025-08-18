@@ -1,0 +1,67 @@
+//! OpenApi接口角色关系表
+
+use sea_orm::{
+    ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, EntityTrait, EnumIter,
+    ForeignKeyAction, PrimaryKeyTrait, Related, RelationDef, RelationTrait, prelude::DateTime,
+};
+use serde::{Deserialize, Serialize};
+
+/// OpenApi接口角色关系表
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
+#[sea_orm(table_name = "t_perm_openapi_role_rel")]
+pub struct Model {
+    /// 自增ID
+    #[sea_orm(primary_key)]
+    pub id: i32,
+    /// 接口ID
+    pub openapi_id: i32,
+    /// 角色ID
+    pub role_id: i32,
+    /// 创建时间
+    pub created_at: DateTime,
+}
+
+#[derive(Copy, Clone, Debug, EnumIter)]
+pub enum Relation {
+    Openapi,
+    Role,
+}
+
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::Openapi => Entity::belongs_to(super::openapi::Entity)
+                .from(Column::OpenapiId)
+                .to(super::openapi::Column::Id)
+                .on_update(ForeignKeyAction::Cascade)
+                .on_delete(ForeignKeyAction::Cascade)
+                .into(),
+            Self::Role => {
+                Entity::belongs_to(user::entity::role::Entity)
+                    // 从实体建立关系
+                    .from(Column::RoleId)
+                    // 与实体建立关系
+                    .to(user::entity::role::Column::Id)
+                    // 发生更新操作时对外键执行的操作
+                    .on_update(ForeignKeyAction::Cascade)
+                    // 发生删除操作时对外键执行的操作
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .into()
+            }
+        }
+    }
+}
+
+impl Related<super::openapi::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Openapi.def()
+    }
+}
+
+impl Related<user::entity::role::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Role.def()
+    }
+}
+
+impl ActiveModelBehavior for ActiveModel {}

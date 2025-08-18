@@ -1,5 +1,10 @@
 //! 角色管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::role::{
         CreateRoleReq, CreateRoleResp, DeleteRoleReq, DeleteRoleResp, GetRoleReq, GetRoleResp,
@@ -8,10 +13,6 @@ use crate::{
     },
     service::role::RoleService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use axum_response::{Responder, Response};
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct RoleController;

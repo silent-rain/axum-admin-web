@@ -1,11 +1,10 @@
 //! 用户手机号管理
 
-use entity::user::phone;
-
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use validator::Validate;
-use validator::ValidationError;
+use validator::{Validate, ValidationError};
+
+use crate::entity::phone;
 
 /// 查询用户手机号列表 请求体
 #[derive(Default, Deserialize, Validate)]

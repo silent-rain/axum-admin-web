@@ -1,17 +1,16 @@
 //! 注册
+
+use log::error;
+use nject::injectable;
+
+use code::{Error, ErrorMsg};
+use system::ImageCaptchaDao;
+use user::{BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao, enums::user_base::UserType};
+use utils::crypto::sha2_256;
+
 use crate::{
     common::captcha::check_captcha, dao::register::RegisterDao, dto::register::RegisterReq,
 };
-
-use system::ImageCaptchaDao;
-use user::{BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao};
-
-use code::{Error, ErrorMsg};
-use entity::user::user_base;
-use utils::crypto::sha2_256;
-
-use nject::injectable;
-use tracing::error;
 
 /// 服务层
 #[injectable]
@@ -29,25 +28,25 @@ impl RegisterService {
     pub async fn register(&self, req: RegisterReq) -> Result<(), ErrorMsg> {
         // 参数校验, 防止被空刷验证码
         match req.register_type {
-            user_base::enums::UserType::Base => {
+            UserType::Base => {
                 if req.phone.is_none() {
                     error!("请输入用户名");
                     return Err(Error::InvalidParameter("请输入用户名".to_string()).into_msg());
                 }
             }
-            user_base::enums::UserType::Phone => {
+            UserType::Phone => {
                 if req.phone.is_none() {
                     error!("请输入手机号码");
                     return Err(Error::InvalidParameter("请输入手机号码".to_string()).into_msg());
                 }
             }
-            user_base::enums::UserType::Email => {
+            UserType::Email => {
                 if req.email.is_none() {
                     error!("请输入邮箱");
                     return Err(Error::InvalidParameter("请输入邮箱".to_string()).into_msg());
                 }
             }
-            user_base::enums::UserType::BlockchainWallet => {
+            UserType::BlockchainWallet => {
                 if req.phone.is_none() {
                     error!("请输入钱包地址");
                     return Err(Error::InvalidParameter("请输入钱包地址".to_string()).into_msg());
@@ -68,12 +67,10 @@ impl RegisterService {
 
         // 根据不同注册类型进行注册检查
         match req.register_type {
-            user_base::enums::UserType::Base => self.check_username(req.username.clone()).await?,
-            user_base::enums::UserType::Phone => self.check_phone(req.clone()).await?,
-            user_base::enums::UserType::Email => self.check_email(req.clone()).await?,
-            user_base::enums::UserType::BlockchainWallet => {
-                self.check_blockchain_wallet(req.clone()).await?
-            }
+            UserType::Base => self.check_username(req.username.clone()).await?,
+            UserType::Phone => self.check_phone(req.clone()).await?,
+            UserType::Email => self.check_email(req.clone()).await?,
+            UserType::BlockchainWallet => self.check_blockchain_wallet(req.clone()).await?,
         };
 
         let mut data = req.clone();
@@ -114,7 +111,7 @@ impl RegisterService {
                 return Err(code::Error::InvalidParameter(
                     "请求参数错误, phone 不能为空".to_string(),
                 )
-                .into_msg())
+                .into_msg());
             }
         };
 
@@ -144,7 +141,7 @@ impl RegisterService {
             None => {
                 return Err(code::Error::DbDataExistError
                     .into_msg()
-                    .with_msg("请求参数错误, email 不能为空"))
+                    .with_msg("请求参数错误, email 不能为空"));
             }
         };
 
@@ -175,7 +172,7 @@ impl RegisterService {
                 return Err(code::Error::InvalidParameter(
                     "请求参数错误, blockchain_wallet 不能为空".to_string(),
                 )
-                .into_msg())
+                .into_msg());
             }
         };
 

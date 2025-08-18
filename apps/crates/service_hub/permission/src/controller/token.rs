@@ -1,5 +1,10 @@
 //! 令牌管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::token::{
         CreateTokenReq, CreateTokenResp, DeleteTokenReq, DeleteTokenResp, GetTokenReq,
@@ -8,10 +13,6 @@ use crate::{
     },
     service::token::TokenService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct TokenController;

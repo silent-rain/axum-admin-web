@@ -1,19 +1,20 @@
 //! 部门管理
+
+use database::utils::GenericTree;
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::department::DepartmentDao,
     dto::department::{
         CreateDepartmentReq, DeleteDepartmentReq, GetDepartmentReq, GetDepartmentsReq,
         UpdateDepartmentReq, UpdateDepartmentStatusReq,
     },
+    entity::department,
 };
-
-use code::{Error, ErrorMsg};
-use entity::organization::department;
-use entity::utils::GenericTree;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

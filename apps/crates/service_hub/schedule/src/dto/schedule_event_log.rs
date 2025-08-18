@@ -1,9 +1,9 @@
 //! 任务调度事件日志管理
 
-use entity::schedule::schedule_event_log;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{entity::schedule_event_log, enums::schedule_event_log::Status};
 
 /// 查询任务调度事件日志列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -47,7 +47,7 @@ pub struct CreateScheduleEventLogReq {
     /// 任务调度ID
     pub uuid: String,
     /// 任务状态,0:失败,1:成功'
-    pub status: schedule_event_log::enums::Status,
+    pub status: Status,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

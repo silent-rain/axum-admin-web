@@ -1,11 +1,11 @@
 //! 用户信息管理
 
-use crate::controller::user_base::UserBaseController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::user_base::UserBaseController;
 
 /// 路由器
 pub struct UserBaseRouter;
@@ -27,10 +27,6 @@ impl UserBaseRouter {
                         .delete(UserBaseController::delete),
                 )
                 .route("/{id}/status", put(UserBaseController::update_status))
-                .route(
-                    "/{id}/share-code",
-                    put(UserBaseController::update_share_code),
-                )
                 .route("/{id}/profile", get(UserBaseController::profile))
                 .route("/{id}/roles", get(UserBaseController::roles))
                 .route("/check-username", get(UserBaseController::check_username)),

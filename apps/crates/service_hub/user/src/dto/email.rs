@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::user::email;
+use crate::entity::email;
 
 /// 查询用户列表
 #[derive(Default, Deserialize, Validate)]

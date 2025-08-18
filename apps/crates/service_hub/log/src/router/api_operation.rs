@@ -1,8 +1,8 @@
 //! API操作日志
 
-use crate::controller::api_operation::ApiOperationController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::api_operation::ApiOperationController;
 
 /// 路由器
 pub struct ApiOperationRouter;

@@ -1,10 +1,12 @@
 //! 用户信息管理
 
-use entity::user::role;
-use entity::user::user_base;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{
+    entity::{role, user_base},
+    enums::user_base::Gender,
+};
 
 /// 查询用户列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -48,7 +50,7 @@ pub struct CreateUserBaseReq {
     /// 真实姓名
     pub real_name: Option<String>,
     /// 性别(0:保密,1:女,2:男)
-    pub gender: user_base::enums::Gender,
+    pub gender: Gender,
     /// 密码
     pub password: String,
     /// 状态(false:停用,true:正常)
@@ -90,7 +92,7 @@ pub struct UpdateUserBaseReq {
     /// 真实姓名
     pub real_name: Option<String>,
     /// 性别(0:保密,1:女,2:男)
-    pub gender: user_base::enums::Gender,
+    pub gender: Gender,
     /// 状态(false:停用,true:正常)
     pub status: bool,
     /// 年龄
@@ -143,15 +145,6 @@ pub struct DeleteUserBaseReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DeleteUserBaseResp {}
-
-/// 更新用户分享码 请求体
-#[derive(Debug, Default, Deserialize, Validate)]
-pub struct UpdateShareCodeReq {
-    /// 用户ID
-    pub id: i32,
-}
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateShareCodeResp {}
 
 /// 更新用户分享码 请求体
 #[derive(Debug, Default, Deserialize, Validate)]

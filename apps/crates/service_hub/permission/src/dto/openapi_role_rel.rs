@@ -1,7 +1,8 @@
 //! OpenApi接口角色关系管理
-use entity::permission::openapi_role_rel;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::openapi_role_rel;
 
 /// 查询OpenApi接口角色关系列表
 #[derive(Default, Deserialize, Validate)]

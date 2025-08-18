@@ -4,8 +4,7 @@ use axum::Extension;
 use axum_response::{Responder, Response};
 use inject::AInjectProvider;
 
-use crate::dto::system::SystemStatsResp;
-use crate::service::system::ComfyUISystemService;
+use crate::{dto::system::SystemStatsResp, service::system::ComfyUISystemService};
 
 /// 控制器
 pub struct ComfyUISystemController;

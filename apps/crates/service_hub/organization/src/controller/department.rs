@@ -1,5 +1,9 @@
 //! 部门管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+use inject::AInjectProvider;
+
 use crate::{
     dto::department::{
         CreateDepartmentReq, CreateDepartmentResp, DeleteDepartmentReq, DeleteDepartmentResp,
@@ -9,11 +13,6 @@ use crate::{
     },
     service::department::DepartmentService,
 };
-
-use axum_response::{Responder, Response};
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-
 /// 控制器
 pub struct DepartmentController;
 

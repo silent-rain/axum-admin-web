@@ -1,18 +1,19 @@
 //! 用户区块链钱包管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::blockchain_wallet::BlockchainWalletDao,
     dto::blockchain_wallet::{
         CreateBlockchainWalletReq, DeleteBlockchainWalletReq, GetBlockchainWalletReq,
         GetBlockchainWalletsReq, UpdateBlockchainWalletReq,
     },
+    entity::blockchain_wallet,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::blockchain_wallet;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

@@ -1,15 +1,16 @@
 //! WEB日志管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::web_log::WebLogDao,
     dto::web_log::{CreateWebLogReq, GetWebLogReq, GetWebLogsReq},
+    entity::log_web,
 };
-
-use code::{Error, ErrorMsg};
-use entity::log::log_web;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

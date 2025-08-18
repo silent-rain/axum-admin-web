@@ -1,19 +1,19 @@
 //! 模板GRPC示例
 
-use crate::service::template::AppTemplateService;
-
 use grpc_api::template::{
-    app_template_service_server::AppTemplateService as AppTemplateGrpcService,
     BatchDeleteAppTemplateReq, BatchDeleteAppTemplateResp, CreateAppTemplateReq,
     CreateAppTemplateResp, DeleteAppTemplateReq, DeleteAppTemplateResp, GetAppTemplateReq,
     GetAppTemplateResp, GetAppTemplatesReq, GetAppTemplatesResp, UpdateAppTemplateReq,
     UpdateAppTemplateResp, UpdateAppTemplateStatusReq, UpdateAppTemplateStatusResp,
+    app_template_service_server::AppTemplateService as AppTemplateGrpcService,
 };
 
 use axum_response::Response;
 use nject::injectable;
 use tonic::{Request, Status};
 use utils::json::struct_to_struct;
+
+use crate::AppTemplateService;
 
 /// 控制器
 #[injectable]

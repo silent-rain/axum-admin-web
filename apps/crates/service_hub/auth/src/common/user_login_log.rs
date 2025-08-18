@@ -2,10 +2,10 @@
 
 use std::sync::Arc;
 
-use entity::user::user_login_log;
+use log::error;
 use sea_orm::Set;
-use tracing::error;
-use user::UserLoginLogDao;
+
+use user::{UserLoginLogDao, entity::user_login_log, enums::user_login_log::LoginStatus};
 use utils::browser::parse_user_agent_async;
 
 use crate::dto::login::BrowserInfo;
@@ -18,7 +18,7 @@ pub fn add_login_log(
     browser_info: BrowserInfo,
     session_id: String,
     desc: &str,
-    login_status: user_login_log::enums::LoginStatus,
+    login_status: LoginStatus,
 ) {
     let user_login_dao = user_login_log_dao.clone();
     let desc = desc.to_string();

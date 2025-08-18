@@ -1,9 +1,9 @@
 //! 职级管理
 
-use entity::organization::rank;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::rank;
 
 /// 查询职级列表 请求体
 #[derive(Default, Deserialize, Validate)]

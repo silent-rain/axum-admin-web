@@ -1,5 +1,10 @@
 //! 会员等级管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::member_level::{
         CreateMemberLevelReq, CreateMemberLevelResp, DeleteMemberLevelReq, DeleteMemberLevelResp,
@@ -9,10 +14,6 @@ use crate::{
     },
     service::member_level::MemberLevelService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use axum_response::{Responder, Response};
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct MemberLevelController;

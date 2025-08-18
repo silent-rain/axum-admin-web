@@ -1,17 +1,18 @@
 //! 角色管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::{DbErr::RecordNotUpdated, Set};
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::role::RoleDao,
     dto::role::{
         CreateRoleReq, DeleteRoleReq, GetRoleReq, GetRolesReq, UpdateRoleReq, UpdateRoleStatusReq,
     },
+    entity::role,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::role;
-
-use nject::injectable;
-use sea_orm::{DbErr::RecordNotUpdated, Set};
-use tracing::error;
 
 /// 服务层
 #[injectable]

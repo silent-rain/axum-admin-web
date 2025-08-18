@@ -1,11 +1,11 @@
 //! 字典维度管理
 
-use crate::controller::dict_dimension::DictDimensionController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::dict_dimension::DictDimensionController;
 
 /// 路由器
 pub struct DictDimensionRouter;

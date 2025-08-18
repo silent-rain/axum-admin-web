@@ -1,15 +1,17 @@
 //! 用户信息管理
 use std::sync::Arc;
 
-use crate::dto::user_base::GetUserBasesReq;
-
-use database::{Pagination, PoolTrait};
-use entity::user::{role, user_base, user_role_rel, Role, UserBase, UserRoleRel};
-
-use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseTransaction, DbErr, EntityTrait, JoinType,
     PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, QueryTrait, Set, TransactionTrait,
+};
+
+use database::{Pagination, PoolTrait};
+use nject::injectable;
+
+use crate::{
+    dto::user_base::GetUserBasesReq,
+    entity::{RoleEntity, UserBaseEntity, UserRoleRelEntity, role, user_base, user_role_rel},
 };
 
 /// 数据访问
@@ -21,7 +23,7 @@ pub struct UserBaseDao {
 impl UserBaseDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<user_base::Model>, u64), DbErr> {
-        let results = UserBase::find()
+        let results = UserBaseEntity::find()
             .order_by_asc(user_base::Column::Id)
             .all(self.db.db())
             .await?;
@@ -33,7 +35,7 @@ impl UserBaseDao {
     pub async fn list(&self, req: GetUserBasesReq) -> Result<(Vec<user_base::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = UserBase::find()
+        let states = UserBaseEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(user_base::Column::CreatedAt.gte(v))
             })
@@ -61,7 +63,7 @@ impl UserBaseDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<user_base::Model>, DbErr> {
-        UserBase::find_by_id(id).one(self.db.db()).await
+        UserBaseEntity::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过用户名获取详情信息
@@ -69,19 +71,8 @@ impl UserBaseDao {
         &self,
         username: String,
     ) -> Result<Option<user_base::Model>, DbErr> {
-        UserBase::find()
+        UserBaseEntity::find()
             .filter(user_base::Column::Username.eq(username))
-            .one(self.db.db())
-            .await
-    }
-
-    /// 通过分享码获取详情信息
-    pub async fn info_by_share_code(
-        &self,
-        share_code: String,
-    ) -> Result<Option<user_base::Model>, DbErr> {
-        UserBase::find()
-            .filter(user_base::Column::ShareCode.eq(share_code))
             .one(self.db.db())
             .await
     }
@@ -97,7 +88,7 @@ impl UserBaseDao {
     /// 更新信息
     pub async fn update(&self, active_model: user_base::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = UserBase::update_many()
+        let result = UserBaseEntity::update_many()
             .set(active_model)
             .filter(user_base::Column::Id.eq(id))
             .exec(self.db.db())
@@ -106,16 +97,27 @@ impl UserBaseDao {
         Ok(result.rows_affected)
     }
 
-    /// 更新分享码信息
-    pub async fn update_share_code(&self, id: i32, share_code: String) -> Result<(), DbErr> {
-        let active_model = user_base::ActiveModel {
-            id: Set(id),
-            share_code: Set(Some(share_code)),
-            ..Default::default()
-        };
-        let _ = active_model.update(self.db.db()).await?;
-        Ok(())
-    }
+    // /// 通过分享码获取详情信息
+    // pub async fn info_by_share_code(
+    //     &self,
+    //     share_code: String,
+    // ) -> Result<Option<user_base::Model>, DbErr> {
+    //     UserBaseEntity::find()
+    //         .filter(user_base::Column::ShareCode.eq(share_code))
+    //         .one(self.db.db())
+    //         .await
+    // }
+
+    // /// 更新分享码信息
+    // pub async fn update_share_code(&self, id: i32, share_code: String) -> Result<(), DbErr> {
+    //     let active_model = user_base::ActiveModel {
+    //         id: Set(id),
+    //         share_code: Set(Some(share_code)),
+    //         ..Default::default()
+    //     };
+    //     let _ = active_model.update(self.db.db()).await?;
+    //     Ok(())
+    // }
 
     /// 更新状态
     pub async fn update_status(&self, id: i32, status: bool) -> Result<(), DbErr> {
@@ -130,21 +132,14 @@ impl UserBaseDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = UserBase::delete_by_id(id).exec(self.db.db()).await?;
-        Ok(result.rows_affected)
-    }
-
-    /// 指定字段删除
-    pub async fn delete_by_name(&self, username: String) -> Result<u64, DbErr> {
-        let result = UserBase::delete_many()
-            .filter(user_base::Column::Username.contains(&username))
-            .exec(self.db.db())
-            .await?;
-
+        let result = UserBaseEntity::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }
 
+/// 添加/删除用户，同时添加角色
+///
+/// 事物处理
 impl UserBaseDao {
     /// 添加用户及对应用户的角色
     pub async fn add_user(
@@ -208,7 +203,7 @@ impl UserBaseDao {
         active_model: user_base::ActiveModel,
     ) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = UserBase::update_many()
+        let result = UserBaseEntity::update_many()
             .set(active_model)
             .filter(user_base::Column::Id.eq(id))
             .exec(txn)
@@ -216,7 +211,7 @@ impl UserBaseDao {
         Ok(result.rows_affected)
     }
 
-    /// 添加批量角色
+    /// 批量添加用户的角色
     async fn txn_batch_add_user_roles(
         &self,
         txn: &DatabaseTransaction,
@@ -236,11 +231,11 @@ impl UserBaseDao {
             user_ids.push(model)
         }
 
-        let result = UserRoleRel::insert_many(user_ids).exec(txn).await?;
+        let result = UserRoleRelEntity::insert_many(user_ids).exec(txn).await?;
         Ok(result.last_insert_id)
     }
 
-    /// 删除批量角色
+    /// 批量删除用户的角色
     async fn txn_batch_del_user_roles(
         &self,
         txn: &DatabaseTransaction,
@@ -251,7 +246,7 @@ impl UserBaseDao {
             return Ok(0);
         }
 
-        let result = UserRoleRel::delete_many()
+        let result = UserRoleRelEntity::delete_many()
             .filter(user_role_rel::Column::UserId.eq(user_id))
             .filter(user_role_rel::Column::RoleId.is_in(role_ids))
             .exec(txn)
@@ -263,10 +258,10 @@ impl UserBaseDao {
 impl UserBaseDao {
     /// 通过用户ID获角色色列表
     pub async fn roles(&self, user_id: i32) -> Result<(Vec<role::Model>, u64), DbErr> {
-        let results = Role::find()
+        let results = RoleEntity::find()
             .join_rev(
                 JoinType::InnerJoin,
-                UserRoleRel::belongs_to(Role)
+                UserRoleRelEntity::belongs_to(RoleEntity)
                     .from(user_role_rel::Column::RoleId)
                     .to(role::Column::Id)
                     .into(),
@@ -289,12 +284,12 @@ mod tests {
 
     #[test]
     fn test_role_list() {
-        let result = Role::find()
+        let result = RoleEntity::find()
             .select_only()
             .columns([role::Column::Id])
             .join_rev(
                 JoinType::InnerJoin,
-                UserRoleRel::belongs_to(Role)
+                UserRoleRelEntity::belongs_to(RoleEntity)
                     .from(user_role_rel::Column::RoleId)
                     .to(role::Column::Id)
                     .into(),

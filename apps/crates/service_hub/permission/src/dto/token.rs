@@ -1,12 +1,12 @@
 //! 令牌管理
 
-use entity::permission::token;
-
-use utils::time::{default_naive_date_time, str_to_naive_date_time};
-
 use sea_orm::prelude::DateTime;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use utils::time::{default_naive_date_time, str_to_naive_date_time};
+
+use crate::entity::token;
 
 /// 查询令牌列表
 #[derive(Default, Deserialize, Validate)]

@@ -2,22 +2,22 @@
 
 use std::io::Read;
 
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+use utils::file::file_extension;
+use uuid::Uuid;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::file_resource::FileResourceDao,
     dto::file_resource::{
         DeleteFileResourceReq, GetFileResourceReq, GetFileResourcesReq, ShowImageReq,
         UpdateFileResourceReq, UploadFileReq, UploadFilesReq,
     },
+    entity::file_resource,
 };
-
-use code::{Error, ErrorMsg};
-use entity::system::sys_file_resource;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
-use utils::file::file_extension;
-use uuid::Uuid;
 
 /// 服务层
 #[injectable]
@@ -30,7 +30,7 @@ impl FileResourceService {
     pub async fn list(
         &self,
         req: GetFileResourcesReq,
-    ) -> Result<(Vec<sys_file_resource::Model>, u64), ErrorMsg> {
+    ) -> Result<(Vec<file_resource::Model>, u64), ErrorMsg> {
         let (results, total) = self.image_resource_dao.list(req).await.map_err(|err| {
             error!("查询文件列表失败, err: {:#?}", err);
             Error::DbQueryError.into_msg().with_msg("查询文件列表失败")
@@ -45,10 +45,7 @@ impl FileResourceService {
     }
 
     /// 获取详情数据
-    pub async fn info(
-        &self,
-        req: GetFileResourceReq,
-    ) -> Result<sys_file_resource::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetFileResourceReq) -> Result<file_resource::Model, ErrorMsg> {
         let result = self
             .image_resource_dao
             .info(req.id)
@@ -66,10 +63,7 @@ impl FileResourceService {
     }
 
     /// 通过hash值获取详情数据
-    pub async fn info_by_hash(
-        &self,
-        req: ShowImageReq,
-    ) -> Result<sys_file_resource::Model, ErrorMsg> {
+    pub async fn info_by_hash(&self, req: ShowImageReq) -> Result<file_resource::Model, ErrorMsg> {
         let result = self
             .image_resource_dao
             .info_by_hash(req.hash)
@@ -90,7 +84,7 @@ impl FileResourceService {
     pub async fn upload_file(
         &self,
         mut req: UploadFileReq,
-    ) -> Result<sys_file_resource::Model, ErrorMsg> {
+    ) -> Result<file_resource::Model, ErrorMsg> {
         let file_name = req.file.metadata.file_name.ok_or_else(|| {
             error!("请求参数异常");
             Error::RequestError("请求参数异常".to_string()).into_msg()
@@ -120,7 +114,7 @@ impl FileResourceService {
 
         let hash = Uuid::new_v4().to_string().replace('-', "");
 
-        let model = sys_file_resource::ActiveModel {
+        let model = file_resource::ActiveModel {
             file_name: Set(file_name),
             hash: Set(hash),
             data: Set(buffer),
@@ -170,7 +164,7 @@ impl FileResourceService {
 
             let hash = Uuid::new_v4().to_string().replace('-', "");
 
-            let model = sys_file_resource::ActiveModel {
+            let model = file_resource::ActiveModel {
                 file_name: Set(file_name),
                 hash: Set(hash),
                 data: Set(buffer),
@@ -196,7 +190,7 @@ impl FileResourceService {
 
     /// 更新文件
     pub async fn update(&self, req: UpdateFileResourceReq) -> Result<u64, ErrorMsg> {
-        let model = sys_file_resource::ActiveModel {
+        let model = file_resource::ActiveModel {
             id: Set(req.id),
             file_name: Set(req.file_name),
             desc: Set(req.desc),

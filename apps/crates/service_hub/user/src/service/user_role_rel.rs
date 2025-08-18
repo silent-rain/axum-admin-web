@@ -1,15 +1,16 @@
 //! 用户角色关系管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::user_role_rel::UserRoleRelDao,
     dto::user_role_rel::{BatchCreateUserRoleRelReq, GetUserRoleRelsReq},
+    entity::user_role_rel,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::user_role_rel;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

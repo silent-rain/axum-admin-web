@@ -1,9 +1,9 @@
 //! 部门管理
 
-use entity::organization::department;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::department;
 
 /// 查询部门列表 请求体
 #[derive(Default, Deserialize, Validate)]

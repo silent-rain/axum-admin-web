@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::user::blockchain_wallet;
+use crate::entity::blockchain_wallet;
 
 /// 查询用户区块链钱包列表 请求体
 #[derive(Default, Deserialize, Validate)]

@@ -1,5 +1,7 @@
 //! 日志管理
 pub mod dto;
+pub mod entity;
+pub mod enums;
 
 pub(crate) mod dao;
 pub use dao::{api_operation::ApiOperationDao, system_log::SystemLogDao, web_log::WebLogDao};

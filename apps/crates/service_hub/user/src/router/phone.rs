@@ -1,8 +1,8 @@
 //! 用户手机号管理
 
-use crate::controller::phone::PhoneController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::phone::PhoneController;
 
 /// 路由器
 pub struct PhoneRouter;

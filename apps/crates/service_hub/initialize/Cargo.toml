@@ -7,7 +7,6 @@ edition = "2024"
 
 [dependencies]
 database = { path = "../../core/database" }
-entity = { path = "../../core/entity" }
 code = { path = "../../core/code" }
 utils = { path = "../../core/utils" }
 inject = { path = "../../core/inject" }
@@ -15,12 +14,17 @@ axum_response = { path = "../../axum_response" }
 axum_validator = { path = "../../axum_validator" }
 embed_asset = { path = "../../embed_asset" }
 
+
+user = { path = "../user" }
+permission = { path = "../permission" }
+
+
 axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }
 
-tracing = { workspace = true }
+log = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_repr = { workspace = true }
 rust-embed = { workspace = true, features = [

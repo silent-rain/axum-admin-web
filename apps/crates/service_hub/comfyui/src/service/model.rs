@@ -1,8 +1,8 @@
 //! ComfyUI 模型管理
 
 use code::{Error, ErrorMsg};
+use log::error;
 use nject::injectable;
-use tracing::error;
 
 use crate::api_clients::{
     client::ComfyUIClient,

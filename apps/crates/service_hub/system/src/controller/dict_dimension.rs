@@ -1,5 +1,10 @@
 //! 字典维度管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::dict_dimension::{
         CreateDictDimensionReq, CreateDictDimensionResp, DeleteDictDimensionReq,
@@ -9,10 +14,6 @@ use crate::{
     },
     service::dict_dimension::DictDimensionService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct DictDimensionController;

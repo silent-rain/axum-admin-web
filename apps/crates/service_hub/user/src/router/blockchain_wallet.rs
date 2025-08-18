@@ -1,8 +1,8 @@
 //! 用户区块链钱包管理
 
-use crate::controller::blockchain_wallet::BlockchainWalletController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::blockchain_wallet::BlockchainWalletController;
 
 /// 路由器
 pub struct BlockchainWalletRouter;

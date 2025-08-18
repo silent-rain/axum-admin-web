@@ -1,13 +1,14 @@
 //! 注册
 
-use crate::{
-    dto::register::{RegisterReq, RegisterResp},
-    RegisterService,
-};
-
 use axum_response::{Responder, Response};
 use axum_validator::{Extension, Json};
+
 use inject::AInjectProvider;
+
+use crate::{
+    RegisterService,
+    dto::register::{RegisterReq, RegisterResp},
+};
 
 /// 控制器
 pub struct RegisterController;

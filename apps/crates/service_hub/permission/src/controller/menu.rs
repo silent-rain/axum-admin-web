@@ -1,8 +1,9 @@
 //! 菜单管理
 
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
 use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
 
 use crate::{
     dto::menu::{

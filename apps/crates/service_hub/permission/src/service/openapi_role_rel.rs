@@ -1,15 +1,16 @@
 //! OpenApi接口角色关系管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::openapi_role_rel::OpenapiRoleRelDao,
     dto::openapi_role_rel::{BatchCreateOpenapiRoleRelReq, GetOpenapiRoleRelsReq},
+    entity::openapi_role_rel,
 };
-
-use code::{Error, ErrorMsg};
-use entity::permission::openapi_role_rel;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

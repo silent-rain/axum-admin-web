@@ -1,11 +1,11 @@
 //! 文件资源管理
 
-use crate::controller::file_resource::FileResourceController;
-
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
+
+use crate::controller::file_resource::FileResourceController;
 
 /// 路由器
 pub struct FileResourceRouter;

@@ -1,9 +1,9 @@
 //! API操作日志
 
-use entity::log::log_api_operation;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{entity::log_api_operation, enums::log_api_operation::HttpType};
 
 /// 查询API操作日志列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -65,7 +65,7 @@ pub struct CreateApiOperationReq {
     /// 耗时,纳秒
     pub cost: i16,
     /// 请求类型:REQ/RESP
-    pub http_type: log_api_operation::enums::HttpType,
+    pub http_type: HttpType,
     /// 描述信息
     pub desc: Option<String>,
 }

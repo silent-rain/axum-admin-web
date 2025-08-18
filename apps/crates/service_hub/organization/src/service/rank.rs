@@ -1,17 +1,18 @@
 //! 职级管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::rank::RankDao,
     dto::rank::{
         CreateRankReq, DeleteRankReq, GetRankReq, GetRanksReq, UpdateRankReq, UpdateRankStatusReq,
     },
+    entity::rank,
 };
-
-use code::{Error, ErrorMsg};
-use entity::organization::rank;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]

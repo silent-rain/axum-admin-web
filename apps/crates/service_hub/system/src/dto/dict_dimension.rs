@@ -1,9 +1,9 @@
 //! 字典维度管理
 
-use entity::system::sys_dict_dimension;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::dict_dimension;
 
 /// 查询字典维度列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -26,7 +26,7 @@ pub struct GetDictDimensionsReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDimensionsResp {
-    pub data_list: Vec<sys_dict_dimension::Model>,
+    pub data_list: Vec<dict_dimension::Model>,
     pub total: u64,
 }
 
@@ -40,7 +40,7 @@ pub struct GetDictDimensionReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDimensionResp {
     #[serde(flatten)]
-    data: sys_dict_dimension::Model,
+    data: dict_dimension::Model,
 }
 
 /// 添加字典维度 请求体

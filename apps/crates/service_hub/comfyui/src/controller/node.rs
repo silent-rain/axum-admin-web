@@ -6,8 +6,10 @@ use axum_validator::Query;
 use inject::AInjectProvider;
 use serde_json::Value;
 
-use crate::dto::node::{ExtensionsResp, ObjectInfoReq};
-use crate::service::node::ComfyUINodeService;
+use crate::{
+    dto::node::{ExtensionsResp, ObjectInfoReq},
+    service::node::ComfyUINodeService,
+};
 
 /// 控制器
 pub struct ComfyUINodeController;

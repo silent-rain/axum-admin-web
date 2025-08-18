@@ -1,15 +1,17 @@
 //! 用户手机号管理
 use std::sync::Arc;
 
-use crate::dto::phone::GetPhonesReq;
-
-use database::{Pagination, PoolTrait};
-use entity::user::{phone, Phone};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::phone::GetPhonesReq,
+    entity::{PhoneEntity, phone},
 };
 
 /// 数据访问
@@ -23,7 +25,7 @@ impl PhoneDao {
     pub async fn list(&self, req: GetPhonesReq) -> Result<(Vec<phone::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = Phone::find()
+        let states = PhoneEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(phone::Column::CreatedAt.gte(v))
             })
@@ -54,12 +56,12 @@ impl PhoneDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<phone::Model>, DbErr> {
-        Phone::find_by_id(id).one(self.db.db()).await
+        PhoneEntity::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过手机号码获取详情信息
     pub async fn info_by_phone(&self, phone: String) -> Result<Option<phone::Model>, DbErr> {
-        Phone::find()
+        PhoneEntity::find()
             .filter(phone::Column::Phone.eq(phone))
             .one(self.db.db())
             .await
@@ -73,7 +75,7 @@ impl PhoneDao {
     /// 更新信息
     pub async fn update(&self, active_model: phone::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = Phone::update_many()
+        let result = PhoneEntity::update_many()
             .set(active_model)
             .filter(phone::Column::Id.eq(id))
             .exec(self.db.db())
@@ -84,7 +86,7 @@ impl PhoneDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = Phone::delete_by_id(id).exec(self.db.db()).await?;
+        let result = PhoneEntity::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

@@ -5,8 +5,8 @@ use std::{boxed::Box, task::Poll};
 use axum::extract::Request;
 use axum_context::Context;
 use casbin::{
-    prelude::{DefaultModel, Enforcer, MemoryAdapter},
     CoreApi, MgmtApi,
+    prelude::{DefaultModel, Enforcer, MemoryAdapter},
 };
 use futures::future::BoxFuture;
 use tower::{Layer, Service};
@@ -273,26 +273,29 @@ mod test {
                 .collect(),
         )
         .await?;
-        e.add_policies(vec![["admin2", "/users/1/status", "PUT"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect()])
-            .await?;
-
-        // 添加角色赋值
-        e.add_grouping_policies(vec![["alice", "admin"]
-            .iter()
-            .map(|s| s.to_string())
-            .collect()])
-            .await?;
-
-        // 检查是否存在策略
-        assert!(!e.has_policy(
-            ["alice", "/users/1/status", "PUT"]
+        e.add_policies(vec![
+            ["admin2", "/users/1/status", "PUT"]
                 .iter()
                 .map(|s| s.to_string())
-                .collect()
-        ));
+                .collect(),
+        ])
+        .await?;
+
+        // 添加角色赋值
+        e.add_grouping_policies(vec![
+            ["alice", "admin"].iter().map(|s| s.to_string()).collect(),
+        ])
+        .await?;
+
+        // 检查是否存在策略
+        assert!(
+            !e.has_policy(
+                ["alice", "/users/1/status", "PUT"]
+                    .iter()
+                    .map(|s| s.to_string())
+                    .collect()
+            )
+        );
 
         // 访问权限
         assert!(e.enforce(("alice", "/users", "GET"))?);

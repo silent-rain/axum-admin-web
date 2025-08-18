@@ -1,8 +1,8 @@
 //! WEB日志管理
 
-use crate::controller::web_log::WebLogController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::web_log::WebLogController;
 
 /// 路由器
 pub struct WebLogRouter;

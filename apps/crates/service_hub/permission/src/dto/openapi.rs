@@ -1,10 +1,10 @@
 //! OpenApi接口管理
 
-use entity::permission::openapi;
-
 use sea_orm::FromQueryResult;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{entity::openapi, enums::openapi::Category};
 
 /// 查询OpenApi接口列表 请求体
 #[derive(Clone, Deserialize, Validate)]
@@ -47,7 +47,7 @@ pub struct CreateOpenapiReq {
     /// 父ID
     pub pid: Option<i32>,
     /// 类别,0:目录,1:接口
-    pub category: openapi::enums::Category,
+    pub category: Category,
     /// 接口名称
     pub name: String,
     /// 请求类型
@@ -73,7 +73,7 @@ pub struct UpdateOpenapiReq {
     /// 父ID
     pub pid: Option<i32>,
     /// 类别,0:目录,1:接口
-    pub category: openapi::enums::Category,
+    pub category: Category,
     /// 接口名称
     pub name: String,
     /// 请求类型

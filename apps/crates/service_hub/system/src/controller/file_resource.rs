@@ -1,5 +1,16 @@
 //! 文件资源管理
 
+use axum::{
+    body::Body,
+    http::{HeaderMap, HeaderName, HeaderValue, header},
+};
+use axum_response::{Responder, Response, ResponseErr};
+use axum_typed_multipart::TypedMultipart;
+use axum_validator::{Extension, Json, Query};
+
+use code::Error;
+use inject::AInjectProvider;
+
 use crate::{
     dto::file_resource::{
         BatchDeleteFileResourceReq, BatchDeleteFileResourceResp, DeleteFileResourceReq,
@@ -9,16 +20,6 @@ use crate::{
     },
     service::file_resource::FileResourceService,
 };
-
-use axum::{
-    body::Body,
-    http::{header, HeaderMap, HeaderName, HeaderValue},
-};
-use axum_response::{Responder, Response, ResponseErr};
-use axum_typed_multipart::TypedMultipart;
-use axum_validator::{Extension, Json, Query};
-use code::Error;
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct FileResourceController;

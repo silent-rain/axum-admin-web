@@ -4,11 +4,13 @@ use axum::Extension;
 use axum_response::{Responder, Response};
 use inject::AInjectProvider;
 
-use crate::dto::model::{
-    CheckpointsResp, ClipVisionsResp, ControlnetsResp, EmbeddingsResp, IpadaptersResp, LorasResp,
-    UnetGgufsResp, UpscaleModelsResp, VaesResp,
+use crate::{
+    dto::model::{
+        CheckpointsResp, ClipVisionsResp, ControlnetsResp, EmbeddingsResp, IpadaptersResp,
+        LorasResp, UnetGgufsResp, UpscaleModelsResp, VaesResp,
+    },
+    service::model::ComfyUIModelService,
 };
-use crate::service::model::ComfyUIModelService;
 
 /// 控制器
 pub struct ComfyUIModelController;

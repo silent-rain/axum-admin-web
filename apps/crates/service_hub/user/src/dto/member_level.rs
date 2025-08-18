@@ -1,9 +1,9 @@
 //! 会员等级管理
 
-use entity::user::member_level;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::entity::member_level;
 
 /// 查询会员等级列表 请求体
 #[derive(Default, Deserialize, Validate)]

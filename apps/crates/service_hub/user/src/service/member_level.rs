@@ -1,18 +1,19 @@
 //! 会员等级管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::member_level::MemberLevelDao,
     dto::member_level::{
         CreateMemberLevelReq, DeleteMemberLevelReq, GetMemberLevelReq, GetMemberLevelsReq,
         UpdateMemberLevelReq, UpdateMemberLevelStatusReq,
     },
+    entity::member_level,
 };
-
-use code::{Error, ErrorMsg};
-use entity::user::member_level;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
 
 /// 服务层
 #[injectable]
@@ -71,9 +72,9 @@ impl MemberLevelService {
     /// 添加数据
     pub async fn create(&self, req: CreateMemberLevelReq) -> Result<member_level::Model, ErrorMsg> {
         // 查询会员等级名称是否已存在
-        self.check_name_exist(req.name.clone(), None).await?;
+        self.check_name(req.name.clone(), None).await?;
         // 检查会员等级是否已存在且不属于当前ID
-        self.check_level_exist(req.level, None).await?;
+        self.check_level(req.level, None).await?;
 
         let model = member_level::ActiveModel {
             name: Set(req.name),
@@ -100,10 +101,9 @@ impl MemberLevelService {
     /// 更新数据
     pub async fn update(&self, req: UpdateMemberLevelReq) -> Result<u64, ErrorMsg> {
         // 查询会员等级名称是否已存在且不属于当前ID
-        self.check_name_exist(req.name.clone(), Some(req.id))
-            .await?;
+        self.check_name(req.name.clone(), Some(req.id)).await?;
         // 检查会员等级是否已存在且不属于当前ID
-        self.check_level_exist(req.level, Some(req.id)).await?;
+        self.check_level(req.level, Some(req.id)).await?;
 
         let model = member_level::ActiveModel {
             id: Set(req.id),
@@ -124,11 +124,7 @@ impl MemberLevelService {
     }
 
     /// 查询会员等级名称是否已存在
-    async fn check_name_exist(
-        &self,
-        name: String,
-        current_id: Option<i32>,
-    ) -> Result<(), ErrorMsg> {
+    async fn check_name(&self, name: String, current_id: Option<i32>) -> Result<(), ErrorMsg> {
         let result = self
             .member_level_dao
             .info_by_name(name)
@@ -155,7 +151,7 @@ impl MemberLevelService {
     }
 
     /// 检查会员等级是否存在
-    async fn check_level_exist(&self, level: u16, current_id: Option<i32>) -> Result<(), ErrorMsg> {
+    async fn check_level(&self, level: u16, current_id: Option<i32>) -> Result<(), ErrorMsg> {
         let result = self
             .member_level_dao
             .info_by_level(level)

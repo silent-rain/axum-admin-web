@@ -2,6 +2,14 @@
 
 use std::net::SocketAddr;
 
+use axum::{extract::ConnectInfo, http::HeaderMap};
+use axum_context::Context;
+use axum_validator::{Extension, Json};
+use tower_sessions::Session;
+
+use axum_response::{Responder, Response};
+use inject::AInjectProvider;
+
 use crate::{
     dto::{
         login::BrowserInfo,
@@ -9,14 +17,6 @@ use crate::{
     },
     service::logout::Logoutervice,
 };
-
-use axum::{extract::ConnectInfo, http::HeaderMap};
-use axum_context::Context;
-use axum_response::{Responder, Response};
-use inject::AInjectProvider;
-
-use axum_validator::{Extension, Json};
-use tower_sessions::Session;
 
 /// 控制器
 pub struct LogoutController;

@@ -1,11 +1,10 @@
 //! 验证码
 
-use system::ImageCaptchaDao;
+use chrono::Local;
+use log::error;
 
 use code::{Error, ErrorMsg};
-
-use chrono::Local;
-use tracing::error;
+use system::ImageCaptchaDao;
 
 /// 检测验证码
 pub async fn check_captcha(

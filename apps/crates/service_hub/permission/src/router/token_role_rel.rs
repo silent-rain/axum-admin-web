@@ -1,11 +1,11 @@
 //! 令牌角色关系管理
 
-use crate::controller::token_role_rel::TokenRoleRelController;
-
 use axum::{
-    routing::{delete, get, post},
     Router,
+    routing::{delete, get, post},
 };
+
+use crate::controller::token_role_rel::TokenRoleRelController;
 
 /// 路由器
 pub struct TokenRoleRelRouter;

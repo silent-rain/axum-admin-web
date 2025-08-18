@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::system::sys_image_captcha;
+use crate::entity::image_captcha;
 
 /// 获取验证码列表
 #[derive(Default, Deserialize, Validate)]
@@ -20,7 +20,7 @@ pub struct GetImageCaptchasReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetImageCaptchasResp {
-    pub data_list: Vec<sys_image_captcha::Model>,
+    pub data_list: Vec<image_captcha::Model>,
     pub total: u64,
 }
 
@@ -34,7 +34,7 @@ pub struct GetImageCaptchaReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetImageCaptchaResp {
     #[serde(flatten)]
-    data: sys_image_captcha::Model,
+    data: image_captcha::Model,
 }
 
 /// 查询数据 请求体
@@ -47,7 +47,7 @@ pub struct GetInfoByCaptchaIdReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetInfoByCaptchaIdResp {
     #[serde(flatten)]
-    data: sys_image_captcha::Model,
+    data: image_captcha::Model,
 }
 
 /// 添加数据 请求体

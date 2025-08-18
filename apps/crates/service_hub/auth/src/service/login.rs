@@ -2,14 +2,17 @@
 
 use std::sync::Arc;
 
+use log::error;
 use nject::injectable;
-use tracing::error;
+use tower_sessions::Session;
 
 use code::{Error, ErrorMsg};
-use entity::{user::user_base, user::user_login_log};
 use system::ImageCaptchaDao;
-use tower_sessions::Session;
-use user::{BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao};
+use user::{
+    BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao,
+    entity::user_base,
+    enums::{user_base::UserType, user_login_log::LoginStatus},
+};
 
 use crate::{
     common::captcha::check_captcha,
@@ -62,7 +65,7 @@ impl LoginService {
                 browser_info,
                 session_id.clone(),
                 "用户已被禁用",
-                user_login_log::enums::LoginStatus::Failed,
+                LoginStatus::Failed,
             );
             return Err(Error::LoginUserDisableError
                 .into_msg()
@@ -78,7 +81,7 @@ impl LoginService {
                 browser_info,
                 session_id.clone(),
                 "账号或密码错误",
-                user_login_log::enums::LoginStatus::Failed,
+                LoginStatus::Failed,
             );
 
             return Err(Error::LoginPasswordError
@@ -103,7 +106,7 @@ impl LoginService {
             browser_info,
             session_id.clone(),
             "登录成功",
-            user_login_log::enums::LoginStatus::Success,
+            LoginStatus::Success,
         );
 
         // 返回Token
@@ -113,12 +116,10 @@ impl LoginService {
     /// 获取用户信息
     async fn get_user(&self, data: LoginReq) -> Result<user_base::Model, ErrorMsg> {
         let user_id = match data.user_type {
-            user_base::enums::UserType::Base => self.get_user_base(data).await?,
-            user_base::enums::UserType::Phone => self.get_user_phone(data).await?,
-            user_base::enums::UserType::Email => self.get_user_email(data).await?,
-            user_base::enums::UserType::BlockchainWallet => {
-                self.get_user_blockchain_wallet(data).await?
-            }
+            UserType::Base => self.get_user_base(data).await?,
+            UserType::Phone => self.get_user_phone(data).await?,
+            UserType::Email => self.get_user_email(data).await?,
+            UserType::BlockchainWallet => self.get_user_blockchain_wallet(data).await?,
         };
 
         // 查询用户
@@ -146,7 +147,7 @@ impl LoginService {
                 return Err(code::Error::InvalidParameter(
                     "请求参数错误, 用户名或密码 不能为空".to_string(),
                 )
-                .into_msg())
+                .into_msg());
             }
         };
 
@@ -176,7 +177,7 @@ impl LoginService {
                 return Err(code::Error::InvalidParameter(
                     "请求参数错误, phone 不能为空".to_string(),
                 )
-                .into_msg())
+                .into_msg());
             }
         };
 
@@ -206,7 +207,7 @@ impl LoginService {
                 return Err(code::Error::InvalidParameter(
                     "请求参数错误, email 不能为空".to_string(),
                 )
-                .into_msg())
+                .into_msg());
             }
         };
 
@@ -233,10 +234,10 @@ impl LoginService {
         let blockchain_wallet = match data.blockchain_wallet.clone() {
             Some(v) => v,
             None => {
-                return Err(
-                    code::Error::InvalidParameter("请求参数错误, 钱包不能为空".to_string())
-                        .into_msg(),
+                return Err(code::Error::InvalidParameter(
+                    "请求参数错误, 钱包不能为空".to_string(),
                 )
+                .into_msg());
             }
         };
 

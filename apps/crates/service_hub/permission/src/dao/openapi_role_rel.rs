@@ -2,15 +2,17 @@
 
 use std::sync::Arc;
 
-use crate::dto::openapi_role_rel::GetOpenapiRoleRelsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::{permission::openapi_role_rel, permission::OpenapiRoleRel};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::openapi_role_rel::GetOpenapiRoleRelsReq,
+    entity::{OpenapiRoleRelEntity, openapi_role_rel},
 };
 
 /// 数据访问
@@ -27,7 +29,7 @@ impl OpenapiRoleRelDao {
     ) -> Result<(Vec<openapi_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = OpenapiRoleRel::find()
+        let states = OpenapiRoleRelEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(openapi_role_rel::Column::CreatedAt.gte(v))
             })
@@ -66,7 +68,7 @@ impl OpenapiRoleRelDao {
         &self,
         active_models: Vec<openapi_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = OpenapiRoleRel::insert_many(active_models)
+        let result = OpenapiRoleRelEntity::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -74,7 +76,7 @@ impl OpenapiRoleRelDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = OpenapiRoleRel::delete_many()
+        let result = OpenapiRoleRelEntity::delete_many()
             .filter(openapi_role_rel::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
@@ -83,7 +85,7 @@ impl OpenapiRoleRelDao {
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = OpenapiRoleRel::delete_many()
+        let result = OpenapiRoleRelEntity::delete_many()
             .filter(openapi_role_rel::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

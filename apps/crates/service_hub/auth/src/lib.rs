@@ -2,6 +2,8 @@
 pub mod common;
 pub mod dao;
 pub mod dto;
+pub mod entity;
+pub mod enums;
 
 pub(crate) mod service;
 pub use service::{login::LoginService, register::RegisterService};
@@ -11,5 +13,5 @@ pub use controller::{login::LoginController, register::RegisterController};
 
 pub(crate) mod router;
 pub use router::{
-    captcha::GenCaptchaRouter, login::LoginRouter, register::RegisterRouter, AuthRouter,
+    AuthRouter, captcha::GenCaptchaRouter, login::LoginRouter, register::RegisterRouter,
 };

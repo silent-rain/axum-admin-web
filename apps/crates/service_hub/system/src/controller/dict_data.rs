@@ -1,5 +1,10 @@
 //! 字典数据管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::dict_data::{
         CreateDictDataReq, CreateDictDataResp, DeleteDictDataReq, DeleteDictDataResp,
@@ -8,10 +13,6 @@ use crate::{
     },
     service::dict_data::DictDataService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
-use axum_response::{Responder, Response};
 
 /// 控制器
 pub struct DictDataController;

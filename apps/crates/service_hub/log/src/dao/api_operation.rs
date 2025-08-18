@@ -2,15 +2,17 @@
 
 use std::sync::Arc;
 
-use crate::dto::api_operation::GetApiOperationsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::log::{log_api_operation, LogApiOperation};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::api_operation::GetApiOperationsReq,
+    entity::{LogApiOperationEntity, log_api_operation},
 };
 
 /// 数据访问
@@ -27,7 +29,7 @@ impl ApiOperationDao {
     ) -> Result<(Vec<log_api_operation::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = LogApiOperation::find()
+        let states = LogApiOperationEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(log_api_operation::Column::CreatedAt.gte(v))
             })
@@ -52,7 +54,9 @@ impl ApiOperationDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<log_api_operation::Model>, DbErr> {
-        LogApiOperation::find_by_id(id).one(self.db.db()).await
+        LogApiOperationEntity::find_by_id(id)
+            .one(self.db.db())
+            .await
     }
 
     /// 添加详情信息
@@ -65,7 +69,9 @@ impl ApiOperationDao {
 
     /// 按主键删除
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = LogApiOperation::delete_by_id(id).exec(self.db.db()).await?;
+        let result = LogApiOperationEntity::delete_by_id(id)
+            .exec(self.db.db())
+            .await?;
         Ok(result.rows_affected)
     }
 }

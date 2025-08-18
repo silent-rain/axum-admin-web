@@ -2,15 +2,17 @@
 
 use std::sync::Arc;
 
-use crate::dto::token_role_rel::GetTokenRoleRelsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::{permission::token_role_rel, permission::TokenRoleRel};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::token_role_rel::GetTokenRoleRelsReq,
+    entity::{TokenRoleRelEntity, token_role_rel},
 };
 
 /// 数据访问
@@ -27,7 +29,7 @@ impl TokenRoleRelDao {
     ) -> Result<(Vec<token_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = TokenRoleRel::find()
+        let states = TokenRoleRelEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(token_role_rel::Column::CreatedAt.gte(v))
             })
@@ -58,7 +60,7 @@ impl TokenRoleRelDao {
         &self,
         token_id: i32,
     ) -> Result<(Vec<token_role_rel::Model>, u64), DbErr> {
-        let results = TokenRoleRel::find()
+        let results = TokenRoleRelEntity::find()
             .filter(token_role_rel::Column::TokenId.eq(token_id))
             .all(self.db.db())
             .await?;
@@ -80,7 +82,7 @@ impl TokenRoleRelDao {
         &self,
         active_models: Vec<token_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = TokenRoleRel::insert_many(active_models)
+        let result = TokenRoleRelEntity::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -88,7 +90,7 @@ impl TokenRoleRelDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = TokenRoleRel::delete_many()
+        let result = TokenRoleRelEntity::delete_many()
             .filter(token_role_rel::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
@@ -97,7 +99,7 @@ impl TokenRoleRelDao {
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = TokenRoleRel::delete_many()
+        let result = TokenRoleRelEntity::delete_many()
             .filter(token_role_rel::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

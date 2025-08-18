@@ -1,9 +1,12 @@
 //! WEB日志管理
 
-use entity::log::log_web;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{
+    entity::log_web,
+    enums::log_web::{ErrorType, OsType},
+};
 
 /// 查询WEB日志列表 请求体
 #[derive(Default, Deserialize, Serialize, Validate)]
@@ -51,9 +54,9 @@ pub struct CreateWebLogReq {
     /// 请求ID
     pub request_id: Option<String>,
     /// 终端类型
-    pub os_type: log_web::enums::OsType,
+    pub os_type: OsType,
     /// 错误类型
-    pub error_type: log_web::enums::ErrorType,
+    pub error_type: ErrorType,
     /// 日志级别
     pub level: String,
     /// 日发生位置

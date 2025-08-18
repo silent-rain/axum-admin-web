@@ -4,10 +4,10 @@ use std::io::Read;
 
 use axum_typed_multipart::FieldData;
 use code::{Error, ErrorMsg};
+use log::error;
 use nject::injectable;
 use tempfile::NamedTempFile;
 use tokio::{fs::File, io::AsyncWriteExt};
-use tracing::error;
 use utils::file::file_extension;
 use uuid::Uuid;
 

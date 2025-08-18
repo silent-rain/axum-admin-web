@@ -9,8 +9,8 @@ use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::response::Response;
-use tracing::info;
-use tracing::warn;
+use log::info;
+use log::warn;
 
 /// 控制器
 pub struct AdminWebSiteController;

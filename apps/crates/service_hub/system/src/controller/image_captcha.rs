@@ -1,5 +1,15 @@
 //! 图片验证码管理
 
+use axum::{
+    body::Body,
+    http::{HeaderMap, HeaderName, HeaderValue},
+    response::IntoResponse,
+};
+use axum_response::{Responder, Response, ResponseErr};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::image_captcha::{
         BatchDeleteImageCaptchaReq, BatchDeleteImageCaptchaResp, CreateImageCaptchaReq,
@@ -9,15 +19,6 @@ use crate::{
     },
     service::image_captcha::ImageCaptchaService,
 };
-
-use axum::{
-    body::Body,
-    http::{HeaderMap, HeaderName, HeaderValue},
-    response::IntoResponse,
-};
-use axum_response::{Responder, Response, ResponseErr};
-use axum_validator::{Extension, Json, Query};
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct ImageCaptchaController;

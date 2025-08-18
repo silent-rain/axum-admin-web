@@ -2,15 +2,17 @@
 
 use std::sync::Arc;
 
-use crate::dto::department_role_rel::GetDepartmentRoleRelsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::organization::{department_role_rel, DepartmentRoleRel};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::department_role_rel::GetDepartmentRoleRelsReq,
+    entity::{DepartmentRoleRelEntity, department_role_rel},
 };
 
 /// 数据访问
@@ -30,7 +32,7 @@ impl DepartmentRoleRelDao {
     ) -> Result<(Vec<department_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = DepartmentRoleRel::find()
+        let states = DepartmentRoleRelEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(department_role_rel::Column::CreatedAt.gte(v))
             })
@@ -69,7 +71,7 @@ impl DepartmentRoleRelDao {
         &self,
         active_models: Vec<department_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = DepartmentRoleRel::insert_many(active_models)
+        let result = DepartmentRoleRelEntity::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -77,7 +79,7 @@ impl DepartmentRoleRelDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = DepartmentRoleRel::delete_many()
+        let result = DepartmentRoleRelEntity::delete_many()
             .filter(department_role_rel::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
@@ -86,7 +88,7 @@ impl DepartmentRoleRelDao {
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = DepartmentRoleRel::delete_many()
+        let result = DepartmentRoleRelEntity::delete_many()
             .filter(department_role_rel::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

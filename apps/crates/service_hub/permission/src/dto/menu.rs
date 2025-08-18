@@ -1,9 +1,12 @@
 //! 菜单管理
 
-use entity::permission::menu;
-
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::{
+    entity::menu,
+    enums::menu::{LinkTarget, MenuType, OpenMethod},
+};
 
 /// 查询菜单列表
 #[derive(Default, Deserialize, Validate)]
@@ -52,9 +55,9 @@ pub struct CreateMenuReq {
     /// Icon图标类
     pub icon_class: Option<String>,
     /// 菜单类型(0:菜单,1:按钮)
-    pub menu_type: menu::enums::MenuType,
+    pub menu_type: MenuType,
     /// 打开方式(0:组件,1:内链,2:外链)
-    pub open_method: menu::enums::OpenMethod,
+    pub open_method: OpenMethod,
     /// 路由地址
     pub path: Option<String>,
     /// 组件路径
@@ -64,7 +67,7 @@ pub struct CreateMenuReq {
     /// 链接地址:站内链地址/站外链地址
     pub link: Option<String>,
     /// 链接跳转方式, _blank/_self
-    pub link_target: Option<menu::enums::LinkTarget>,
+    pub link_target: Option<LinkTarget>,
     /// 是否隐藏(0:显示,1:隐藏)
     pub is_hidden: Option<bool>,
     /// 是否始终显示根菜单(0:隐藏,1:显示)
@@ -95,9 +98,9 @@ pub struct UpdateMenuReq {
     /// Icon图标类
     pub icon_class: Option<String>,
     /// 菜单类型(0:菜单,1:按钮)
-    pub menu_type: menu::enums::MenuType,
+    pub menu_type: MenuType,
     /// 打开方式(0:组件,1:内链,2:外链)
-    pub open_method: menu::enums::OpenMethod,
+    pub open_method: OpenMethod,
     /// 路由地址
     pub path: Option<String>,
     /// 组件路径
@@ -107,7 +110,7 @@ pub struct UpdateMenuReq {
     /// 链接地址:站内链地址/站外链地址
     pub link: Option<String>,
     /// 链接跳转方式, _blank/_self
-    pub link_target: Option<menu::enums::LinkTarget>,
+    pub link_target: Option<LinkTarget>,
     /// 是否隐藏(0:显示,1:隐藏)
     pub is_hidden: Option<bool>,
     /// 是否始终显示根菜单(0:隐藏,1:显示)

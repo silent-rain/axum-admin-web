@@ -8,6 +8,7 @@ tokio = { workspace = true, features = ["rt-multi-thread"] }
 tower = { workspace = true }
 tonic = { workspace = true }
 prost = { workspace = true }
+tonic-prost = { workspace = true }
 tracing = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 
@@ -16,5 +17,6 @@ tonic-health = { workspace = true }
 tonic-reflection = { workspace = true }
 
 [build-dependencies]
-tonic-build = { workspace = true }
+# tonic-build = { workspace = true }
+tonic-prost-build = { workspace = true }
 anyhow = { workspace = true }

@@ -4,7 +4,7 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::user::location;
+use crate::entity::location;
 
 /// 查询用户地理位置列表
 #[derive(Default, Deserialize, Validate)]

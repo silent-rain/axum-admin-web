@@ -1,8 +1,8 @@
 //! 用户邮箱管理
 
-use crate::controller::email::EmailController;
+use axum::{Router, routing::get};
 
-use axum::{routing::get, Router};
+use crate::controller::email::EmailController;
 
 /// 路由器
 pub struct EmailRouter;

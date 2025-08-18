@@ -1,5 +1,10 @@
 //! 用户角色关系管理
 
+use axum_response::{Responder, Response};
+use axum_validator::{Extension, Json, Query};
+
+use inject::AInjectProvider;
+
 use crate::{
     dto::user_role_rel::{
         BatchCreateUserRoleRelReq, BatchCreateUserRoleRelResp, BatchDeleteUserRoleRelReq,
@@ -7,10 +12,6 @@ use crate::{
     },
     service::user_role_rel::UserRoleRelService,
 };
-
-use axum_validator::{Extension, Json, Query};
-use axum_response::{Responder, Response};
-use inject::AInjectProvider;
 
 /// 控制器
 pub struct UserRoleRelController;

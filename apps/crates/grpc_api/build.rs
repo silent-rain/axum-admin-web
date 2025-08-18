@@ -10,7 +10,7 @@ fn main() -> anyhow::Result<()> {
         .join("proto");
     std::fs::create_dir_all(&out_dir)?;
 
-    tonic_build::configure()
+    tonic_prost_build::configure()
         // 现实启用当 .proto 文件变化时自动重编译
         .emit_rerun_if_changed(true)
         // 生成 gRPC 服务端代码，默认为 true

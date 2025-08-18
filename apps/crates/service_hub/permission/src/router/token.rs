@@ -1,11 +1,11 @@
 //! 令牌管理
 
-use crate::controller::token::TokenController;
-
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
+
+use crate::controller::token::TokenController;
 
 /// 路由器
 pub struct TokenRouter;

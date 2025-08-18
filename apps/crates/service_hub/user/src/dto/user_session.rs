@@ -1,10 +1,10 @@
 //! 用户session管理
 
-use entity::user::user_session;
-
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 use validator::Validate;
+
+use crate::entity::user_session;
 
 /// 查询用户session列表 请求体
 #[derive(Default, Deserialize, Validate)]

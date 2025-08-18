@@ -142,7 +142,7 @@ pub struct DoubleRules {
 }
 /// Int32Rules describes the constraints applied to `int32` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Int32Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(int32, optional, tag = "1")]
@@ -180,7 +180,7 @@ pub struct Int32Rules {
 }
 /// Int64Rules describes the constraints applied to `int64` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Int64Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(int64, optional, tag = "1")]
@@ -218,7 +218,7 @@ pub struct Int64Rules {
 }
 /// UInt32Rules describes the constraints applied to `uint32` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct UInt32Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(uint32, optional, tag = "1")]
@@ -256,7 +256,7 @@ pub struct UInt32Rules {
 }
 /// UInt64Rules describes the constraints applied to `uint64` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct UInt64Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(uint64, optional, tag = "1")]
@@ -294,7 +294,7 @@ pub struct UInt64Rules {
 }
 /// SInt32Rules describes the constraints applied to `sint32` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct SInt32Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(sint32, optional, tag = "1")]
@@ -332,7 +332,7 @@ pub struct SInt32Rules {
 }
 /// SInt64Rules describes the constraints applied to `sint64` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct SInt64Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(sint64, optional, tag = "1")]
@@ -370,7 +370,7 @@ pub struct SInt64Rules {
 }
 /// Fixed32Rules describes the constraints applied to `fixed32` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Fixed32Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(fixed32, optional, tag = "1")]
@@ -408,7 +408,7 @@ pub struct Fixed32Rules {
 }
 /// Fixed64Rules describes the constraints applied to `fixed64` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct Fixed64Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(fixed64, optional, tag = "1")]
@@ -446,7 +446,7 @@ pub struct Fixed64Rules {
 }
 /// SFixed32Rules describes the constraints applied to `sfixed32` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct SFixed32Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(sfixed32, optional, tag = "1")]
@@ -484,7 +484,7 @@ pub struct SFixed32Rules {
 }
 /// SFixed64Rules describes the constraints applied to `sfixed64` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct SFixed64Rules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(sfixed64, optional, tag = "1")]
@@ -522,7 +522,7 @@ pub struct SFixed64Rules {
 }
 /// BoolRules describes the constraints applied to `bool` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct BoolRules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(bool, optional, tag = "1")]
@@ -530,7 +530,7 @@ pub struct BoolRules {
 }
 /// StringRules describe the constraints applied to `string` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct StringRules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(string, optional, tag = "1")]
@@ -594,7 +594,7 @@ pub struct StringRules {
     /// strict header validation.
     /// By default, this is true, and HTTP header validations are RFC-compliant.
     /// Setting to false will enable a looser validations that only disallows
-    /// \r\n\0 characters, which can be used to bypass header matching rules.
+    /// \\r\n\0 characters, which can be used to bypass header matching rules.
     #[prost(bool, optional, tag = "25", default = "true")]
     pub strict: ::core::option::Option<bool>,
     /// IgnoreEmpty specifies that the validation rules of this field should be
@@ -614,7 +614,7 @@ pub mod string_rules {
     /// WellKnown rules provide advanced constraints against common string
     /// patterns
     #[derive(serde::Serialize, serde::Deserialize)]
-    #[derive(Clone, Copy, PartialEq, ::prost::Oneof)]
+    #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Oneof)]
     pub enum WellKnown {
         /// Email specifies that the field must be a valid email address as
         /// defined by RFC 5322
@@ -660,7 +660,7 @@ pub mod string_rules {
 }
 /// BytesRules describe the constraints applied to `bytes` values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct BytesRules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(bytes = "vec", optional, tag = "1")]
@@ -715,7 +715,7 @@ pub mod bytes_rules {
     /// WellKnown rules provide advanced constraints against common byte
     /// patterns
     #[derive(serde::Serialize, serde::Deserialize)]
-    #[derive(Clone, Copy, PartialEq, ::prost::Oneof)]
+    #[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Oneof)]
     pub enum WellKnown {
         /// Ip specifies that the field must be a valid IP (v4 or v6) address in
         /// byte format
@@ -733,7 +733,7 @@ pub mod bytes_rules {
 }
 /// EnumRules describe the constraints applied to enum values
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct EnumRules {
     /// Const specifies that this field must be exactly the specified value
     #[prost(int32, optional, tag = "1")]
@@ -754,7 +754,7 @@ pub struct EnumRules {
 /// MessageRules describe the constraints applied to embedded message values.
 /// For message-type fields, validation is performed recursively.
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct MessageRules {
     /// Skip specifies that the validation rules of this field should not be
     /// evaluated
@@ -823,7 +823,7 @@ pub struct MapRules {
 /// AnyRules describe constraints applied exclusively to the
 /// `google.protobuf.Any` well-known type
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct AnyRules {
     /// Required specifies that this field must be set
     #[prost(bool, optional, tag = "1")]
@@ -876,7 +876,7 @@ pub struct DurationRules {
 /// TimestampRules describe the constraints applied exclusively to the
 /// `google.protobuf.Timestamp` well-known type
 #[derive(serde::Serialize, serde::Deserialize)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash, ::prost::Message)]
 pub struct TimestampRules {
     /// Required specifies that this field must be set
     #[prost(bool, optional, tag = "1")]

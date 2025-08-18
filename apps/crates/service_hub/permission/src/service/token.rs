@@ -1,19 +1,20 @@
 //! 令牌管理
+
+use log::error;
+use nject::injectable;
+use sea_orm::Set;
+use uuid::Uuid;
+
+use code::{Error, ErrorMsg};
+
 use crate::{
     dao::token::TokenDao,
     dto::token::{
         CreateTokenReq, DeleteTokenReq, GetTokenReq, GetTokensReq, UpdateTokenReq,
         UpdateTokenStatusReq,
     },
+    entity::token,
 };
-
-use code::{Error, ErrorMsg};
-use entity::permission::token;
-
-use nject::injectable;
-use sea_orm::Set;
-use tracing::error;
-use uuid::Uuid;
 
 /// 服务层
 #[injectable]

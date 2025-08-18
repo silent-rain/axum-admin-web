@@ -2,15 +2,17 @@
 
 use std::sync::Arc;
 
-use crate::dto::schedule_status_log::GetScheduleStatusLogsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::schedule::{schedule_status_log, ScheduleStatusLog};
-
 use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait, Set,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::schedule_status_log::GetScheduleStatusLogsReq,
+    entity::{ScheduleStatusLogEntity, schedule_status_log},
 };
 
 /// 数据访问
@@ -27,7 +29,7 @@ impl ScheduleStatusLogDao {
     ) -> Result<(Vec<schedule_status_log::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = ScheduleStatusLog::find()
+        let states = ScheduleStatusLogEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(schedule_status_log::Column::CreatedAt.gte(v))
             })
@@ -61,7 +63,9 @@ impl ScheduleStatusLogDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<schedule_status_log::Model>, DbErr> {
-        ScheduleStatusLog::find_by_id(id).one(self.db.db()).await
+        ScheduleStatusLogEntity::find_by_id(id)
+            .one(self.db.db())
+            .await
     }
 
     /// 获取最新的UUID数据
@@ -69,7 +73,7 @@ impl ScheduleStatusLogDao {
         &self,
         job_id: i32,
     ) -> Result<Option<schedule_status_log::Model>, DbErr> {
-        ScheduleStatusLog::find()
+        ScheduleStatusLogEntity::find()
             .filter(schedule_status_log::Column::JobId.eq(job_id))
             .order_by_desc(schedule_status_log::Column::Id)
             .one(self.db.db())
@@ -90,7 +94,7 @@ impl ScheduleStatusLogDao {
         active_model: schedule_status_log::ActiveModel,
     ) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = ScheduleStatusLog::update_many()
+        let result = ScheduleStatusLogEntity::update_many()
             .set(active_model)
             .filter(schedule_status_log::Column::Id.eq(id))
             .exec(self.db.db())
@@ -112,7 +116,7 @@ impl ScheduleStatusLogDao {
 
     /// 按主键删除
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = ScheduleStatusLog::delete_by_id(id)
+        let result = ScheduleStatusLogEntity::delete_by_id(id)
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)

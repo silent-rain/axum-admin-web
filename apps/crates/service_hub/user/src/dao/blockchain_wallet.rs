@@ -1,15 +1,17 @@
 //! 用户区块链钱包管理
 use std::sync::Arc;
 
-use crate::dto::blockchain_wallet::GetBlockchainWalletsReq;
-
-use database::{Pagination, PoolTrait};
-use entity::user::{blockchain_wallet, BlockchainWallet};
 use nject::injectable;
-
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder,
     QuerySelect, QueryTrait,
+};
+
+use database::{Pagination, PoolTrait};
+
+use crate::{
+    dto::blockchain_wallet::GetBlockchainWalletsReq,
+    entity::{BlockchainWalletEntity, blockchain_wallet},
 };
 
 /// 数据访问
@@ -26,7 +28,7 @@ impl BlockchainWalletDao {
     ) -> Result<(Vec<blockchain_wallet::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = BlockchainWallet::find()
+        let states = BlockchainWalletEntity::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(blockchain_wallet::Column::CreatedAt.gte(v))
             })
@@ -57,7 +59,9 @@ impl BlockchainWalletDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<blockchain_wallet::Model>, DbErr> {
-        BlockchainWallet::find_by_id(id).one(self.db.db()).await
+        BlockchainWalletEntity::find_by_id(id)
+            .one(self.db.db())
+            .await
     }
 
     /// 通过钱包地址获取详情信息
@@ -65,7 +69,7 @@ impl BlockchainWalletDao {
         &self,
         wallet_address: String,
     ) -> Result<Option<blockchain_wallet::Model>, DbErr> {
-        BlockchainWallet::find()
+        BlockchainWalletEntity::find()
             .filter(blockchain_wallet::Column::WalletAddress.eq(wallet_address))
             .one(self.db.db())
             .await
@@ -82,7 +86,7 @@ impl BlockchainWalletDao {
     /// 更新数据
     pub async fn update(&self, active_model: blockchain_wallet::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = BlockchainWallet::update_many()
+        let result = BlockchainWalletEntity::update_many()
             .set(active_model)
             .filter(blockchain_wallet::Column::Id.eq(id))
             .exec(self.db.db())
@@ -93,7 +97,7 @@ impl BlockchainWalletDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = BlockchainWallet::delete_by_id(id)
+        let result = BlockchainWalletEntity::delete_by_id(id)
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)
