@@ -75,12 +75,6 @@ impl IntoResponse for ResponseErr {
 mod tests {
     use super::*;
 
-    #[derive(Debug, Serialize, Deserialize)]
-    struct Book {
-        title: String,
-        desc: String,
-    }
-
     #[test]
     fn test_response_err() {
         let resp = ResponseErr::new(Error::InjectAproviderObj);
