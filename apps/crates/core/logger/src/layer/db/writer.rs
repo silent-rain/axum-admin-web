@@ -10,11 +10,11 @@ use entity::log::log_system;
 
 use chrono::Local;
 use tokio::sync::{
-    mpsc::{self, Receiver, Sender},
     Mutex,
+    mpsc::{self, Receiver, Sender},
 };
 
-use tracing::{info, Metadata};
+use tracing::{Metadata, info};
 use tracing_error::SpanTraceStatus;
 
 pub struct DbWriter {

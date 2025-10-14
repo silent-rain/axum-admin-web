@@ -7,7 +7,7 @@
 //!     - 获取用户任务
 //!     - 注册用户任务
 //!     - 添加任务运行状态日志
-use crate::{dao::Dao, error::Error, Job, JobScheduler};
+use crate::{Job, JobScheduler, dao::Dao, error::Error};
 
 use database::PoolTrait;
 use entity::schedule::schedule_job;

@@ -1,4 +1,4 @@
-use sea_orm_migration::{async_trait, MigrationTrait, MigratorTrait};
+use sea_orm_migration::{MigrationTrait, MigratorTrait, async_trait};
 
 mod log;
 mod organization;

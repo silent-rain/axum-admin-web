@@ -5,7 +5,7 @@ use std::{
 
 use moka::future::Cache as MokaCache;
 use serde::Serialize;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 /// 全局调度对象，用于存储和管理缓存实例。
 static GLOBAL_SCHED: OnceLock<MokaCache<String, Entry>> = OnceLock::new();
@@ -138,16 +138,19 @@ impl Cache {
 
     /// 获取缓存条目，如果过期则移除。
     pub async fn get_with_expiry(&self, key: &str) -> Option<Entry> {
-        match self.cache.get(&key.to_string()).await { Some(entry) => {
-            if entry.is_expired() {
-                self.cache.remove(&key.to_string()).await; // 如果过期，则移除缓存条目。
-                None
-            } else {
-                Some(entry) // 如果未过期，则返回缓存条目。
+        match self.cache.get(&key.to_string()).await {
+            Some(entry) => {
+                if entry.is_expired() {
+                    self.cache.remove(&key.to_string()).await; // 如果过期，则移除缓存条目。
+                    None
+                } else {
+                    Some(entry) // 如果未过期，则返回缓存条目。
+                }
             }
-        } _ => {
-            None // 如果缓存条目不存在，则返回None。
-        }}
+            _ => {
+                None // 如果缓存条目不存在，则返回None。
+            }
+        }
     }
 
     /// 移除缓存

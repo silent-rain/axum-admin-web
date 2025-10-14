@@ -19,10 +19,9 @@ use tracing::warn;
 
 use axum_context::ContextLayer;
 use axum_middleware::{
-    api_operation_log::ApiOperationLogLayer, casbin_auth::CasbinAuthLayer,
-    check_auth::CheckAuthLayer, cors::cors_layer, empty_wrapper_fn::empty_wrapper_layer,
-    openapi_auth::OpenApiAuthLayer, prometheus::prometheus_layer_metric_handle,
-    session_auth::SessionAuthLayer,
+    api_operation_log::ApiOperationLogLayer, check_auth::CheckAuthLayer, cors::cors_layer,
+    empty_wrapper_fn::empty_wrapper_layer, openapi_auth::OpenApiAuthLayer,
+    prometheus::prometheus_layer_metric_handle, session_auth::SessionAuthLayer,
 };
 use axum_session::session_layer;
 use service_hub::{
@@ -67,7 +66,7 @@ pub async fn shutdown_signal() {
 }
 
 /// 注册路由
-pub fn register(db_pool: Arc<(dyn PoolTrait)>) -> Router {
+pub fn register(db_pool: Arc<dyn PoolTrait>) -> Router {
     // 速率限制
     //允许每个IP地址最多有五个请求的突发, 每两秒钟补充一种元素
     // Allow bursts with up to five requests per IP address

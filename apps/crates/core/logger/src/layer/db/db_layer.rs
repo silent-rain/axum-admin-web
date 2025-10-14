@@ -11,7 +11,7 @@ use crate::config::DbConfig;
 use tracing::Subscriber;
 use tracing_appender::non_blocking;
 use tracing_appender::non_blocking::WorkerGuard;
-use tracing_subscriber::{registry::LookupSpan, Layer};
+use tracing_subscriber::{Layer, registry::LookupSpan};
 
 /// 输出到数据库中
 pub fn non_blocking_layer<S>(
@@ -52,8 +52,8 @@ mod tests {
     use code::Error;
 
     use tracing::{
-        debug, debug_span, error, event, info, info_span, subscriber::DefaultGuard, trace, warn,
-        Level,
+        Level, debug, debug_span, error, event, info, info_span, subscriber::DefaultGuard, trace,
+        warn,
     };
     use tracing_subscriber::layer::SubscriberExt;
 

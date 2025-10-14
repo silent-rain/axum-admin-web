@@ -4,7 +4,7 @@ use crate::Context;
 
 use axum::{
     extract::FromRequestParts,
-    http::{request::Parts, StatusCode},
+    http::{StatusCode, request::Parts},
 };
 
 impl<S> FromRequestParts<S> for Context

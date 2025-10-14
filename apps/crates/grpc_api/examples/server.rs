@@ -1,8 +1,8 @@
+use grpc_api::FILE_DESCRIPTOR_SET;
 use grpc_api::helloworld::greeter_server::{Greeter, GreeterServer};
 use grpc_api::helloworld::{HelloReply, HelloRequest, StatusRequest};
-use grpc_api::FILE_DESCRIPTOR_SET;
 use tonic::Code;
-use tonic::{transport::Server, Request, Response, Status};
+use tonic::{Request, Response, Status, transport::Server};
 
 #[derive(Default)]
 pub struct MyGreeter {}

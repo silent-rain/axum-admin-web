@@ -5,7 +5,7 @@ use crate::config::ConsoleBunyanConfig;
 
 use tracing_bunyan_formatter::BunyanFormattingLayer;
 use tracing_subscriber::{
-    fmt::writer::MakeWriterExt, layer::SubscriberExt, registry::LookupSpan, Layer,
+    Layer, fmt::writer::MakeWriterExt, layer::SubscriberExt, registry::LookupSpan,
 };
 
 /// 输出到控制台中
@@ -29,8 +29,8 @@ mod tests {
     use crate::config;
 
     use tracing::{
-        debug, debug_span, error, event, info, info_span, subscriber::DefaultGuard, trace, warn,
-        Level,
+        Level, debug, debug_span, error, event, info, info_span, subscriber::DefaultGuard, trace,
+        warn,
     };
 
     /// 注册日志订阅器

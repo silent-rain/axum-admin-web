@@ -8,7 +8,7 @@ use migration::Migrator;
 use colored::Colorize;
 use dotenv::dotenv;
 use sea_orm_migration::MigratorTrait;
-use sqlx::{mysql::MySqlPoolOptions, Executor};
+use sqlx::{Executor, mysql::MySqlPoolOptions};
 use tracing::info;
 
 #[tokio::main]

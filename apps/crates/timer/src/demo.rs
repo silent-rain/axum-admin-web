@@ -1,6 +1,6 @@
 //! 定时任务示例
 use database::PoolTrait;
-use scheduler::{error::Error, register::SysTaskTrait, Job};
+use scheduler::{Job, error::Error, register::SysTaskTrait};
 
 pub struct DemoTask<DB>
 where

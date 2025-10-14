@@ -6,9 +6,9 @@ use tracing::Subscriber;
 use tracing_appender::non_blocking;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::{
+    Layer,
     fmt::{self, writer::MakeWriterExt},
     registry::LookupSpan,
-    Layer,
 };
 
 /// 自定义输出

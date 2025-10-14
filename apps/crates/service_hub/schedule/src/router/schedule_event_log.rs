@@ -1,6 +1,6 @@
 //! 任务调度事件日志管理
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use crate::controller::schedule_event_log::ScheduleEventLogController;
 

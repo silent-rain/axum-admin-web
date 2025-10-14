@@ -6,10 +6,10 @@ use crate::{
 };
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
-use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

@@ -1,8 +1,8 @@
 //! ComfyUI 任务管理
 
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 
 use crate::ComfyUITaskController;

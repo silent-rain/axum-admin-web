@@ -1,6 +1,6 @@
 //! 验证码
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use system::ImageCaptchaController;
 
 /// 路由器

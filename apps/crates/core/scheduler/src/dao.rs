@@ -1,7 +1,7 @@
 //! 数据库操作
 use database::PoolTrait;
 use entity::schedule::{
-    schedule_event_log, schedule_job, schedule_status_log, ScheduleJob, ScheduleStatusLog,
+    ScheduleJob, ScheduleStatusLog, schedule_event_log, schedule_job, schedule_status_log,
 };
 
 use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};

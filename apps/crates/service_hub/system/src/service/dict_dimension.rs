@@ -144,13 +144,13 @@ impl DictDimensionService {
             })?;
 
         // 存在
-        if let Some(model) = result {
-            if current_id.is_none() || Some(model.id) != current_id {
-                error!("字典维度名称已存在");
-                return Err(Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("字典维度名称已存在"));
-            }
+        if let Some(model) = result
+            && (current_id.is_none() || Some(model.id) != current_id)
+        {
+            error!("字典维度名称已存在");
+            return Err(Error::DbDataExistError
+                .into_msg()
+                .with_msg("字典维度名称已存在"));
         }
 
         // 不存在
@@ -175,13 +175,13 @@ impl DictDimensionService {
             })?;
 
         // 存在
-        if let Some(model) = result {
-            if current_id.is_none() || Some(model.id) != current_id {
-                error!("字典维度编码已存在");
-                return Err(Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("字典维度编码已存在"));
-            }
+        if let Some(model) = result
+            && (current_id.is_none() || Some(model.id) != current_id)
+        {
+            error!("字典维度编码已存在");
+            return Err(Error::DbDataExistError
+                .into_msg()
+                .with_msg("字典维度编码已存在"));
         }
 
         // 不存在

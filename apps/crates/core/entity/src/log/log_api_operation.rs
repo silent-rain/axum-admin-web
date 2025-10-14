@@ -1,9 +1,9 @@
 //! API操作日志表
 
 use sea_orm::{
-    prelude::{async_trait::async_trait, DateTime},
     ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
     DeriveRelation, EnumIter, PrimaryKeyTrait,
+    prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
 

@@ -1,7 +1,7 @@
 use std::env;
 
 mod common;
-use common::{schem::create_user_table, user, User};
+use common::{User, schem::create_user_table, user};
 
 use database::{Curd, Options, Pagination, Pool, PoolTrait};
 

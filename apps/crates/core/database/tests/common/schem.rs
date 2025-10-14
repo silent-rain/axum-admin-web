@@ -2,12 +2,12 @@
 use database::{Pool, PoolTrait};
 
 use sea_orm::{
-    sea_query::{ColumnDef, Table, TableCreateStatement},
     ConnectionTrait, DbBackend, DbErr, EntityTrait, ExecResult, Schema,
+    sea_query::{ColumnDef, Table, TableCreateStatement},
 };
 
-use super::user;
 use super::User;
+use super::user;
 
 pub async fn create_user_table(db: &Pool) -> Result<ExecResult, DbErr> {
     let stmt = Table::create()

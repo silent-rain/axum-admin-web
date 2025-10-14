@@ -7,8 +7,8 @@ use super::{
     writer::DbWriter,
 };
 
-use tracing::{span, Event, Metadata};
-use tracing_subscriber::{layer::Context, registry::LookupSpan, Layer};
+use tracing::{Event, Metadata, span};
+use tracing_subscriber::{Layer, layer::Context, registry::LookupSpan};
 
 /// 日志处理 Layer
 pub struct LayerHandler {

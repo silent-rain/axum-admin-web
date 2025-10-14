@@ -2,9 +2,9 @@
 
 use chrono::Local;
 use sea_orm::{
-    prelude::{async_trait::async_trait, DateTime},
     ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey, EntityTrait,
     EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait, Set,
+    prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
 
@@ -82,7 +82,7 @@ mod tests {
         RelationTrait,
     };
 
-    use crate::user::{role, user_base, user_role_rel, Role, UserBase, UserRoleRel};
+    use crate::user::{Role, UserBase, UserRoleRel, role, user_base, user_role_rel};
 
     use super::*;
 

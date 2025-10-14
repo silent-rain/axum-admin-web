@@ -197,13 +197,12 @@ impl Casbin {
         if let Ok(permission) =
             UserCached::get_user_openapi_access_permission(user_id, path.clone(), method.clone())
                 .await
+            && permission
         {
-            if permission {
-                info!(
-                    "openapi access permission, cached, user_id: {user_id}, method: {method}, path: {path}"
-                );
-                return Ok(true);
-            }
+            info!(
+                "openapi access permission, cached, user_id: {user_id}, method: {method}, path: {path}"
+            );
+            return Ok(true);
         }
 
         let p_policies = self.get_p_policies().await?;

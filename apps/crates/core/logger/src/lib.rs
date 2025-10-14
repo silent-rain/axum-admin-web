@@ -17,8 +17,8 @@ use tracing::subscriber::SetGlobalDefaultError;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_error::ErrorLayer;
 use tracing_subscriber::{
-    layer::{Layered, SubscriberExt},
     Layer, Registry,
+    layer::{Layered, SubscriberExt},
 };
 
 #[derive(Debug)]
@@ -173,8 +173,8 @@ impl<'a> Logger<'a> {
 mod tests {
     use super::*;
 
-    use color_eyre::{eyre::eyre, Result};
-    use tracing::{error, info, instrument, span, warn, Level};
+    use color_eyre::{Result, eyre::eyre};
+    use tracing::{Level, error, info, instrument, span, warn};
 
     #[instrument]
     fn return_err() -> Result<()> {

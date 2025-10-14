@@ -1,8 +1,8 @@
 //! 后台管理 WEB 服务
 
 use axum::response::Html;
-use embed_asset::web::AssetAdminWebDist;
 use embed_asset::EmbedAssetTrait;
+use embed_asset::web::AssetAdminWebDist;
 
 use axum::body::Body;
 use axum::extract::Path;

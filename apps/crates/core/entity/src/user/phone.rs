@@ -2,9 +2,9 @@
 
 use chrono::Local;
 use sea_orm::{
-    prelude::{async_trait::async_trait, DateTime},
     ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey, EntityTrait,
     EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait, Set,
+    prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
 

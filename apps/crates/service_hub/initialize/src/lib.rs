@@ -14,4 +14,4 @@ pub(crate) mod controller;
 pub use controller::table::TableController;
 
 pub(crate) mod router;
-pub use router::{table::TableRouter, InitializeRouter};
+pub use router::{InitializeRouter, table::TableRouter};

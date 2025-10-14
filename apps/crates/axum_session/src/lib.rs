@@ -8,7 +8,7 @@ use database::PoolTrait;
 pub use session_store::DbStore;
 
 pub use tower_sessions::Session;
-use tower_sessions::{cookie::time::Duration, Expiry, SessionManagerLayer};
+use tower_sessions::{Expiry, SessionManagerLayer, cookie::time::Duration};
 
 pub static SESSION_ID: &str = "session-id";
 

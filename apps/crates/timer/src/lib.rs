@@ -5,9 +5,9 @@ mod demo2;
 
 use database::PoolTrait;
 use scheduler::{
+    JobScheduler,
     error::Error,
     register::{SysTaskRegister, UserTaskRegister},
-    JobScheduler,
 };
 use tokio::runtime::Handle;
 

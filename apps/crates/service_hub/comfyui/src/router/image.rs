@@ -1,8 +1,8 @@
 //! ComfyUI 图片管理
 
 use axum::{
-    routing::{get, post},
     Router,
+    routing::{get, post},
 };
 
 use crate::ComfyUIImageController;

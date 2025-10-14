@@ -1,9 +1,9 @@
 //!  middleware to collect HTTP metrics for Axum applications.
 
 use axum_prometheus::{
+    AXUM_HTTP_REQUESTS_DURATION_SECONDS, GenericMetricLayer, Handle, PrometheusMetricLayerBuilder,
     metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle},
     utils::SECONDS_DURATION_BUCKETS,
-    GenericMetricLayer, Handle, PrometheusMetricLayerBuilder, AXUM_HTTP_REQUESTS_DURATION_SECONDS,
 };
 
 /// prometheus middleware

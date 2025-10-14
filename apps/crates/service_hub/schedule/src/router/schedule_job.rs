@@ -1,8 +1,8 @@
 //! 任务调度作业管理
 
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
 
 use crate::controller::schedule_job::ScheduleJobController;

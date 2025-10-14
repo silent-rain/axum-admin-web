@@ -1,8 +1,8 @@
 //! 配置管理
 
+use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
-use log::error;
 
 use code::{Error, ErrorMsg};
 use database::utils::GenericTree;
@@ -133,13 +133,13 @@ impl ConfigService {
         })?;
 
         // 存在
-        if let Some(model) = result {
-            if current_id.is_none() || Some(model.id) != current_id {
-                error!("配置编码已存在");
-                return Err(Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("配置编码已存在"));
-            }
+        if let Some(model) = result
+            && (current_id.is_none() || Some(model.id) != current_id)
+        {
+            error!("配置编码已存在");
+            return Err(Error::DbDataExistError
+                .into_msg()
+                .with_msg("配置编码已存在"));
         }
 
         // 不存在

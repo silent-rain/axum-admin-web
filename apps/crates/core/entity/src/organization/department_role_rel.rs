@@ -1,8 +1,8 @@
 //! 部门角色关系表
 
 use sea_orm::{
-    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, DeriveRelation,
-    EnumIter, PrimaryKeyTrait,
+    ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, DeriveRelation, EnumIter,
+    PrimaryKeyTrait, prelude::DateTime,
 };
 use serde::{Deserialize, Serialize};
 

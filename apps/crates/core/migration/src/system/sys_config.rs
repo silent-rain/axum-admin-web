@@ -2,7 +2,7 @@
 //! Entity: [`entity::system::SysConfig`]
 
 use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
-use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

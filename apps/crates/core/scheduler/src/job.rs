@@ -236,9 +236,7 @@ where
                     Box::pin(async move {
                         trace!(
                             "TokioJob {:?} was started, notification {:?} ran ({:?})",
-                            job_id,
-                            notification_id,
-                            type_of_notification
+                            job_id, notification_id, type_of_notification
                         );
 
                         // 添加任务运行事件日志
@@ -271,9 +269,7 @@ where
                     Box::pin(async move {
                         trace!(
                             "TokioJob {:?} was done, notification {:?} ran ({:?})",
-                            job_id,
-                            notification_id,
-                            type_of_notification
+                            job_id, notification_id, type_of_notification
                         );
 
                         // 添加任务运行事件日志
@@ -306,9 +302,7 @@ where
                     Box::pin(async move {
                         trace!(
                             "TokioJob {:?} was stop, notification {:?} ran ({:?})",
-                            job_id,
-                            notification_id,
-                            type_of_notification
+                            job_id, notification_id, type_of_notification
                         );
 
                         // 添加任务运行事件日志
@@ -341,9 +335,7 @@ where
                     Box::pin(async move {
                         trace!(
                             "TokioJob {:?} was removed, notification {:?} ran ({:?})",
-                            job_id,
-                            notification_id,
-                            type_of_notification
+                            job_id, notification_id, type_of_notification
                         );
                         // 添加任务运行事件日志
                         Self::add_schedule_event_log(

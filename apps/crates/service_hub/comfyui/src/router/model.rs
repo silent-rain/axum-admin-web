@@ -1,6 +1,6 @@
 //! ComfyUI 模型管理
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 use crate::ComfyUIModelController;
 

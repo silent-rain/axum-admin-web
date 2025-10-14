@@ -1,8 +1,8 @@
-use color_eyre::{eyre::eyre, Result};
+use color_eyre::{Result, eyre::eyre};
 use config::{ConsoleBunyanConfig, ConsoleConfig, DbConfig, FileConfig};
 use database::Options;
-use logger::{config, Logger};
-use tracing::{debug, error, info, instrument, span, trace, warn, Level};
+use logger::{Logger, config};
+use tracing::{Level, debug, error, info, instrument, span, trace, warn};
 
 #[instrument]
 fn return_err() -> Result<()> {

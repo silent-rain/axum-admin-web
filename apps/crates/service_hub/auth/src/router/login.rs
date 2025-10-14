@@ -1,6 +1,6 @@
 //! 登陆
 
-use axum::{routing::post, Router};
+use axum::{Router, routing::post};
 
 use crate::controller::login::LoginController;
 

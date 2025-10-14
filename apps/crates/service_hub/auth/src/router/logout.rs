@@ -2,7 +2,7 @@
 
 use crate::controller::logout::LogoutController;
 
-use axum::{routing::post, Router};
+use axum::{Router, routing::post};
 
 /// 路由器
 pub struct LogoutRouter;

@@ -2,7 +2,7 @@
 
 use crate::controller::table::TableController;
 
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 
 /// 路由器
 pub struct TableRouter;

@@ -24,6 +24,6 @@ pub use controller::{
 
 pub(crate) mod router;
 pub use router::{
-    schedule_event_log::ScheduleEventLogRouter, schedule_job::ScheduleJobRouter,
-    schedule_status_log::ScheduleStatusLogRouter, ScheduleRouter,
+    ScheduleRouter, schedule_event_log::ScheduleEventLogRouter, schedule_job::ScheduleJobRouter,
+    schedule_status_log::ScheduleStatusLogRouter,
 };

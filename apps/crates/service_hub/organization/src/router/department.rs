@@ -1,8 +1,8 @@
 //! 部门管理
 
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
 
 use crate::controller::department::DepartmentController;

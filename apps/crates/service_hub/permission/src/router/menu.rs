@@ -1,8 +1,8 @@
 //! 菜单管理
 
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
 
 use crate::controller::menu::MenuController;

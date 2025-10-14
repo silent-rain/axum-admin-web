@@ -5,7 +5,7 @@ use std::sync::Arc;
 use sea_orm::{ConnectionTrait, DbErr, EntityTrait, Schema, Statement};
 use sea_orm_migration::{MigrationTrait, SchemaManager};
 
-use crate::{config::Level, Options, Pool, PoolTrait};
+use crate::{Options, Pool, PoolTrait, config::Level};
 
 pub struct Mock {
     pool: Arc<dyn PoolTrait>,

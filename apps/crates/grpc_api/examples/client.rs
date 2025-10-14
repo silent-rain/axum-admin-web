@@ -1,7 +1,7 @@
 use grpc_api::helloworld::greeter_client::GreeterClient;
 use grpc_api::helloworld::{HelloRequest, StatusRequest};
-use tonic::transport::Channel;
 use tonic::Code;
+use tonic::transport::Channel;
 use tower::ServiceBuilder;
 
 #[tokio::main]

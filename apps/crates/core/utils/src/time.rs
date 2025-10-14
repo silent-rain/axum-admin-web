@@ -1,6 +1,6 @@
 //! 时间处理工具
 use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
-use serde::{de, Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, de};
 
 /// 时间格式
 pub const DATE_FORMAT: &str = "%Y-%m-%d %H:%M:%S.%3f";

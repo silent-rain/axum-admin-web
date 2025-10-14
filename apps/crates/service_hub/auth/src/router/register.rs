@@ -2,7 +2,7 @@
 
 use crate::controller::register::RegisterController;
 
-use axum::{routing::post, Router};
+use axum::{Router, routing::post};
 
 /// 路由器
 pub struct RegisterRouter;

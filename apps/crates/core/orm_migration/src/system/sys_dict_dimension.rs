@@ -1,10 +1,10 @@
 //! 字典维度表
 //! Entity: [`entity::system::SysDictDimension`]
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
     DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
-use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 use crate::utils::if_not_exists_create_index;
 

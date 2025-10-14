@@ -19,6 +19,6 @@ pub use controller::{
 
 pub(crate) mod router;
 pub use router::{
-    api_operation::ApiOperationRouter, system_log::SystemLogRouter, web_log::WebLogRouter,
-    LogRouter,
+    LogRouter, api_operation::ApiOperationRouter, system_log::SystemLogRouter,
+    web_log::WebLogRouter,
 };

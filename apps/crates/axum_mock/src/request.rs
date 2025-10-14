@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use axum_response::Response;
-use database::{mock::Mock, Mdb, PoolTrait};
+use database::{Mdb, PoolTrait, mock::Mock};
 use inject::InjectProvider;
 use migration::Migrator;
 
 use axum::{Extension, Router};
 use axum_test::TestServer;
 use sea_orm::{ConnectionTrait, EntityTrait, Schema};
-use sea_orm_migration::{migrator::MigratorTrait, MigrationTrait, SchemaManager};
+use sea_orm_migration::{MigrationTrait, SchemaManager, migrator::MigratorTrait};
 use serde::Serialize;
 use tracing::error;
 

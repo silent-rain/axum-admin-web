@@ -1,6 +1,6 @@
 //! 异常响应体
 
-use axum::{response::IntoResponse, Json};
+use axum::{Json, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 
 use code::{Error, ErrorMsg};

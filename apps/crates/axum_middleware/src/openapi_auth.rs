@@ -148,7 +148,7 @@ impl<S> OpenApiAuthService<S> {
             None => {
                 return Err(code::Error::HeadersNotAuthorizationPassphrase
                     .into_msg()
-                    .with_msg("鉴权口令不能为空"))
+                    .with_msg("鉴权口令不能为空"));
             }
         };
 

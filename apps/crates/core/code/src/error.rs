@@ -1,7 +1,7 @@
 // 业务码
 use std::io;
 
-use serde::{ser::Serializer, Serialize};
+use serde::{Serialize, ser::Serializer};
 
 /// 错误种类
 #[derive(Debug, thiserror::Error)]

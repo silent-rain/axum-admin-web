@@ -1,8 +1,8 @@
 //! 任务调度状态日志管理
 
 use axum::{
-    routing::{get, put},
     Router,
+    routing::{get, put},
 };
 
 use crate::controller::schedule_status_log::ScheduleStatusLogController;

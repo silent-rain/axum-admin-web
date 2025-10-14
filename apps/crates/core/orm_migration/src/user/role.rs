@@ -4,10 +4,10 @@
 use entity::user;
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Table},
     DeriveIden, DeriveMigrationName, EntityTrait, Set,
+    sea_query::{ColumnDef, Expr, Table},
 };
-use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

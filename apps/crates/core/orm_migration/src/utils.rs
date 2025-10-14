@@ -1,7 +1,7 @@
 //! 工具集
 use sea_orm::{
-    sea_query::{Index, IntoIden, IntoIndexColumn, IntoTableRef},
     Iden,
+    sea_query::{Index, IntoIden, IntoIndexColumn, IntoTableRef},
 };
 use sea_orm_migration::{DbErr, SchemaManager};
 

@@ -1,6 +1,6 @@
 use chrono::Local;
 use jsonwebtoken::{
-    decode, encode, errors, Algorithm, DecodingKey, EncodingKey, Header, Validation,
+    Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode, errors,
 };
 use serde::{Deserialize, Serialize};
 

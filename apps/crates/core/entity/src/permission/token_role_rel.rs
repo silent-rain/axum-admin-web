@@ -1,8 +1,8 @@
 //! 令牌角色关系表
 
 use sea_orm::{
-    prelude::DateTime, ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey,
-    DeriveRelation, EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait,
+    ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, DeriveRelation, EntityTrait,
+    EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait, prelude::DateTime,
 };
 use serde::{Deserialize, Serialize};
 

@@ -23,6 +23,6 @@ pub use controller::{
 
 pub(crate) mod router;
 pub use router::{
-    department::DepartmentRouter, department_role_rel::DepartmentRoleRelRouter,
-    position::PositionRouter, rank::RankRouter, OrganizationRouter,
+    OrganizationRouter, department::DepartmentRouter, department_role_rel::DepartmentRoleRelRouter,
+    position::PositionRouter, rank::RankRouter,
 };

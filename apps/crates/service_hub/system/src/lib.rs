@@ -25,6 +25,7 @@ pub use controller::{
 
 pub(crate) mod router;
 pub use router::{
-    config::ConfigRouter, dict_data::DictDataRouter, dict_dimension::DictDimensionRouter,
-    file_resource::FileResourceRouter, image_captcha::ImageCaptchaRouter, SystemRouter,
+    SystemRouter, config::ConfigRouter, dict_data::DictDataRouter,
+    dict_dimension::DictDimensionRouter, file_resource::FileResourceRouter,
+    image_captcha::ImageCaptchaRouter,
 };

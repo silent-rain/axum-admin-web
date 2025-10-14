@@ -143,13 +143,13 @@ impl BlockchainWalletService {
             })?;
 
         // 存在
-        if let Some(model) = result {
-            if current_id.is_none() || Some(model.id) != current_id {
-                error!("用户区块链钱包已存在");
-                return Err(Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("用户区块链钱包已存在"));
-            }
+        if let Some(model) = result
+            && (current_id.is_none() || Some(model.id) != current_id)
+        {
+            error!("用户区块链钱包已存在");
+            return Err(Error::DbDataExistError
+                .into_msg()
+                .with_msg("用户区块链钱包已存在"));
         }
 
         // 不存在

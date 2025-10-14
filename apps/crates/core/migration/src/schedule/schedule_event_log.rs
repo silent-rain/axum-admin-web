@@ -2,7 +2,7 @@
 //! Entity: [`entity::schedule::ScheduleEventLog`]
 
 use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
-use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -33,8 +33,7 @@ impl MigrationTrait for Migration {
                 .await?;
             }
             DatabaseBackend::Postgres => {
-                db.execute_unprepared( 
-                    r#"
+                db.execute_unprepared(r#"
                     CREATE TABLE IF NOT EXISTS "t_schedule_event_log" (
                         "id" SERIAL PRIMARY KEY,
                         "job_id" INTEGER NOT NULL,
