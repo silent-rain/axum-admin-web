@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::openapi_role_rel::OpenapiRoleRelDao,
@@ -26,9 +26,7 @@ impl OpenapiRoleRelService {
     ) -> Result<(Vec<openapi_role_rel::Model>, u64), ErrorMsg> {
         let (results, total) = self.openapi_role_rel_dao.list(req).await.map_err(|err| {
             error!("查询OpenApi接口角色关系列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询OpenApi接口角色关系列表失败")
+            Error::DbQueryError.into_err_with_msg("查询OpenApi接口角色关系列表失败")
         })?;
 
         Ok((results, total))
@@ -52,9 +50,7 @@ impl OpenapiRoleRelService {
             .await
             .map_err(|err| {
                 error!("批量添加OpenApi接口角色关系失败, err: {:#?}", err);
-                Error::DbBatchAddError
-                    .into_msg()
-                    .with_msg("批量添加OpenApi接口角色关系失败")
+                Error::DbBatchAddError.into_err_with_msg("批量添加OpenApi接口角色关系失败")
             })?;
 
         Ok(result)
@@ -68,9 +64,7 @@ impl OpenapiRoleRelService {
             .await
             .map_err(|err| {
                 error!("批量删除OpenApi接口角色关系失败, err: {:#?}", err);
-                Error::DbBatchDeleteError
-                    .into_msg()
-                    .with_msg("批量删除OpenApi接口角色关系失败")
+                Error::DbBatchDeleteError.into_err_with_msg("批量删除OpenApi接口角色关系失败")
             })?;
 
         Ok(result)

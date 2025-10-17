@@ -2,6 +2,7 @@
 
 use std::sync::Arc;
 
+use err_code::Error;
 use log::error;
 use sea_orm::Set;
 
@@ -52,9 +53,7 @@ pub fn add_login_log(
                 "添加登陆日志失败, session_id: {:#?}, err: {:#?}",
                 session_id, err
             );
-            code::Error::DbAddError
-                .into_msg()
-                .with_msg("添加登陆日志失败")
+            Error::DbAddError.into_err_with_msg("添加登陆日志失败")
         });
         if let Err(err) = result {
             error!("添加登陆日志失败, err: {:#?}", err);

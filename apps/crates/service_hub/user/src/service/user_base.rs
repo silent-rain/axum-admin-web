@@ -5,7 +5,7 @@ use nject::injectable;
 use sea_orm::Set;
 use utils::crypto::sha2_256;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::{user_base::UserBaseDao, user_role_rel::UserRoleRelDao},
@@ -31,9 +31,7 @@ impl UserBaseService {
     ) -> Result<(Vec<user_base::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.user_base_dao.list(req).await.map_err(|err| {
             error!("查询用户信息列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询用户信息列表失败")
+            Error::DbQueryError.into_err_with_msg("查询用户信息列表失败")
         })?;
 
         // 屏蔽敏感信息
@@ -52,11 +50,11 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("user_id: {}, 用户不存在", req.id);
-                Error::DbQueryEmptyError.into_msg().with_msg("用户不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("用户不存在")
             })?;
 
         // 屏蔽敏感信息
@@ -71,9 +69,7 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("更新用户信息状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新用户信息状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新用户信息状态失败")
             })?;
 
         Ok(())
@@ -83,7 +79,7 @@ impl UserBaseService {
     pub async fn delete(&self, req: DeleteUserBaseReq) -> Result<u64, ErrorMsg> {
         let result = self.user_base_dao.delete(req.id).await.map_err(|err| {
             error!("删除用户信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除用户信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除用户信息失败")
         })?;
 
         Ok(result)
@@ -125,7 +121,7 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("添加用户信息失败, err: {:#?}", err);
-                Error::DbAddError.into_msg().with_msg("添加用户信息失败")
+                Error::DbAddError.into_err_with_msg("添加用户信息失败")
             })?;
         Ok(result)
     }
@@ -139,9 +135,7 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("查询用户信息与角色关系列表失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询用户信息与角色关系列表失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息与角色关系列表失败")
             })?;
 
         // 获角色色ID的差异列表
@@ -164,7 +158,7 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("更新用户信息失败, err: {:#?}", err);
-                Error::DbUpdateError.into_msg().with_msg("更新用户信息失败")
+                Error::DbUpdateError.into_err_with_msg("更新用户信息失败")
             })?;
 
         Ok(())
@@ -207,15 +201,13 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?;
 
         // 存在
         if let Some(_model) = result {
             error!("用户名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("用户名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("用户名称已存在"));
         }
 
         // 不存在
@@ -230,13 +222,11 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("用户信息不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("用户信息不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("用户信息不存在")
             })?;
 
         let result = ProfileResp {
@@ -254,7 +244,7 @@ impl UserBaseService {
     pub async fn roles(&self, req: RolesReq) -> Result<(Vec<role::Model>, u64), ErrorMsg> {
         let (results, total) = self.user_base_dao.roles(req.user_id).await.map_err(|err| {
             error!("查询用户信息失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+            Error::DbQueryError.into_err_with_msg("查询用户信息失败")
         })?;
 
         Ok((results, total))
@@ -268,18 +258,16 @@ impl UserBaseService {
             .await
             .map_err(|err| {
                 error!("user_id: {user_id}, 查询用户信息失败, err: {err}",);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("user_id: {user_id}, 用户不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("用户不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("用户不存在")
             })?;
 
         if !user.status {
             error!("user_id: {user_id}, 用户已被禁用");
-            return Err(code::Error::LoginStatusDisabled
-                .into_msg()
-                .with_msg("用户已被禁用"));
+            return Err(Error::LoginStatusDisabled.into_err_with_msg("用户已被禁用"));
         }
 
         Ok(user)

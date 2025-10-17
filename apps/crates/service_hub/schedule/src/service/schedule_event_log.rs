@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::schedule_event_log::ScheduleEventLogDao,
@@ -29,9 +29,7 @@ impl ScheduleEventLogService {
     ) -> Result<(Vec<schedule_event_log::Model>, u64), ErrorMsg> {
         let (results, total) = self.schedule_event_log_dao.list(req).await.map_err(|err| {
             error!("查询任务调度事件日志列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询任务调度事件日志列表失败")
+            Error::DbQueryError.into_err_with_msg("查询任务调度事件日志列表失败")
         })?;
 
         Ok((results, total))
@@ -48,15 +46,11 @@ impl ScheduleEventLogService {
             .await
             .map_err(|err| {
                 error!("查询任务调度事件日志失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询任务调度事件日志失败")
+                Error::DbQueryError.into_err_with_msg("查询任务调度事件日志失败")
             })?
             .ok_or_else(|| {
                 error!("任务调度事件日志不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("任务调度事件日志不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("任务调度事件日志不存在")
             })?;
 
         Ok(result)
@@ -79,9 +73,7 @@ impl ScheduleEventLogService {
             .await
             .map_err(|err| {
                 error!("添加任务调度事件日志失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("添加任务调度事件日志失败")
+                Error::DbQueryError.into_err_with_msg("添加任务调度事件日志失败")
             })?;
 
         Ok(result)
@@ -95,9 +87,7 @@ impl ScheduleEventLogService {
             .await
             .map_err(|err| {
                 error!("删除任务调度事件日志失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("删除任务调度事件日志失败")
+                Error::DbQueryError.into_err_with_msg("删除任务调度事件日志失败")
             })?;
 
         Ok(result)

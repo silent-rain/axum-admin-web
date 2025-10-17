@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::rank::RankDao,
@@ -27,13 +27,13 @@ impl RankService {
         if let Some(true) = req.all {
             return self.rank_dao.all().await.map_err(|err| {
                 error!("查询所有职级失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询所有职级失败")
+                Error::DbQueryError.into_err_with_msg("查询所有职级失败")
             });
         }
 
         let (results, total) = self.rank_dao.list(req).await.map_err(|err| {
             error!("查询职级列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询职级列表失败")
+            Error::DbQueryError.into_err_with_msg("查询职级列表失败")
         })?;
 
         Ok((results, total))
@@ -47,11 +47,11 @@ impl RankService {
             .await
             .map_err(|err| {
                 error!("查询职级信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询职级信息失败")
+                Error::DbQueryError.into_err_with_msg("查询职级信息失败")
             })?
             .ok_or_else(|| {
                 error!("职级不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("职级不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("职级不存在")
             })?;
 
         Ok(result)
@@ -78,7 +78,7 @@ impl RankService {
             .await
             .map_err(|err: sea_orm::prelude::DbErr| {
                 error!("添加职级信息失败, err: {:#?}", err);
-                Error::DbAddError.into_msg().with_msg("添加职级信息失败")
+                Error::DbAddError.into_err_with_msg("添加职级信息失败")
             })?;
 
         Ok(rank)
@@ -104,7 +104,7 @@ impl RankService {
 
         let result = self.rank_dao.update(model).await.map_err(|err| {
             error!("更新职级失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新职级失败")
+            Error::DbUpdateError.into_err_with_msg("更新职级失败")
         })?;
 
         Ok(result)
@@ -118,7 +118,7 @@ impl RankService {
     ) -> Result<(), ErrorMsg> {
         let result = self.rank_dao.info_by_name(name).await.map_err(|err| {
             error!("查询职级名称失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询职级名称失败")
+            Error::DbQueryError.into_err_with_msg("查询职级名称失败")
         })?;
 
         // 存在
@@ -126,9 +126,7 @@ impl RankService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("职级名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("职级名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("职级名称已存在"));
         }
 
         // 不存在
@@ -139,7 +137,7 @@ impl RankService {
     async fn check_level_exist(&self, level: u16, current_id: Option<i32>) -> Result<(), ErrorMsg> {
         let result = self.rank_dao.info_by_level(level).await.map_err(|err| {
             error!("查询职级等级失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询职级等级失败")
+            Error::DbQueryError.into_err_with_msg("查询职级等级失败")
         })?;
 
         // 存在
@@ -147,9 +145,7 @@ impl RankService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("职级等级已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("职级等级已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("职级等级已存在"));
         }
 
         // 不存在
@@ -163,7 +159,7 @@ impl RankService {
             .await
             .map_err(|err| {
                 error!("更新职级状态失败, err: {:#?}", err);
-                Error::DbUpdateError.into_msg().with_msg("更新职级状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新职级状态失败")
             })?;
 
         Ok(())
@@ -173,7 +169,7 @@ impl RankService {
     pub async fn delete(&self, req: DeleteRankReq) -> Result<u64, ErrorMsg> {
         let result = self.rank_dao.delete(req.id).await.map_err(|err| {
             error!("删除职级信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除职级信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除职级信息失败")
         })?;
 
         Ok(result)

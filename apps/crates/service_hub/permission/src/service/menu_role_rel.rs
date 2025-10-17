@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::menu_role_rel::MenuRoleRelDao,
@@ -26,9 +26,7 @@ impl MenuRoleRelService {
     ) -> Result<(Vec<menu_role_rel::Model>, u64), ErrorMsg> {
         let (results, total) = self.menu_role_rel_dao.list(req).await.map_err(|err| {
             error!("查询菜单角色关系列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询菜单角色关系列表失败")
+            Error::DbQueryError.into_err_with_msg("查询菜单角色关系列表失败")
         })?;
 
         Ok((results, total))
@@ -52,9 +50,7 @@ impl MenuRoleRelService {
             .await
             .map_err(|err| {
                 error!("批量添加菜单角色关系失败, err: {:#?}", err);
-                Error::DbBatchAddError
-                    .into_msg()
-                    .with_msg("批量添加菜单角色关系失败")
+                Error::DbBatchAddError.into_err_with_msg("批量添加菜单角色关系失败")
             })?;
 
         Ok(result)
@@ -68,9 +64,7 @@ impl MenuRoleRelService {
             .await
             .map_err(|err| {
                 error!("批量删除菜单角色关系失败, err: {:#?}", err);
-                Error::DbBatchDeleteError
-                    .into_msg()
-                    .with_msg("批量删除菜单角色关系失败")
+                Error::DbBatchDeleteError.into_err_with_msg("批量删除菜单角色关系失败")
             })?;
 
         Ok(result)

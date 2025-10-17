@@ -3,7 +3,7 @@
 use log::error;
 use nject::injectable;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use utils::json::struct_to_struct;
 
 use crate::{
@@ -26,9 +26,7 @@ impl SystemLogService {
     ) -> Result<(Vec<log_system::Model>, u64), ErrorMsg> {
         let (results, total) = self.system_dao.list(req).await.map_err(|err| {
             error!("查询系统日志列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询系统日志列表失败")
+            Error::DbQueryError.into_err_with_msg("查询系统日志列表失败")
         })?;
 
         Ok((results, total))
@@ -42,13 +40,11 @@ impl SystemLogService {
             .await
             .map_err(|err| {
                 error!("查询系统日志失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询系统日志失败")
+                Error::DbQueryError.into_err_with_msg("查询系统日志失败")
             })?
             .ok_or_else(|| {
                 error!("系统日志不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("系统日志不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("系统日志不存在")
             })?;
 
         Ok(result)
@@ -58,14 +54,12 @@ impl SystemLogService {
     pub async fn create(&self, req: CreateSystemLogReq) -> Result<log_system::Model, ErrorMsg> {
         let data: log_system::Model = struct_to_struct(&req).map_err(|err| {
             error!("JSON转换错误失败, err: {:#?}", err);
-            Error::JsonConvert(err.to_string())
-                .into_msg()
-                .with_msg("JSON转换错误失败")
+            Error::JsonConvert(err.to_string()).into_err_with_msg("JSON转换错误失败")
         })?;
 
         let result = self.system_dao.create(data).await.map_err(|err| {
             error!("添加系统日志失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("添加系统日志失败")
+            Error::DbQueryError.into_err_with_msg("添加系统日志失败")
         })?;
 
         Ok(result)
@@ -75,7 +69,7 @@ impl SystemLogService {
     pub async fn delete(&self, req: DeleteSystemLogReq) -> Result<u64, ErrorMsg> {
         let result = self.system_dao.delete(req.id).await.map_err(|err| {
             error!("删除系统日志失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("删除系统日志失败")
+            Error::DbQueryError.into_err_with_msg("删除系统日志失败")
         })?;
 
         Ok(result)

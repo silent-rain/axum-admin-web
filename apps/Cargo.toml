@@ -2,30 +2,31 @@
 resolver = "2"
 members = [
     # 核心组件
-    "crates/core/code",
+    "crates/core/err_code",
     "crates/core/database",
-    "crates/core/inject",
     "crates/core/entity",
+    "crates/core/inject",
     "crates/core/orm_migration", # 当前不完善, 以migration为主
     "crates/core/migration",
-    "crates/core/jwt",
     "crates/core/scheduler",
     "crates/core/utils",
     "crates/core/logger",
     "crates/core/cache",
     "crates/core/requests",
 
+    # 插件
+    "crates/plugins/axum_jwt",
+    "crates/plugins/axum_context",
+
     # 组件
     "crates/app_state",
     "crates/embed_asset",
     "crates/axum_response",
     "crates/axum_mock",
-    "crates/axum_context",
-    "crates/axum_middleware",
     "crates/axum_validator",
+    "crates/axum_middleware",
     "crates/axum_session",
     "crates/grpc_api",
-    "crates/plugins",
     "crates/timer",
     "crates/service_hub",
 
@@ -35,6 +36,12 @@ members = [
 
 
 [workspace.dependencies]
+# 插件
+axum_validator = { path = "crates/axum_validator" }
+axum_jwt = { path = "crates/plugins/axum_jwt" }
+axum_context = { path = "crates/plugins/axum_context" }
+
+
 # 网络相关
 tokio = "1.48"
 async-std = "1.13"

@@ -1,7 +1,9 @@
 //! 请求参数验证
+mod error;
 mod json;
 mod query;
 
+pub use error::Error;
 pub use json::Json;
 pub use query::Query;
 

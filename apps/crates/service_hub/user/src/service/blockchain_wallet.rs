@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::blockchain_wallet::BlockchainWalletDao,
@@ -29,9 +29,7 @@ impl BlockchainWalletService {
     ) -> Result<(Vec<blockchain_wallet::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.blockchain_wallet_dao.list(req).await.map_err(|err| {
             error!("查询用户区块链钱包列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询用户区块链钱包列表失败")
+            Error::DbQueryError.into_err_with_msg("查询用户区块链钱包列表失败")
         })?;
 
         // 屏蔽敏感信息
@@ -54,15 +52,11 @@ impl BlockchainWalletService {
             .await
             .map_err(|err| {
                 error!("查询用户区块链钱包信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询用户区块链钱包信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户区块链钱包信息失败")
             })?
             .ok_or_else(|| {
                 error!("用户区块链钱包不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("用户区块链钱包不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("用户区块链钱包不存在")
             })?;
 
         // 屏蔽敏感信息
@@ -95,9 +89,7 @@ impl BlockchainWalletService {
             .await
             .map_err(|err| {
                 error!("添加用户区块链钱包信息失败, err: {:#?}", err);
-                Error::DbAddError
-                    .into_msg()
-                    .with_msg("添加用户区块链钱包信息失败")
+                Error::DbAddError.into_err_with_msg("添加用户区块链钱包信息失败")
             })?;
 
         Ok(result)
@@ -117,9 +109,7 @@ impl BlockchainWalletService {
             .await
             .map_err(|err| {
                 error!("更新用户区块链钱包失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新用户区块链钱包失败")
+                Error::DbUpdateError.into_err_with_msg("更新用户区块链钱包失败")
             })?;
 
         Ok(result)
@@ -137,9 +127,7 @@ impl BlockchainWalletService {
             .await
             .map_err(|err| {
                 error!("查询用户区块链钱包信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询用户区块链钱包信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户区块链钱包信息失败")
             })?;
 
         // 存在
@@ -147,9 +135,7 @@ impl BlockchainWalletService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("用户区块链钱包已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("用户区块链钱包已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("用户区块链钱包已存在"));
         }
 
         // 不存在
@@ -164,9 +150,7 @@ impl BlockchainWalletService {
             .await
             .map_err(|err| {
                 error!("删除用户区块链钱包信息失败, err: {:#?}", err);
-                Error::DbDeleteError
-                    .into_msg()
-                    .with_msg("删除用户区块链钱包信息失败")
+                Error::DbDeleteError.into_err_with_msg("删除用户区块链钱包信息失败")
             })?;
 
         Ok(result)

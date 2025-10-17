@@ -3,7 +3,7 @@
 use log::error;
 use nject::injectable;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use embed_asset::EmbedAssetTrait;
 use user::entity::user_base;
 use utils::crypto::sha2_256;
@@ -29,16 +29,12 @@ impl TableService {
         // 查询管理员是否存在, 存在则无需初始化
         let admin = self.table_dao.admin_user().await.map_err(|err| {
             error!("查询管理员失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("初始化失败, 请稍后再试")
+            Error::DbQueryError.into_err_with_msg("初始化失败, 请稍后再试")
         })?;
 
         if admin.is_some() {
             error!("管理员已存在无需重复初始化");
-            return Err(Error::DbDataInit
-                .into_msg()
-                .with_msg("管理员已存在无需重复初始化"));
+            return Err(Error::DbDataInit.into_err_with_msg("管理员已存在无需重复初始化"));
         }
 
         let result = self.init_table_data(req).await?;
@@ -60,9 +56,7 @@ impl TableService {
         for table in tables {
             let content = asset.to_string(table).map_err(|err| {
                 error!("数据库资源解析错误, err: {err}");
-                Error::EmbedAssetError(err.to_string())
-                    .into_msg()
-                    .with_msg("数据库资源解析错误")
+                Error::EmbedAssetError(err.to_string()).into_err_with_msg("数据库资源解析错误")
             })?;
 
             table_content_sql.push_str(&content);
@@ -76,9 +70,7 @@ impl TableService {
             .await
             .map_err(|err| {
                 error!("初始化数据库表失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("初始化数据库表失败, 请联系开发者")
+                Error::DbQueryError.into_err_with_msg("初始化数据库表失败, 请联系开发者")
             })?;
         Ok(())
     }
@@ -92,27 +84,19 @@ impl TableService {
         let asset = AssetDbTableData;
         let role_sql = asset.to_string("t_user_role.sql").map_err(|err| {
             error!("角色表资源解析错误, err: {err}");
-            Error::EmbedAssetError(err.to_string())
-                .into_msg()
-                .with_msg("角色表资源解析错误")
+            Error::EmbedAssetError(err.to_string()).into_err_with_msg("角色表资源解析错误")
         })?;
         let openapi_sql = asset.to_string("t_perm_openapi.sql").map_err(|err| {
             error!("OpenAPi表资源解析错误, err: {err}");
-            Error::EmbedAssetError(err.to_string())
-                .into_msg()
-                .with_msg("OpenAPi表资源解析错误")
+            Error::EmbedAssetError(err.to_string()).into_err_with_msg("OpenAPi表资源解析错误")
         })?;
         let menu_sql = asset.to_string("t_perm_menu.sql").map_err(|err| {
             error!("菜单表资源解析错误, err: {err}");
-            Error::EmbedAssetError(err.to_string())
-                .into_msg()
-                .with_msg("菜单表源解析错误")
+            Error::EmbedAssetError(err.to_string()).into_err_with_msg("菜单表源解析错误")
         })?;
         let schedule_job_sql = asset.to_string("t_schedule_job.sql").map_err(|err| {
             error!("任务调度作业表资源解析错误, err: {err}");
-            Error::EmbedAssetError(err.to_string())
-                .into_msg()
-                .with_msg("任务调度作业表源解析错误")
+            Error::EmbedAssetError(err.to_string()).into_err_with_msg("任务调度作业表源解析错误")
         })?;
 
         let table_sql = TableDataSql {
@@ -129,7 +113,7 @@ impl TableService {
             .await
             .map_err(|err| {
                 error!("初始化数据失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("初始化数据失败")
+                Error::DbQueryError.into_err_with_msg("初始化数据失败")
             })?;
 
         Ok(result)

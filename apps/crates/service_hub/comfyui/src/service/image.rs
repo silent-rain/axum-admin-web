@@ -3,7 +3,7 @@
 use std::io::Read;
 
 use axum_typed_multipart::FieldData;
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use log::error;
 use nject::injectable;
 use tempfile::NamedTempFile;
@@ -37,15 +37,15 @@ impl ComfyUIImageService {
     async fn image_tmp_filepath(mut image: FieldData<NamedTempFile>) -> Result<String, ErrorMsg> {
         let file_name = image.metadata.file_name.ok_or_else(|| {
             error!("请求参数异常, image is empty");
-            Error::RequestError("请求参数异常, image is empty".to_string()).into_msg()
+            Error::RequestError("请求参数异常, image is empty".to_string()).into_err()
         })?;
-        let extension = file_extension(file_name.clone())?;
+        let extension = file_extension(file_name.clone()).map_err(|e| e.into_err())?;
 
         let mut buffer = vec![];
         image
             .contents
             .read_to_end(&mut buffer)
-            .map_err(|err| Error::UploadFileError(err.to_string()))?;
+            .map_err(|err| Error::UploadFileError(err.to_string()).into_err())?;
 
         let file_hash_name = Uuid::new_v4().to_string();
         let filepath = format!("./upload/images/{file_hash_name}.{extension}");
@@ -55,13 +55,13 @@ impl ComfyUIImageService {
             .await
             .map_err(|err| {
                 error!("获取文件实例失败, err: {err}");
-                Error::Io(err).into_msg()
+                Error::Io(err).into_err()
             })?
             .write_all(&buffer)
             .await
             .map_err(|err| {
                 error!("写入文件失败, err: {err}");
-                Error::Io(err).into_msg()
+                Error::Io(err).into_err()
             })?;
 
         Ok(filepath)
@@ -77,9 +77,7 @@ impl ComfyUIImageService {
             .await
             .map_err(|err| {
                 error!("上传图片失败, err: {err}");
-                Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("上传图片失败")
+                Error::ComfyUIError(err.to_string()).into_err_with_msg("上传图片失败")
             })?;
 
         Ok(result)
@@ -103,9 +101,7 @@ impl ComfyUIImageService {
             .await
             .map_err(|err| {
                 error!("上传蒙版图片失败, err: {err}");
-                Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("上传蒙版图片失败")
+                Error::ComfyUIError(err.to_string()).into_err_with_msg("上传蒙版图片失败")
             })?;
 
         Ok(result)
@@ -144,9 +140,7 @@ impl ComfyUIImageService {
     pub async fn view_image(&self, req: ImageViewReq) -> Result<Vec<u8>, ErrorMsg> {
         let result = self.comfyui_client().view_image(req).await.map_err(|err| {
             error!("获取图片失败, err: {err}");
-            Error::ComfyUIError(err.to_string())
-                .into_msg()
-                .with_msg("获取图片失败")
+            Error::ComfyUIError(err.to_string()).into_err_with_msg("获取图片失败")
         })?;
 
         Ok(result)

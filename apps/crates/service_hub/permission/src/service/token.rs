@@ -5,7 +5,7 @@ use nject::injectable;
 use sea_orm::Set;
 use uuid::Uuid;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::token::TokenDao,
@@ -27,7 +27,7 @@ impl TokenService {
     pub async fn list(&self, req: GetTokensReq) -> Result<(Vec<token::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.token_dao.list(req).await.map_err(|err| {
             error!("查询令牌列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询令牌列表失败")
+            Error::DbQueryError.into_err_with_msg("查询令牌列表失败")
         })?;
 
         // 屏蔽口令
@@ -46,11 +46,11 @@ impl TokenService {
             .await
             .map_err(|err| {
                 error!("查询令牌信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询令牌信息失败")
+                Error::DbQueryError.into_err_with_msg("查询令牌信息失败")
             })?
             .ok_or_else(|| {
                 error!("令牌不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("令牌不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("令牌不存在")
             })?;
 
         // 屏蔽口令
@@ -70,11 +70,11 @@ impl TokenService {
             .await
             .map_err(|err| {
                 error!("查询令牌信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询令牌信息失败")
+                Error::DbQueryError.into_err_with_msg("查询令牌信息失败")
             })?
             .ok_or_else(|| {
                 error!("令牌不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("令牌不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("令牌不存在")
             })?;
 
         // TODO 到期时间判断
@@ -82,7 +82,7 @@ impl TokenService {
         // 状态判断
         if !result.status {
             error!("user_id: {}, Token 已被禁用", result.user_id);
-            return Err(code::Error::TokenDisabed.into_msg());
+            return Err(Error::TokenDisabed.into_err());
         }
 
         // 屏蔽口令
@@ -110,7 +110,7 @@ impl TokenService {
                 .await
                 .map_err(|err: sea_orm::prelude::DbErr| {
                     error!("添加令牌信息失败, err: {:#?}", err);
-                    Error::DbAddError.into_msg().with_msg("添加令牌信息失败")
+                    Error::DbAddError.into_err_with_msg("添加令牌信息失败")
                 })?;
 
         Ok(result)
@@ -132,7 +132,7 @@ impl TokenService {
 
         let result = self.token_dao.update(model).await.map_err(|err| {
             error!("更新令牌失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新令牌失败")
+            Error::DbUpdateError.into_err_with_msg("更新令牌失败")
         })?;
 
         Ok(result)
@@ -145,7 +145,7 @@ impl TokenService {
             .await
             .map_err(|err| {
                 error!("更新令牌状态失败, err: {:#?}", err);
-                Error::DbUpdateError.into_msg().with_msg("更新令牌状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新令牌状态失败")
             })?;
 
         Ok(())
@@ -155,7 +155,7 @@ impl TokenService {
     pub async fn delete(&self, req: DeleteTokenReq) -> Result<u64, ErrorMsg> {
         let result = self.token_dao.delete(req.id).await.map_err(|err| {
             error!("删除令牌信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除令牌信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除令牌信息失败")
         })?;
 
         Ok(result)

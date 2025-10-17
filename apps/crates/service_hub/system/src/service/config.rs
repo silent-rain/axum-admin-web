@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use database::utils::GenericTree;
 
 use crate::{
@@ -29,13 +29,13 @@ impl ConfigService {
         if let Some(true) = req.all {
             return self.config_dao.all().await.map_err(|err| {
                 error!("查询配置列表失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询配置列表失败")
+                Error::DbQueryError.into_err_with_msg("查询配置列表失败")
             });
         }
 
         let (results, total) = self.config_dao.list(req).await.map_err(|err| {
             error!("查询配置列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询配置列表失败")
+            Error::DbQueryError.into_err_with_msg("查询配置列表失败")
         })?;
 
         Ok((results, total))
@@ -45,7 +45,7 @@ impl ConfigService {
     pub async fn tree(&self) -> Result<Vec<GenericTree<config::Model>>, ErrorMsg> {
         let (results, _total) = self.config_dao.all().await.map_err(|err| {
             error!("查询配置列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询配置列表失败")
+            Error::DbQueryError.into_err_with_msg("查询配置列表失败")
         })?;
 
         // 将列表转换为树列表
@@ -62,11 +62,11 @@ impl ConfigService {
             .await
             .map_err(|err| {
                 error!("查询配置信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询配置信息失败")
+                Error::DbQueryError.into_err_with_msg("查询配置信息失败")
             })?
             .ok_or_else(|| {
                 error!("配置不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("配置不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("配置不存在")
             })?;
 
         Ok(result)
@@ -89,7 +89,7 @@ impl ConfigService {
         };
         let result = self.config_dao.create(model).await.map_err(|err| {
             error!("添加配置信息失败, err: {:#?}", err);
-            Error::DbAddError.into_msg().with_msg("添加配置信息失败")
+            Error::DbAddError.into_err_with_msg("添加配置信息失败")
         })?;
 
         Ok(result)
@@ -115,7 +115,7 @@ impl ConfigService {
 
         let result = self.config_dao.update(model).await.map_err(|err| {
             error!("更新配置失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新配置失败")
+            Error::DbUpdateError.into_err_with_msg("更新配置失败")
         })?;
 
         Ok(result)
@@ -129,7 +129,7 @@ impl ConfigService {
     ) -> Result<(), ErrorMsg> {
         let result = self.config_dao.info_by_code(code).await.map_err(|err| {
             error!("查询配置编码失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询配置编码失败")
+            Error::DbQueryError.into_err_with_msg("查询配置编码失败")
         })?;
 
         // 存在
@@ -137,9 +137,7 @@ impl ConfigService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("配置编码已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("配置编码已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("配置编码已存在"));
         }
 
         // 不存在
@@ -155,11 +153,10 @@ impl ConfigService {
                 if err == RecordNotUpdated {
                     error!("更新配置状态失败, 该配置不存在");
                     return Error::DbUpdateError
-                        .into_msg()
-                        .with_msg("更新配置状态失败, 该配置不存在");
+                        .into_err_with_msg("更新配置状态失败, 该配置不存在");
                 }
                 error!("更新配置状态失败, err: {:#?}", err);
-                Error::DbUpdateError.into_msg().with_msg("更新配置状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新配置状态失败")
             })?;
 
         Ok(())
@@ -169,23 +166,19 @@ impl ConfigService {
     pub async fn delete(&self, req: DeleteConfigReq) -> Result<u64, ErrorMsg> {
         let config_children = self.config_dao.children(req.id).await.map_err(|err| {
             error!("获取所有子列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("获取所有子列表失败")
+            Error::DbQueryError.into_err_with_msg("获取所有子列表失败")
         })?;
         if !config_children.is_empty() {
             error!(
                 "请先删除子列表, children count: {:#?}",
                 config_children.len()
             );
-            return Err(Error::DbDataExistChildrenError
-                .into_msg()
-                .with_msg("请先删除子列表"));
+            return Err(Error::DbDataExistChildrenError.into_err_with_msg("请先删除子列表"));
         }
 
         let result = self.config_dao.delete(req.id).await.map_err(|err| {
             error!("删除配置信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除配置信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除配置信息失败")
         })?;
 
         Ok(result)

@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::member_level::MemberLevelDao,
@@ -31,17 +31,13 @@ impl MemberLevelService {
         if let Some(true) = req.all {
             return self.member_level_dao.all().await.map_err(|err| {
                 error!("查询所有会员等级失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询所有会员等级失败")
+                Error::DbQueryError.into_err_with_msg("查询所有会员等级失败")
             });
         }
 
         let (results, total) = self.member_level_dao.list(req).await.map_err(|err| {
             error!("查询会员等级列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询会员等级列表失败")
+            Error::DbQueryError.into_err_with_msg("查询会员等级列表失败")
         })?;
 
         Ok((results, total))
@@ -55,15 +51,11 @@ impl MemberLevelService {
             .await
             .map_err(|err| {
                 error!("查询会员等级信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询会员等级信息失败")
+                Error::DbQueryError.into_err_with_msg("查询会员等级信息失败")
             })?
             .ok_or_else(|| {
                 error!("会员等级不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("会员等级不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("会员等级不存在")
             })?;
 
         Ok(result)
@@ -90,9 +82,7 @@ impl MemberLevelService {
                 .await
                 .map_err(|err: sea_orm::prelude::DbErr| {
                     error!("添加会员等级信息失败, err: {:#?}", err);
-                    Error::DbAddError
-                        .into_msg()
-                        .with_msg("添加会员等级信息失败")
+                    Error::DbAddError.into_err_with_msg("添加会员等级信息失败")
                 })?;
 
         Ok(member_level)
@@ -117,7 +107,7 @@ impl MemberLevelService {
 
         let result = self.member_level_dao.update(model).await.map_err(|err| {
             error!("更新会员等级失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新会员等级失败")
+            Error::DbUpdateError.into_err_with_msg("更新会员等级失败")
         })?;
 
         Ok(result)
@@ -131,9 +121,7 @@ impl MemberLevelService {
             .await
             .map_err(|err| {
                 error!("查询会员等级信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询会员等级信息失败")
+                Error::DbQueryError.into_err_with_msg("查询会员等级信息失败")
             })?;
 
         // 存在
@@ -141,9 +129,7 @@ impl MemberLevelService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("会员等级名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("会员等级名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("会员等级名称已存在"));
         }
 
         // 不存在
@@ -158,7 +144,7 @@ impl MemberLevelService {
             .await
             .map_err(|err| {
                 error!("查询会员等级失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询会员等级失败")
+                Error::DbQueryError.into_err_with_msg("查询会员等级失败")
             })?;
 
         // 存在
@@ -166,9 +152,7 @@ impl MemberLevelService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("会员等级已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("会员等级已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("会员等级已存在"));
         }
 
         // 不存在
@@ -182,9 +166,7 @@ impl MemberLevelService {
             .await
             .map_err(|err| {
                 error!("更新会员等级状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新会员等级状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新会员等级状态失败")
             })?;
 
         Ok(())
@@ -194,9 +176,7 @@ impl MemberLevelService {
     pub async fn delete(&self, req: DeleteMemberLevelReq) -> Result<u64, ErrorMsg> {
         let result = self.member_level_dao.delete(req.id).await.map_err(|err| {
             error!("删除会员等级信息失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除会员等级信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除会员等级信息失败")
         })?;
 
         Ok(result)

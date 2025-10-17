@@ -1,10 +1,10 @@
 //! 接口响应类型
 //! 泛型版本
-use code::Error;
+use err_code::Error;
 
-use axum::{response::IntoResponse, Json};
+use axum::{Json, response::IntoResponse};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 /// 数据列表
 #[derive(Debug, Serialize, Deserialize, Clone)]

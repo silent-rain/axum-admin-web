@@ -3,7 +3,7 @@
 use log::error;
 use nject::injectable;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use system::ImageCaptchaDao;
 use user::{BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao, enums::user_base::UserType};
 use utils::crypto::sha2_256;
@@ -31,25 +31,25 @@ impl RegisterService {
             UserType::Base => {
                 if req.phone.is_none() {
                     error!("请输入用户名");
-                    return Err(Error::InvalidParameter("请输入用户名".to_string()).into_msg());
+                    return Err(Error::InvalidParameter("请输入用户名".to_string()).into_err());
                 }
             }
             UserType::Phone => {
                 if req.phone.is_none() {
                     error!("请输入手机号码");
-                    return Err(Error::InvalidParameter("请输入手机号码".to_string()).into_msg());
+                    return Err(Error::InvalidParameter("请输入手机号码".to_string()).into_err());
                 }
             }
             UserType::Email => {
                 if req.email.is_none() {
                     error!("请输入邮箱");
-                    return Err(Error::InvalidParameter("请输入邮箱".to_string()).into_msg());
+                    return Err(Error::InvalidParameter("请输入邮箱".to_string()).into_err());
                 }
             }
             UserType::BlockchainWallet => {
                 if req.phone.is_none() {
                     error!("请输入钱包地址");
-                    return Err(Error::InvalidParameter("请输入钱包地址".to_string()).into_msg());
+                    return Err(Error::InvalidParameter("请输入钱包地址".to_string()).into_err());
                 }
             }
         }
@@ -81,7 +81,7 @@ impl RegisterService {
         // 添加用户
         let _result = self.register_dao.add_user(data).await.map_err(|err| {
             error!("注册用户失败, err: {:#?}", err);
-            Error::DbAddError.into_msg().with_msg("注册用户失败")
+            Error::DbAddError.into_err_with_msg("注册用户失败")
         })?;
 
         Ok(())
@@ -95,10 +95,10 @@ impl RegisterService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?;
         if result.is_some() {
-            return Err(Error::UserAddError.into_msg().with_msg("用户名已存在"));
+            return Err(Error::UserAddError.into_err_with_msg("用户名已存在"));
         }
         Ok(())
     }
@@ -108,10 +108,9 @@ impl RegisterService {
         let phone = match req.phone.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter(
-                    "请求参数错误, phone 不能为空".to_string(),
-                )
-                .into_msg());
+                return Err(
+                    Error::InvalidParameter("请求参数错误, phone 不能为空".to_string()).into_err(),
+                );
             }
         };
 
@@ -120,14 +119,12 @@ impl RegisterService {
         // 检测是否已注册用户
         let phone = self.phone_dao.info_by_phone(phone).await.map_err(|err| {
             error!("查询用户信息失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+            Error::DbQueryError.into_err_with_msg("查询用户信息失败")
         })?;
         if phone.is_some() {
             {
                 error!("该手机号码已注册");
-                return Err(code::Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("该手机号码已注册"));
+                return Err(Error::DbDataExistError.into_err_with_msg("该手机号码已注册"));
             };
         }
 
@@ -139,23 +136,21 @@ impl RegisterService {
         let email = match data.email.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("请求参数错误, email 不能为空"));
+                return Err(
+                    Error::DbDataExistError.into_err_with_msg("请求参数错误, email 不能为空")
+                );
             }
         };
 
         // 检测是否已注册邮箱
         let user = self.email_dao.info_by_email(email).await.map_err(|err| {
             error!("查询用户信息失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+            Error::DbQueryError.into_err_with_msg("查询用户信息失败")
         })?;
         if user.is_some() {
             {
                 error!("该邮箱已注册");
-                return Err(code::Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("该邮箱已注册"));
+                return Err(Error::DbDataExistError.into_err_with_msg("该邮箱已注册"));
             };
         }
 
@@ -169,10 +164,10 @@ impl RegisterService {
         let blockchain_wallet = match req.blockchain_wallet.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter(
+                return Err(Error::InvalidParameter(
                     "请求参数错误, blockchain_wallet 不能为空".to_string(),
                 )
-                .into_msg());
+                .into_err());
             }
         };
 
@@ -183,14 +178,12 @@ impl RegisterService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?;
         if blockchain_wallet.is_some() {
             {
                 error!("该钱包已注册");
-                return Err(code::Error::DbDataExistError
-                    .into_msg()
-                    .with_msg("该钱包已注册"));
+                return Err(Error::DbDataExistError.into_err_with_msg("该钱包已注册"));
             };
         }
 

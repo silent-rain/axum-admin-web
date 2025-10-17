@@ -1,8 +1,8 @@
 use chrono::Local;
-use jsonwebtoken::{
-    Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode, errors,
-};
+use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
+
+use crate::error::Error;
 
 const SECRET: &str = "secret";
 const ISS: &str = "silent-rain";
@@ -11,32 +11,6 @@ const KID: &str = "silent-rain";
 const NBF: usize = 0;
 /// Token 过期时间
 const EXPIRE: i64 = 1000 * 60 * 60 * 24 * 30; // 30 Day
-
-#[derive(Debug, PartialEq, thiserror::Error)]
-#[repr(u16)]
-pub enum Error {
-    /// 令牌已经过期
-    #[error("Token has expired")]
-    CheckExp,
-    /// Audience 验证错误
-    #[error("Audience verification failed")]
-    CheckAud,
-    /// Issued At 时间验证错误
-    #[error("Issued At time verification failed")]
-    CheckIat,
-    /// Not Before 时间验证错误
-    #[error("Not Before time verification failed")]
-    CheckNbf,
-    /// Subject 验证错误
-    #[error("Subject verification failed")]
-    CheckSub,
-    /// 发行人验证错误
-    #[error("Issuer verification failed")]
-    CheckIss,
-    /// JWT 错误
-    #[error("JWT processing error: {0}")]
-    JwtError(#[from] errors::Error),
-}
 
 /// Our claims struct, it needs to derive `Serialize` and/or `Deserialize`
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
@@ -60,6 +34,7 @@ pub struct Claims {
     iss: Option<String>,
 }
 
+/// Claims 相关的验证方法
 impl Claims {
     /// 验证过期时间
     pub fn check_exp(&self) -> Result<&Self, Error> {
@@ -136,43 +111,37 @@ impl Claims {
     }
 }
 
-/// 编码
-pub fn encode_token(user_id: i32, username: String) -> Result<String, Error> {
-    let exp = Local::now().timestamp_millis() + EXPIRE;
-    let claims = Claims {
-        user_id,
-        username,
-        exp: exp as usize,
-        nbf: Some(NBF),
-        iss: Some(ISS.to_owned()),
-        ..Default::default()
-    };
-    let mut header = Header::new(Algorithm::HS256);
-    header.kid = Some(KID.to_owned());
-    let token = encode(&header, &claims, &EncodingKey::from_secret(SECRET.as_ref()))
-        .map_err(Error::JwtError)?;
-    Ok(token)
-}
+impl Claims {
+    /// 编码
+    pub fn encode_token(user_id: i32, username: String) -> Result<String, Error> {
+        let exp = Local::now().timestamp_millis() + EXPIRE;
+        let claims = Claims {
+            user_id,
+            username,
+            exp: exp as usize,
+            nbf: Some(NBF),
+            iss: Some(ISS.to_owned()),
+            ..Default::default()
+        };
+        let mut header = Header::new(Algorithm::HS256);
+        header.kid = Some(KID.to_owned());
+        let token = encode(&header, &claims, &EncodingKey::from_secret(SECRET.as_ref()))
+            .map_err(Error::JsonWebToken)?;
+        Ok(token)
+    }
 
-/// 解码
-pub fn decode_token(token: &str) -> Result<Claims, Error> {
-    let claims = decode::<Claims>(
-        token,
-        &DecodingKey::from_secret(SECRET.as_ref()),
-        &Validation::default(),
-    )
-    .map_err(Error::JwtError)?
-    .claims;
+    /// 解码
+    pub fn decode_token(token: &str) -> Result<Claims, Error> {
+        let claims = decode::<Claims>(
+            token,
+            &DecodingKey::from_secret(SECRET.as_ref()),
+            &Validation::default(),
+        )
+        .map_err(Error::JsonWebToken)?
+        .claims;
 
-    Ok(claims)
-}
-
-/// 解码 Token 并进行验证
-pub fn decode_token_with_verify(token: &str) -> Result<Claims, Error> {
-    let claims = decode_token(token)?;
-    claims.verify()?;
-
-    Ok(claims)
+        Ok(claims)
+    }
 }
 
 #[cfg(test)]
@@ -192,7 +161,7 @@ mod tests {
 
     #[test]
     fn it_encode_token() -> Result<(), Error> {
-        let token = encode_token(1, "user_name".to_owned())?;
+        let token = Claims::encode_token(1, "user_name".to_owned())?;
         println!("token: {:?}", token);
         assert!(!token.is_empty());
 
@@ -202,7 +171,7 @@ mod tests {
     #[test]
     fn it_decode_token() -> Result<(), Error> {
         let token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6InNpbGVudC1yYWluIn0.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InVzZXJfbmFtZSIsImV4cCI6MTcxNTUyNTYzNDQ2NywiYXVkIjpudWxsLCJpYXQiOm51bGwsIm5iZiI6MCwic3ViIjpudWxsLCJpc3MiOiJzaWxlbnQtcmFpbiJ9.g4A48G5PE0vAaiqYzXEe_Xb7AtLo9h5B3Z3hOOYgDyU";
-        let result = decode_token(token)?;
+        let result = Claims::decode_token(token)?;
         println!("result: {:?}", result);
 
         let expected = Claims {
@@ -221,7 +190,7 @@ mod tests {
     #[test]
     fn it_decode_token_verify() -> Result<(), Error> {
         let token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6InNpbGVudC1yYWluIn0.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InVzZXJfbmFtZSIsImV4cCI6MTcxNTUyNTc1NjM1NCwiYXVkIjpudWxsLCJpYXQiOm51bGwsIm5iZiI6MCwic3ViIjpudWxsLCJpc3MiOiJzaWxlbnQtcmFpbiJ9.HtSnf34Ybz-O8cfKMADJ_lvKK8LdRxKcPhb4yynNn-o";
-        let result = decode_token(token)?;
+        let result = Claims::decode_token(token)?;
         println!("result: {:?}", result);
 
         let expected = Claims {

@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::user_session::UserSessionDao,
@@ -29,9 +29,7 @@ impl UserSessionService {
     ) -> Result<(Vec<user_session::Model>, u64), ErrorMsg> {
         let (results, total) = self.user_session_dao.list(req).await.map_err(|err| {
             error!("查询用户session列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询用户session列表失败")
+            Error::DbQueryError.into_err_with_msg("查询用户session列表失败")
         })?;
 
         Ok((results, total))
@@ -45,15 +43,11 @@ impl UserSessionService {
             .await
             .map_err(|err| {
                 error!("查询用户session信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询用户session信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户session信息失败")
             })?
             .ok_or_else(|| {
                 error!("用户session不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("用户session不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("用户session不存在")
             })?;
 
         Ok(result)
@@ -69,9 +63,7 @@ impl UserSessionService {
         };
         let result = self.user_session_dao.create(model).await.map_err(|err| {
             error!("添加用户session信息失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加用户session信息失败")
+            Error::DbAddError.into_err_with_msg("添加用户session信息失败")
         })?;
 
         Ok(result)
@@ -89,9 +81,7 @@ impl UserSessionService {
 
         let result = self.user_session_dao.update(model).await.map_err(|err| {
             error!("更新用户session失败, err: {:#?}", err);
-            Error::DbUpdateError
-                .into_msg()
-                .with_msg("更新用户session失败")
+            Error::DbUpdateError.into_err_with_msg("更新用户session失败")
         })?;
 
         Ok(result)
@@ -106,13 +96,10 @@ impl UserSessionService {
                 if err == RecordNotUpdated {
                     error!("更新用户session状态失败, {err}");
                     return Error::DbUpdateError
-                        .into_msg()
-                        .with_msg("更新用户session状态失败, 请登陆");
+                        .into_err_with_msg("更新用户session状态失败, 请登陆");
                 }
                 error!("更新用户session状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("操作失败, 请重新登陆")
+                Error::DbUpdateError.into_err_with_msg("操作失败, 请重新登陆")
             })?;
 
         Ok(())
@@ -122,9 +109,7 @@ impl UserSessionService {
     pub async fn delete(&self, req: DeleteUserSessionReq) -> Result<u64, ErrorMsg> {
         let result = self.user_session_dao.delete(req.id).await.map_err(|err| {
             error!("删除用户session失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除用户session失败")
+            Error::DbDeleteError.into_err_with_msg("删除用户session失败")
         })?;
 
         Ok(result)

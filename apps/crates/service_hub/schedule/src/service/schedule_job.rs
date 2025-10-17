@@ -18,7 +18,7 @@ use crate::{
     enums::schedule_job::Source,
 };
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 /// 服务层
 #[injectable]
@@ -35,9 +35,7 @@ impl ScheduleJobService {
     ) -> Result<(Vec<schedule_job::Model>, u64), ErrorMsg> {
         let (results, total) = self.schedule_job_dao.list(req).await.map_err(|err| {
             error!("查询调度任务列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询调度任务列表失败")
+            Error::DbQueryError.into_err_with_msg("查询调度任务列表失败")
         })?;
 
         Ok((results, total))
@@ -51,15 +49,11 @@ impl ScheduleJobService {
             .await
             .map_err(|err| {
                 error!("查询调度任务作业失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询调度任务作业失败")
+                Error::DbQueryError.into_err_with_msg("查询调度任务作业失败")
             })?
             .ok_or_else(|| {
                 error!("调度任务不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("调度任务不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("调度任务不存在")
             })?;
 
         Ok(result)
@@ -84,9 +78,7 @@ impl ScheduleJobService {
         };
         let result = self.schedule_job_dao.create(model).await.map_err(|err| {
             error!("添加调度任务作业失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加调度任务作业失败")
+            Error::DbAddError.into_err_with_msg("添加调度任务作业失败")
         })?;
 
         Ok(result)
@@ -109,7 +101,7 @@ impl ScheduleJobService {
 
         let result = self.schedule_job_dao.update(model).await.map_err(|err| {
             error!("更新调度任务失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新调度任务失败")
+            Error::DbUpdateError.into_err_with_msg("更新调度任务失败")
         })?;
 
         Ok(result)
@@ -127,7 +119,7 @@ impl ScheduleJobService {
             .await
             .map_err(|err| {
                 error!("查询任务名称失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询任务名称失败")
+                Error::DbQueryError.into_err_with_msg("查询任务名称失败")
             })?;
 
         // 存在
@@ -135,9 +127,7 @@ impl ScheduleJobService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("任务名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("任务名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("任务名称已存在"));
         }
 
         // 不存在
@@ -153,13 +143,10 @@ impl ScheduleJobService {
                 if err == RecordNotUpdated {
                     error!("更新调度任务状态失败, 该调度任务不存在");
                     return Error::DbUpdateError
-                        .into_msg()
-                        .with_msg("更新调度任务状态失败, 该调度任务不存在");
+                        .into_err_with_msg("更新调度任务状态失败, 该调度任务不存在");
                 }
                 error!("更新调度任务状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新调度任务状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新调度任务状态失败")
             })?;
 
         Ok(())
@@ -167,23 +154,20 @@ impl ScheduleJobService {
 
     /// 调度任务下线
     async fn schedule_offline(&self, uuid: String) -> Result<(), ErrorMsg> {
-        let job_id =
-            Uuid::parse_str(&uuid).map_err(|err| Error::UuidParseError(err.to_string()))?;
+        let job_id = Uuid::parse_str(&uuid)
+            .map_err(|err| Error::UuidParseError(err.to_string()).into_err())?;
         JobScheduler::new()
             .await
             .map_err(|err| {
                 error!("获取任务实例失败, err: {:#?}", err);
-                Error::ScheduleInstance
-                    .into_msg()
-                    .with_msg("获取任务实例失败")
+                Error::ScheduleInstance.into_err_with_msg("获取任务实例失败")
             })?
             .remove(&job_id)
             .await
             .map_err(|err| {
                 error!("调度任务移除解析失败, err: {:#?}", err);
                 Error::ScheduleRemoveError(err.to_string())
-                    .into_msg()
-                    .with_msg("调度任务移除解析失败")
+                    .into_err_with_msg("调度任务移除解析失败")
             })?;
 
         Ok(())
@@ -194,9 +178,7 @@ impl ScheduleJobService {
         let job = self.info(GetScheduleJobReq { id: req.id }).await?;
         if job.source == Source::System as i8 {
             error!("系统任务不允许删除");
-            return Err(Error::DbDeleteError
-                .into_msg()
-                .with_msg("系统任务不允许删除"));
+            return Err(Error::DbDeleteError.into_err_with_msg("系统任务不允许删除"));
         }
 
         // 调度任务下线
@@ -206,23 +188,17 @@ impl ScheduleJobService {
             .await
             .map_err(|err| {
                 error!("查询最新的调度任务作业失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询最新的调度任务作业失败")
+                Error::DbQueryError.into_err_with_msg("查询最新的调度任务作业失败")
             })?
             .ok_or_else(|| {
                 error!("调度任务不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("调度任务不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("调度任务不存在")
             })?;
         self.schedule_offline(status_model.uuid).await?;
 
         let result = self.schedule_job_dao.delete(req.id).await.map_err(|err| {
             error!("删除调度任务作业失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除调度任务作业失败")
+            Error::DbDeleteError.into_err_with_msg("删除调度任务作业失败")
         })?;
 
         Ok(result)

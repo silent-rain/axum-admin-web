@@ -1,10 +1,18 @@
 [package]
-name = "jwt"
+name = "axum_jwt"
 version = "0.1.0"
 edition = "2024"
 
+
 [dependencies]
+axum = { workspace = true }
+axum_context = { workspace = true }
+tower = { workspace = true }
+futures = { workspace = true }
+
 jsonwebtoken = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 chrono = { workspace = true }
 thiserror = { workspace = true }
+log = { workspace = true }

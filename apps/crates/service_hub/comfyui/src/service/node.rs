@@ -1,6 +1,6 @@
 //! ComfyUI 节点管理
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use log::error;
 use nject::injectable;
 use serde_json::Value;
@@ -26,9 +26,7 @@ impl ComfyUINodeService {
             .await
             .map_err(|err| {
                 error!("获取节点信息失败, err: {err}");
-                Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("获取节点信息失败")
+                Error::ComfyUIError(err.to_string()).into_err_with_msg("获取节点信息失败")
             })?;
 
         Ok(result)
@@ -38,9 +36,7 @@ impl ComfyUINodeService {
     pub async fn extensions(&self) -> Result<(Vec<String>, u64), ErrorMsg> {
         let results = self.comfyui_client().extensions().await.map_err(|err| {
             error!("获取扩展节点列表失败, err: {err}");
-            Error::ComfyUIError(err.to_string())
-                .into_msg()
-                .with_msg("获取扩展节点列表失败")
+            Error::ComfyUIError(err.to_string()).into_err_with_msg("获取扩展节点列表失败")
         })?;
 
         let total = results.len() as u64;

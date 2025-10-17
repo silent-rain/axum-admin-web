@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::email::EmailDao,
@@ -23,7 +23,7 @@ impl EmailService {
     pub async fn list(&self, req: GetEmailsReq) -> Result<(Vec<email::Model>, u64), ErrorMsg> {
         let (results, total) = self.email_dao.list(req).await.map_err(|err| {
             error!("查询邮箱列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询邮箱列表失败")
+            Error::DbQueryError.into_err_with_msg("查询邮箱列表失败")
         })?;
 
         Ok((results, total))
@@ -37,11 +37,11 @@ impl EmailService {
             .await
             .map_err(|err| {
                 error!("查询邮箱信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询邮箱信息失败")
+                Error::DbQueryError.into_err_with_msg("查询邮箱信息失败")
             })?
             .ok_or_else(|| {
                 error!("邮箱不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("邮箱不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("邮箱不存在")
             })?;
 
         Ok(result)
@@ -56,11 +56,11 @@ impl EmailService {
             .await
             .map_err(|err| {
                 error!("查询邮箱信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询邮箱信息失败")
+                Error::DbQueryError.into_err_with_msg("查询邮箱信息失败")
             })?;
         if email.is_some() {
             error!("邮箱已存在");
-            return Err(Error::DbDataExistError.into_msg().with_msg("邮箱已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("邮箱已存在"));
         }
 
         // 检查邮箱名称是否已存在
@@ -74,7 +74,7 @@ impl EmailService {
         };
         let result = self.email_dao.create(model).await.map_err(|err| {
             error!("添加邮箱信息失败, err: {:#?}", err);
-            Error::DbAddError.into_msg().with_msg("添加邮箱信息失败")
+            Error::DbAddError.into_err_with_msg("添加邮箱信息失败")
         })?;
 
         Ok(result)
@@ -95,7 +95,7 @@ impl EmailService {
 
         let result = self.email_dao.update(model).await.map_err(|err| {
             error!("更新邮箱失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新邮箱失败")
+            Error::DbUpdateError.into_err_with_msg("更新邮箱失败")
         })?;
 
         Ok(result)
@@ -109,7 +109,7 @@ impl EmailService {
     ) -> Result<(), ErrorMsg> {
         let result = self.email_dao.info_by_email(email).await.map_err(|err| {
             error!("查询邮箱信息失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询邮箱信息失败")
+            Error::DbQueryError.into_err_with_msg("查询邮箱信息失败")
         })?;
 
         // 存在
@@ -117,7 +117,7 @@ impl EmailService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("邮箱已存在");
-            return Err(Error::DbDataExistError.into_msg().with_msg("邮箱已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("邮箱已存在"));
         }
 
         // 不存在
@@ -128,7 +128,7 @@ impl EmailService {
     pub async fn delete(&self, req: DeleteEmailReq) -> Result<u64, ErrorMsg> {
         let result = self.email_dao.delete(req.id).await.map_err(|err| {
             error!("删除邮箱失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除邮箱失败")
+            Error::DbDeleteError.into_err_with_msg("删除邮箱失败")
         })?;
 
         Ok(result)

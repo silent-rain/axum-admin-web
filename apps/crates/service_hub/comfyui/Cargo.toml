@@ -5,13 +5,13 @@ edition = "2024"
 
 [dependencies]
 database = { path = "../../core/database" }
-code = { path = "../../core/code" }
+err_code = { path = "../../core/err_code" }
 inject = { path = "../../core/inject" }
 utils = { path = "../../core/utils" }
 axum_response = { path = "../../axum_response" }
-axum_validator = { path = "../../axum_validator" }
 
 axum = { workspace = true }
+axum_validator = { workspace = true }
 axum_typed_multipart = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }

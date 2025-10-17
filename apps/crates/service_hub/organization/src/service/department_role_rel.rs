@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::department_role_rel::DepartmentRoleRelDao,
@@ -30,9 +30,7 @@ impl DepartmentRoleRelService {
             .await
             .map_err(|err| {
                 error!("查询部门角色关系列表失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询部门角色关系列表失败")
+                Error::DbQueryError.into_err_with_msg("查询部门角色关系列表失败")
             })?;
 
         Ok((results, total))
@@ -59,9 +57,7 @@ impl DepartmentRoleRelService {
             .await
             .map_err(|err| {
                 error!("批量添加部门角色关系失败, err: {:#?}", err);
-                Error::DbBatchAddError
-                    .into_msg()
-                    .with_msg("批量添加部门角色关系失败")
+                Error::DbBatchAddError.into_err_with_msg("批量添加部门角色关系失败")
             })?;
 
         Ok(result)
@@ -75,9 +71,7 @@ impl DepartmentRoleRelService {
             .await
             .map_err(|err| {
                 error!("批量删除部门角色关系失败, err: {:#?}", err);
-                Error::DbBatchDeleteError
-                    .into_msg()
-                    .with_msg("批量删除部门角色关系失败")
+                Error::DbBatchDeleteError.into_err_with_msg("批量删除部门角色关系失败")
             })?;
 
         Ok(result)

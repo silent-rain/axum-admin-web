@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::dict_data::DictDataDao,
@@ -29,9 +29,7 @@ impl DictDataService {
     ) -> Result<(Vec<dict_data::Model>, u64), ErrorMsg> {
         let (results, total) = self.dict_data_dao.list(req).await.map_err(|err| {
             error!("查询字典数据列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询字典数据列表失败")
+            Error::DbQueryError.into_err_with_msg("查询字典数据列表失败")
         })?;
 
         Ok((results, total))
@@ -45,15 +43,11 @@ impl DictDataService {
             .await
             .map_err(|err| {
                 error!("查询字典数据信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询字典数据信息失败")
+                Error::DbQueryError.into_err_with_msg("查询字典数据信息失败")
             })?
             .ok_or_else(|| {
                 error!("字典数据不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("字典数据不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("字典数据不存在")
             })?;
 
         Ok(result)
@@ -68,13 +62,11 @@ impl DictDataService {
             .await
             .map_err(|err| {
                 error!("查询字典标签失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询字典标签失败")
+                Error::DbQueryError.into_err_with_msg("查询字典标签失败")
             })?;
         if dict_data.is_some() {
             error!("字典标签已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("字典标签已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("字典标签已存在"));
         }
 
         let model = dict_data::ActiveModel {
@@ -88,9 +80,7 @@ impl DictDataService {
         };
         let result = self.dict_data_dao.create(model).await.map_err(|err| {
             error!("添加字典数据信息失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加字典数据信息失败")
+            Error::DbAddError.into_err_with_msg("添加字典数据信息失败")
         })?;
 
         Ok(result)
@@ -110,7 +100,7 @@ impl DictDataService {
 
         let result = self.dict_data_dao.update(model).await.map_err(|err| {
             error!("更新字典数据失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新字典数据失败")
+            Error::DbUpdateError.into_err_with_msg("更新字典数据失败")
         })?;
 
         Ok(result)
@@ -125,13 +115,10 @@ impl DictDataService {
                 if err == RecordNotUpdated {
                     error!("更新字典数据状态失败, 该字典数据不存在");
                     return Error::DbUpdateError
-                        .into_msg()
-                        .with_msg("更新字典数据状态失败, 该字典数据不存在");
+                        .into_err_with_msg("更新字典数据状态失败, 该字典数据不存在");
                 }
                 error!("更新字典数据状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新字典数据状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新字典数据状态失败")
             })?;
 
         Ok(())
@@ -141,9 +128,7 @@ impl DictDataService {
     pub async fn delete(&self, req: DeleteDictDataReq) -> Result<u64, ErrorMsg> {
         let result = self.dict_data_dao.delete(req.id).await.map_err(|err| {
             error!("删除字典数据信息失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除字典数据信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除字典数据信息失败")
         })?;
 
         Ok(result)

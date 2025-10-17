@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::role::RoleDao,
@@ -27,13 +27,13 @@ impl RoleService {
         if let Some(true) = req.all {
             return self.role_dao.all().await.map_err(|err| {
                 error!("查询角色列表失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询角色列表失败")
+                Error::DbQueryError.into_err_with_msg("查询角色列表失败")
             });
         }
 
         let (results, total) = self.role_dao.list(req).await.map_err(|err| {
             error!("查询角色列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询角色列表失败")
+            Error::DbQueryError.into_err_with_msg("查询角色列表失败")
         })?;
 
         Ok((results, total))
@@ -47,11 +47,11 @@ impl RoleService {
             .await
             .map_err(|err| {
                 error!("查询角色信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询角色信息失败")
+                Error::DbQueryError.into_err_with_msg("查询角色信息失败")
             })?
             .ok_or_else(|| {
                 error!("角色不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("角色不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("角色不存在")
             })?;
 
         Ok(result)
@@ -71,7 +71,7 @@ impl RoleService {
         };
         let result = self.role_dao.create(model).await.map_err(|err| {
             error!("添加角色信息失败, err: {:#?}", err);
-            Error::DbAddError.into_msg().with_msg("添加角色信息失败")
+            Error::DbAddError.into_err_with_msg("添加角色信息失败")
         })?;
 
         Ok(result)
@@ -94,7 +94,7 @@ impl RoleService {
 
         let result = self.role_dao.update(model).await.map_err(|err| {
             error!("更新角色失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新角色失败")
+            Error::DbUpdateError.into_err_with_msg("更新角色失败")
         })?;
 
         Ok(result)
@@ -108,7 +108,7 @@ impl RoleService {
     ) -> Result<(), ErrorMsg> {
         let result = self.role_dao.info_by_name(name).await.map_err(|err| {
             error!("查询角色信息失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询角色信息失败")
+            Error::DbQueryError.into_err_with_msg("查询角色信息失败")
         })?;
 
         // 存在
@@ -116,9 +116,7 @@ impl RoleService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("角色名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("角色名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("角色名称已存在"));
         }
 
         // 不存在
@@ -134,11 +132,10 @@ impl RoleService {
                 if err == RecordNotUpdated {
                     error!("更新角色状态失败, 该角色不存在");
                     return Error::DbUpdateError
-                        .into_msg()
-                        .with_msg("更新角色状态失败, 该角色不存在");
+                        .into_err_with_msg("更新角色状态失败, 该角色不存在");
                 }
                 error!("更新角色状态失败, err: {:#?}", err);
-                Error::DbUpdateError.into_msg().with_msg("更新角色状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新角色状态失败")
             })?;
 
         Ok(())
@@ -148,7 +145,7 @@ impl RoleService {
     pub async fn delete(&self, req: DeleteRoleReq) -> Result<u64, ErrorMsg> {
         let result = self.role_dao.delete(req.id).await.map_err(|err| {
             error!("删除角色信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除角色信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除角色信息失败")
         })?;
 
         Ok(result)

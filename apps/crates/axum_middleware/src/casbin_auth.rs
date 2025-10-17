@@ -12,7 +12,7 @@ use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::{error, info};
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use service_hub::permission::OpenapiService;
 use service_hub::user::UserRoleRelService;
 use service_hub::{inject::AInjectProvider, user::cached::UserCached};
@@ -101,7 +101,7 @@ where
             let inject_provider = match req.extensions().get::<AInjectProvider>() {
                 Some(v) => v.clone(),
                 None => {
-                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_err()));
                 }
             };
 
@@ -142,13 +142,13 @@ impl Casbin {
         // 加载模型
         let m = DefaultModel::from_str(MODEL)
             .await
-            .map_err(Error::CasbinError)?;
+            .map_err(|err| Error::CasbinError(err).into_err())?;
         // 加载策略
         let adapter = MemoryAdapter::default();
         // 创建 Enforcer
         let enforcer = Enforcer::new(m, adapter)
             .await
-            .map_err(Error::CasbinError)?;
+            .map_err(|err| Error::CasbinError(err).into_err())?;
 
         Ok(Casbin {
             inject_provider: inject_provider.clone(),
@@ -214,7 +214,7 @@ impl Casbin {
             .await
             .map_err(|err| {
                 error!("add policies error, {err}");
-                Error::CasbinError(err)
+                Error::CasbinError(err).into_err()
             })?;
         // 添加角色
         self.enforcer
@@ -222,7 +222,7 @@ impl Casbin {
             .await
             .map_err(|err| {
                 error!("add grouping policies error, {err}");
-                Error::CasbinError(err)
+                Error::CasbinError(err).into_err()
             })?;
 
         // 执行权限检查
@@ -232,13 +232,13 @@ impl Casbin {
             .enforce((user_id, path.clone(), method.clone()))
             .map_err(|err| {
                 error!("enforce error, {err}");
-                Error::CasbinError(err)
+                Error::CasbinError(err).into_err()
             })?;
 
         // 权限判断
         if !result {
             error!("{user_id} {method} {path}, No access permission");
-            return Err(Error::CasbinNoAccessPermission.into_msg());
+            return Err(Error::CasbinNoAccessPermission.into_err());
         }
 
         // 设置缓存

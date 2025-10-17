@@ -13,7 +13,7 @@ use http_body_util::BodyExt;
 use tower::{Layer, Service};
 use tracing::error;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use service_hub::{
     inject::AInjectProvider,
     log::{
@@ -138,7 +138,7 @@ where
     let bytes = body
         .collect()
         .await
-        .map_err(|err| Error::RequestBodyError(err.to_string()).into_msg())?
+        .map_err(|err| Error::RequestBodyError(err.to_string()).into_err())?
         .to_bytes();
     Ok(bytes)
 }
@@ -159,7 +159,7 @@ impl ApiOperationLog {
         let inject_provider = match request.extensions().get::<AInjectProvider>() {
             Some(v) => v.clone(),
             None => {
-                return Err(Error::InjectAproviderObj.into_msg());
+                return Err(Error::InjectAproviderObj.into_err());
             }
         };
 
@@ -293,24 +293,20 @@ impl ApiOperationLog {
 
         let data: serde_json::Value = serde_json::from_str(&json_str).map_err(|err| {
             error!("body 数据转换错误, err: {err}");
-            code::Error::JsonConvert(err.to_string())
-                .into_msg()
-                .with_msg("body 数据转换错误")
+            Error::JsonConvert(err.to_string()).into_err_with_msg("body 数据转换错误")
         })?;
 
         // 将Value转换为紧凑格式的字符串
         let body = serde_json::to_string(&data).map_err(|err| {
             error!("body 数据解析错误, err: {err}");
-            code::Error::JsonConvert(err.to_string())
-                .into_msg()
-                .with_msg("body 数据解析错误")
+            Error::JsonConvert(err.to_string()).into_err_with_msg("body 数据解析错误")
         })?;
 
         Ok(body)
     }
 
     /// 创建操作日志
-    async fn create_api_operation_log(self) -> Result<Self, code::ErrorMsg> {
+    async fn create_api_operation_log(self) -> Result<Self, ErrorMsg> {
         let data = match self.data {
             Some(ref v) => v,
             None => return Ok(self),

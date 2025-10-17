@@ -7,7 +7,7 @@ use std::sync::OnceLock;
 pub mod env;
 pub mod server;
 
-use code::Error;
+use err_code::Error;
 use logger::config::LoggerConfig;
 
 use serde::{Deserialize, Serialize};

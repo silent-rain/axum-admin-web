@@ -7,7 +7,7 @@ use futures::future::BoxFuture;
 use tower::{Layer, Service};
 use tracing::error;
 
-use code::Error;
+use err_code::{Error, ErrorMsg};
 use service_hub::{inject::AInjectProvider, permission::TokenService};
 
 use crate::{
@@ -78,7 +78,7 @@ where
             let inject_provider = match req.extensions().get::<AInjectProvider>() {
                 Some(v) => v.clone(),
                 None => {
-                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_err()));
                 }
             };
 
@@ -119,7 +119,7 @@ impl<S> OpenApiAuthService<S> {
         provider: AInjectProvider,
         openapi_token: String,
         passphrase: String,
-    ) -> Result<i32, code::ErrorMsg> {
+    ) -> Result<i32, ErrorMsg> {
         let token_service: TokenService = provider.provide();
         let user = token_service
             .info_by_token(openapi_token, passphrase)
@@ -128,9 +128,7 @@ impl<S> OpenApiAuthService<S> {
     }
 
     /// 获取OPEN API鉴权标识Token
-    fn get_openapi_token<ReqBody>(
-        req: &Request<ReqBody>,
-    ) -> Result<(String, String), code::ErrorMsg> {
+    fn get_openapi_token<ReqBody>(req: &Request<ReqBody>) -> Result<(String, String), ErrorMsg> {
         let token = req
             .headers()
             .get(OPENAPI_AUTHORIZATION)
@@ -138,17 +136,15 @@ impl<S> OpenApiAuthService<S> {
 
         if token.is_empty() {
             error!("鉴权标识为空");
-            return Err(code::Error::HeadersNotAuthorization
-                .into_msg()
-                .with_msg("鉴权标识为空"));
+            return Err(Error::HeadersNotAuthorization.into_err_with_msg("鉴权标识为空"));
         }
 
         let passphras = match req.headers().get(OPENAPI_PASSPHRASE) {
             Some(v) => v.to_str().map_or("", |v| v),
             None => {
-                return Err(code::Error::HeadersNotAuthorizationPassphrase
-                    .into_msg()
-                    .with_msg("鉴权口令不能为空"));
+                return Err(
+                    Error::HeadersNotAuthorizationPassphrase.into_err_with_msg("鉴权口令不能为空")
+                );
             }
         };
 

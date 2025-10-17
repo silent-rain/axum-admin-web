@@ -5,7 +5,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::department::DepartmentDao,
@@ -32,13 +32,13 @@ impl DepartmentService {
         if let Some(true) = req.all {
             return self.department_dao.all().await.map_err(|err| {
                 error!("查询所有部门失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询所有部门失败")
+                Error::DbQueryError.into_err_with_msg("查询所有部门失败")
             });
         }
 
         let (results, total) = self.department_dao.list(req).await.map_err(|err| {
             error!("查询部门列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询部门列表失败")
+            Error::DbQueryError.into_err_with_msg("查询部门列表失败")
         })?;
 
         Ok((results, total))
@@ -48,7 +48,7 @@ impl DepartmentService {
     pub async fn tree(&self) -> Result<Vec<GenericTree<department::Model>>, ErrorMsg> {
         let (results, _total) = self.department_dao.all().await.map_err(|err| {
             error!("查询部门列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询部门列表失败")
+            Error::DbQueryError.into_err_with_msg("查询部门列表失败")
         })?;
 
         // 将列表转换为树列表
@@ -64,11 +64,11 @@ impl DepartmentService {
             .await
             .map_err(|err| {
                 error!("查询部门信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询部门信息失败")
+                Error::DbQueryError.into_err_with_msg("查询部门信息失败")
             })?
             .ok_or_else(|| {
                 error!("部门不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("部门不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("部门不存在")
             })?;
 
         Ok(result)
@@ -93,13 +93,13 @@ impl DepartmentService {
                 .await
                 .map_err(|err: sea_orm::prelude::DbErr| {
                     error!("添加部门信息失败, err: {:#?}", err);
-                    Error::DbAddError.into_msg().with_msg("添加部门信息失败")
+                    Error::DbAddError.into_err_with_msg("添加部门信息失败")
                 })?;
 
         // 获取所有部门数据
         let (departments, _) = self.department_dao.all().await.map_err(|err| {
             error!("查询所有部门失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询所有部门失败")
+            Error::DbQueryError.into_err_with_msg("查询所有部门失败")
         })?;
         // 获取所有上级ID
         let pids = GenericTree::get_pids(&departments, department.id)
@@ -113,7 +113,7 @@ impl DepartmentService {
         let model: department::ActiveModel = department.clone().into();
         let _result = self.department_dao.update(model).await.map_err(|err| {
             error!("更新部门Pids失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新部门Pids失败")
+            Error::DbUpdateError.into_err_with_msg("更新部门Pids失败")
         })?;
 
         Ok(department)
@@ -128,7 +128,7 @@ impl DepartmentService {
         // 获取所有部门数据
         let (departments, _) = self.department_dao.all().await.map_err(|err| {
             error!("查询所有部门失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询所有部门失败")
+            Error::DbQueryError.into_err_with_msg("查询所有部门失败")
         })?;
         // 获取所有上级ID
         let pids = GenericTree::get_pids(&departments, req.id)
@@ -150,7 +150,7 @@ impl DepartmentService {
 
         let result = self.department_dao.update(model).await.map_err(|err| {
             error!("更新部门失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新部门失败")
+            Error::DbUpdateError.into_err_with_msg("更新部门失败")
         })?;
 
         Ok(result)
@@ -168,7 +168,7 @@ impl DepartmentService {
             .await
             .map_err(|err| {
                 error!("查询部门信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询部门信息失败")
+                Error::DbQueryError.into_err_with_msg("查询部门信息失败")
             })?;
 
         // 存在
@@ -176,9 +176,7 @@ impl DepartmentService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("部门名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("部门名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("部门名称已存在"));
         }
 
         // 不存在
@@ -192,7 +190,7 @@ impl DepartmentService {
             .await
             .map_err(|err| {
                 error!("更新部门状态失败, err: {:#?}", err);
-                Error::DbUpdateError.into_msg().with_msg("更新部门状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新部门状态失败")
             })?;
 
         Ok(())
@@ -202,20 +200,16 @@ impl DepartmentService {
     pub async fn delete(&self, req: DeleteDepartmentReq) -> Result<u64, ErrorMsg> {
         let children = self.department_dao.children(req.id).await.map_err(|err| {
             error!("获取所有子列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("获取所有子列表失败")
+            Error::DbQueryError.into_err_with_msg("获取所有子列表失败")
         })?;
         if !children.is_empty() {
             error!("请先删除子列表, children count: {:#?}", children.len());
-            return Err(Error::DbDataExistChildrenError
-                .into_msg()
-                .with_msg("请先删除子列表"));
+            return Err(Error::DbDataExistChildrenError.into_err_with_msg("请先删除子列表"));
         }
 
         let result = self.department_dao.delete(req.id).await.map_err(|err| {
             error!("删除部门信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除部门信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除部门信息失败")
         })?;
 
         Ok(result)

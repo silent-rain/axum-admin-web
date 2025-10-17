@@ -1,6 +1,6 @@
 //! ComfyUI 系统管理
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use log::error;
 use nject::injectable;
 
@@ -21,9 +21,7 @@ impl ComfyUISystemService {
     pub async fn system_stats(&self) -> Result<SystemStats, ErrorMsg> {
         let result = self.comfyui_client().system_stats().await.map_err(|err| {
             error!("获取系统统计信息失败, err: {err}");
-            Error::ComfyUIError(err.to_string())
-                .into_msg()
-                .with_msg("获取系统统计信息失败")
+            Error::ComfyUIError(err.to_string()).into_err_with_msg("获取系统统计信息失败")
         })?;
 
         Ok(result)

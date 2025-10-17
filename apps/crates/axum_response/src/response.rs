@@ -1,55 +1,50 @@
 //! 接口响应类型
-use code::{Error, ErrorMsg};
 
 use axum::{Json, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 
-use crate::response_err::ResponseErr;
+use crate::ResponseErr;
 
 /// 响应体封装
 pub type Responder<T> = Result<Response<T>, ResponseErr>;
 
-/// Data list
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DataList<T: Serialize> {
-    pub data_list: Vec<T>,
-    pub total: u64,
-}
-
-/// Response structure
-#[derive(Debug, Serialize, Deserialize)]
+/// 响应结构
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Response<T: Serialize> {
-    /// Return business code
+    /// 返回业务码
     code: u16,
-    /// Return message
+    /// 返回信息
     msg: String,
-    /// Return data
+
+    /// 返回数据
     data: Option<T>,
+    /// 数据总数
+    #[serde(skip_serializing_if = "Option::is_none")]
+    total: Option<usize>,
 }
 
 impl<T: Serialize> Default for Response<T> {
     fn default() -> Self {
         Self {
-            code: Error::OK.code(),
-            msg: Error::OK.msg(),
+            code: 0,
+            msg: "ok".to_string(),
             data: None,
+            total: None,
         }
     }
 }
 
 impl<T: Serialize> Response<T> {
-    /// Return success with no data
+    /// 返回成功
     pub fn ok() -> Self {
-        Self {
-            data: None,
-            ..Default::default()
-        }
+        Self::default()
     }
 
-    /// Set return data
+    /// 设置返回的数据
     pub fn data(data: T) -> Self {
         Self {
             data: Some(data),
+            total: None,
             ..Default::default()
         }
     }
@@ -66,42 +61,42 @@ impl<T: Serialize> Response<T> {
         self
     }
 
+    /// 获取当前状态
+    pub fn status(&self) -> u16 {
+        self.code
+    }
+
     /// 返回 JSON 结构
-    pub fn to_json<J>(&self) -> Result<Response<J>, Error>
+    pub fn to_json<J>(&self) -> Result<J, serde_json::Error>
     where
         J: for<'de> Deserialize<'de> + Serialize,
     {
-        // 转换为JSON字符串
-        let data =
-            serde_json::to_string(self).map_err(|err| Error::JsonSerialization(err.to_string()))?;
-
-        // 将JSON字符串反序列化为结构体
-        let target: Response<J> = serde_json::from_str(&data)
-            .map_err(|err| Error::JsonDeserialization(err.to_string()))?;
+        let data = serde_json::to_value(self)?;
+        let target: J = serde_json::from_value(data)?;
         Ok(target)
     }
 
     /// 返回 PB 结构
-    pub fn to_pb<PB>(&self) -> Result<tonic::Response<PB>, Error>
+    pub fn to_pb<PB>(&self) -> Result<tonic::Response<PB>, serde_json::Error>
     where
         PB: for<'de> Deserialize<'de>,
     {
-        // 转换为JSON字符串
-        let data =
-            serde_json::to_string(self).map_err(|err| Error::JsonSerialization(err.to_string()))?;
-
-        // 将JSON字符串反序列化为结构体
-        let target: PB = serde_json::from_str(&data)
-            .map_err(|err| Error::JsonDeserialization(err.to_string()))?;
+        let data = serde_json::to_value(self)?;
+        let target: PB = serde_json::from_value(data)?;
         Ok(tonic::Response::new(target))
     }
 }
 
-impl<T: Serialize> Response<DataList<T>> {
-    /// Set return data list
-    pub fn data_list(data_list: Vec<T>, total: u64) -> Self {
+impl<T: Serialize> Response<Vec<T>> {
+    /// 设置返回的数据列表
+    pub fn data_list<U>(data: Vec<T>, total: U) -> Self
+    where
+        U: TryInto<usize> + TryInto<u64>,
+    {
+        let total_usize = total.try_into().unwrap_or_default(); // 转换为 usize
         Self {
-            data: Some(DataList { data_list, total }),
+            data: Some(data),
+            total: Some(total_usize),
             ..Default::default()
         }
     }
@@ -110,33 +105,11 @@ impl<T: Serialize> Response<DataList<T>> {
 /// 打印 Response
 impl<T: Serialize> std::fmt::Display for Response<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(response code: {}, msg: {})", self.code, self.msg)
+        write!(f, "(Response(code: {}, msg: {}))", self.code, self.msg)
     }
 }
 
 impl<T: Serialize + std::fmt::Debug> std::error::Error for Response<T> {}
-
-/// 将错误枚举转换为响应体
-impl<T: Serialize> From<Error> for Response<T> {
-    fn from(err: Error) -> Self {
-        Response {
-            code: err.code(),
-            msg: err.msg(),
-            ..Default::default()
-        }
-    }
-}
-
-/// 将错误信息转换为响应体
-impl<T: Serialize> From<ErrorMsg> for Response<T> {
-    fn from(err: ErrorMsg) -> Self {
-        Response {
-            code: err.code(),
-            msg: err.msg().to_string(),
-            ..Default::default()
-        }
-    }
-}
 
 /// Axum 响应体实现
 impl<T: Serialize> IntoResponse for Response<T> {
@@ -149,7 +122,7 @@ impl<T: Serialize> IntoResponse for Response<T> {
 mod tests {
     use super::*;
 
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     struct Book {
         title: String,
         desc: String,
@@ -166,30 +139,28 @@ mod tests {
     }
 
     #[test]
-    fn test_ok_to_json() -> anyhow::Result<()> {
-        #[derive(Debug, Serialize, Deserialize)]
-        pub struct TemplateResp {}
-
-        let resp = Response::<()>::ok()
-            .with_msg("ok")
-            .to_json::<TemplateResp>()?;
-        println!("resp: {:#?}", resp);
-
-        let resp_str =
-            serde_json::to_string_pretty(&resp).expect("Failed to serialize response to JSON");
-        println!("resp str: {}", resp_str);
-
-        Ok(())
-    }
-
-    #[test]
     fn test_data() {
         let book = Book {
             title: "weather".to_string(),
             desc: "This is a book about weather".to_string(),
         };
 
-        let resp = Response::data(book).with_msg("operation successful");
+        let resp = Response::data(book);
+
+        println!("{:#?}", resp);
+
+        assert!(resp.status() == 0);
+    }
+
+    #[test]
+    fn test_data_list() {
+        let books = vec![Book {
+            title: "Douqi Continent".to_string(),
+            desc: "This is a fantasy novel".to_string(),
+        }];
+        let total = books.len();
+
+        let resp = Response::data_list(books, total).with_msg("operation successful");
         println!("resp: {:#?}", resp);
 
         let resp_str =
@@ -206,13 +177,12 @@ mod tests {
 
         #[derive(Debug, Serialize, Deserialize)]
         pub struct TemplateResp {
-            #[serde(flatten)]
             data: Book,
         }
 
         let resp = Response::data(book)
             .with_msg("operation successful")
-            .to_json::<TemplateResp>();
+            .to_json::<TemplateResp>()?;
         println!("resp: {:#?}", resp);
 
         let resp_str =
@@ -223,22 +193,6 @@ mod tests {
     }
 
     #[test]
-    fn test_data_list() {
-        let books = vec![Book {
-            title: "Douqi Continent".to_string(),
-            desc: "This is a fantasy novel".to_string(),
-        }];
-        let total = books.len() as u64;
-
-        let resp = Response::data_list(books, total).with_msg("operation successful");
-        println!("resp: {:#?}", resp);
-
-        let resp_str =
-            serde_json::to_string_pretty(&resp).expect("Failed to serialize response to JSON");
-        println!("resp str: {}", resp_str);
-    }
-
-    #[test]
     fn test_data_list_to_json() -> anyhow::Result<()> {
         let books = vec![Book {
             title: "Douqi Continent".to_string(),
@@ -246,16 +200,18 @@ mod tests {
         }];
 
         #[derive(Debug, Serialize, Deserialize)]
-        pub struct TemplatesResp {
-            pub data_list: Vec<Book>,
+        struct TemplatesResp {
+            code: u16,
+            msg: String,
+            pub data: Vec<Book>,
             pub total: u64,
         }
 
-        let total = books.len() as u64;
+        let total = books.len();
 
         let resp = Response::data_list(books, total)
             .with_msg("operation successful")
-            .to_json::<TemplatesResp>();
+            .to_json::<TemplatesResp>()?;
         println!("resp: {:#?}", resp);
 
         let resp_str =
@@ -275,6 +231,19 @@ mod tests {
         let resp = Response::data(book)
             .with_msg("operation successful")
             .into_response();
+        println!("resp: {:#?}", resp);
+    }
+
+    #[test]
+    fn test_to_string() {
+        let book = Book {
+            title: "weather".to_string(),
+            desc: "This is a book about weather".to_string(),
+        };
+
+        let resp = Response::data(book)
+            .with_msg("operation successful")
+            .to_string();
         println!("resp: {:#?}", resp);
     }
 }

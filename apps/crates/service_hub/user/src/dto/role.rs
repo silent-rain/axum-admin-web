@@ -101,7 +101,7 @@ pub struct DeleteRoleResp {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use code::Error;
+    use err_code::Error;
 
     use serde_json::json;
 

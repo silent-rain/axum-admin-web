@@ -8,8 +8,7 @@ use tower_sessions::Session;
 use tracing::error;
 
 use axum_context::{ApiAuthType, Context};
-use code::Error;
-// use entity::user::user_login_log;
+use err_code::{Error, ErrorMsg};
 use service_hub::{
     inject::AInjectProvider,
     user::{UserLoginLogService, enums::user_login_log::LoginStatus},
@@ -65,7 +64,7 @@ where
             let session = match req.extensions().get::<Session>() {
                 Some(v) => v,
                 None => {
-                    return Ok(create_error_response(Error::SessionExtension.into_msg()));
+                    return Ok(create_error_response(Error::SessionExtension.into_err()));
                 }
             };
             let session_id = match session.id() {
@@ -73,9 +72,7 @@ where
                 None => {
                     error!("获取用户信息失败, 请重新登陆");
                     return Ok(create_error_response(
-                        Error::SessionIdNotFound
-                            .into_msg()
-                            .with_msg("获取用户信息失败, 请重新登陆"),
+                        Error::SessionIdNotFound.into_err_with_msg("获取用户信息失败, 请重新登陆"),
                     ));
                 }
             };
@@ -84,7 +81,7 @@ where
             let inject_provider = match req.extensions().get::<AInjectProvider>() {
                 Some(v) => v.clone(),
                 None => {
-                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_err()));
                 }
             };
 
@@ -115,10 +112,7 @@ impl<S> SessionAuthService<S> {
     /// 获取用户ID
     ///
     /// 同时验证用户登陆状态, 非正常登录态则重新登录
-    async fn get_user_id(
-        provider: AInjectProvider,
-        session_id: String,
-    ) -> Result<i32, code::ErrorMsg> {
+    async fn get_user_id(provider: AInjectProvider, session_id: String) -> Result<i32, ErrorMsg> {
         let user_login_log_service: UserLoginLogService = provider.provide();
         let user = user_login_log_service
             .info_by_session_id(session_id.clone())
@@ -129,9 +123,9 @@ impl<S> SessionAuthService<S> {
                 "user_id: {} session_id: {}, 当前登陆已被禁用",
                 user.id, session_id
             );
-            return Err(code::Error::LoginStatusDisabled
-                .into_msg()
-                .with_msg("当前登陆已被禁用, 请重新登陆"));
+            return Err(
+                Error::LoginStatusDisabled.into_err_with_msg("当前登陆已被禁用, 请重新登陆")
+            );
         }
         if user.login_status == LoginStatus::Failed as i8 {
             error!(
@@ -139,15 +133,11 @@ impl<S> SessionAuthService<S> {
                 user.id,
                 session_id.clone()
             );
-            return Err(code::Error::LoginStatusDisabled
-                .into_msg()
-                .with_msg("登陆失败, 请重新登陆"));
+            return Err(Error::LoginStatusDisabled.into_err_with_msg("登陆失败, 请重新登陆"));
         }
         if user.login_status == LoginStatus::Logout as i8 {
             error!("user_id: {} session_id: {}, 已登出", user.id, session_id);
-            return Err(code::Error::LoginStatusDisabled
-                .into_msg()
-                .with_msg("已登出, 请重新登陆"));
+            return Err(Error::LoginStatusDisabled.into_err_with_msg("已登出, 请重新登陆"));
         }
         Ok(user.user_id)
     }

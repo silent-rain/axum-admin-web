@@ -4,6 +4,8 @@ use std::collections::BTreeMap;
 
 use serde_json::Value;
 
+use err_code::Error;
+
 /// 日志字段和值
 #[derive(Debug, Default, Clone)]
 pub struct StorageFiled {
@@ -31,7 +33,7 @@ impl Storage {
         }
     }
 
-    fn add_code(&mut self, code: &code::Error) {
+    fn add_code(&mut self, code: &Error) {
         self.code = Some(code.code());
         self.code_msg = Some(code.msg());
 
@@ -137,7 +139,7 @@ impl tracing::field::Visit for StorageVisitor {
         field: &tracing::field::Field,
         value: &(dyn std::error::Error + 'static),
     ) {
-        if let Some(err) = value.downcast_ref::<code::Error>() {
+        if let Some(err) = value.downcast_ref::<Error>() {
             self.storage.add_code(err);
             return;
         }

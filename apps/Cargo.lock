@@ -35,11 +35,11 @@ dependencies = [
  "axum_middleware",
  "axum_response",
  "axum_session",
- "code",
  "colored",
  "database",
  "dotenv",
  "embed_asset",
+ "err_code",
  "inject",
  "listenfd",
  "logger",
@@ -430,8 +430,8 @@ dependencies = [
  "axum_response",
  "axum_validator",
  "chrono",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -583,15 +583,28 @@ name = "axum_context"
 version = "0.1.0"
 dependencies = [
  "axum",
- "axum_response",
- "bytes",
- "code",
  "futures",
+ "log 0.4.28",
+ "serde",
  "serde_json",
- "tokio",
+ "thiserror 2.0.17",
  "tower",
- "tower-sessions",
- "tracing",
+]
+
+[[package]]
+name = "axum_jwt"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_context",
+ "chrono",
+ "futures",
+ "jsonwebtoken",
+ "log 0.4.28",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.17",
+ "tower",
 ]
 
 [[package]]
@@ -604,10 +617,9 @@ dependencies = [
  "axum_response",
  "bytes",
  "casbin",
- "code",
+ "err_code",
  "futures",
  "http-body-util",
- "jwt",
  "pin-project",
  "serde_json",
  "service_hub",
@@ -644,7 +656,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
- "code",
  "serde",
  "serde_json",
  "tonic",
@@ -709,13 +720,11 @@ name = "axum_validator"
 version = "0.1.0"
 dependencies = [
  "axum",
- "axum_response",
- "code",
  "mime",
  "serde",
  "serde_json",
  "serde_urlencoded",
- "tracing",
+ "thiserror 2.0.17",
  "validator",
  "validator_derive",
 ]
@@ -1069,15 +1078,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1d728cc89cf3aee9ff92b05e62b19ee65a02b5702cff7d5a377e32c6ae29d8d"
 
 [[package]]
-name = "code"
-version = "0.1.0"
-dependencies = [
- "casbin",
- "serde",
- "thiserror 2.0.17",
-]
-
-[[package]]
 name = "color-eyre"
 version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1118,10 +1118,11 @@ checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 
 [[package]]
 name = "colored"
-version = "3.0.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fde0e0ec90c9dfb3b4b1a0891a7dcd0e2bffde2f7efed5fe7c9bb00e5bfb915e"
+checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
+ "lazy_static",
  "windows-sys 0.59.0",
 ]
 
@@ -1134,8 +1135,8 @@ dependencies = [
  "axum_response",
  "axum_typed_multipart",
  "axum_validator",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -1630,6 +1631,18 @@ dependencies = [
  "serde",
  "serde_core",
  "typeid",
+]
+
+[[package]]
+name = "err_code"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum_response",
+ "casbin",
+ "color-eyre",
+ "serde",
+ "thiserror 2.0.17",
 ]
 
 [[package]]
@@ -2584,9 +2597,9 @@ dependencies = [
  "axum",
  "axum_response",
  "axum_validator",
- "code",
  "database",
  "embed_asset",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -2713,16 +2726,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jwt"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "jsonwebtoken",
- "serde",
- "thiserror 2.0.17",
-]
-
-[[package]]
 name = "kernel32-sys"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2830,14 +2833,15 @@ dependencies = [
  "axum",
  "axum_response",
  "axum_validator",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
  "sea-orm",
  "serde",
  "serde_repr",
+ "thiserror 2.0.17",
  "uap-rust",
  "utils",
  "validator",
@@ -2857,10 +2861,10 @@ name = "logger"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "code",
  "color-eyre",
  "database",
  "entity",
+ "err_code",
  "once_cell",
  "sea-orm",
  "serde",
@@ -3367,8 +3371,8 @@ dependencies = [
  "axum_response",
  "axum_validator",
  "chrono",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -3503,8 +3507,8 @@ dependencies = [
  "axum_response",
  "axum_validator",
  "chrono",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -3634,13 +3638,6 @@ name = "pkg-config"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
-
-[[package]]
-name = "plugins"
-version = "0.1.0"
-dependencies = [
- "colored",
-]
 
 [[package]]
 name = "polling"
@@ -4560,8 +4557,8 @@ dependencies = [
  "axum_response",
  "axum_validator",
  "chrono",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -5405,8 +5402,8 @@ dependencies = [
  "axum_validator",
  "base64 0.22.1",
  "chrono",
- "code",
  "database",
+ "err_code",
  "infer",
  "inject",
  "log 0.4.28",
@@ -5477,8 +5474,8 @@ dependencies = [
  "axum_response",
  "axum_validator",
  "chrono",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -5602,16 +5599,6 @@ checksum = "30cfb0125f12d9c277f35663a0a33f8c30190f4e4574868a330595412d34ebf3"
 dependencies = [
  "num-conv",
  "time-core",
-]
-
-[[package]]
-name = "timer"
-version = "0.1.0"
-dependencies = [
- "database",
- "entity",
- "scheduler",
- "tokio",
 ]
 
 [[package]]
@@ -6275,8 +6262,8 @@ dependencies = [
  "base64 0.22.1",
  "cache",
  "chrono",
- "code",
  "database",
+ "err_code",
  "inject",
  "log 0.4.28",
  "nject",
@@ -6317,7 +6304,7 @@ dependencies = [
  "bincode",
  "captcha-rs",
  "chrono",
- "code",
+ "err_code",
  "serde",
  "serde_json",
  "sha2",

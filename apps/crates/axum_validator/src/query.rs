@@ -3,11 +3,9 @@ use std::ops::Deref;
 
 use axum::{extract::FromRequestParts, http::request::Parts};
 use serde::de::DeserializeOwned;
-use tracing::error;
 use validator::Validate;
 
-use axum_response::ResponseErr;
-use code::Error;
+use crate::Error;
 
 #[derive(Debug)]
 pub struct Query<T>(pub T);
@@ -39,7 +37,7 @@ where
     S: Send + Sync,
     T: DeserializeOwned + Validate,
 {
-    type Rejection = ResponseErr;
+    type Rejection = Error;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         // 解析查询字符串
@@ -47,19 +45,10 @@ where
         // 从查询字符串中解析出 T 结构体
         let query_info: Result<T, _> = serde_urlencoded::from_str(query_string);
         // 根据解析结果进行验证
-        let inner_query = match query_info {
-            Ok(v) => v,
-            Err(e) => {
-                error!("请求参数解析失败, err: {e}");
-                return Err(ResponseErr::new(Error::InvalidParameter(e.to_string())));
-            }
-        };
+        let inner_query = query_info.map_err(|e| Error::InvalidParameter(e.to_string()))?;
 
         // 验证字段
-        if let Err(e) = inner_query.validate() {
-            error!("请求参数验证失败, err: {e}");
-            return Err(ResponseErr::new(Error::ValidateError(e.to_string())));
-        }
+        inner_query.validate()?;
         Ok(Query(inner_query))
     }
 }

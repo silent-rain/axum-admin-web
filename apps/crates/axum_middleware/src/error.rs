@@ -7,7 +7,7 @@ use axum::{
 use tracing::error;
 
 use axum_response::ResponseErr;
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 pub(crate) fn create_error_response(err: ErrorMsg) -> Response<Body> {
     let err: ResponseErr = err.into();

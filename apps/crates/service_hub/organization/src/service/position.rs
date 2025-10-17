@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::position::PositionDao,
@@ -31,13 +31,13 @@ impl PositionService {
         if let Some(true) = req.all {
             return self.position_dao.all().await.map_err(|err| {
                 error!("查询所有岗位失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询所有岗位失败")
+                Error::DbQueryError.into_err_with_msg("查询所有岗位失败")
             });
         }
 
         let (results, total) = self.position_dao.list(req).await.map_err(|err| {
             error!("查询岗位列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询岗位列表失败")
+            Error::DbQueryError.into_err_with_msg("查询岗位列表失败")
         })?;
 
         Ok((results, total))
@@ -51,11 +51,11 @@ impl PositionService {
             .await
             .map_err(|err| {
                 error!("查询岗位信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询岗位信息失败")
+                Error::DbQueryError.into_err_with_msg("查询岗位信息失败")
             })?
             .ok_or_else(|| {
                 error!("岗位不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("岗位不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("岗位不存在")
             })?;
 
         Ok(result)
@@ -80,7 +80,7 @@ impl PositionService {
                 .await
                 .map_err(|err: sea_orm::prelude::DbErr| {
                     error!("添加岗位信息失败, err: {:#?}", err);
-                    Error::DbAddError.into_msg().with_msg("添加岗位信息失败")
+                    Error::DbAddError.into_err_with_msg("添加岗位信息失败")
                 })?;
 
         Ok(position)
@@ -104,7 +104,7 @@ impl PositionService {
 
         let result = self.position_dao.update(model).await.map_err(|err| {
             error!("更新岗位失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新岗位失败")
+            Error::DbUpdateError.into_err_with_msg("更新岗位失败")
         })?;
 
         Ok(result)
@@ -118,7 +118,7 @@ impl PositionService {
     ) -> Result<(), ErrorMsg> {
         let result = self.position_dao.info_by_name(name).await.map_err(|err| {
             error!("查询岗位信息失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询岗位信息失败")
+            Error::DbQueryError.into_err_with_msg("查询岗位信息失败")
         })?;
 
         // 存在
@@ -126,9 +126,7 @@ impl PositionService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("岗位名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("岗位名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("岗位名称已存在"));
         }
 
         // 不存在
@@ -142,7 +140,7 @@ impl PositionService {
             .await
             .map_err(|err| {
                 error!("更新岗位状态失败, err: {:#?}", err);
-                Error::DbUpdateError.into_msg().with_msg("更新岗位状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新岗位状态失败")
             })?;
 
         Ok(())
@@ -152,7 +150,7 @@ impl PositionService {
     pub async fn delete(&self, req: DeletePositionReq) -> Result<u64, ErrorMsg> {
         let result = self.position_dao.delete(req.id).await.map_err(|err| {
             error!("删除岗位信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_msg().with_msg("删除岗位信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除岗位信息失败")
         })?;
 
         Ok(result)

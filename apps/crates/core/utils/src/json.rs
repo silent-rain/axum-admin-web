@@ -1,6 +1,6 @@
 //! JSON 序列化与反序列化转换
 
-use code::Error;
+use err_code::Error;
 
 use serde::{Deserialize, Deserializer, Serializer, de::DeserializeOwned};
 use tracing::error;

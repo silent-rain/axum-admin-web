@@ -5,15 +5,15 @@ edition = "2024"
 
 [dependencies]
 database = { path = "../../core/database" }
-code = { path = "../../core/code" }
+err_code = { path = "../../core/err_code" }
 inject = { path = "../../core/inject" }
 utils = { path = "../../core/utils" }
 axum_response = { path = "../../axum_response" }
-axum_validator = { path = "../../axum_validator" }
 grpc_api = { path = "../../grpc_api" }
 
 
 axum = { workspace = true }
+axum_validator = { workspace = true }
 axum-extra = { workspace = true, features = ["cookie-private", "typed-header"] }
 tonic = { workspace = true }
 sea-orm = { workspace = true }
@@ -27,7 +27,7 @@ serde_repr = { workspace = true }
 
 
 [dev-dependencies]
-orm_migration = { path = "../../core/orm_migration" }
+# orm_migration = { path = "../../core/orm_migration" }
 
 axum-test = { workspace = true }
 axum_mock = { path = "../../axum_mock" }

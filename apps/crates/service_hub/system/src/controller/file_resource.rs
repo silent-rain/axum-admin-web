@@ -8,7 +8,7 @@ use axum_response::{Responder, Response, ResponseErr};
 use axum_typed_multipart::TypedMultipart;
 use axum_validator::{Extension, Json, Query};
 
-use code::Error;
+use err_code::Error;
 use inject::AInjectProvider;
 
 use crate::{
@@ -133,7 +133,7 @@ impl FileResourceController {
             .header("Content-Type", result.content_type)
             .header(header::CONTENT_DISPOSITION, content_disposition)
             .body(Body::from(file_bytes))
-            .map_err(|err| Error::InternalServer(err.to_string()).into_msg())?;
+            .map_err(|err| Error::InternalServer(err.to_string()).into_err())?;
         Ok(resp)
     }
 

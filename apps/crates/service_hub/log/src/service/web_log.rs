@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::web_log::WebLogDao,
@@ -23,9 +23,7 @@ impl WebLogService {
     pub async fn list(&self, req: GetWebLogsReq) -> Result<(Vec<log_web::Model>, u64), ErrorMsg> {
         let (results, total) = self.log_web_dao.list(req).await.map_err(|err| {
             error!("查询WEB日志列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询WEB日志列表失败")
+            Error::DbQueryError.into_err_with_msg("查询WEB日志列表失败")
         })?;
 
         Ok((results, total))
@@ -39,15 +37,11 @@ impl WebLogService {
             .await
             .map_err(|err| {
                 error!("查询WEB日志信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询WEB日志信息失败")
+                Error::DbQueryError.into_err_with_msg("查询WEB日志信息失败")
             })?
             .ok_or_else(|| {
                 error!("WEB日志不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("WEB日志不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("WEB日志不存在")
             })?;
 
         Ok(result)
@@ -71,7 +65,7 @@ impl WebLogService {
         };
         let result = self.log_web_dao.create(model).await.map_err(|err| {
             error!("添加WEB日志信息失败, err: {:#?}", err);
-            Error::DbAddError.into_msg().with_msg("添加WEB日志信息失败")
+            Error::DbAddError.into_err_with_msg("添加WEB日志信息失败")
         })?;
 
         Ok(result)

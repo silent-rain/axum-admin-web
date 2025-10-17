@@ -2,7 +2,7 @@
 use core::time;
 
 use cache::Cache;
-use code::Error;
+use err_code::Error;
 
 /// 用户接口访问权限KEY
 pub const USER_OPENAPI_USER_ID_METHOD_PATH: &str = "USER_OPENAPI_USER_ID_METHOD_PATH";

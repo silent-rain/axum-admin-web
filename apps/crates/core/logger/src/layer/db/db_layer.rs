@@ -49,7 +49,7 @@ mod tests {
     use super::*;
 
     use crate::config;
-    use code::Error;
+    use err_code::Error;
 
     use tracing::{
         Level, debug, debug_span, error, event, info, info_span, subscriber::DefaultGuard, trace,

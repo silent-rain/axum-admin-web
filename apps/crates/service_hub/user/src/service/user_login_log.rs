@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use utils::browser::parse_user_agent_async;
 
 use crate::{
@@ -27,9 +27,7 @@ impl UserLoginLogService {
     ) -> Result<(Vec<user_login_log::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.user_login_dao.list(req).await.map_err(|err| {
             error!("查询登陆日志列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询登陆日志列表失败")
+            Error::DbQueryError.into_err_with_msg("查询登陆日志列表失败")
         })?;
 
         // 重置 session_id 为空
@@ -48,15 +46,11 @@ impl UserLoginLogService {
             .await
             .map_err(|err| {
                 error!("查询登陆日志信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询登陆日志信息失败")
+                Error::DbQueryError.into_err_with_msg("查询登陆日志信息失败")
             })?
             .ok_or_else(|| {
                 error!("登陆日志不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("登陆日志不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("登陆日志不存在")
             })?;
 
         result.session_id = "".to_string();
@@ -74,15 +68,11 @@ impl UserLoginLogService {
             .await
             .map_err(|err| {
                 error!("查询登陆日志信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询登陆日志信息失败")
+                Error::DbQueryError.into_err_with_msg("查询登陆日志信息失败")
             })?
             .ok_or_else(|| {
                 error!("未查询到登陆信息，请重新登陆");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("未查询到登陆信息，请重新登陆")
+                Error::DbQueryEmptyError.into_err_with_msg("未查询到登陆信息，请重新登陆")
             })?;
         result.session_id = "".to_string();
         Ok(result)
@@ -97,7 +87,7 @@ impl UserLoginLogService {
             .await
             .map_err(|err| {
                 error!("User-Agent解析错误, err: {:#?}", err);
-                Error::UserAgentParserError(err)
+                Error::UserAgentParserError(err).into_err_with_msg("User-Agent解析错误")
             })?;
 
         let model = user_login_log::ActiveModel {
@@ -115,9 +105,7 @@ impl UserLoginLogService {
         };
         let result = self.user_login_dao.create(model).await.map_err(|err| {
             error!("添加登陆日志信息失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加登陆日志信息失败")
+            Error::DbAddError.into_err_with_msg("添加登陆日志信息失败")
         })?;
 
         Ok(result)

@@ -13,6 +13,7 @@ crate-type = ["staticlib", "rlib"]
 inject = { path = "../core/inject" }
 embed_asset = { path = "../embed_asset" }
 
+
 public = { path = "public" }
 template = { path = "template" }
 auth = { path = "auth" }

@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::location::LocationDao,
@@ -28,9 +28,7 @@ impl LocationService {
     ) -> Result<(Vec<location::Model>, u64), ErrorMsg> {
         let (results, total) = self.location_dao.list(req).await.map_err(|err| {
             error!("查询用户地理位置列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询用户地理位置列表失败")
+            Error::DbQueryError.into_err_with_msg("查询用户地理位置列表失败")
         })?;
 
         Ok((results, total))
@@ -44,15 +42,11 @@ impl LocationService {
             .await
             .map_err(|err| {
                 error!("查询用户地理位置信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询用户地理位置信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户地理位置信息失败")
             })?
             .ok_or_else(|| {
                 error!("用户地理位置不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("用户地理位置不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("用户地理位置不存在")
             })?;
 
         Ok(result)
@@ -67,15 +61,11 @@ impl LocationService {
             .await
             .map_err(|err| {
                 error!("查询用户地理位置信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询用户地理位置信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户地理位置信息失败")
             })?;
         if location.is_some() {
             error!("用户地理位置已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("用户地理位置已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("用户地理位置已存在"));
         }
 
         let model = location::ActiveModel {
@@ -92,9 +82,7 @@ impl LocationService {
         };
         let result = self.location_dao.create(model).await.map_err(|err| {
             error!("添加用户地理位置信息失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加用户地理位置信息失败")
+            Error::DbAddError.into_err_with_msg("添加用户地理位置信息失败")
         })?;
 
         Ok(result)
@@ -117,9 +105,7 @@ impl LocationService {
 
         let result = self.location_dao.update(model).await.map_err(|err| {
             error!("更新用户地理位置失败, err: {:#?}", err);
-            Error::DbUpdateError
-                .into_msg()
-                .with_msg("更新用户地理位置失败")
+            Error::DbUpdateError.into_err_with_msg("更新用户地理位置失败")
         })?;
 
         Ok(result)
@@ -129,9 +115,7 @@ impl LocationService {
     pub async fn delete(&self, req: DeleteLocationReq) -> Result<u64, ErrorMsg> {
         let result = self.location_dao.delete(req.id).await.map_err(|err| {
             error!("删除用户地理位置信息失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除用户地理位置信息失败")
+            Error::DbDeleteError.into_err_with_msg("删除用户地理位置信息失败")
         })?;
 
         Ok(result)

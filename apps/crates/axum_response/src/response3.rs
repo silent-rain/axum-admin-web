@@ -1,9 +1,9 @@
 //! 接口响应类型
 //! 多类型
 //! 泛型版本
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
-use axum::{response::IntoResponse, Json};
+use axum::{Json, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 
 use crate::response_err::ResponseErr;

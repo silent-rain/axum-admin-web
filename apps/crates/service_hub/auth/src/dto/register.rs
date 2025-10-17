@@ -56,7 +56,7 @@ pub struct RegisterResp {}
 mod tests {
     use super::*;
 
-    use code::Error;
+    use err_code::Error;
     use serde_json::json;
     use utils::json::struct_to_struct;
 

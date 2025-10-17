@@ -6,7 +6,7 @@ use futures::future::BoxFuture;
 use tower::{Layer, Service};
 
 use axum_context::Context;
-use code::Error;
+use err_code::{Error, ErrorMsg};
 use service_hub::{
     inject::AInjectProvider,
     user::{UserBaseService, dto::user_base::RolesReq},
@@ -63,7 +63,7 @@ where
             let inject_provider = match req.extensions().get::<AInjectProvider>() {
                 Some(v) => v.clone(),
                 None => {
-                    return Ok(create_error_response(Error::InjectAproviderObj.into_msg()));
+                    return Ok(create_error_response(Error::InjectAproviderObj.into_err()));
                 }
             };
 
@@ -114,7 +114,7 @@ impl<S> CheckAuthService<S> {
     async fn get_user_checked(
         provider: AInjectProvider,
         user_id: i32,
-    ) -> Result<(i32, String), code::ErrorMsg> {
+    ) -> Result<(i32, String), ErrorMsg> {
         let user_base_service: UserBaseService = provider.provide();
         let user = user_base_service.checked_user(user_id).await?;
 
@@ -122,7 +122,7 @@ impl<S> CheckAuthService<S> {
     }
 
     /// 获取角色
-    async fn get_role(provider: AInjectProvider, user_id: i32) -> Result<Vec<i32>, code::ErrorMsg> {
+    async fn get_role(provider: AInjectProvider, user_id: i32) -> Result<Vec<i32>, ErrorMsg> {
         let user_base_service: UserBaseService = provider.provide();
         let (roles, _) = user_base_service.roles(RolesReq { user_id }).await?;
 

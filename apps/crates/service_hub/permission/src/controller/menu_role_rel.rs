@@ -25,7 +25,7 @@ impl MenuRoleRelController {
         let menu_role_rel_service: MenuRoleRelService = provider.provide();
         let (results, total) = menu_role_rel_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json::<GetMenuRoleRelsResp>()?;
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 

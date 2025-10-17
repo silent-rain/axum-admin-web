@@ -5,7 +5,7 @@ edition = "2024"
 publish = false
 
 [dependencies]
-code = { path = "../code" }
+err_code = { path = "../err_code" }
 
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

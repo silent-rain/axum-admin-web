@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::dict_dimension::DictDimensionDao,
@@ -31,17 +31,13 @@ impl DictDimensionService {
         if let Some(true) = req.all {
             return self.dict_dimension_dao.all().await.map_err(|err| {
                 error!("查询字典维度列表失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询字典维度列表失败")
+                Error::DbQueryError.into_err_with_msg("查询字典维度列表失败")
             });
         }
 
         let (results, total) = self.dict_dimension_dao.list(req).await.map_err(|err| {
             error!("查询字典维度列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询字典维度列表失败")
+            Error::DbQueryError.into_err_with_msg("查询字典维度列表失败")
         })?;
 
         Ok((results, total))
@@ -55,15 +51,11 @@ impl DictDimensionService {
             .await
             .map_err(|err| {
                 error!("查询字典维度信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询字典维度信息失败")
+                Error::DbQueryError.into_err_with_msg("查询字典维度信息失败")
             })?
             .ok_or_else(|| {
                 error!("字典维度不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("字典维度不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("字典维度不存在")
             })?;
 
         Ok(result)
@@ -90,9 +82,7 @@ impl DictDimensionService {
         };
         let result = self.dict_dimension_dao.create(model).await.map_err(|err| {
             error!("添加字典维度信息失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加字典维度信息失败")
+            Error::DbAddError.into_err_with_msg("添加字典维度信息失败")
         })?;
 
         Ok(result)
@@ -120,7 +110,7 @@ impl DictDimensionService {
 
         let result = self.dict_dimension_dao.update(model).await.map_err(|err| {
             error!("更新字典维度失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新字典维度失败")
+            Error::DbUpdateError.into_err_with_msg("更新字典维度失败")
         })?;
 
         Ok(result)
@@ -138,9 +128,7 @@ impl DictDimensionService {
             .await
             .map_err(|err| {
                 error!("查询字典维度名称失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询字典维度名称失败")
+                Error::DbQueryError.into_err_with_msg("查询字典维度名称失败")
             })?;
 
         // 存在
@@ -148,9 +136,7 @@ impl DictDimensionService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("字典维度名称已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("字典维度名称已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("字典维度名称已存在"));
         }
 
         // 不存在
@@ -169,9 +155,7 @@ impl DictDimensionService {
             .await
             .map_err(|err| {
                 error!("查询字典维度编码失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询字典维度编码失败")
+                Error::DbQueryError.into_err_with_msg("查询字典维度编码失败")
             })?;
 
         // 存在
@@ -179,9 +163,7 @@ impl DictDimensionService {
             && (current_id.is_none() || Some(model.id) != current_id)
         {
             error!("字典维度编码已存在");
-            return Err(Error::DbDataExistError
-                .into_msg()
-                .with_msg("字典维度编码已存在"));
+            return Err(Error::DbDataExistError.into_err_with_msg("字典维度编码已存在"));
         }
 
         // 不存在
@@ -197,13 +179,10 @@ impl DictDimensionService {
                 if err == RecordNotUpdated {
                     error!("更新字典维度状态失败, 该字典维度不存在");
                     return Error::DbUpdateError
-                        .into_msg()
-                        .with_msg("更新字典维度状态失败, 该字典维度不存在");
+                        .into_err_with_msg("更新字典维度状态失败, 该字典维度不存在");
                 }
                 error!("更新字典维度状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新字典维度状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新字典维度状态失败")
             })?;
 
         Ok(())
@@ -217,9 +196,7 @@ impl DictDimensionService {
             .await
             .map_err(|err| {
                 error!("删除字典维度信息失败, err: {:#?}", err);
-                Error::DbDeleteError
-                    .into_msg()
-                    .with_msg("删除字典维度信息失败")
+                Error::DbDeleteError.into_err_with_msg("删除字典维度信息失败")
             })?;
 
         Ok(result)

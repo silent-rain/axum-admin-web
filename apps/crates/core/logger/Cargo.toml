@@ -10,7 +10,7 @@ name = "logger"
 path = "src/lib.rs"
 
 [dependencies]
-code = { path = "../code" }
+err_code = { path = "../err_code" }
 entity = { path = "../entity" }
 database = { path = "../database" }
 

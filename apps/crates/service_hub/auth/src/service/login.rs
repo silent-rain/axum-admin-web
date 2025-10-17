@@ -6,7 +6,7 @@ use log::error;
 use nject::injectable;
 use tower_sessions::Session;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use system::ImageCaptchaDao;
 use user::{
     BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao,
@@ -51,7 +51,10 @@ impl LoginService {
             error!("验证码校验失败, err: {err}");
         })?;
 
-        let session_id = session.id().ok_or(Error::SessionIdNotFound)?.to_string();
+        let session_id = session
+            .id()
+            .ok_or(Error::SessionIdNotFound.into_err())?
+            .to_string();
 
         // 检测手机号码或邮件用户是否存在
         let user = self.get_user(req.clone()).await?;
@@ -67,9 +70,7 @@ impl LoginService {
                 "用户已被禁用",
                 LoginStatus::Failed,
             );
-            return Err(Error::LoginUserDisableError
-                .into_msg()
-                .with_msg("用户已被禁用"));
+            return Err(Error::LoginUserDisableError.into_err_with_msg("用户已被禁用"));
         }
         // 检测密码
         if user.password != req.password {
@@ -84,19 +85,17 @@ impl LoginService {
                 LoginStatus::Failed,
             );
 
-            return Err(Error::LoginPasswordError
-                .into_msg()
-                .with_msg("账号或密码错误"));
+            return Err(Error::LoginPasswordError.into_err_with_msg("账号或密码错误"));
         }
 
         session
             .insert("user_id", user.id)
             .await
-            .map_err(|err| Error::SessionIdInsertError(err.to_string()))?;
+            .map_err(|err| Error::SessionIdInsertError(err.to_string()).into_err())?;
         session
             .insert("username", user.username.clone())
             .await
-            .map_err(|err| Error::SessionIdInsertError(err.to_string()))?;
+            .map_err(|err| Error::SessionIdInsertError(err.to_string()).into_err())?;
 
         // 添加登陆日志
         add_login_log(
@@ -129,11 +128,11 @@ impl LoginService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("该用户不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("该用户不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("该用户不存在")
             })?;
 
         Ok(result)
@@ -144,10 +143,10 @@ impl LoginService {
         let username = match req.username.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter(
+                return Err(Error::InvalidParameter(
                     "请求参数错误, 用户名或密码 不能为空".to_string(),
                 )
-                .into_msg());
+                .into_err());
             }
         };
 
@@ -157,13 +156,11 @@ impl LoginService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("该用户名或密码不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("该用户名或密码不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("该用户名或密码不存在")
             })?;
 
         Ok(user.id)
@@ -174,10 +171,9 @@ impl LoginService {
         let phone = match data.phone.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter(
-                    "请求参数错误, phone 不能为空".to_string(),
-                )
-                .into_msg());
+                return Err(
+                    Error::InvalidParameter("请求参数错误, phone 不能为空".to_string()).into_err(),
+                );
             }
         };
 
@@ -187,13 +183,11 @@ impl LoginService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("该用户手机号不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("该用户手机号不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("该用户手机号不存在")
             })?;
 
         Ok(user.user_id)
@@ -204,10 +198,9 @@ impl LoginService {
         let email = match data.email.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter(
-                    "请求参数错误, email 不能为空".to_string(),
-                )
-                .into_msg());
+                return Err(
+                    Error::InvalidParameter("请求参数错误, email 不能为空".to_string()).into_err(),
+                );
             }
         };
 
@@ -217,13 +210,11 @@ impl LoginService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("该用户邮箱不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("该用户邮箱不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("该用户邮箱不存在")
             })?;
 
         Ok(user.user_id)
@@ -234,10 +225,9 @@ impl LoginService {
         let blockchain_wallet = match data.blockchain_wallet.clone() {
             Some(v) => v,
             None => {
-                return Err(code::Error::InvalidParameter(
-                    "请求参数错误, 钱包不能为空".to_string(),
-                )
-                .into_msg());
+                return Err(
+                    Error::InvalidParameter("请求参数错误, 钱包不能为空".to_string()).into_err(),
+                );
             }
         };
 
@@ -247,11 +237,11 @@ impl LoginService {
             .await
             .map_err(|err| {
                 error!("查询用户信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询用户信息失败")
+                Error::DbQueryError.into_err_with_msg("查询用户信息失败")
             })?
             .ok_or_else(|| {
                 error!("该钱包不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("该钱包不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("该钱包不存在")
             })?;
 
         Ok(user.user_id)

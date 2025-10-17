@@ -8,7 +8,7 @@ use sea_orm::Set;
 use utils::file::file_extension;
 use uuid::Uuid;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::file_resource::FileResourceDao,
@@ -33,7 +33,7 @@ impl FileResourceService {
     ) -> Result<(Vec<file_resource::Model>, u64), ErrorMsg> {
         let (results, total) = self.image_resource_dao.list(req).await.map_err(|err| {
             error!("查询文件列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("查询文件列表失败")
+            Error::DbQueryError.into_err_with_msg("查询文件列表失败")
         })?;
 
         // 屏蔽文件内容
@@ -52,11 +52,11 @@ impl FileResourceService {
             .await
             .map_err(|err| {
                 error!("查询文件信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询文件信息失败")
+                Error::DbQueryError.into_err_with_msg("查询文件信息失败")
             })?
             .ok_or_else(|| {
                 error!("文件不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("文件不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("文件不存在")
             })?;
 
         Ok(result)
@@ -70,11 +70,11 @@ impl FileResourceService {
             .await
             .map_err(|err| {
                 error!("获取文件失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("获取文件失败")
+                Error::DbQueryError.into_err_with_msg("获取文件失败")
             })?
             .ok_or_else(|| {
                 error!("文件不存在");
-                Error::DbQueryEmptyError.into_msg().with_msg("文件不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("文件不存在")
             })?;
 
         Ok(result)
@@ -87,16 +87,16 @@ impl FileResourceService {
     ) -> Result<file_resource::Model, ErrorMsg> {
         let file_name = req.file.metadata.file_name.ok_or_else(|| {
             error!("请求参数异常");
-            Error::RequestError("请求参数异常".to_string()).into_msg()
+            Error::RequestError("请求参数异常".to_string()).into_err()
         })?;
 
-        let extension = file_extension(file_name.clone())?;
+        let extension = file_extension(file_name.clone()).map_err(|e| e.into_err())?;
 
         let mut buffer = vec![];
         req.file
             .contents
             .read_to_end(&mut buffer)
-            .map_err(|err| Error::UploadFileError(err.to_string()))?;
+            .map_err(|err| Error::UploadFileError(err.to_string()).into_err())?;
 
         let mut content_type = req
             .file
@@ -105,9 +105,9 @@ impl FileResourceService {
             .map_or("".to_owned(), |v| v.to_string());
 
         if content_type.is_empty() {
-            let file_kind = infer::get(&buffer).ok_or(Error::HeaderContentType(format!(
-                "{file_name} file type is known"
-            )))?;
+            let file_kind = infer::get(&buffer).ok_or(
+                Error::HeaderContentType(format!("{file_name} file type is known")).into_err(),
+            )?;
             content_type = file_kind.mime_type().to_string();
         }
         let file_size = buffer.len() as u16;
@@ -126,7 +126,7 @@ impl FileResourceService {
 
         let result = self.image_resource_dao.create(model).await.map_err(|err| {
             error!("传文件信息失败, err: {:#?}", err);
-            Error::DbAddError.into_msg().with_msg("传文件信息失败")
+            Error::DbAddError.into_err_with_msg("传文件信息失败")
         })?;
 
         Ok(result)
@@ -138,15 +138,15 @@ impl FileResourceService {
         for mut file in req.files {
             let file_name = file.metadata.file_name.ok_or_else(|| {
                 error!("请求参数异常");
-                Error::RequestError("请求参数异常".to_string()).into_msg()
+                Error::RequestError("请求参数异常".to_string()).into_err()
             })?;
 
-            let extension = file_extension(file_name.clone())?;
+            let extension = file_extension(file_name.clone()).map_err(|e| e.into_err())?;
 
             let mut buffer = vec![];
             file.contents
                 .read_to_end(&mut buffer)
-                .map_err(|err| Error::UploadFileError(err.to_string()))?;
+                .map_err(|err| Error::UploadFileError(err.to_string()).into_err())?;
 
             let mut content_type = file
                 .metadata
@@ -154,9 +154,9 @@ impl FileResourceService {
                 .map_or("".to_owned(), |v| v.to_string());
 
             if content_type.is_empty() {
-                let file_kind = infer::get(&buffer).ok_or(Error::HeaderContentType(format!(
-                    "{file_name} file type is known"
-                )))?;
+                let file_kind = infer::get(&buffer).ok_or(
+                    Error::HeaderContentType(format!("{file_name} file type is known")).into_err(),
+                )?;
                 content_type = file_kind.mime_type().to_string();
             }
 
@@ -182,7 +182,7 @@ impl FileResourceService {
             .await
             .map_err(|err| {
                 error!("批量上传文件失败, err: {:#?}", err);
-                Error::DbAddError.into_msg().with_msg("批量上传文件失败")
+                Error::DbAddError.into_err_with_msg("批量上传文件失败")
             })?;
 
         Ok(result)
@@ -199,7 +199,7 @@ impl FileResourceService {
 
         let result = self.image_resource_dao.update(model).await.map_err(|err| {
             error!("更新文件失败, err: {:#?}", err);
-            Error::DbUpdateError.into_msg().with_msg("更新文件失败")
+            Error::DbUpdateError.into_err_with_msg("更新文件失败")
         })?;
 
         Ok(result)
@@ -213,7 +213,7 @@ impl FileResourceService {
             .await
             .map_err(|err| {
                 error!("删除文件信息失败, err: {:#?}", err);
-                Error::DbDeleteError.into_msg().with_msg("删除文件信息失败")
+                Error::DbDeleteError.into_err_with_msg("删除文件信息失败")
             })?;
 
         Ok(result)
@@ -227,9 +227,7 @@ impl FileResourceService {
             .await
             .map_err(|err| {
                 error!("批量删除文件信息失败, err: {:#?}", err);
-                Error::DbBatchDeleteError
-                    .into_msg()
-                    .with_msg("批量删除文件信息失败")
+                Error::DbBatchDeleteError.into_err_with_msg("批量删除文件信息失败")
             })?;
 
         Ok(result)

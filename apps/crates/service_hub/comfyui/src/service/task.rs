@@ -1,6 +1,6 @@
 //! ComfyUI 任务管理
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 use log::error;
 use nject::injectable;
 
@@ -30,9 +30,7 @@ impl ComfyUITaskService {
     pub async fn push_prompt(&self, req: PushPromptReq) -> Result<PromptResult, ErrorMsg> {
         let result = self.comfyui_client().prompt(req).await.map_err(|err| {
             error!("发布绘图任务失败, err: {err}");
-            Error::ComfyUIError(err.to_string())
-                .into_msg()
-                .with_msg("发布绘图任务失败")
+            Error::ComfyUIError(err.to_string()).into_err_with_msg("发布绘图任务失败")
         })?;
 
         Ok(result)
@@ -47,8 +45,7 @@ impl ComfyUITaskService {
             .map_err(|err| {
                 error!("获取服务器当前剩余任务列队数量失败, err: {err}");
                 Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("获取服务器当前剩余任务列队数量失败")
+                    .into_err_with_msg("获取服务器当前剩余任务列队数量失败")
             })?;
 
         Ok(result)
@@ -62,9 +59,7 @@ impl ComfyUITaskService {
             .await
             .map_err(|err| {
                 error!("获取所有历史任务数据失败, err: {err}");
-                Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("获取所有历史任务数据失败")
+                Error::ComfyUIError(err.to_string()).into_err_with_msg("获取所有历史任务数据失败")
             })?;
 
         let mut imgs = Vec::<History>::new();
@@ -91,9 +86,7 @@ impl ComfyUITaskService {
             .await
             .map_err(|err| {
                 error!("获取所有历史任务数据失败, err: {err}");
-                Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("获取所有历史任务数据失败")
+                Error::ComfyUIError(err.to_string()).into_err_with_msg("获取所有历史任务数据失败")
             })?;
 
         let mut imgs = Vec::<History>::new();
@@ -120,9 +113,7 @@ impl ComfyUITaskService {
     pub async fn queues(&self) -> Result<Queues, ErrorMsg> {
         let result = self.comfyui_client().queues().await.map_err(|err| {
             error!("获取所有的队列失败, err: {err}");
-            Error::ComfyUIError(err.to_string())
-                .into_msg()
-                .with_msg("获取所有的队列失败")
+            Error::ComfyUIError(err.to_string()).into_err_with_msg("获取所有的队列失败")
         })?;
 
         Ok(result)
@@ -132,9 +123,7 @@ impl ComfyUITaskService {
     pub async fn clear_queue(&self) -> Result<bool, ErrorMsg> {
         let result = self.comfyui_client().clear_queue().await.map_err(|err| {
             error!("清空队列失败, err: {err}");
-            Error::ComfyUIError(err.to_string())
-                .into_msg()
-                .with_msg("清空队列失败")
+            Error::ComfyUIError(err.to_string()).into_err_with_msg("清空队列失败")
         })?;
 
         Ok(result)
@@ -148,9 +137,7 @@ impl ComfyUITaskService {
             .await
             .map_err(|err| {
                 error!("删除队列失败, err: {err}");
-                Error::ComfyUIError(err.to_string())
-                    .into_msg()
-                    .with_msg("删除队列失败")
+                Error::ComfyUIError(err.to_string()).into_err_with_msg("删除队列失败")
             })?;
 
         Ok(result)
@@ -160,9 +147,7 @@ impl ComfyUITaskService {
     pub async fn interrupt(&self) -> Result<bool, ErrorMsg> {
         let result = self.comfyui_client().interrupt().await.map_err(|err| {
             error!("取消当前任务失败, err: {err}");
-            Error::ComfyUIError(err.to_string())
-                .into_msg()
-                .with_msg("取消当前任务失败")
+            Error::ComfyUIError(err.to_string()).into_err_with_msg("取消当前任务失败")
         })?;
 
         Ok(result)

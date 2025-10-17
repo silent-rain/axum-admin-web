@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::api_operation::ApiOperationDao,
@@ -28,9 +28,7 @@ impl ApiOperationService {
     ) -> Result<(Vec<log_api_operation::Model>, u64), ErrorMsg> {
         let (results, total) = self.system_dao.list(req).await.map_err(|err| {
             error!("查询操作日志列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询操作日志列表失败")
+            Error::DbQueryError.into_err_with_msg("查询操作日志列表失败")
         })?;
 
         Ok((results, total))
@@ -47,13 +45,11 @@ impl ApiOperationService {
             .await
             .map_err(|err| {
                 error!("查询操作日志失败, err: {:#?}", err);
-                Error::DbQueryError.into_msg().with_msg("查询操作日志失败")
+                Error::DbQueryError.into_err_with_msg("查询操作日志失败")
             })?
             .ok_or_else(|| {
                 error!("操作日志不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("操作日志不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("操作日志不存在")
             })?;
 
         Ok(result)
@@ -83,7 +79,7 @@ impl ApiOperationService {
         };
         let result = self.system_dao.create(data).await.map_err(|err| {
             error!("添加操作日志失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("添加操作日志失败")
+            Error::DbQueryError.into_err_with_msg("添加操作日志失败")
         })?;
 
         Ok(result)
@@ -93,7 +89,7 @@ impl ApiOperationService {
     pub async fn delete(&self, req: DeleteApiOperationReq) -> Result<u64, ErrorMsg> {
         let result = self.system_dao.delete(req.id).await.map_err(|err| {
             error!("删除操作日志失败, err: {:#?}", err);
-            Error::DbQueryError.into_msg().with_msg("删除操作日志失败")
+            Error::DbQueryError.into_err_with_msg("删除操作日志失败")
         })?;
 
         Ok(result)

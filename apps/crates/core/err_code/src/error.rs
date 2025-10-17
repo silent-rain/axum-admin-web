@@ -9,7 +9,7 @@ use serde::{Serialize, ser::Serializer};
 pub enum Error {
     /// ok
     #[error("ok")]
-    OK = 0,
+    Ok = 0,
     /// unknown error
     #[error("unknown error, {0}")]
     Unknown(String) = 10001,
@@ -54,11 +54,10 @@ pub enum Error {
     /// io error, no data available
     #[error("io error, no data available")]
     NoDataAvailable,
-    /// io error, from io::Error
-    #[error("io error, {0}")]
+    #[error(transparent)]
     Io(io::Error),
     /// from utf8 error, from std::string::FromUtf8Error
-    #[error("from utf8 error, {0}")]
+    #[error(transparent)]
     FromUtf8(#[from] std::string::FromUtf8Error),
     #[error("date time parse error, {0}")]
     DateTimeParseError(String),
@@ -184,16 +183,19 @@ pub enum Error {
     GenerateUserShareCore,
 
     // 组件错误集
-    #[error("permission error, {0}")]
+    #[error(transparent)]
     CasbinError(#[from] casbin::error::Error),
 
     // SDK API
     #[error("comfyui error, {0}")]
     ComfyUIError(String) = 30001,
 
-    /// 自定义错误
-    #[error("自定义错误")]
-    CustomError = 65535,
+    #[error(transparent)]
+    ColorEyreReport(#[from] color_eyre::Report),
+    #[error(transparent)]
+    Any(#[from] anyhow::Error) = 65535,
+    // #[error("自定义错误")]
+    // CustomError = 65535,
     // Other error from higher-level crate, for downcasting
     // Other(Box<dyn std::error::Error + Send + Sync + 'static>),
 }

@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use code::{Error, ErrorMsg};
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::template::TemplateDao,
@@ -30,9 +30,7 @@ impl TemplateService {
         if req.is_all {
             let (results, total) = self.template_dao.all().await.map_err(|err| {
                 error!("查询{{InterfaceName}}列表失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询{{InterfaceName}}列表失败")
+                Error::DbQueryError.into_err_with_msg("查询{{InterfaceName}}列表失败")
             })?;
 
             return Ok((results, total));
@@ -40,9 +38,7 @@ impl TemplateService {
 
         let (results, total) = self.template_dao.list(req).await.map_err(|err| {
             error!("查询{{InterfaceName}}列表失败, err: {:#?}", err);
-            Error::DbQueryError
-                .into_msg()
-                .with_msg("查询{{InterfaceName}}列表失败")
+            Error::DbQueryError.into_err_with_msg("查询{{InterfaceName}}列表失败")
         })?;
         Ok((results, total))
     }
@@ -55,15 +51,11 @@ impl TemplateService {
             .await
             .map_err(|err| {
                 error!("查询{{InterfaceName}}信息失败, err: {:#?}", err);
-                Error::DbQueryError
-                    .into_msg()
-                    .with_msg("查询{{InterfaceName}}信息失败")
+                Error::DbQueryError.into_err_with_msg("查询{{InterfaceName}}信息失败")
             })?
             .ok_or_else(|| {
                 error!("{{InterfaceName}}不存在");
-                Error::DbQueryEmptyError
-                    .into_msg()
-                    .with_msg("{{InterfaceName}}不存在")
+                Error::DbQueryEmptyError.into_err_with_msg("{{InterfaceName}}不存在")
             })?;
 
         Ok(result)
@@ -79,9 +71,7 @@ impl TemplateService {
 
         let result = self.template_dao.create(model).await.map_err(|err| {
             error!("添加{{InterfaceName}}失败, err: {:#?}", err);
-            Error::DbAddError
-                .into_msg()
-                .with_msg("添加{{InterfaceName}}失败")
+            Error::DbAddError.into_err_with_msg("添加{{InterfaceName}}失败")
         })?;
 
         Ok(result)
@@ -106,9 +96,7 @@ impl TemplateService {
             .await
             .map_err(|err| {
                 error!("批量添加{{InterfaceName}}失败, err: {:#?}", err);
-                Error::DbBatchAddError
-                    .into_msg()
-                    .with_msg("批量添加{{InterfaceName}}失败")
+                Error::DbBatchAddError.into_err_with_msg("批量添加{{InterfaceName}}失败")
             })?;
 
         Ok(result)
@@ -125,9 +113,7 @@ impl TemplateService {
 
         let result = self.template_dao.update(model).await.map_err(|err| {
             error!("更新{{InterfaceName}}失败, err: {:#?}", err);
-            Error::DbUpdateError
-                .into_msg()
-                .with_msg("更新{{InterfaceName}}失败")
+            Error::DbUpdateError.into_err_with_msg("更新{{InterfaceName}}失败")
         })?;
 
         Ok(result)
@@ -144,9 +130,7 @@ impl TemplateService {
             .await
             .map_err(|err| {
                 error!("更新{{InterfaceName}}状态失败, err: {:#?}", err);
-                Error::DbUpdateError
-                    .into_msg()
-                    .with_msg("更新{{InterfaceName}}状态失败")
+                Error::DbUpdateError.into_err_with_msg("更新{{InterfaceName}}状态失败")
             })?;
 
         Ok(result)
@@ -156,9 +140,7 @@ impl TemplateService {
     pub async fn delete(&self, req: DeleteTemplateReq) -> Result<u64, ErrorMsg> {
         let result = self.template_dao.delete(req.id).await.map_err(|err| {
             error!("删除{{InterfaceName}}失败, err: {:#?}", err);
-            Error::DbDeleteError
-                .into_msg()
-                .with_msg("删除{{InterfaceName}}失败")
+            Error::DbDeleteError.into_err_with_msg("删除{{InterfaceName}}失败")
         })?;
 
         Ok(result)
@@ -168,9 +150,7 @@ impl TemplateService {
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, ErrorMsg> {
         let result = self.template_dao.batch_delete(ids).await.map_err(|err| {
             error!("批量删除{{InterfaceName}}失败, err: {:#?}", err);
-            Error::DbBatchDeleteError
-                .into_msg()
-                .with_msg("批量删除{{InterfaceName}}失败")
+            Error::DbBatchDeleteError.into_err_with_msg("批量删除{{InterfaceName}}失败")
         })?;
 
         Ok(result)
@@ -181,7 +161,6 @@ impl TemplateService {
 mod tests {
     use super::*;
 
-    use code::ErrorMsg;
     use database::mock::Mock;
     use orm_migration::template::app_template;
     use orm_migration::user::user_base;
@@ -190,10 +169,10 @@ mod tests {
     async fn test_mock_add() -> Result<(), ErrorMsg> {
         let pool = Mock::builder()
             .await
-            .map_err(|err| Error::DbInit(err.to_string()))?
+            .map_err(|err| Error::DbInit(err.to_string()).into_err())?
             .migration_migrations(vec![&user_base::Migration, &app_template::Migration])
             .await
-            .map_err(|err| Error::DbTableMigration(err.to_string()))?
+            .map_err(|err| Error::DbTableMigration(err.to_string()).into_err())?
             .build();
 
         let dao = TemplateDao { db: pool };
