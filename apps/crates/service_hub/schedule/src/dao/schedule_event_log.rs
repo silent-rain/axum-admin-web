@@ -9,11 +9,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::schedule::{ScheduleEventLogEntity, schedule_event_log};
 
-use crate::{
-    dto::schedule_event_log::GetScheduleEventLogsReq,
-    entity::{ScheduleEventLogEntity, schedule_event_log},
-};
+use crate::dto::schedule_event_log::GetScheduleEventLogsReq;
 
 /// 数据访问
 #[injectable]

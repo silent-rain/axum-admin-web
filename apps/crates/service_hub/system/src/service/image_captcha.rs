@@ -7,6 +7,7 @@ use sea_orm::Set;
 use uuid::Uuid;
 
 use axum_response::ResponseErr;
+use entity::system::image_captcha;
 use err_code::Error;
 use utils::captcha::generate_captcha;
 
@@ -17,7 +18,6 @@ use crate::{
         CreateImageCaptchaReq, CreateImageCaptchaResp, DeleteImageCaptchaReq, GetImageCaptchaReq,
         GetImageCaptchasReq, GetInfoByCaptchaIdReq, ShowCaptchaImageReq,
     },
-    entity::image_captcha,
 };
 
 /// 服务层

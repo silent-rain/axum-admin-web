@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::system::{ConfigEntity, config};
 
-use crate::{
-    dto::config::GetConfigsReq,
-    entity::{ConfigEntity, config},
-};
+use crate::dto::config::GetConfigsReq;
 
 /// 数据访问
 #[injectable]

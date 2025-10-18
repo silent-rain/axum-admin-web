@@ -3,7 +3,9 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::{entity::schedule_event_log, enums::schedule_event_log::Status};
+use entity::schedule::schedule_event_log;
+
+use crate::enums::schedule_event_log::Status;
 
 /// 查询任务调度事件日志列表 请求体
 #[derive(Default, Deserialize, Validate)]

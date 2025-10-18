@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::template::template;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         BatchCreateTemplateReq, CreateTemplateReq, DeleteTemplateReq, GetTemplateReq,
         GetTemplatesReq, UpdateTemplateReq, UpdateTemplateStatusReq,
     },
-    entity::template,
 };
 
 /// 服务层

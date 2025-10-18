@@ -8,9 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::organization::{RankEntity, rank};
 
 use crate::dto::rank::GetRanksReq;
-use crate::entity::{RankEntity, rank};
 
 /// 数据访问
 #[injectable]

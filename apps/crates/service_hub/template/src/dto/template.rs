@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::entity::template;
+use entity::template::template;
 
 /// 查询列表数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]

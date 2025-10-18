@@ -5,6 +5,7 @@ use nject::injectable;
 use sea_orm::Set;
 use utils::crypto::sha2_256;
 
+use entity::user::{role, user_base, user_role_rel};
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -13,7 +14,6 @@ use crate::{
         CreateUserBaseReq, DeleteUserBaseReq, GetCheckUsernameReq, GetUserBaseReq, GetUserBasesReq,
         ProfileResp, RolesReq, UpdateUserBaseReq, UpdateUserBaseStatusReq,
     },
-    entity::{role, user_base, user_role_rel},
 };
 
 /// 服务层

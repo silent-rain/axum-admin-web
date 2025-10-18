@@ -9,13 +9,13 @@ use sea_orm::{
 };
 
 use database::PoolTrait;
-use permission::entity::{
+use entity::permission::{
     MenuEntity, MenuRoleRelEntity, OpenapiEntity, OpenapiRoleRelEntity, menu_role_rel,
     openapi_role_rel,
 };
-use user::{
-    entity::{RoleEntity, UserBaseEntity, email, phone, role, user_base, user_role_rel},
-    enums::user_base::Gender,
+use entity::user::{
+    user_base::enums::Gender,
+    {RoleEntity, UserBaseEntity, email, phone, role, user_base, user_role_rel},
 };
 
 use crate::dto::table::{CreateTableReq, TableDataSql};

@@ -431,6 +431,7 @@ dependencies = [
  "axum_validator",
  "chrono",
  "database",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",
@@ -1118,11 +1119,10 @@ checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 
 [[package]]
 name = "colored"
-version = "2.2.0"
+version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
+checksum = "fde0e0ec90c9dfb3b4b1a0891a7dcd0e2bffde2f7efed5fe7c9bb00e5bfb915e"
 dependencies = [
- "lazy_static",
  "windows-sys 0.59.0",
 ]
 
@@ -1609,6 +1609,7 @@ name = "entity"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "database",
  "rust_decimal",
  "sea-orm",
  "serde",
@@ -2599,6 +2600,7 @@ dependencies = [
  "axum_validator",
  "database",
  "embed_asset",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",
@@ -2834,6 +2836,7 @@ dependencies = [
  "axum_response",
  "axum_validator",
  "database",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",
@@ -3372,6 +3375,7 @@ dependencies = [
  "axum_validator",
  "chrono",
  "database",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",
@@ -3508,6 +3512,7 @@ dependencies = [
  "axum_validator",
  "chrono",
  "database",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",
@@ -4558,6 +4563,7 @@ dependencies = [
  "axum_validator",
  "chrono",
  "database",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",
@@ -4899,6 +4905,7 @@ dependencies = [
  "schedule",
  "system",
  "template",
+ "template_grpc",
  "tokio",
  "user",
 ]
@@ -5403,6 +5410,7 @@ dependencies = [
  "base64 0.22.1",
  "chrono",
  "database",
+ "entity",
  "err_code",
  "infer",
  "inject",
@@ -5475,6 +5483,7 @@ dependencies = [
  "axum_validator",
  "chrono",
  "database",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",
@@ -5485,6 +5494,34 @@ dependencies = [
  "serde_repr",
  "strum 0.27.2",
  "strum_macros",
+ "tokio",
+ "tonic",
+ "utils",
+ "validator",
+]
+
+[[package]]
+name = "template_grpc"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum-extra",
+ "axum-test",
+ "axum_mock",
+ "axum_response",
+ "axum_validator",
+ "chrono",
+ "database",
+ "entity",
+ "err_code",
+ "grpc_api",
+ "inject",
+ "log 0.4.28",
+ "nject",
+ "orm_migration",
+ "sea-orm",
+ "serde",
+ "serde_repr",
  "tokio",
  "tonic",
  "utils",
@@ -5599,6 +5636,16 @@ checksum = "30cfb0125f12d9c277f35663a0a33f8c30190f4e4574868a330595412d34ebf3"
 dependencies = [
  "num-conv",
  "time-core",
+]
+
+[[package]]
+name = "timer"
+version = "0.1.0"
+dependencies = [
+ "database",
+ "entity",
+ "scheduler",
+ "tokio",
 ]
 
 [[package]]
@@ -6263,6 +6310,7 @@ dependencies = [
  "cache",
  "chrono",
  "database",
+ "entity",
  "err_code",
  "inject",
  "log 0.4.28",

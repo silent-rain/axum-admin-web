@@ -9,9 +9,10 @@ path = "src/lib.rs"
 
 [dependencies]
 sea-orm = { workspace = true }
-time = { workspace = true }
+database = { workspace = true }
 
 serde = { workspace = true, features = ["derive"] }
 serde_repr = { workspace = true }
 chrono = { workspace = true }
+time = { workspace = true }
 rust_decimal = { workspace = true }

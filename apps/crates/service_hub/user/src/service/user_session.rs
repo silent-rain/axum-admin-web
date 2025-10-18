@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
+use entity::user::user_session;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreateUserSessionReq, DeleteUserSessionReq, GetUserSessionReq, GetUserSessionsReq,
         UpdateUserSessionReq, UpdateUserSessionStatusReq,
     },
-    entity::user_session,
 };
 
 /// 服务层

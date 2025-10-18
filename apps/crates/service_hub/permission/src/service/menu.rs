@@ -4,15 +4,15 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use err_code::{Error, ErrorMsg};
 use database::utils::GenericTree;
+use entity::permission::menu;
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::menu::MenuDao,
     dto::menu::{
         CreateMenuReq, DeleteMenuReq, GetMenuReq, GetMenusReq, UpdateMenuReq, UpdateMenuStatusReq,
     },
-    entity::menu,
 };
 
 /// 服务层

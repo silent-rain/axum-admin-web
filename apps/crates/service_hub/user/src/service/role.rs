@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
+use entity::user::role;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -11,7 +12,6 @@ use crate::{
     dto::role::{
         CreateRoleReq, DeleteRoleReq, GetRoleReq, GetRolesReq, UpdateRoleReq, UpdateRoleStatusReq,
     },
-    entity::role,
 };
 
 /// 服务层

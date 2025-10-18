@@ -39,7 +39,7 @@ mod tests {
     use axum_mock::MockRequest;
 
     use crate::dto::template::GetTemplatesResp;
-    use crate::entity::TemplateEntity;
+    use entity::template::TemplateEntity;
 
     use super::*;
 

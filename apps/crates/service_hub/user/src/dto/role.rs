@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::entity::role;
+use entity::user::role;
 
 /// 查询角色列表 请求体
 #[derive(Default, Deserialize, Validate)]

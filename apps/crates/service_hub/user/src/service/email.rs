@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::user::email;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::email::EmailDao,
     dto::email::{CreateEmailReq, DeleteEmailReq, GetEmailReq, GetEmailsReq, UpdateEmailReq},
-    entity::email,
 };
 
 /// 服务层

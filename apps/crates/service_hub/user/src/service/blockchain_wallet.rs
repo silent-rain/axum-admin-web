@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::user::blockchain_wallet;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreateBlockchainWalletReq, DeleteBlockchainWalletReq, GetBlockchainWalletReq,
         GetBlockchainWalletsReq, UpdateBlockchainWalletReq,
     },
-    entity::blockchain_wallet,
 };
 
 /// 服务层

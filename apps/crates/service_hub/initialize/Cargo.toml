@@ -6,17 +6,17 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-database = { path = "../../core/database" }
-err_code = { path = "../../core/err_code" }
 utils = { path = "../../core/utils" }
-inject = { path = "../../core/inject" }
-axum_response = { path = "../../axum_response" }
 embed_asset = { path = "../../embed_asset" }
-
 
 user = { path = "../user" }
 permission = { path = "../permission" }
 
+database = { workspace = true }
+entity = { workspace = true }
+err_code = { workspace = true }
+inject = { workspace = true }
+axum_response = { workspace = true }
 
 axum = { workspace = true }
 axum_validator = { workspace = true }

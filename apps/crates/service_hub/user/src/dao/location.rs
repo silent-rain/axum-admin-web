@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::user::{LocationEntity, location};
 
-use crate::{
-    dto::location::GetLocationsReq,
-    entity::{LocationEntity, location},
-};
+use crate::dto::location::GetLocationsReq;
 
 /// 数据访问
 #[injectable]

@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::user::phone;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::phone::PhoneDao,
     dto::phone::{CreatePhoneReq, DeletePhoneReq, GetPhoneReq, GetPhonesReq, UpdatePhoneReq},
-    entity::phone,
 };
 
 /// 服务层

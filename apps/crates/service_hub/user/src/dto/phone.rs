@@ -4,7 +4,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 
-use crate::entity::phone;
+use entity::user::phone;
 
 /// 查询用户手机号列表 请求体
 #[derive(Default, Deserialize, Validate)]

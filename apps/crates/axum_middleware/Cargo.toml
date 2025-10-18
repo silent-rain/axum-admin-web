@@ -5,9 +5,10 @@ edition = "2024"
 
 
 [dependencies]
-err_code = { path = "../core/err_code" }
 service_hub = { path = "../service_hub" }
-axum_response = { path = "../axum_response" }
+
+err_code = { workspace = true }
+axum_response = { workspace = true }
 
 tokio = { workspace = true }
 axum = { workspace = true }

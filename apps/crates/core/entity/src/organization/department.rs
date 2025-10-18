@@ -8,7 +8,7 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::utils::list_tree::GenericTreeTrait;
+use database::utils::GenericTreeTrait;
 
 /// 部门表
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]

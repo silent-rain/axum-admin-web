@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
+use entity::system::dict_data;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreateDictDataReq, DeleteDictDataReq, GetDictDataReq, GetDictDatasReq, UpdateDictDataReq,
         UpdateDictDataStatusReq,
     },
-    entity::dict_data,
 };
 
 /// 服务层

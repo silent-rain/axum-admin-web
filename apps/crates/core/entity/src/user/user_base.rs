@@ -1,12 +1,14 @@
 //! 用户信息表
+use std::str::FromStr;
 
 use chrono::Local;
 use sea_orm::{
-    ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey, EntityTrait,
-    EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait, Set,
+    ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
+    DeriveRelation, EnumIter, PrimaryKeyTrait, Set,
     prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// 用户信息表
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -35,74 +37,14 @@ pub struct Model {
     pub intro: Option<String>,
     /// 用户描述
     pub desc: Option<String>,
-    /// 用户的居住或邮寄地址
-    pub address: Option<String>,
-    /// 用户分享码
-    pub share_code: Option<String>,
-    /// 偏好设置
-    pub preferences: Option<String>,
-    /// 所属部门ID
-    pub department_id: Option<i32>,
-    /// 所属岗位ID
-    pub position_id: Option<i32>,
-    /// 所属职级ID
-    pub rank_id: Option<i32>,
-    /// 用户会员等级ID
-    pub member_level_id: Option<i32>,
     /// 创建时间
     pub created_at: DateTime,
     /// 更新时间
     pub updated_at: DateTime,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter)]
-pub enum Relation {
-    UserPhone,
-    UserEmail,
-    UserBlockchainWallet,
-    UserRole,
-}
-
-impl RelationTrait for Relation {
-    fn def(&self) -> RelationDef {
-        match self {
-            Self::UserPhone => Entity::has_one(super::phone::Entity).into(),
-            Self::UserEmail => Entity::has_one(super::email::Entity).into(),
-            Self::UserBlockchainWallet => Entity::has_one(super::blockchain_wallet::Entity).into(),
-            Self::UserRole => Entity::has_many(super::role::Entity).into(),
-        }
-    }
-}
-
-impl Related<super::role::Entity> for Entity {
-    // 检查一个实体是否与另一个实体相关
-    fn to() -> RelationDef {
-        super::user_role_rel::Relation::UserRole.def()
-    }
-
-    // 检查一个实体是否通过另一个实体关联
-    fn via() -> Option<RelationDef> {
-        Some(super::user_role_rel::Relation::UserBase.def().rev())
-    }
-}
-
-impl Related<super::phone::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UserPhone.def()
-    }
-}
-
-impl Related<super::email::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UserEmail.def()
-    }
-}
-
-impl Related<super::blockchain_wallet::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UserBlockchainWallet.def()
-    }
-}
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {}
 
 #[async_trait]
 impl ActiveModelBehavior for ActiveModel {
@@ -116,12 +58,8 @@ impl ActiveModelBehavior for ActiveModel {
     }
 }
 
-/// 枚举
 pub mod enums {
-    use std::str::FromStr;
-
-    use serde::{Deserialize, Serialize};
-    use serde_repr::{Deserialize_repr, Serialize_repr};
+    use super::*;
 
     /// 性别
     #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize_repr, Deserialize_repr)]

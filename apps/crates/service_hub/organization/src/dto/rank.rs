@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::entity::rank;
+use entity::organization::rank;
 
 /// 查询职级列表 请求体
 #[derive(Default, Deserialize, Validate)]

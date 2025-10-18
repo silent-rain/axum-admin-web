@@ -38,9 +38,8 @@ pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
 
-/// 枚举
 pub mod enums {
-    use serde::{Deserialize, Serialize};
+    use super::*;
 
     /// 文件文件扩展类型, svg,png
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

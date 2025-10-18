@@ -3,10 +3,9 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::{
-    entity::menu,
-    enums::menu::{LinkTarget, MenuType, OpenMethod},
-};
+use entity::permission::menu;
+
+use crate::enums::menu::{LinkTarget, MenuType, OpenMethod};
 
 /// 查询菜单列表
 #[derive(Default, Deserialize, Validate)]

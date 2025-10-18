@@ -9,9 +9,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::template::{TemplateEntity, template};
 
 use crate::dto::template::GetTemplatesReq;
-use crate::entity::{TemplateEntity, template};
 
 /// 数据访问
 #[injectable]

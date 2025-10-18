@@ -8,6 +8,7 @@ use sea_orm::Set;
 use utils::file::file_extension;
 use uuid::Uuid;
 
+use entity::system::file_resource;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -16,7 +17,6 @@ use crate::{
         DeleteFileResourceReq, GetFileResourceReq, GetFileResourcesReq, ShowImageReq,
         UpdateFileResourceReq, UploadFileReq, UploadFilesReq,
     },
-    entity::file_resource,
 };
 
 /// 服务层

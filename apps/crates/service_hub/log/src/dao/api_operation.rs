@@ -9,11 +9,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::log::{LogApiOperationEntity, log_api_operation};
 
-use crate::{
-    dto::api_operation::GetApiOperationsReq,
-    entity::{LogApiOperationEntity, log_api_operation},
-};
+use crate::dto::api_operation::GetApiOperationsReq;
 
 /// 数据访问
 #[injectable]

@@ -4,7 +4,8 @@ use sea_orm::FromQueryResult;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::{entity::openapi, enums::openapi::Category};
+use crate::enums::openapi::Category;
+use entity::permission::openapi;
 
 /// 查询OpenApi接口列表 请求体
 #[derive(Clone, Deserialize, Validate)]

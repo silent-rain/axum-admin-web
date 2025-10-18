@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::entity::image_captcha;
+use entity::system::image_captcha;
 
 /// 获取验证码列表
 #[derive(Default, Deserialize, Validate)]

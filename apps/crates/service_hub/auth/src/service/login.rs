@@ -6,11 +6,12 @@ use log::error;
 use nject::injectable;
 use tower_sessions::Session;
 
+use entity::user::user_base;
 use err_code::{Error, ErrorMsg};
+
 use system::ImageCaptchaDao;
 use user::{
     BlockchainWalletDao, EmailDao, PhoneDao, UserBaseDao, UserLoginLogDao,
-    entity::user_base,
     enums::{user_base::UserType, user_login_log::LoginStatus},
 };
 

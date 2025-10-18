@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::user::{BlockchainWalletEntity, blockchain_wallet};
 
-use crate::{
-    dto::blockchain_wallet::GetBlockchainWalletsReq,
-    entity::{BlockchainWalletEntity, blockchain_wallet},
-};
+use crate::dto::blockchain_wallet::GetBlockchainWalletsReq;
 
 /// 数据访问
 #[injectable]

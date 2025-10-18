@@ -3,9 +3,9 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::{
-    entity::log_web,
-    enums::log_web::{ErrorType, OsType},
+use entity::log::{
+    log_web,
+    log_web::enums::{ErrorType, OsType},
 };
 
 /// 查询WEB日志列表 请求体

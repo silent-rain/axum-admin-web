@@ -6,7 +6,7 @@ use nject::injectable;
 use sea_orm::{ActiveModelTrait, DatabaseTransaction, DbErr, Set, TransactionTrait};
 
 use database::PoolTrait;
-use user::entity::{email, phone, user_base};
+use entity::user::{email, phone, user_base};
 
 use crate::dto::register::RegisterReq;
 

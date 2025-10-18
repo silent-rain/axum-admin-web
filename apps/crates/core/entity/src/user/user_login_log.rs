@@ -7,6 +7,7 @@ use sea_orm::{
     prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// 用户登录日志表
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -55,9 +56,8 @@ impl ActiveModelBehavior for ActiveModel {
     }
 }
 
-/// 枚举
 pub mod enums {
-    use serde_repr::{Deserialize_repr, Serialize_repr};
+    use super::*;
 
     /// 用户登陆状态
     #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]

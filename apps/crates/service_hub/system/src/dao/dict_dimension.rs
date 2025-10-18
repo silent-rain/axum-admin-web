@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::system::{DictDimensionEntity, dict_dimension};
 
-use crate::{
-    dto::dict_dimension::GetDictDimensionsReq,
-    entity::{DictDimensionEntity, dict_dimension},
-};
+use crate::dto::dict_dimension::GetDictDimensionsReq;
 
 /// 数据访问
 #[injectable]

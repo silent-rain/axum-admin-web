@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::organization::position;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreatePositionReq, DeletePositionReq, GetPositionReq, GetPositionsReq, UpdatePositionReq,
         UpdatePositionStatusReq,
     },
-    entity::position,
 };
 
 /// 服务层

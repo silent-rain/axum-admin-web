@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::user::member_level;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreateMemberLevelReq, DeleteMemberLevelReq, GetMemberLevelReq, GetMemberLevelsReq,
         UpdateMemberLevelReq, UpdateMemberLevelStatusReq,
     },
-    entity::member_level,
 };
 
 /// 服务层

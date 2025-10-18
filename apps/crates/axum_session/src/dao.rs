@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use chrono::Local;
 use database::PoolTrait;
-use entity::user::{UserSession, user_session};
+use entity::user::{UserSessionEntity, user_session};
 use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};
 
 pub struct UserSessionDao {
@@ -18,7 +18,7 @@ impl UserSessionDao {
 
     /// 通过nsession_id获取详情信息
     pub async fn info(&self, session_id: String) -> Result<Option<user_session::Model>, DbErr> {
-        UserSession::find()
+        UserSessionEntity::find()
             .filter(user_session::Column::SessionId.eq(session_id))
             .one(self.db.db())
             .await
@@ -38,7 +38,7 @@ impl UserSessionDao {
         session_id: String,
         active_model: user_session::ActiveModel,
     ) -> Result<u64, DbErr> {
-        let result = UserSession::update_many()
+        let result = UserSessionEntity::update_many()
             .set(active_model)
             .filter(user_session::Column::SessionId.eq(session_id))
             .exec(self.db.db())
@@ -54,7 +54,7 @@ impl UserSessionDao {
             ..Default::default()
         };
 
-        let result = UserSession::update_many()
+        let result = UserSessionEntity::update_many()
             .set(active_model)
             .filter(user_session::Column::SessionId.eq(session_id))
             .exec(self.db.db())
@@ -69,7 +69,7 @@ impl UserSessionDao {
             ..Default::default()
         };
 
-        let result = UserSession::update_many()
+        let result = UserSessionEntity::update_many()
             .set(active_model)
             .filter(user_session::Column::ExpiryDate.lt(Local::now().naive_local()))
             .exec(self.db.db())

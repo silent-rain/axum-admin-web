@@ -9,11 +9,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::organization::{DepartmentRoleRelEntity, department_role_rel};
 
-use crate::{
-    dto::department_role_rel::GetDepartmentRoleRelsReq,
-    entity::{DepartmentRoleRelEntity, department_role_rel},
-};
+use crate::dto::department_role_rel::GetDepartmentRoleRelsReq;
 
 /// 数据访问
 #[injectable]

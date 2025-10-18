@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::organization::{DepartmentEntity, department};
 
-use crate::{
-    dto::department::GetDepartmentsReq,
-    entity::{DepartmentEntity, department},
-};
+use crate::dto::department::GetDepartmentsReq;
 
 /// 数据访问
 #[injectable]

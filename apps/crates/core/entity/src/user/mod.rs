@@ -10,16 +10,16 @@ pub mod user_login_log;
 pub mod user_role_rel;
 pub mod user_session;
 
-pub use blockchain_wallet::Entity as BlockchainWallet;
-pub use email::Entity as Email;
-pub use phone::Entity as Phone;
-pub use user_base::Entity as UserBase;
+pub use blockchain_wallet::Entity as BlockchainWalletEntity;
+pub use email::Entity as EmailEntity;
+pub use phone::Entity as PhoneEntity;
+pub use user_base::Entity as UserBaseEntity;
 
-pub use role::Entity as Role;
-pub use user_role_rel::Entity as UserRoleRel;
+pub use role::Entity as RoleEntity;
+pub use user_role_rel::Entity as UserRoleRelEntity;
 
-pub use location::Entity as Location;
-pub use member_level::Entity as MemberLevel;
+pub use location::Entity as LocationEntity;
+pub use member_level::Entity as MemberLevelEntity;
 
-pub use user_login_log::Entity as UserLoginLog;
-pub use user_session::Entity as UserSession;
+pub use user_login_log::Entity as UserLoginLogEntity;
+pub use user_session::Entity as UserSessionEntity;

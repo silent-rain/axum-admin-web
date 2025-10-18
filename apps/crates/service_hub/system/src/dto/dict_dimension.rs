@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::entity::dict_dimension;
+use entity::system::dict_dimension;
 
 /// 查询字典维度列表 请求体
 #[derive(Default, Deserialize, Validate)]

@@ -5,6 +5,7 @@ use sea_orm::{
     PrimaryKeyTrait, prelude::DateTime,
 };
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// WEB日志表
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -46,9 +47,8 @@ pub enum Relation {}
 
 impl ActiveModelBehavior for ActiveModel {}
 
-/// 枚举
 pub mod enums {
-    use serde_repr::{Deserialize_repr, Serialize_repr};
+    use super::*;
 
     /// 终端类型(0:未知, 1:安卓, 2:IOS, 3:WEB)
     #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]

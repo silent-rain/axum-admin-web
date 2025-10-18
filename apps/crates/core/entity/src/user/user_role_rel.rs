@@ -23,14 +23,20 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    UserRole,
-    UserBase,
+    Base,
+    Role,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
-            Self::UserRole => {
+            Self::Base => Entity::belongs_to(super::user_base::Entity)
+                .from(Column::UserId)
+                .to(super::user_base::Column::Id)
+                .on_update(ForeignKeyAction::Cascade)
+                .on_delete(ForeignKeyAction::Cascade)
+                .into(),
+            Self::Role => {
                 // 检查关系是否属于实体
                 Entity::belongs_to(super::role::Entity)
                     // 从实体建立关系
@@ -43,25 +49,19 @@ impl RelationTrait for Relation {
                     .on_delete(ForeignKeyAction::Cascade)
                     .into()
             }
-            Self::UserBase => Entity::belongs_to(super::user_base::Entity)
-                .from(Column::UserId)
-                .to(super::user_base::Column::Id)
-                .on_update(ForeignKeyAction::Cascade)
-                .on_delete(ForeignKeyAction::Cascade)
-                .into(),
         }
     }
 }
 
 impl Related<super::user_base::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::UserBase.def()
+        Relation::Base.def()
     }
 }
 
 impl Related<super::role::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::UserRole.def()
+        Relation::Role.def()
     }
 }
 

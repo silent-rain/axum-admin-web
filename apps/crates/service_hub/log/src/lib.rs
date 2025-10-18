@@ -1,6 +1,5 @@
 //! 日志管理
 pub mod dto;
-pub mod entity;
 pub mod enums;
 
 pub(crate) mod dao;

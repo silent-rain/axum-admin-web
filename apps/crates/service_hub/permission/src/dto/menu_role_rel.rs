@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::entity::menu_role_rel;
+use entity::permission::menu_role_rel;
 
 /// 查询菜单角色关系列表 请求体
 #[derive(Default, Deserialize, Validate)]

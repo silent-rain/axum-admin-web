@@ -8,9 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::system::{ImageCaptchaEntity, image_captcha};
 
 use crate::dto::image_captcha::GetImageCaptchasReq;
-use crate::entity::{ImageCaptchaEntity, image_captcha};
 
 /// 数据访问
 #[injectable]

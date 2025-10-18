@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::log::log_api_operation;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -11,7 +12,6 @@ use crate::{
     dto::api_operation::{
         CreateApiOperationReq, DeleteApiOperationReq, GetApiOperationReq, GetApiOperationsReq,
     },
-    entity::log_api_operation,
 };
 
 /// 服务层

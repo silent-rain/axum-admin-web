@@ -2,8 +2,8 @@
 
 use chrono::Local;
 use sea_orm::{
-    ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
-    DeriveRelation, EnumIter, PrimaryKeyTrait, Set,
+    ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey, EntityTrait,
+    EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait, Set,
     prelude::{DateTime, Decimal, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
@@ -39,8 +39,27 @@ pub struct Model {
     pub updated_at: DateTime,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+#[derive(Copy, Clone, Debug, EnumIter)]
+pub enum Relation {
+    UserBase,
+}
+
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::UserBase => Entity::belongs_to(super::user_base::Entity)
+                .from(Column::UserId)
+                .to(super::user_base::Column::Id)
+                .into(),
+        }
+    }
+}
+
+impl Related<super::user_base::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserBase.def()
+    }
+}
 
 #[async_trait]
 impl ActiveModelBehavior for ActiveModel {

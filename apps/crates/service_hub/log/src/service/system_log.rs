@@ -3,13 +3,13 @@
 use log::error;
 use nject::injectable;
 
+use entity::log::log_system;
 use err_code::{Error, ErrorMsg};
 use utils::json::struct_to_struct;
 
 use crate::{
     dao::system_log::SystemLogDao,
     dto::system_log::{CreateSystemLogReq, DeleteSystemLogReq, GetSystemLogReq, GetSystemLogsReq},
-    entity::log_system,
 };
 
 /// 服务层

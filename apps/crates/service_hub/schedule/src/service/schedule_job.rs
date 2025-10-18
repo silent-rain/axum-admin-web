@@ -5,6 +5,7 @@ use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 use uuid::Uuid;
 
+use entity::schedule::schedule_job;
 use scheduler::JobScheduler;
 
 use crate::{
@@ -14,7 +15,6 @@ use crate::{
         CreateScheduleJobReq, DeleteScheduleJobReq, GetScheduleJobReq, GetScheduleJobsReq,
         UpdateScheduleJobReq, UpdateScheduleJobStatusReq,
     },
-    entity::schedule_job,
     enums::schedule_job::Source,
 };
 

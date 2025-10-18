@@ -1,7 +1,7 @@
 //! 角色表
-//! Entity: [`entity::user::Role`]
+//! Entity: [`entity::user::RoleEntity`]
 
-use entity::user;
+use entity::user::{self, RoleEntity};
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName, EntityTrait, Set,
@@ -81,7 +81,7 @@ impl MigrationTrait for Migration {
 
         // 预设数据
         let db = manager.get_connection();
-        user::Role::insert_many([
+        RoleEntity::insert_many([
             user::role::ActiveModel {
                 name: Set("管理员".to_string()),
                 sort: Set(Some(1)),

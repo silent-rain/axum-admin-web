@@ -1,13 +1,13 @@
 //! 系统相关表
 
-pub mod sys_config;
-pub mod sys_dict_data;
-pub mod sys_dict_dimension;
-pub mod sys_file_resource;
-pub mod sys_image_captcha;
+pub mod config;
+pub mod dict_data;
+pub mod dict_dimension;
+pub mod file_resource;
+pub mod image_captcha;
 
-pub use sys_config::Entity as SysConfig;
-pub use sys_dict_data::Entity as SysDictData;
-pub use sys_dict_dimension::Entity as SysDictDimension;
-pub use sys_file_resource::Entity as SysFileResource;
-pub use sys_image_captcha::Entity as SysImageCaptcha;
+pub use config::Entity as ConfigEntity;
+pub use dict_data::Entity as DictDataEntity;
+pub use dict_dimension::Entity as DictDimensionEntity;
+pub use file_resource::Entity as FileResourceEntity;
+pub use image_captcha::Entity as ImageCaptchaEntity;

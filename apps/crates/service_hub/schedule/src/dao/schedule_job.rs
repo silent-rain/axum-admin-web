@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::schedule::{ScheduleJobEntity, schedule_job};
 
-use crate::{
-    dto::schedule_job::GetScheduleJobsReq,
-    entity::{ScheduleJobEntity, schedule_job},
-};
+use crate::dto::schedule_job::GetScheduleJobsReq;
 
 /// 数据访问
 #[injectable]

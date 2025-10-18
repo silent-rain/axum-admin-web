@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::user::{MemberLevelEntity, member_level};
 
-use crate::{
-    dto::member_level::GetMemberLevelsReq,
-    entity::{MemberLevelEntity, member_level},
-};
+use crate::dto::member_level::GetMemberLevelsReq;
 
 /// 数据访问
 #[injectable]

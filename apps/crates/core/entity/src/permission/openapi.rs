@@ -7,8 +7,9 @@ use sea_orm::{
     prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::utils::list_tree::GenericTreeTrait;
+use database::utils::GenericTreeTrait;
 
 /// OpenApi接口表
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -65,9 +66,8 @@ impl GenericTreeTrait for Model {
     }
 }
 
-/// 枚举
 pub mod enums {
-    use serde_repr::{Deserialize_repr, Serialize_repr};
+    use super::*;
 
     /// OpenApi接口类别
     #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]

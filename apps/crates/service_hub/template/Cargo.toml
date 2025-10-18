@@ -4,12 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-database = { path = "../../core/database" }
-err_code = { path = "../../core/err_code" }
-inject = { path = "../../core/inject" }
 utils = { path = "../../core/utils" }
-axum_response = { path = "../../axum_response" }
 orm_migration = { path = "../../core/orm_migration" }
+
+database = { workspace = true }
+entity = { workspace = true }
+err_code = { workspace = true }
+inject = { workspace = true }
+axum_response = { workspace = true }
 
 axum = { workspace = true }
 axum-extra = { workspace = true, features = ["cookie-private", "typed-header"] }

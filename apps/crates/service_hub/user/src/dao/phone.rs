@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::user::{PhoneEntity, phone};
 
-use crate::{
-    dto::phone::GetPhonesReq,
-    entity::{PhoneEntity, phone},
-};
+use crate::dto::phone::GetPhonesReq;
 
 /// 数据访问
 #[injectable]

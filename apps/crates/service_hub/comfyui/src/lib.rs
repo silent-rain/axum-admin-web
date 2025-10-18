@@ -2,7 +2,6 @@
 
 pub mod api_clients;
 pub mod dto;
-pub mod entity;
 pub mod enums;
 
 pub(crate) mod dao;

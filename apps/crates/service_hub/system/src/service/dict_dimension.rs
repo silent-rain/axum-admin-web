@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
+use entity::system::dict_dimension;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreateDictDimensionReq, DeleteDictDimensionReq, GetDictDimensionReq, GetDictDimensionsReq,
         UpdateDictDimensionReq, UpdateDictDimensionStatusReq,
     },
-    entity::dict_dimension,
 };
 
 /// 服务层

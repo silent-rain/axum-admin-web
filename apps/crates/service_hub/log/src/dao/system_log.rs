@@ -9,11 +9,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::log::{LogSystemEntity, log_system};
 
-use crate::{
-    dto::system_log::GetSystemLogsReq,
-    entity::{LogSystemEntity, log_system},
-};
+use crate::dto::system_log::GetSystemLogsReq;
 
 /// 数据访问
 #[injectable]

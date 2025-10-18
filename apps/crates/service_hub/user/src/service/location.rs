@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::user::location;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -11,7 +12,6 @@ use crate::{
     dto::location::{
         CreateLocationReq, DeleteLocationReq, GetLocationReq, GetLocationsReq, UpdateLocationReq,
     },
-    entity::location,
 };
 
 /// 服务层

@@ -1,5 +1,5 @@
 //! 模板
+#[allow(clippy::module_inception)]
+pub mod template;
 
-pub mod app_template;
-
-pub use app_template::Entity as AppTemplate;
+pub use template::Entity as TemplateEntity;

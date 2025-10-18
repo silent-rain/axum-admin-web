@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::permission::{MenuEntity, menu};
 
-use crate::{
-    dto::menu::GetMenusReq,
-    entity::{MenuEntity, menu},
-};
+use crate::dto::menu::GetMenusReq;
 
 /// 数据访问
 #[injectable]

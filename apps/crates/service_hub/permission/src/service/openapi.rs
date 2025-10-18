@@ -4,8 +4,9 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use err_code::{Error, ErrorMsg};
 use database::utils::GenericTree;
+use entity::permission::openapi;
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::openapi::OpenapiDao,
@@ -13,7 +14,6 @@ use crate::{
         CreateOpenapiReq, DeleteOpenapiReq, GetOpenapiReq, GetOpenapisReq, RoleOpenapiPermission,
         UpdateOpenapiReq, UpdateOpenapiStatusReq,
     },
-    entity::openapi,
 };
 
 /// 服务层

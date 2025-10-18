@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::permission::token_role_rel;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::token_role_rel::TokenRoleRelDao,
     dto::token_role_rel::{BatchCreateTokenRoleRelReq, GetTokenRoleRelsReq},
-    entity::token_role_rel,
 };
 
 /// 服务层

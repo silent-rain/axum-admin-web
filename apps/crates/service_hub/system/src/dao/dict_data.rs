@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::system::{DictDataEntity, dict_data};
 
-use crate::{
-    dto::dict_data::GetDictDatasReq,
-    entity::{DictDataEntity, dict_data},
-};
+use crate::dto::dict_data::GetDictDatasReq;
 
 /// 数据访问
 #[injectable]

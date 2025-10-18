@@ -3,9 +3,9 @@
 use log::error;
 use nject::injectable;
 
-use err_code::{Error, ErrorMsg};
 use embed_asset::EmbedAssetTrait;
-use user::entity::user_base;
+use entity::user::user_base;
+use err_code::{Error, ErrorMsg};
 use utils::crypto::sha2_256;
 
 use crate::{

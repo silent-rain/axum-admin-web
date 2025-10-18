@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
+use entity::schedule::schedule_status_log;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreateScheduleStatusLogReq, DeleteScheduleStatusLogReq, GetScheduleStatusLogReq,
         GetScheduleStatusLogsReq, UpdateScheduleStatusLogReq, UpdateScheduleStatusLogSatausReq,
     },
-    entity::schedule_status_log,
 };
 
 /// 服务层

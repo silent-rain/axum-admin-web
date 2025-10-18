@@ -40,6 +40,12 @@ members = [
 axum_validator = { path = "crates/axum_validator" }
 axum_jwt = { path = "crates/plugins/axum_jwt" }
 axum_context = { path = "crates/plugins/axum_context" }
+axum_response = { path = "crates/axum_response" }
+
+err_code = { path = "crates/core/err_code" }
+database = { path = "crates/core/database" }
+entity = { path = "crates/core/entity" }
+inject = { path = "crates/core/inject" }
 
 
 # 网络相关

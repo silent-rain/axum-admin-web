@@ -3,10 +3,9 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::{
-    entity::{role, user_base},
-    enums::user_base::Gender,
-};
+use entity::user::{role, user_base};
+
+use crate::enums::user_base::Gender;
 
 /// 查询用户列表 请求体
 #[derive(Default, Deserialize, Validate)]

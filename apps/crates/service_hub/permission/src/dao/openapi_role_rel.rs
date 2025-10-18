@@ -9,11 +9,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::permission::{OpenapiRoleRelEntity, openapi_role_rel};
 
-use crate::{
-    dto::openapi_role_rel::GetOpenapiRoleRelsReq,
-    entity::{OpenapiRoleRelEntity, openapi_role_rel},
-};
+use crate::dto::openapi_role_rel::GetOpenapiRoleRelsReq;
 
 /// 数据访问
 #[injectable]

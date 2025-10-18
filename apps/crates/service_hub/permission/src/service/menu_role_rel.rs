@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::permission::menu_role_rel;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::menu_role_rel::MenuRoleRelDao,
     dto::menu_role_rel::{BatchCreateMenuRoleRelReq, GetMenuRoleRelsReq},
-    entity::menu_role_rel,
 };
 
 /// 服务层

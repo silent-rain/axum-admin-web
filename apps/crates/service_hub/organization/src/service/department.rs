@@ -5,6 +5,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::organization::department;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -13,7 +14,6 @@ use crate::{
         CreateDepartmentReq, DeleteDepartmentReq, GetDepartmentReq, GetDepartmentsReq,
         UpdateDepartmentReq, UpdateDepartmentStatusReq,
     },
-    entity::department,
 };
 
 /// 服务层

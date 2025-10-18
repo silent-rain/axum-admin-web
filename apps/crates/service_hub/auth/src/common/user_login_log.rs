@@ -2,11 +2,12 @@
 
 use std::sync::Arc;
 
+use entity::user::user_login_log;
 use err_code::Error;
 use log::error;
 use sea_orm::Set;
 
-use user::{UserLoginLogDao, entity::user_login_log, enums::user_login_log::LoginStatus};
+use user::{UserLoginLogDao, enums::user_login_log::LoginStatus};
 use utils::browser::parse_user_agent_async;
 
 use crate::dto::login::BrowserInfo;

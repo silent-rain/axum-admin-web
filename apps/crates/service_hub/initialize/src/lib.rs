@@ -1,10 +1,8 @@
 //! 服务初始化管理
 pub mod asset;
-
 pub mod dto;
 
 pub(crate) mod dao;
-
 pub use dao::table::TableDao;
 
 pub(crate) mod service;

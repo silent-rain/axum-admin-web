@@ -4,13 +4,15 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-database = { path = "../../core/database" }
-err_code = { path = "../../core/err_code" }
 utils = { path = "../../core/utils" }
-inject = { path = "../../core/inject" }
-axum_response = { path = "../../axum_response" }
 
 user = { path = "../user" }
+
+database = { workspace = true }
+entity = { workspace = true }
+err_code = { workspace = true }
+inject = { workspace = true }
+axum_response = { workspace = true }
 
 axum = { workspace = true }
 axum_validator = { workspace = true }

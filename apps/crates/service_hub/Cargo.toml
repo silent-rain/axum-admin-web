@@ -16,6 +16,7 @@ embed_asset = { path = "../embed_asset" }
 
 public = { path = "public" }
 template = { path = "template" }
+template_grpc = { path = "template_grpc" }
 auth = { path = "auth" }
 user = { path = "user" }
 permission = { path = "permission" }

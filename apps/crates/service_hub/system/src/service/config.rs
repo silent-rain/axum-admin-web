@@ -4,8 +4,9 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
-use err_code::{Error, ErrorMsg};
 use database::utils::GenericTree;
+use entity::system::config;
+use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::config::ConfigDao,
@@ -13,7 +14,6 @@ use crate::{
         CreateConfigReq, DeleteConfigReq, GetConfigReq, GetConfigsReq, UpdateConfigReq,
         UpdateConfigStatusReq,
     },
-    entity::config,
 };
 
 /// 服务层

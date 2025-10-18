@@ -1,18 +1,16 @@
 //! 用户信息管理
 use std::sync::Arc;
 
+use nject::injectable;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseTransaction, DbErr, EntityTrait, JoinType,
     PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, QueryTrait, Set, TransactionTrait,
 };
 
 use database::{Pagination, PoolTrait};
-use nject::injectable;
+use entity::user::{RoleEntity, UserBaseEntity, UserRoleRelEntity, role, user_base, user_role_rel};
 
-use crate::{
-    dto::user_base::GetUserBasesReq,
-    entity::{RoleEntity, UserBaseEntity, UserRoleRelEntity, role, user_base, user_role_rel},
-};
+use crate::dto::user_base::GetUserBasesReq;
 
 /// 数据访问
 #[injectable]

@@ -1,10 +1,12 @@
 //! 菜单角色关系表
 
 use sea_orm::{
-    ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, DeriveRelation, EntityTrait,
-    EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait, prelude::DateTime,
+    ActiveModelBehavior, DeriveEntityModel, DerivePrimaryKey, EntityTrait, EnumIter,
+    ForeignKeyAction, PrimaryKeyTrait, Related, RelationDef, RelationTrait, prelude::DateTime,
 };
 use serde::{Deserialize, Serialize};
+
+use crate::user::role;
 
 /// 菜单角色关系表
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -21,35 +23,40 @@ pub struct Model {
     pub created_at: DateTime,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::menu::Entity",
-        from = "Column::MenuId",
-        to = "super::menu::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Cascade"
-    )]
-    PermMenu,
-    #[sea_orm(
-        belongs_to = "crate::user::role::Entity",
-        from = "Column::RoleId",
-        to = "crate::user::role::Column::Id",
-        on_update = "Cascade",
-        on_delete = "Cascade"
-    )]
-    UserRole,
+    Menu,
+    Role,
 }
 
-impl Related<crate::permission::menu::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::PermMenu.def()
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::Menu => Entity::belongs_to(super::menu::Entity)
+                .from(Column::MenuId)
+                .to(super::menu::Column::Id)
+                .on_update(ForeignKeyAction::Cascade)
+                .on_delete(ForeignKeyAction::Cascade)
+                .into(),
+            Self::Role => Entity::belongs_to(role::Entity)
+                .from(Column::RoleId)
+                .to(role::Column::Id)
+                .on_update(ForeignKeyAction::Cascade)
+                .on_delete(ForeignKeyAction::Cascade)
+                .into(),
+        }
     }
 }
 
-impl Related<crate::user::role::Entity> for Entity {
+impl Related<super::menu::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::UserRole.def()
+        Relation::Menu.def()
+    }
+}
+
+impl Related<role::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Role.def()
     }
 }
 

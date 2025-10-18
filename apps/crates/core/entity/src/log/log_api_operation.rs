@@ -61,9 +61,8 @@ impl ActiveModelBehavior for ActiveModel {
     }
 }
 
-/// 枚举
 pub mod enums {
-    use serde::{Deserialize, Serialize};
+    use super::*;
 
     /// Api 操作日志类型
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

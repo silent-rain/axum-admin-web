@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::log::log_web;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::web_log::WebLogDao,
     dto::web_log::{CreateWebLogReq, GetWebLogReq, GetWebLogsReq},
-    entity::log_web,
 };
 
 /// 服务层

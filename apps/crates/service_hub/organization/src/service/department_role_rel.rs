@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::organization::department_role_rel;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::department_role_rel::DepartmentRoleRelDao,
     dto::department_role_rel::{BatchCreateDepartmentRoleRelReq, GetDepartmentRoleRelsReq},
-    entity::department_role_rel,
 };
 
 /// 服务层

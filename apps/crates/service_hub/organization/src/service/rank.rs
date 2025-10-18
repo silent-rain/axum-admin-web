@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::organization::rank;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -11,7 +12,6 @@ use crate::{
     dto::rank::{
         CreateRankReq, DeleteRankReq, GetRankReq, GetRanksReq, UpdateRankReq, UpdateRankStatusReq,
     },
-    entity::rank,
 };
 
 /// 服务层

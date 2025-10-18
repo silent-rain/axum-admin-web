@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::user::{EmailEntity, email};
 
-use crate::{
-    dto::email::GetEmailsReq,
-    entity::{EmailEntity, email},
-};
+use crate::dto::email::GetEmailsReq;
 
 /// 数据访问
 #[injectable]

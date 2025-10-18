@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::user::{RoleEntity, role};
 
-use crate::{
-    dto::role::GetRolesReq,
-    entity::{RoleEntity, role},
-};
+use crate::dto::role::GetRolesReq;
 
 /// 数据访问
 #[injectable]

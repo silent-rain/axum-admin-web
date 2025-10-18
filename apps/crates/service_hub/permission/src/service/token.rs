@@ -5,6 +5,7 @@ use nject::injectable;
 use sea_orm::Set;
 use uuid::Uuid;
 
+use entity::permission::token;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -13,7 +14,6 @@ use crate::{
         CreateTokenReq, DeleteTokenReq, GetTokenReq, GetTokensReq, UpdateTokenReq,
         UpdateTokenStatusReq,
     },
-    entity::token,
 };
 
 /// 服务层

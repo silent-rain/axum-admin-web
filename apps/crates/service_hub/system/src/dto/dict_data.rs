@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::entity::dict_data;
+use entity::system::dict_data;
 
 /// 查询字典数据列表 请求体
 #[derive(Default, Deserialize, Validate)]

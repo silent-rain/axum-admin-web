@@ -1,7 +1,8 @@
 //! 数据库操作
 use database::PoolTrait;
 use entity::schedule::{
-    ScheduleJob, ScheduleStatusLog, schedule_event_log, schedule_job, schedule_status_log,
+    ScheduleJobEntity, ScheduleStatusLogEntity, schedule_event_log, schedule_job,
+    schedule_status_log,
 };
 
 use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};
@@ -47,12 +48,12 @@ where
 
     /// 获取任务调度列表
     pub async fn list(&self) -> Result<Vec<schedule_job::Model>, DbErr> {
-        ScheduleJob::find().all(self.db.db()).await
+        ScheduleJobEntity::find().all(self.db.db()).await
     }
 
     /// 获取任务调度详情
     pub async fn info(&self, id: i32) -> Result<Option<schedule_job::Model>, DbErr> {
-        ScheduleJob::find_by_id(id).one(self.db.db()).await
+        ScheduleJobEntity::find_by_id(id).one(self.db.db()).await
     }
 }
 
@@ -103,7 +104,7 @@ where
             status: Set(status as i8),
             ..Default::default()
         };
-        let result = ScheduleStatusLog::update_many()
+        let result = ScheduleStatusLogEntity::update_many()
             .set(active_model)
             .filter(schedule_status_log::Column::Id.eq(id))
             .exec(self.db.db())
@@ -122,7 +123,7 @@ where
             status: Set(status as i8),
             ..Default::default()
         };
-        let result = ScheduleStatusLog::update_many()
+        let result = ScheduleStatusLogEntity::update_many()
             .set(active_model)
             .filter(schedule_status_log::Column::Id.eq(id))
             .exec(self.db.db())

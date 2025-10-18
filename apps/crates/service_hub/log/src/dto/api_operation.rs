@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::{entity::log_api_operation, enums::log_api_operation::HttpType};
+use entity::log::{log_api_operation, log_api_operation::enums::HttpType};
 
 /// 查询API操作日志列表 请求体
 #[derive(Default, Deserialize, Validate)]

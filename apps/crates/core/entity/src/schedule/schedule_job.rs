@@ -7,6 +7,7 @@ use sea_orm::{
     prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// 任务调度作业表
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -53,9 +54,8 @@ impl ActiveModelBehavior for ActiveModel {
     }
 }
 
-/// 枚举
 pub mod enums {
-    use serde_repr::{Deserialize_repr, Serialize_repr};
+    use super::*;
 
     /// 任务调度状态
     #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]

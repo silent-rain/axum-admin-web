@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::schedule::schedule_event_log;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         CreateScheduleEventLogReq, DeleteScheduleEventLogReq, GetScheduleEventLogReq,
         GetScheduleEventLogsReq,
     },
-    entity::schedule_event_log,
 };
 
 /// 服务层

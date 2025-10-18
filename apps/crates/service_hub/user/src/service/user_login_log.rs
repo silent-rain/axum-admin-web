@@ -4,13 +4,13 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::user::user_login_log;
 use err_code::{Error, ErrorMsg};
 use utils::browser::parse_user_agent_async;
 
 use crate::{
     dao::user_login_log::UserLoginLogDao,
     dto::user_login_log::{CreateUserLoginLogReq, GetUserLoginLogReq, GetUserLoginLogsReq},
-    entity::user_login_log,
 };
 
 /// 服务层

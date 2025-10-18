@@ -8,9 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::permission::{TokenEntity, token};
 
 use crate::dto::token::GetTokensReq;
-use crate::entity::{TokenEntity, token};
 
 /// 数据访问
 #[injectable]

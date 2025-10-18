@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::permission::openapi_role_rel;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::openapi_role_rel::OpenapiRoleRelDao,
     dto::openapi_role_rel::{BatchCreateOpenapiRoleRelReq, GetOpenapiRoleRelsReq},
-    entity::openapi_role_rel,
 };
 
 /// 服务层

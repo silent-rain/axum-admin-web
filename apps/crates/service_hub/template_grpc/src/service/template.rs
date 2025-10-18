@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::template::template;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
@@ -12,7 +13,6 @@ use crate::{
         BatchCreateAppTemplateReq, CreateAppTemplateReq, DeleteAppTemplateReq, GetAppTemplateReq,
         GetAppTemplatesReq, UpdateAppTemplateReq, UpdateAppTemplateStatusReq,
     },
-    entity::template,
 };
 
 /// 服务层
@@ -174,10 +174,10 @@ mod tests {
     async fn test_mock_add() -> Result<(), ErrorMsg> {
         let pool = Mock::builder()
             .await
-            .map_err(|err| Error::DbInit(err.to_string()))?
+            .map_err(|err| Error::DbInit(err.to_string()).into_err())?
             .migration_migrations(vec![&user_base::Migration, &app_template::Migration])
             .await
-            .map_err(|err| Error::DbTableMigration(err.to_string()))?
+            .map_err(|err| Error::DbTableMigration(err.to_string()).into_err())?
             .build();
 
         let dao = AppTemplateDao { db: pool };

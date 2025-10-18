@@ -3,8 +3,7 @@
 use chrono::Local;
 use sea_orm::{
     ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
-    DeriveRelation, EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait,
-    Set,
+    DeriveRelation, EnumIter, PrimaryKeyTrait, Set,
     prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
@@ -37,16 +36,7 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::token_role_rel::Entity")]
-    PermTokenRoleRel,
-}
-
-impl Related<super::token_role_rel::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::PermTokenRoleRel.def()
-    }
-}
+pub enum Relation {}
 
 #[async_trait]
 impl ActiveModelBehavior for ActiveModel {
@@ -60,9 +50,8 @@ impl ActiveModelBehavior for ActiveModel {
     }
 }
 
-/// 枚举
 pub mod enums {
-    use serde::{Deserialize, Serialize};
+    use super::*;
 
     /// 令牌权限范围
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

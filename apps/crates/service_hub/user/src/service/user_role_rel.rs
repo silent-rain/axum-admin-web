@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
+use entity::user::user_role_rel;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
     dao::user_role_rel::UserRoleRelDao,
     dto::user_role_rel::{BatchCreateUserRoleRelReq, GetUserRoleRelsReq},
-    entity::user_role_rel,
 };
 
 /// 服务层

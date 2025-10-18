@@ -1,5 +1,6 @@
 //! 模板GRPC示例
 
+use err_code::ErrorMsg;
 use grpc_api::template::{
     BatchDeleteAppTemplateReq, BatchDeleteAppTemplateResp, CreateAppTemplateReq,
     CreateAppTemplateResp, DeleteAppTemplateReq, DeleteAppTemplateResp, GetAppTemplateReq,
@@ -75,7 +76,7 @@ impl AppTemplateGrpcService for AppTemplateController {
     ) -> Result<tonic::Response<UpdateAppTemplateResp>, Status> {
         let data: crate::dto::template::UpdateAppTemplateReq = struct_to_struct(&req.into_inner())
             .map_err(|err| tonic::Status::aborted(err.to_string()))?;
-        let resp: Result<u64, code::ErrorMsg> = self.app_template_service.update(data).await;
+        let resp: Result<u64, ErrorMsg> = self.app_template_service.update(data).await;
 
         match resp {
             Ok(_v) => Ok(Response::<()>::ok()

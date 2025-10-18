@@ -8,11 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
+use entity::system::{FileResourceEntity, file_resource};
 
-use crate::{
-    dto::file_resource::GetFileResourcesReq,
-    entity::{FileResourceEntity, file_resource},
-};
+use crate::dto::file_resource::GetFileResourcesReq;
 
 /// 数据访问
 #[injectable]

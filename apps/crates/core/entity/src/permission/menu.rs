@@ -3,13 +3,13 @@
 use chrono::Local;
 use sea_orm::{
     ActiveModelBehavior, ConnectionTrait, DbErr, DeriveEntityModel, DerivePrimaryKey,
-    DeriveRelation, EntityTrait, EnumIter, PrimaryKeyTrait, Related, RelationDef, RelationTrait,
-    Set,
+    DeriveRelation, EnumIter, PrimaryKeyTrait, Set,
     prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::utils::list_tree::GenericTreeTrait;
+use database::utils::GenericTreeTrait;
 
 /// 菜单表
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -57,16 +57,7 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {
-    #[sea_orm(has_many = "super::menu_role_rel::Entity")]
-    PermMenuRoleRel,
-}
-
-impl Related<super::menu_role_rel::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::PermMenuRoleRel.def()
-    }
-}
+pub enum Relation {}
 
 #[async_trait]
 impl ActiveModelBehavior for ActiveModel {
@@ -91,10 +82,8 @@ impl GenericTreeTrait for Model {
     }
 }
 
-/// 枚举
 pub mod enums {
-    use serde::{Deserialize, Serialize};
-    use serde_repr::{Deserialize_repr, Serialize_repr};
+    use super::*;
 
     /// 菜单类型
     #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
