@@ -14,10 +14,6 @@ members = [
     "crates/core/cache",
     "crates/core/requests",
 
-    # 插件
-    "crates/plugins/axum_jwt",
-    "crates/plugins/axum_context",
-
     # 组件
     "crates/app_state",
     "crates/embed_asset",
@@ -26,6 +22,8 @@ members = [
     "crates/axum_validator",
     "crates/axum_middleware",
     "crates/axum_session",
+    "crates/axum_jwt",
+    "crates/axum_context",
     "crates/grpc_api",
     "crates/timer",
     "crates/service_hub",
@@ -38,8 +36,8 @@ members = [
 [workspace.dependencies]
 # 插件
 axum_validator = { path = "crates/axum_validator" }
-axum_jwt = { path = "crates/plugins/axum_jwt" }
-axum_context = { path = "crates/plugins/axum_context" }
+axum_jwt = { path = "crates/axum_jwt" }
+axum_context = { path = "crates/axum_context" }
 axum_response = { path = "crates/axum_response" }
 
 err_code = { path = "crates/core/err_code" }
