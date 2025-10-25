@@ -3,13 +3,13 @@ pub mod dto;
 pub mod enums;
 
 pub(crate) mod dao;
-pub use dao::template::TemplateDao;
+pub use dao::t_app_template::TemplateDao;
 
 pub(crate) mod service;
-pub use service::template::TemplateService;
+pub use service::t_app_template::TemplateService;
 
 pub(crate) mod controller;
-pub use controller::template::TemplateController;
+pub use controller::t_app_template::TemplateController;
 
 pub(crate) mod router;
 pub use router::TemplateRouter;

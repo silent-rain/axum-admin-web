@@ -1,13 +1,13 @@
 //! 模板管理
 
 use crate::{
-    dto::template::{
+    dto::t_app_template::{
         BatchCreateTemplateReq, BatchCreateTemplateResp, BatchDeleteTemplateReq,
         BatchDeleteTemplateResp, CreateTemplateReq, CreateTemplateResp, DeleteTemplateReq,
         DeleteTemplateResp, GetTemplateReq, GetTemplateResp, GetTemplatesReq, GetTemplatesResp,
         UpdateTemplateReq, UpdateTemplateResp, UpdateTemplateStatusReq, UpdateTemplateStatusResp,
     },
-    service::template::TemplateService,
+    service::t_app_template::TemplateService,
 };
 
 use axum_response::{Responder, Response};

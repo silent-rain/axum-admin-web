@@ -1,7 +1,7 @@
 //! 部门角色关系表
 //! Entity: [`entity::organization::DepartmentRoleRel`]
 use crate::{
-    organization::department::Department, user::role::UserRole,
+    organization::department::Department, user::role::Role,
     utils::if_not_exists_create_unique_index,
 };
 
@@ -99,7 +99,7 @@ impl MigrationTrait for Migration {
                     ForeignKey::create()
                         .name("fk_org_department_role_rel_role_id")
                         .from(DepartmentRoleRel::Table, DepartmentRoleRel::RoleId)
-                        .to(UserRole::Table, UserRole::Id)
+                        .to(Role::Table, Role::Id)
                         .on_update(ForeignKeyAction::Cascade)
                         .on_delete(ForeignKeyAction::Cascade)
                         .to_owned(),

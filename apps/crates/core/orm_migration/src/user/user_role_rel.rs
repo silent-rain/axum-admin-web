@@ -8,7 +8,7 @@ use sea_orm::{
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 use crate::{
-    user::{role::UserRole, user_base::UserBase},
+    user::{role::Role, user_base::UserBase},
     utils::if_not_exists_create_unique_index,
 };
 #[derive(DeriveMigrationName)]
@@ -93,7 +93,7 @@ impl MigrationTrait for Migration {
                     ForeignKey::create()
                         .name("fk_user_role_rel_role_id")
                         .from(UserRoleRel::Table, UserRoleRel::RoleId)
-                        .to(UserRole::Table, UserRole::Id)
+                        .to(Role::Table, Role::Id)
                         .on_update(ForeignKeyAction::Cascade)
                         .on_delete(ForeignKeyAction::Cascade)
                         .to_owned(),

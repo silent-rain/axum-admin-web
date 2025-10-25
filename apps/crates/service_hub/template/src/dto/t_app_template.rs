@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::template::template;
+use entity::template::t_app_template;
 
 /// 查询列表数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
@@ -24,7 +24,7 @@ pub struct GetTemplatesReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTemplatesResp {
-    pub data_list: Vec<template::Model>,
+    pub data_list: Vec<t_app_template::Model>,
     pub total: u64,
 }
 
@@ -38,7 +38,7 @@ pub struct GetTemplateReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTemplateResp {
     #[serde(flatten)]
-    data: template::Model,
+    data: t_app_template::Model,
 }
 
 /// 添加数据 请求体

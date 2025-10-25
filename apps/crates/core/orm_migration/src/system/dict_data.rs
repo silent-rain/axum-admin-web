@@ -1,13 +1,12 @@
-//! 配置表
-//! Entity: [`entity::system::SysConfig`]
+//! 字典数据表
+//! Entity: [`entity::system::SysDictData`]
+use crate::utils::if_not_exists_create_index;
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName,
     sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
-
-use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -20,76 +19,67 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(SysConfig::Table)
-                    .comment("配置表")
+                    .table(DictData::Table)
+                    .comment("字典数据表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(SysConfig::Id)
+                        ColumnDef::new(DictData::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
                             .not_null()
-                            .comment("配置ID"),
+                            .comment("字典项ID"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Pid)
+                        ColumnDef::new(DictData::DimId)
                             .integer()
-                            .null()
-                            .default(0)
-                            .comment("父节点ID"),
+                            .not_null()
+                            .comment("字典维度ID"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Name)
+                        ColumnDef::new(DictData::Label)
                             .string()
                             .string_len(64)
                             .not_null()
-                            .comment("配置名称"),
+                            .comment("字典项标签"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Code)
-                            .string()
-                            .string_len(64)
-                            .unique_key()
-                            .not_null()
-                            .comment("配置编码(英文)"),
-                    )
-                    .col(
-                        ColumnDef::new(SysConfig::Value)
+                        ColumnDef::new(DictData::Value)
                             .text()
-                            .null()
-                            .comment("配置值"),
+                            .not_null()
+                            .comment("字典项值"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Sort)
+                        ColumnDef::new(DictData::Sort)
                             .integer()
                             .null()
                             .default(0)
                             .comment("排序"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Desc)
+                        ColumnDef::new(DictData::Desc)
                             .string()
                             .string_len(200)
-                            .null()
                             .default("")
-                            .comment("配置描述"),
+                            .null()
+                            .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Status)
+                        ColumnDef::new(DictData::Status)
                             .boolean()
                             .not_null()
                             .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::CreatedAt)
+                        ColumnDef::new(DictData::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::UpdatedAt)
+                        ColumnDef::new(DictData::UpdatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -99,10 +89,8 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if_not_exists_create_index(manager, SysConfig::Table, vec![SysConfig::Name]).await?;
-        if_not_exists_create_index(manager, SysConfig::Table, vec![SysConfig::Pid]).await?;
-        if_not_exists_create_index(manager, SysConfig::Table, vec![SysConfig::Code]).await?;
-
+        if_not_exists_create_index(manager, DictData::Table, vec![DictData::DimId]).await?;
+        if_not_exists_create_index(manager, DictData::Table, vec![DictData::Label]).await?;
         Ok(())
     }
 
@@ -110,19 +98,18 @@ impl MigrationTrait for Migration {
         // Replace the sample below with your own migration scripts
 
         manager
-            .drop_table(Table::drop().table(SysConfig::Table).to_owned())
+            .drop_table(Table::drop().table(DictData::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum SysConfig {
-    #[sea_orm(iden = "t_sys_config")]
+pub enum DictData {
+    #[sea_orm(iden = "t_sys_dict_data")]
     Table,
     Id,
-    Pid,
-    Name,
-    Code,
+    DimId,
+    Label,
     Value,
     Sort,
     Desc,

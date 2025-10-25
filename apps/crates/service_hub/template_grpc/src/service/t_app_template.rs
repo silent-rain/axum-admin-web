@@ -4,31 +4,31 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use entity::template::template;
+use entity::template::t_app_template;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
-    dao::template::TemplateDao,
-    dto::template::{
-        BatchCreateTemplateReq, CreateTemplateReq, DeleteTemplateReq, GetTemplateReq,
-        GetTemplatesReq, UpdateTemplateReq, UpdateTemplateStatusReq,
+    dao::t_app_template::AppTemplateDao,
+    dto::t_app_template::{
+        BatchCreateAppTemplateReq, CreateAppTemplateReq, DeleteAppTemplateReq, GetAppTemplateReq,
+        GetAppTemplatesReq, UpdateAppTemplateReq, UpdateAppTemplateStatusReq,
     },
 };
 
 /// 服务层
 #[injectable]
-pub struct TemplateService {
-    pub template_dao: TemplateDao,
+pub struct AppTemplateService {
+    pub app_template_dao: AppTemplateDao,
 }
 
-impl TemplateService {
+impl AppTemplateService {
     /// 获取{{InterfaceName}}列表
     pub async fn list(
         &self,
-        req: GetTemplatesReq,
-    ) -> Result<(Vec<template::Model>, u64), ErrorMsg> {
+        req: GetAppTemplatesReq,
+    ) -> Result<(Vec<t_app_template::Model>, u64), ErrorMsg> {
         if req.is_all {
-            let (results, total) = self.template_dao.all().await.map_err(|err| {
+            let (results, total) = self.app_template_dao.all().await.map_err(|err| {
                 error!("查询{{InterfaceName}}列表失败, err: {:#?}", err);
                 Error::DbQueryError.into_err_with_msg("查询{{InterfaceName}}列表失败")
             })?;
@@ -36,7 +36,7 @@ impl TemplateService {
             return Ok((results, total));
         }
 
-        let (results, total) = self.template_dao.list(req).await.map_err(|err| {
+        let (results, total) = self.app_template_dao.list(req).await.map_err(|err| {
             error!("查询{{InterfaceName}}列表失败, err: {:#?}", err);
             Error::DbQueryError.into_err_with_msg("查询{{InterfaceName}}列表失败")
         })?;
@@ -44,9 +44,9 @@ impl TemplateService {
     }
 
     /// 获取{{InterfaceName}}详情
-    pub async fn info(&self, req: GetTemplateReq) -> Result<template::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetAppTemplateReq) -> Result<t_app_template::Model, ErrorMsg> {
         let result = self
-            .template_dao
+            .app_template_dao
             .info(req.id)
             .await
             .map_err(|err| {
@@ -62,14 +62,17 @@ impl TemplateService {
     }
 
     /// 添加{{InterfaceName}}
-    pub async fn create(&self, data: CreateTemplateReq) -> Result<template::Model, ErrorMsg> {
-        let model = template::ActiveModel {
+    pub async fn create(
+        &self,
+        data: CreateAppTemplateReq,
+    ) -> Result<t_app_template::Model, ErrorMsg> {
+        let model = t_app_template::ActiveModel {
             user_id: Set(data.user_id),
             desc: Set(data.desc),
             ..Default::default()
         };
 
-        let result = self.template_dao.create(model).await.map_err(|err| {
+        let result = self.app_template_dao.create(model).await.map_err(|err| {
             error!("添加{{InterfaceName}}失败, err: {:#?}", err);
             Error::DbAddError.into_err_with_msg("添加{{InterfaceName}}失败")
         })?;
@@ -78,10 +81,10 @@ impl TemplateService {
     }
 
     /// 批量添加{{InterfaceName}}
-    pub async fn batch_create(&self, data: BatchCreateTemplateReq) -> Result<i32, ErrorMsg> {
+    pub async fn batch_create(&self, data: BatchCreateAppTemplateReq) -> Result<i32, ErrorMsg> {
         let mut models = Vec::new();
         for item in data.data {
-            let model = template::ActiveModel {
+            let model = t_app_template::ActiveModel {
                 user_id: Set(item.user_id),
                 desc: Set(item.desc),
                 status: Set(item.status),
@@ -91,7 +94,7 @@ impl TemplateService {
         }
 
         let result = self
-            .template_dao
+            .app_template_dao
             .batch_create(models)
             .await
             .map_err(|err| {
@@ -103,15 +106,15 @@ impl TemplateService {
     }
 
     /// 更新{{InterfaceName}}
-    pub async fn update(&self, data: UpdateTemplateReq) -> Result<u64, ErrorMsg> {
-        let model = template::ActiveModel {
+    pub async fn update(&self, data: UpdateAppTemplateReq) -> Result<u64, ErrorMsg> {
+        let model = t_app_template::ActiveModel {
             id: Set(data.id),
             desc: Set(data.desc),
             status: Set(data.status),
             ..Default::default()
         };
 
-        let result = self.template_dao.update(model).await.map_err(|err| {
+        let result = self.app_template_dao.update(model).await.map_err(|err| {
             error!("更新{{InterfaceName}}失败, err: {:#?}", err);
             Error::DbUpdateError.into_err_with_msg("更新{{InterfaceName}}失败")
         })?;
@@ -122,10 +125,10 @@ impl TemplateService {
     /// 更新{{InterfaceName}}状态
     pub async fn update_status(
         &self,
-        req: UpdateTemplateStatusReq,
-    ) -> Result<template::Model, ErrorMsg> {
+        req: UpdateAppTemplateStatusReq,
+    ) -> Result<t_app_template::Model, ErrorMsg> {
         let result = self
-            .template_dao
+            .app_template_dao
             .status(req.id, req.status)
             .await
             .map_err(|err| {
@@ -137,8 +140,8 @@ impl TemplateService {
     }
 
     /// 删除{{InterfaceName}}
-    pub async fn delete(&self, req: DeleteTemplateReq) -> Result<u64, ErrorMsg> {
-        let result = self.template_dao.delete(req.id).await.map_err(|err| {
+    pub async fn delete(&self, req: DeleteAppTemplateReq) -> Result<u64, ErrorMsg> {
+        let result = self.app_template_dao.delete(req.id).await.map_err(|err| {
             error!("删除{{InterfaceName}}失败, err: {:#?}", err);
             Error::DbDeleteError.into_err_with_msg("删除{{InterfaceName}}失败")
         })?;
@@ -148,10 +151,14 @@ impl TemplateService {
 
     /// 批量删除{{InterfaceName}}
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, ErrorMsg> {
-        let result = self.template_dao.batch_delete(ids).await.map_err(|err| {
-            error!("批量删除{{InterfaceName}}失败, err: {:#?}", err);
-            Error::DbBatchDeleteError.into_err_with_msg("批量删除{{InterfaceName}}失败")
-        })?;
+        let result = self
+            .app_template_dao
+            .batch_delete(ids)
+            .await
+            .map_err(|err| {
+                error!("批量删除{{InterfaceName}}失败, err: {:#?}", err);
+                Error::DbBatchDeleteError.into_err_with_msg("批量删除{{InterfaceName}}失败")
+            })?;
 
         Ok(result)
     }
@@ -162,6 +169,7 @@ mod tests {
     use super::*;
 
     use database::mock::Mock;
+    use err_code::ErrorMsg;
     use orm_migration::template::app_template;
     use orm_migration::user::user_base;
 
@@ -175,12 +183,14 @@ mod tests {
             .map_err(|err| Error::DbTableMigration(err.to_string()).into_err())?
             .build();
 
-        let dao = TemplateDao { db: pool };
+        let dao = AppTemplateDao { db: pool };
 
-        let service = TemplateService { template_dao: dao };
+        let service = AppTemplateService {
+            app_template_dao: dao,
+        };
 
         // 添加模板1
-        let data = CreateTemplateReq {
+        let data = CreateAppTemplateReq {
             user_id: 1,
             desc: Some("desc".to_string()),
         };
@@ -189,7 +199,7 @@ mod tests {
         assert!(result.user_id == 1);
 
         // 添加模板2
-        let data = CreateTemplateReq {
+        let data = CreateAppTemplateReq {
             user_id: 2,
             desc: Some("desc".to_string()),
         };
@@ -198,12 +208,12 @@ mod tests {
         assert!(result.user_id == 2);
 
         // 查询模板1
-        let result = service.info(GetTemplateReq { id: 1 }).await?;
+        let result = service.info(GetAppTemplateReq { id: 1 }).await?;
         println!("info result: {result:#?}");
         assert!(result.user_id == 1);
 
         // 查询所有的模板
-        let query = GetTemplatesReq {
+        let query = GetAppTemplatesReq {
             is_all: true,
             ..Default::default()
         };

@@ -17,11 +17,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(UserEmail::Table)
+                    .table(Email::Table)
                     .comment("用户邮箱表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(UserEmail::Id)
+                        ColumnDef::new(Email::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -29,14 +29,14 @@ impl MigrationTrait for Migration {
                             .comment("邮箱ID"),
                     )
                     .col(
-                        ColumnDef::new(UserEmail::UserId)
+                        ColumnDef::new(Email::UserId)
                             .integer()
                             .unique_key()
                             .not_null()
                             .comment("用户ID"),
                     )
                     .col(
-                        ColumnDef::new(UserEmail::Email)
+                        ColumnDef::new(Email::Email)
                             .string()
                             .string_len(50)
                             .unique_key()
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                             .comment("邮箱"),
                     )
                     .col(
-                        ColumnDef::new(UserEmail::Desc)
+                        ColumnDef::new(Email::Desc)
                             .string()
                             .string_len(200)
                             .null()
@@ -52,14 +52,14 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(UserEmail::CreatedAt)
+                        ColumnDef::new(Email::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(UserEmail::UpdatedAt)
+                        ColumnDef::new(Email::UpdatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -75,13 +75,13 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(UserEmail::Table).to_owned())
+            .drop_table(Table::drop().table(Email::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum UserEmail {
+pub enum Email {
     #[sea_orm(iden = "t_user_email")]
     Table,
     Id,

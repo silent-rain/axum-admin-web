@@ -43,11 +43,11 @@ impl MigratorTrait for Migrator {
             Box::new(organization::position::Migration),
             Box::new(organization::rank::Migration),
             // 系统管理
-            Box::new(system::sys_config::Migration),
-            Box::new(system::sys_dict_dimension::Migration),
-            Box::new(system::sys_dict_data::Migration),
-            Box::new(system::sys_image_captcha::Migration),
-            Box::new(system::sys_file_resource::Migration),
+            Box::new(system::config::Migration),
+            Box::new(system::dict_dimension::Migration),
+            Box::new(system::dict_data::Migration),
+            Box::new(system::image_captcha::Migration),
+            Box::new(system::file_resource::Migration),
             // 任务调度作业管理
             Box::new(schedule::schedule_job::Migration),
             Box::new(schedule::schedule_status_log::Migration),

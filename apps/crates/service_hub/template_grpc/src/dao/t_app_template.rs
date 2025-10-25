@@ -9,21 +9,21 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::template::{TemplateEntity, template};
+use entity::template::{AppTemplateEntity, t_app_template};
 
-use crate::dto::template::GetTemplatesReq;
+use crate::dto::t_app_template::GetAppTemplatesReq;
 
 /// 数据访问
 #[injectable]
-pub struct TemplateDao {
+pub struct AppTemplateDao {
     pub db: Arc<dyn PoolTrait>,
 }
 
-impl TemplateDao {
+impl AppTemplateDao {
     /// 获取所有数据
-    pub async fn all(&self) -> Result<(Vec<template::Model>, u64), DbErr> {
-        let results = TemplateEntity::find()
-            .order_by_asc(template::Column::Id)
+    pub async fn all(&self) -> Result<(Vec<t_app_template::Model>, u64), DbErr> {
+        let results = AppTemplateEntity::find()
+            .order_by_asc(t_app_template::Column::Id)
             .all(self.db.db())
             .await?;
         let total = results.len() as u64;
@@ -31,15 +31,18 @@ impl TemplateDao {
     }
 
     /// 获取列表数据
-    pub async fn list(&self, req: GetTemplatesReq) -> Result<(Vec<template::Model>, u64), DbErr> {
+    pub async fn list(
+        &self,
+        req: GetAppTemplatesReq,
+    ) -> Result<(Vec<t_app_template::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = TemplateEntity::find()
+        let states = AppTemplateEntity::find()
             .apply_if(req.start_time, |query, v| {
-                query.filter(template::Column::CreatedAt.gte(v))
+                query.filter(t_app_template::Column::CreatedAt.gte(v))
             })
             .apply_if(req.end_time, |query, v| {
-                query.filter(template::Column::CreatedAt.lt(v))
+                query.filter(t_app_template::Column::CreatedAt.lt(v))
             });
 
         let total = states.clone().count(self.db.db()).await?;
@@ -48,8 +51,10 @@ impl TemplateDao {
         }
 
         let order_by_col = match req.order_by {
-            Some(v) => template::Column::from_str(&v).map_or(template::Column::Id, |v| v),
-            None => template::Column::Id,
+            Some(v) => {
+                t_app_template::Column::from_str(&v).map_or(t_app_template::Column::Id, |v| v)
+            }
+            None => t_app_template::Column::Id,
         };
 
         let results = states
@@ -63,35 +68,35 @@ impl TemplateDao {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, id: i32) -> Result<Option<template::Model>, DbErr> {
-        TemplateEntity::find_by_id(id).one(self.db.db()).await
+    pub async fn info(&self, id: i32) -> Result<Option<t_app_template::Model>, DbErr> {
+        AppTemplateEntity::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加数据
     pub async fn create(
         &self,
-        active_model: template::ActiveModel,
-    ) -> Result<template::Model, DbErr> {
+        active_model: t_app_template::ActiveModel,
+    ) -> Result<t_app_template::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
     /// 批量添加数据
     pub async fn batch_create(
         &self,
-        active_models: Vec<template::ActiveModel>,
+        active_models: Vec<t_app_template::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = TemplateEntity::insert_many(active_models)
+        let result = AppTemplateEntity::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
     }
 
     /// 更新数据
-    pub async fn update(&self, active_model: template::ActiveModel) -> Result<u64, DbErr> {
+    pub async fn update(&self, active_model: t_app_template::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = TemplateEntity::update_many()
+        let result = AppTemplateEntity::update_many()
             .set(active_model)
-            .filter(template::Column::Id.eq(id))
+            .filter(t_app_template::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
 
@@ -99,8 +104,8 @@ impl TemplateDao {
     }
 
     /// 更新状态
-    pub async fn status(&self, id: i32, status: bool) -> Result<template::Model, DbErr> {
-        let active_model = template::ActiveModel {
+    pub async fn status(&self, id: i32, status: bool) -> Result<t_app_template::Model, DbErr> {
+        let active_model = t_app_template::ActiveModel {
             id: Set(id),
             status: Set(status),
             ..Default::default()
@@ -111,14 +116,16 @@ impl TemplateDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = TemplateEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = AppTemplateEntity::delete_by_id(id)
+            .exec(self.db.db())
+            .await?;
         Ok(result.rows_affected)
     }
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = TemplateEntity::delete_many()
-            .filter(template::Column::Id.is_in(ids))
+        let result = AppTemplateEntity::delete_many()
+            .filter(t_app_template::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)
@@ -137,12 +144,12 @@ mod tests {
 
     #[test]
     fn test_all() {
-        let result = TemplateEntity::find()
-            .order_by_asc(template::Column::Id)
+        let result = AppTemplateEntity::find()
+            .order_by_asc(t_app_template::Column::Id)
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"SELECT `t_app_template`.`id`, `t_app_template`.`user_id`, `t_app_template`.`desc`, `t_app_template`.`status`, `t_app_template`.`created_at`, `t_app_template`.`updated_at` FROM `t_app_template` ORDER BY `t_app_template`.`id` ASC"#;
+        let sql = r#"SELECT `t_template`.`id`, `t_template`.`user_id`, `t_template`.`desc`, `t_template`.`status`, `t_template`.`created_at`, `t_template`.`updated_at` FROM `t_template` ORDER BY `t_template`.`id` ASC"#;
 
         assert_eq!(result, sql);
     }
@@ -152,100 +159,99 @@ mod tests {
 
     #[test]
     fn test_info() {
-        let result = TemplateEntity::find_by_id(1)
+        let result = AppTemplateEntity::find_by_id(1)
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"SELECT `t_app_template`.`id`, `t_app_template`.`user_id`, `t_app_template`.`desc`, `t_app_template`.`status`, `t_app_template`.`created_at`, `t_app_template`.`updated_at` FROM `t_app_template` WHERE `t_app_template`.`id` = 1"#;
+        let sql = r#"SELECT `t_template`.`id`, `t_template`.`user_id`, `t_template`.`desc`, `t_template`.`status`, `t_template`.`created_at`, `t_template`.`updated_at` FROM `t_template` WHERE `t_template`.`id` = 1"#;
 
         assert_eq!(result, sql);
     }
 
     #[test]
     fn test_add() {
-        let active_model = template::ActiveModel {
+        let active_model = t_app_template::ActiveModel {
             id: Set(1),
             user_id: Set(11),
             status: Set(true),
             ..Default::default()
         };
-        let result = TemplateEntity::insert(active_model)
+        let result = AppTemplateEntity::insert(active_model)
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql =
-            r#"INSERT INTO `t_app_template` (`id`, `user_id`, `status`) VALUES (1, 11, TRUE)"#;
+        let sql = r#"INSERT INTO `t_template` (`id`, `user_id`, `status`) VALUES (1, 11, TRUE)"#;
 
         assert_eq!(result, sql);
     }
 
     #[test]
     fn test_batch_add() {
-        let active_model1 = template::ActiveModel {
+        let active_model1 = t_app_template::ActiveModel {
             id: Set(1),
             user_id: Set(11),
             status: Set(true),
             ..Default::default()
         };
-        let active_model2 = template::ActiveModel {
+        let active_model2 = t_app_template::ActiveModel {
             id: Set(2),
             user_id: Set(22),
             status: Set(false),
             ..Default::default()
         };
         let models = [active_model1, active_model2];
-        let result = TemplateEntity::insert_many(models)
+        let result = AppTemplateEntity::insert_many(models)
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"INSERT INTO `t_app_template` (`id`, `user_id`, `status`) VALUES (1, 11, TRUE), (2, 22, FALSE)"#;
+        let sql = r#"INSERT INTO `t_template` (`id`, `user_id`, `status`) VALUES (1, 11, TRUE), (2, 22, FALSE)"#;
 
         assert_eq!(result, sql);
     }
 
     #[test]
     fn test_update() {
-        let active_model = template::ActiveModel {
+        let active_model = t_app_template::ActiveModel {
             id: Set(1),
             user_id: Set(11),
             status: Set(true),
             ..Default::default()
         };
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = TemplateEntity::update_many()
+        let result = AppTemplateEntity::update_many()
             .set(active_model)
-            .filter(template::Column::Id.eq(id))
+            .filter(t_app_template::Column::Id.eq(id))
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"UPDATE `t_app_template` SET `id` = 1, `user_id` = 11, `status` = TRUE WHERE `t_app_template`.`id` = 1"#;
+        let sql = r#"UPDATE `t_template` SET `id` = 1, `user_id` = 11, `status` = TRUE WHERE `t_template`.`id` = 1"#;
 
         assert_eq!(result, sql);
     }
 
     #[test]
     fn test_status() {
-        let active_model = template::ActiveModel {
+        let active_model = t_app_template::ActiveModel {
             id: Set(1),
             status: Set(false),
             ..Default::default()
         };
-        let result = TemplateEntity::update(active_model)
+        let result = AppTemplateEntity::update(active_model)
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"UPDATE `t_app_template` SET `status` = FALSE WHERE `t_app_template`.`id` = 1"#;
+        let sql = r#"UPDATE `t_template` SET `status` = FALSE WHERE `t_template`.`id` = 1"#;
 
         assert_eq!(result, sql);
     }
 
     #[test]
     fn test_delete() {
-        let result = TemplateEntity::delete_by_id(1)
+        let result = AppTemplateEntity::delete_by_id(1)
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"DELETE FROM `t_app_template` WHERE `t_app_template`.`id` = 1"#;
+        let sql = r#"DELETE FROM `t_template` WHERE `t_template`.`id` = 1"#;
 
         assert_eq!(result, sql);
     }
@@ -253,12 +259,12 @@ mod tests {
     #[test]
     fn test_batch_delete() {
         let ids = vec![1, 2, 3, 4];
-        let result = TemplateEntity::delete_many()
-            .filter(template::Column::Id.is_in(ids))
+        let result = AppTemplateEntity::delete_many()
+            .filter(t_app_template::Column::Id.is_in(ids))
             .build(DbBackend::MySql)
             .to_string();
 
-        let sql = r#"DELETE FROM `t_app_template` WHERE `t_app_template`.`id` IN (1, 2, 3, 4)"#;
+        let sql = r#"DELETE FROM `t_template` WHERE `t_template`.`id` IN (1, 2, 3, 4)"#;
 
         assert_eq!(result, sql);
     }
@@ -271,7 +277,7 @@ mod tests {
             .await?
             .build();
 
-        let dao = TemplateDao { db: pool };
+        let dao = AppTemplateDao { db: pool };
 
         let (results, total) = dao.all().await?;
         assert!(results.is_empty());
@@ -287,7 +293,7 @@ mod tests {
             .await?
             .build();
 
-        let dao = TemplateDao { db: pool };
+        let dao = AppTemplateDao { db: pool };
 
         let result = dao.info(1).await?;
         assert!(result.is_none());
@@ -302,10 +308,10 @@ mod tests {
             .await?
             .build();
 
-        let dao = TemplateDao { db: pool };
+        let dao = AppTemplateDao { db: pool };
 
         // 添加模板1
-        let active_model = template::ActiveModel {
+        let active_model = t_app_template::ActiveModel {
             user_id: Set(1),
             desc: Set(Some("desc".to_string())),
             status: Set(true),
@@ -316,7 +322,7 @@ mod tests {
         assert!(result.user_id == 1);
 
         // 添加模板2
-        let active_model = template::ActiveModel {
+        let active_model = t_app_template::ActiveModel {
             user_id: Set(2),
             desc: Set(Some("desc2".to_string())),
             status: Set(false),

@@ -1,6 +1,6 @@
 //! 系统相关表
-pub mod sys_config;
-pub mod sys_dict_data;
-pub mod sys_dict_dimension;
-pub mod sys_file_resource;
-pub mod sys_image_captcha;
+pub mod config;
+pub mod dict_data;
+pub mod dict_dimension;
+pub mod file_resource;
+pub mod image_captcha;

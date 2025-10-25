@@ -2,7 +2,7 @@
 
 use axum::Router;
 pub mod simple;
-pub mod template;
+pub mod t_app_template;
 
 /// 路由器
 pub struct TemplateRouter;
@@ -13,7 +13,7 @@ impl TemplateRouter {
         Router::new().nest(
             "/template",
             Router::new()
-                .merge(template::TemplateRouter::register()) // HTTP 模板
+                .merge(t_app_template::TemplateRouter::register()) // HTTP 模板
                 .merge(simple::SimpleRouter::register()), // HTTP 模板
         )
     }

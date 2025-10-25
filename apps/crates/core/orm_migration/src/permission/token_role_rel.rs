@@ -1,8 +1,6 @@
 //! 令牌角色关系表
 //! Entity: [`entity::permission::TokenRoleRel`]
-use crate::{
-    permission::token::Token, user::role::UserRole, utils::if_not_exists_create_unique_index,
-};
+use crate::{permission::token::Token, user::role::Role, utils::if_not_exists_create_unique_index};
 
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
@@ -98,7 +96,7 @@ impl MigrationTrait for Migration {
                     ForeignKey::create()
                         .name("fk_perm_token_role_rel_role_id")
                         .from(TokenRoleRel::Table, TokenRoleRel::RoleId)
-                        .to(UserRole::Table, UserRole::Id)
+                        .to(Role::Table, Role::Id)
                         .on_update(ForeignKeyAction::Cascade)
                         .on_delete(ForeignKeyAction::Cascade)
                         .to_owned(),

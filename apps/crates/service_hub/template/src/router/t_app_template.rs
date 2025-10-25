@@ -5,7 +5,7 @@ use axum::{
     routing::{delete, get, post, put},
 };
 
-use crate::controller::template::TemplateController;
+use crate::controller::t_app_template::TemplateController;
 
 /// 路由器
 pub struct TemplateRouter;
@@ -38,8 +38,8 @@ mod tests {
     use axum_mock::Error;
     use axum_mock::MockRequest;
 
-    use crate::dto::template::GetTemplatesResp;
-    use entity::template::TemplateEntity;
+    use crate::dto::t_app_template::GetTemplatesResp;
+    use entity::template::AppTemplateEntity;
 
     use super::*;
 
@@ -47,7 +47,7 @@ mod tests {
     async fn test_router_all() -> Result<(), Error> {
         let mut request = MockRequest::new(TemplateRouter::register())
             .await?
-            .from_entity(vec![TemplateEntity])
+            .from_entity(vec![AppTemplateEntity])
             .await?
             .enabled_log(true);
 

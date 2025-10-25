@@ -74,8 +74,9 @@ impl AppTemplateGrpcService for AppTemplateController {
         &self,
         req: Request<UpdateAppTemplateReq>,
     ) -> Result<tonic::Response<UpdateAppTemplateResp>, Status> {
-        let data: crate::dto::template::UpdateAppTemplateReq = struct_to_struct(&req.into_inner())
-            .map_err(|err| tonic::Status::aborted(err.to_string()))?;
+        let data: crate::dto::t_app_template::UpdateAppTemplateReq =
+            struct_to_struct(&req.into_inner())
+                .map_err(|err| tonic::Status::aborted(err.to_string()))?;
         let resp: Result<u64, ErrorMsg> = self.app_template_service.update(data).await;
 
         match resp {
@@ -90,7 +91,7 @@ impl AppTemplateGrpcService for AppTemplateController {
         &self,
         req: Request<UpdateAppTemplateStatusReq>,
     ) -> Result<tonic::Response<UpdateAppTemplateStatusResp>, Status> {
-        let data: crate::dto::template::UpdateAppTemplateStatusReq =
+        let data: crate::dto::t_app_template::UpdateAppTemplateStatusReq =
             struct_to_struct(&req.into_inner())
                 .map_err(|err| tonic::Status::aborted(err.to_string()))?;
 
@@ -108,8 +109,9 @@ impl AppTemplateGrpcService for AppTemplateController {
         &self,
         req: Request<DeleteAppTemplateReq>,
     ) -> Result<tonic::Response<DeleteAppTemplateResp>, Status> {
-        let data: crate::dto::template::DeleteAppTemplateReq = struct_to_struct(&req.into_inner())
-            .map_err(|err| tonic::Status::aborted(err.to_string()))?;
+        let data: crate::dto::t_app_template::DeleteAppTemplateReq =
+            struct_to_struct(&req.into_inner())
+                .map_err(|err| tonic::Status::aborted(err.to_string()))?;
 
         let resp = self.app_template_service.delete(data).await;
         match resp {

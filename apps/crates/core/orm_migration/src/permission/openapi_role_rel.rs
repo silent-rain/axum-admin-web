@@ -1,7 +1,7 @@
 //! OpenApi接口角色关系表
 //! Entity: [`entity::permission::OpenapiRoleRel`]
 use crate::{
-    permission::openapi::Openapi, user::role::UserRole, utils::if_not_exists_create_unique_index,
+    permission::openapi::Openapi, user::role::Role, utils::if_not_exists_create_unique_index,
 };
 
 use sea_orm::{
@@ -98,7 +98,7 @@ impl MigrationTrait for Migration {
                     ForeignKey::create()
                         .name("fk_openapi_role_rel_role_id")
                         .from(OpenapiRoleRel::Table, OpenapiRoleRel::RoleId)
-                        .to(UserRole::Table, UserRole::Id)
+                        .to(Role::Table, Role::Id)
                         .on_update(ForeignKeyAction::Cascade)
                         .on_delete(ForeignKeyAction::Cascade)
                         .to_owned(),

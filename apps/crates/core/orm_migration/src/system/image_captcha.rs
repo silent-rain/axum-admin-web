@@ -19,11 +19,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(SysImageCaptcha::Table)
+                    .table(ImageCaptcha::Table)
                     .comment("图片验证码表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(SysImageCaptcha::Id)
+                        ColumnDef::new(ImageCaptcha::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -31,7 +31,7 @@ impl MigrationTrait for Migration {
                             .comment("ID"),
                     )
                     .col(
-                        ColumnDef::new(SysImageCaptcha::CaptchaId)
+                        ColumnDef::new(ImageCaptcha::CaptchaId)
                             .string()
                             .string_len(40)
                             .unique_key()
@@ -39,40 +39,40 @@ impl MigrationTrait for Migration {
                             .comment("验证码ID"),
                     )
                     .col(
-                        ColumnDef::new(SysImageCaptcha::Captcha)
+                        ColumnDef::new(ImageCaptcha::Captcha)
                             .string()
                             .string_len(10)
                             .not_null()
                             .comment("验证码"),
                     )
                     .col(
-                        ColumnDef::new(SysImageCaptcha::Data)
+                        ColumnDef::new(ImageCaptcha::Data)
                             .blob()
                             .not_null()
                             .comment("图片数据, Base64编码"),
                     )
                     .col(
-                        ColumnDef::new(SysImageCaptcha::Expire)
+                        ColumnDef::new(ImageCaptcha::Expire)
                             .small_integer()
                             .not_null()
                             .comment("过期时间,秒"),
                     )
                     .col(
-                        ColumnDef::new(SysImageCaptcha::Status)
+                        ColumnDef::new(ImageCaptcha::Status)
                             .boolean()
                             .not_null()
                             .default(true)
                             .comment("状态(false:失效,true:有效)"),
                     )
                     .col(
-                        ColumnDef::new(SysImageCaptcha::CreatedAt)
+                        ColumnDef::new(ImageCaptcha::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(SysImageCaptcha::UpdatedAt)
+                        ColumnDef::new(ImageCaptcha::UpdatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -82,31 +82,23 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        if_not_exists_create_index(
-            manager,
-            SysImageCaptcha::Table,
-            vec![SysImageCaptcha::CaptchaId],
-        )
-        .await?;
-        if_not_exists_create_index(
-            manager,
-            SysImageCaptcha::Table,
-            vec![SysImageCaptcha::Status],
-        )
-        .await?;
+        if_not_exists_create_index(manager, ImageCaptcha::Table, vec![ImageCaptcha::CaptchaId])
+            .await?;
+        if_not_exists_create_index(manager, ImageCaptcha::Table, vec![ImageCaptcha::Status])
+            .await?;
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(SysImageCaptcha::Table).to_owned())
+            .drop_table(Table::drop().table(ImageCaptcha::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum SysImageCaptcha {
+pub enum ImageCaptcha {
     #[sea_orm(iden = "t_sys_image_captcha")]
     Table,
     Id,

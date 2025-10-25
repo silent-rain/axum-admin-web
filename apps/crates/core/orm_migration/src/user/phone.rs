@@ -17,11 +17,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(UserPhone::Table)
+                    .table(Phone::Table)
                     .comment("用户手机号表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(UserPhone::Id)
+                        ColumnDef::new(Phone::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -29,14 +29,14 @@ impl MigrationTrait for Migration {
                             .comment("手机号ID"),
                     )
                     .col(
-                        ColumnDef::new(UserPhone::UserId)
+                        ColumnDef::new(Phone::UserId)
                             .integer()
                             .unique_key()
                             .not_null()
                             .comment("用户ID"),
                     )
                     .col(
-                        ColumnDef::new(UserPhone::Phone)
+                        ColumnDef::new(Phone::Phone)
                             .string()
                             .string_len(16)
                             .unique_key()
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                             .comment("手机号码"),
                     )
                     .col(
-                        ColumnDef::new(UserPhone::Desc)
+                        ColumnDef::new(Phone::Desc)
                             .string()
                             .string_len(200)
                             .null()
@@ -52,14 +52,14 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(UserPhone::CreatedAt)
+                        ColumnDef::new(Phone::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(UserPhone::UpdatedAt)
+                        ColumnDef::new(Phone::UpdatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -75,13 +75,13 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(UserPhone::Table).to_owned())
+            .drop_table(Table::drop().table(Phone::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum UserPhone {
+pub enum Phone {
     #[sea_orm(iden = "t_user_phone")]
     Table,
     Id,

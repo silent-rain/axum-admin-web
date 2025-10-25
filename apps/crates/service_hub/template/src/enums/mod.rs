@@ -1,2 +1,2 @@
 //! 枚举
-pub mod template;
+pub mod t_app_template;

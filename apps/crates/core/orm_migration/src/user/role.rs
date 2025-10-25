@@ -20,11 +20,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(UserRole::Table)
+                    .table(Role::Table)
                     .comment("角色表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(UserRole::Id)
+                        ColumnDef::new(Role::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -32,7 +32,7 @@ impl MigrationTrait for Migration {
                             .comment("角色ID"),
                     )
                     .col(
-                        ColumnDef::new(UserRole::Name)
+                        ColumnDef::new(Role::Name)
                             .string()
                             .string_len(20)
                             .unique_key()
@@ -40,14 +40,14 @@ impl MigrationTrait for Migration {
                             .comment("角色名称"),
                     )
                     .col(
-                        ColumnDef::new(UserRole::Sort)
+                        ColumnDef::new(Role::Sort)
                             .integer()
                             .null()
                             .default(0)
                             .comment("排序"),
                     )
                     .col(
-                        ColumnDef::new(UserRole::Desc)
+                        ColumnDef::new(Role::Desc)
                             .string()
                             .string_len(200)
                             .null()
@@ -55,21 +55,21 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(UserRole::Status)
+                        ColumnDef::new(Role::Status)
                             .boolean()
                             .not_null()
                             .default(true)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
-                        ColumnDef::new(UserRole::CreatedAt)
+                        ColumnDef::new(Role::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(UserRole::UpdatedAt)
+                        ColumnDef::new(Role::UpdatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -123,13 +123,13 @@ impl MigrationTrait for Migration {
         // Replace the sample below with your own migration scripts
 
         manager
-            .drop_table(Table::drop().table(UserRole::Table).to_owned())
+            .drop_table(Table::drop().table(Role::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum UserRole {
+pub enum Role {
     #[sea_orm(iden = "t_user_role")]
     Table,
     Id,

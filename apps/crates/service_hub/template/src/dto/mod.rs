@@ -1,3 +1,3 @@
 //! 数据传递层
 pub mod axum_validator;
-pub mod template;
+pub mod t_app_template;
