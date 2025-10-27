@@ -14,10 +14,10 @@ entity = { workspace = true }
 err_code = { workspace = true }
 inject = { workspace = true }
 axum_response = { workspace = true }
-
-axum = { workspace = true }
 axum_context = { workspace = true }
 axum_validator = { workspace = true }
+
+axum = { workspace = true }
 tower-sessions = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }

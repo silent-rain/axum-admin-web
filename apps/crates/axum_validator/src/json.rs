@@ -15,7 +15,6 @@ use crate::error::Error;
 #[derive(Debug)]
 pub struct Json<T>(pub T);
 
-#[allow(unused)]
 impl<T> Json<T> {
     /// Deconstruct to an inner value
     pub fn into_inner(self) -> T {
@@ -46,21 +45,23 @@ where
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         if !json_content_type(req.headers()) {
-            return Err(Error::HeaderContentType(
-                "expected request with `Content-Type: application/json`".to_string(),
-            ));
+            let body = axum::extract::Json::<T>::from_request(req, state)
+                .await
+                .map_err(|e| Error::JsonRejection(e.to_string()))?;
+            return Ok(Json(body.0));
         }
 
         let bytes = Bytes::from_request(req, state)
             .await
             .map_err(|e| Error::InvalidParameter(e.to_string()))?;
-        // 获取body数据
-        let body: T =
-            serde_json::from_slice(&bytes).map_err(|e| Error::SerdeJsonError(e.to_string()))?;
+
+        let body = axum::extract::Json::<T>::from_bytes(&bytes)
+            .map_err(|e| Error::JsonRejection(e.to_string()))?;
 
         // 验证 body 数据
-        body.validate()?;
-        Ok(Json(body))
+        body.0.validate()?;
+
+        Ok(Json(body.0))
     }
 }
 

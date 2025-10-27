@@ -13,12 +13,12 @@ inject = { path = "../crates/core/inject" }
 axum_response = { path = "../crates/axum_response" }
 axum_middleware = { path = "../crates/axum_middleware" }
 axum_session = { path = "../crates/axum_session" }
+axum_context = { workspace = true }
 service_hub = { path = "../crates/service_hub" }
 app_state = { path = "../crates/app_state" }
 
 axum = { workspace = true }
 axum-extra = { workspace = true, features = ["cookie-private"] }
-axum_context = { workspace = true }
 tokio = { workspace = true, features = ["full"] }
 tower = { workspace = true }
 tower_governor = { workspace = true }

@@ -4,7 +4,7 @@ pub mod error;
 
 pub mod api_operation_log;
 pub mod api_operation_log_fn;
-pub mod empty_wrapper_fn;
+pub mod empty_wrapper;
 
 // 鉴权
 pub mod casbin_auth;

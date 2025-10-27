@@ -5,6 +5,4 @@ mod error;
 pub use error::Error;
 
 mod layer;
-pub use layer::JwtAuthLayer;
-
-pub mod constant;
+pub use layer::JwtLayer;

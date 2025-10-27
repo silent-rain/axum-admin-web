@@ -12,9 +12,9 @@ database = { workspace = true }
 err_code = { workspace = true }
 inject = { workspace = true }
 axum_response = { workspace = true }
+axum_validator = { workspace = true }
 
 axum = { workspace = true }
-axum_validator = { workspace = true }
 axum-extra = { workspace = true, features = ["cookie-private", "typed-header"] }
 tonic = { workspace = true }
 sea-orm = { workspace = true }

@@ -13,7 +13,7 @@ const NBF: usize = 0;
 const EXPIRE: i64 = 1000 * 60 * 60 * 24 * 30; // 30 Day
 
 /// Our claims struct, it needs to derive `Serialize` and/or `Deserialize`
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Claims {
     pub user_id: i32,
     pub username: String,

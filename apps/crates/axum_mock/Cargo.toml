@@ -4,10 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-database = { path = "../core/database" }
 migration = { path = "../core/migration" }
-inject = { path = "../core/inject" }
-axum_response = { path = "../axum_response" }
+
+
+database = { workspace = true }
+inject = { workspace = true }
+axum_response = { workspace = true }
 
 
 axum = { workspace = true }

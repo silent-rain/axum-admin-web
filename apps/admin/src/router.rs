@@ -20,7 +20,7 @@ use tracing::warn;
 use axum_context::ContextLayer;
 use axum_middleware::{
     api_operation_log::ApiOperationLogLayer, check_auth::CheckAuthLayer, cors::cors_layer,
-    empty_wrapper_fn::empty_wrapper_layer, openapi_auth::OpenApiAuthLayer,
+    empty_wrapper::empty_wrapper_layer, openapi_auth::OpenApiAuthLayer,
     prometheus::prometheus_layer_metric_handle, session_auth::SessionAuthLayer,
 };
 use axum_session::session_layer;

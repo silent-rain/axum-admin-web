@@ -10,10 +10,10 @@ database = { workspace = true }
 entity = { workspace = true }
 err_code = { workspace = true }
 axum_response = { workspace = true }
+axum_validator = { workspace = true }
 inject = { workspace = true }
 
 axum = { workspace = true }
-axum_validator = { workspace = true }
 validator = { workspace = true, features = ["derive"] }
 sea-orm = { workspace = true }
 nject = { workspace = true }
