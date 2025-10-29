@@ -22,7 +22,7 @@ impl RegisterController {
         let register_service: RegisterService = provider.provide();
         register_service.register(req).await?;
 
-        let resp = Response::<()>::ok().with_msg("注册成功").to_json()?;
+        let resp = Response::ok().with_msg("注册成功");
         Ok(resp)
     }
 }

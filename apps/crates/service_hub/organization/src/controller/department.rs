@@ -25,7 +25,7 @@ impl DepartmentController {
         let department_service: DepartmentService = provider.provide();
         let (results, total) = department_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl DepartmentController {
         let department_service: DepartmentService = provider.provide();
         let result = department_service.tree().await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -49,7 +49,7 @@ impl DepartmentController {
         let department_service: DepartmentService = provider.provide();
         let result = department_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -61,7 +61,7 @@ impl DepartmentController {
         let department_service: DepartmentService = provider.provide();
         let _result = department_service.create(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -73,7 +73,7 @@ impl DepartmentController {
         let department_service: DepartmentService = provider.provide();
         let _result = department_service.update(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -85,7 +85,7 @@ impl DepartmentController {
         let department_service: DepartmentService = provider.provide();
         department_service.update_status(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -97,7 +97,7 @@ impl DepartmentController {
         let department_service: DepartmentService = provider.provide();
         let _result = department_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

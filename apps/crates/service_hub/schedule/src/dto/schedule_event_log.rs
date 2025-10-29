@@ -28,6 +28,12 @@ pub struct GetScheduleEventLogsResp {
     pub total: u64,
 }
 
+impl From<(Vec<schedule_event_log::Model>, u64)> for GetScheduleEventLogsResp {
+    fn from((data_list, total): (Vec<schedule_event_log::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetScheduleEventLogReq {
@@ -38,7 +44,13 @@ pub struct GetScheduleEventLogReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleEventLogResp {
     #[serde(flatten)]
-    data: schedule_event_log::Model,
+    model: schedule_event_log::Model,
+}
+
+impl From<schedule_event_log::Model> for GetScheduleEventLogResp {
+    fn from(model: schedule_event_log::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加任务调度事件日志 请求体

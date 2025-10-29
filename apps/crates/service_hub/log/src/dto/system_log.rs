@@ -24,6 +24,12 @@ pub struct GetSystemLogsResp {
     pub total: u64,
 }
 
+impl From<(Vec<log_system::Model>, u64)> for GetSystemLogsResp {
+    fn from((data_list, total): (Vec<log_system::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetSystemLogReq {
@@ -34,7 +40,13 @@ pub struct GetSystemLogReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetSystemLogResp {
     #[serde(flatten)]
-    data: log_system::Model,
+    model: log_system::Model,
+}
+
+impl From<log_system::Model> for GetSystemLogResp {
+    fn from(model: log_system::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加系统日志 请求体

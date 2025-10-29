@@ -28,6 +28,12 @@ pub struct GetEmailsResp {
     pub total: u64,
 }
 
+impl From<(Vec<email::Model>, u64)> for GetEmailsResp {
+    fn from((data_list, total): (Vec<email::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询邮箱信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetEmailReq {
@@ -38,7 +44,13 @@ pub struct GetEmailReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetEmailResp {
     #[serde(flatten)]
-    data: email::Model,
+    model: email::Model,
+}
+
+impl From<email::Model> for GetEmailResp {
+    fn from(model: email::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加邮箱 请求体

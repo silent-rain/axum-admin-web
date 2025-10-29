@@ -29,6 +29,12 @@ pub struct GetScheduleStatusLogsResp {
     pub total: u64,
 }
 
+impl From<(Vec<schedule_status_log::Model>, u64)> for GetScheduleStatusLogsResp {
+    fn from((data_list, total): (Vec<schedule_status_log::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetScheduleStatusLogReq {
@@ -39,7 +45,13 @@ pub struct GetScheduleStatusLogReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleStatusLogResp {
     #[serde(flatten)]
-    data: schedule_status_log::Model,
+    model: schedule_status_log::Model,
+}
+
+impl From<schedule_status_log::Model> for GetScheduleStatusLogResp {
+    fn from(model: schedule_status_log::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加任务调度状态日志

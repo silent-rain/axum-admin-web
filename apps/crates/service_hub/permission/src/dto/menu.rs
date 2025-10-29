@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+use database::utils::GenericTree;
 use entity::permission::menu;
 
 use crate::enums::menu::{LinkTarget, MenuType, OpenMethod};
@@ -30,6 +31,12 @@ pub struct GetMenusResp {
     pub total: u64,
 }
 
+impl From<(Vec<menu::Model>, u64)> for GetMenusResp {
+    fn from((data_list, total): (Vec<menu::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询菜单详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetMenuReq {
@@ -40,7 +47,13 @@ pub struct GetMenuReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMenuResp {
     #[serde(flatten)]
-    data: menu::Model,
+    model: menu::Model,
+}
+
+impl From<menu::Model> for GetMenuResp {
+    fn from(model: menu::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加菜单
@@ -161,11 +174,10 @@ pub struct GetMenuChildrenResp {
     pub total: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct MenuTreeItem {
-    #[serde(flatten)]
-    pub data: menu::Model,
-    pub children: Vec<MenuTreeItem>,
+impl From<(Vec<menu::Model>, u64)> for GetMenuChildrenResp {
+    fn from((data_list, total): (Vec<menu::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
 }
 
 /// 菜单树列表 请求体
@@ -175,5 +187,11 @@ pub struct GetMenuTreeReq {}
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMenuTreeResp {
     #[serde(flatten)]
-    pub data: MenuTreeItem,
+    pub data: Vec<GenericTree<menu::Model>>,
+}
+
+impl From<Vec<GenericTree<menu::Model>>> for GetMenuTreeResp {
+    fn from(data: Vec<GenericTree<menu::Model>>) -> Self {
+        Self { data }
+    }
 }

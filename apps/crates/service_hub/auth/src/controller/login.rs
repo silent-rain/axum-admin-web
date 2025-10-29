@@ -39,7 +39,7 @@ impl LoginController {
         let login_service: LoginService = provider.provide();
         let result = login_service.login(req, browser_info, session).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result);
         Ok(resp)
     }
 }

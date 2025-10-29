@@ -26,7 +26,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         let (results, total) = token_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -38,7 +38,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         let result = token_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -50,7 +50,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         let _result = token_service.create(data).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -62,7 +62,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         let _result = token_service.update(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -74,7 +74,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         token_service.update_status(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -86,7 +86,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         let _result = token_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

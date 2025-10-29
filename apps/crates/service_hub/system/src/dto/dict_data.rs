@@ -28,6 +28,12 @@ pub struct GetDictDatasResp {
     pub total: u64,
 }
 
+impl From<(Vec<dict_data::Model>, u64)> for GetDictDatasResp {
+    fn from((data_list, total): (Vec<dict_data::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetDictDataReq {
@@ -38,7 +44,13 @@ pub struct GetDictDataReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDataResp {
     #[serde(flatten)]
-    data: dict_data::Model,
+    model: dict_data::Model,
+}
+
+impl From<dict_data::Model> for GetDictDataResp {
+    fn from(model: dict_data::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加字典数据 请求体

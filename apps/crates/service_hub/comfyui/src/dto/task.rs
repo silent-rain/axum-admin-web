@@ -13,11 +13,23 @@ pub struct PushPromptResp {
     pub data: PromptResult,
 }
 
+impl From<PromptResult> for PushPromptResp {
+    fn from(data: PromptResult) -> Self {
+        Self { data }
+    }
+}
+
 /// 获取服务器当前剩余任务列队的数量 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct QueueRemainingResp {
     #[serde(flatten)]
     pub data: QueueRemaining,
+}
+
+impl From<QueueRemaining> for QueueRemainingResp {
+    fn from(data: QueueRemaining) -> Self {
+        Self { data }
+    }
 }
 
 /// 获取所有历史任务数据 请求体
@@ -39,6 +51,12 @@ pub struct HistorysResp {
     pub total: u64,
 }
 
+impl From<(Vec<History>, u64)> for HistorysResp {
+    fn from((data_list, total): (Vec<History>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 获取指定历史任务数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct HistoryReq {
@@ -52,11 +70,23 @@ pub struct HistoryResp {
     pub data: History,
 }
 
+impl From<History> for HistoryResp {
+    fn from(data: History) -> Self {
+        Self { data }
+    }
+}
+
 /// 获取所有的队列 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct QueuesResp {
     #[serde(flatten)]
     pub data: Queues,
+}
+
+impl From<Queues> for QueuesResp {
+    fn from(data: Queues) -> Self {
+        Self { data }
+    }
 }
 
 /// 删除队列 请求体

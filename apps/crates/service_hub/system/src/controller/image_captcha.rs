@@ -32,7 +32,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let (results, total) = image_captcha_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -44,7 +44,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let result = image_captcha_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -56,7 +56,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let result = image_captcha_service.create(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result);
         Ok(resp)
     }
 
@@ -68,7 +68,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let _result = image_captcha_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -80,7 +80,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let _result = image_captcha_service.batch_delete(req.ids.clone()).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }
@@ -94,7 +94,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let result = image_captcha_service.info_by_captcha_id(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 

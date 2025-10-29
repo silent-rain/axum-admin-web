@@ -25,7 +25,7 @@ impl UserLoginLogController {
         let user_login_service: UserLoginLogService = provider.provide();
         let (results, total) = user_login_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl UserLoginLogController {
         let user_login_service: UserLoginLogService = provider.provide();
         let result = user_login_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -49,7 +49,7 @@ impl UserLoginLogController {
         let user_login_service: UserLoginLogService = provider.provide();
         let _result = user_login_service.create(data).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

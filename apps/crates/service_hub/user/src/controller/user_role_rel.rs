@@ -25,7 +25,7 @@ impl UserRoleRelController {
         let user_role_rel_service: UserRoleRelService = provider.provide();
         let (results, total) = user_role_rel_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl UserRoleRelController {
         let user_role_rel_service: UserRoleRelService = provider.provide();
         let _result = user_role_rel_service.batch_create(data).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -49,7 +49,7 @@ impl UserRoleRelController {
         let user_role_rel_service: UserRoleRelService = provider.provide();
         let _result = user_role_rel_service.batch_delete(data.ids.clone()).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

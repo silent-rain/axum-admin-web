@@ -26,7 +26,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         let (results, total) = menu_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -38,7 +38,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         let result = menu_service.tree().await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -50,7 +50,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         let (results, total) = menu_service.children(req.pid).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -62,7 +62,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         let result = menu_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -74,7 +74,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         let _result = menu_service.create(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -86,7 +86,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         let _result = menu_service.update(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -98,7 +98,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         menu_service.update_status(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -110,7 +110,7 @@ impl MenuController {
         let menu_service: MenuService = provider.provide();
         let _result = menu_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

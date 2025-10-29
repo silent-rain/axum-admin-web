@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+use database::utils::GenericTree;
 use entity::organization::department;
 
 /// 查询部门列表 请求体
@@ -28,6 +29,12 @@ pub struct GetDepartmentsResp {
     pub total: u64,
 }
 
+impl From<(Vec<department::Model>, u64)> for GetDepartmentsResp {
+    fn from((data_list, total): (Vec<department::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetDepartmentReq {
@@ -38,7 +45,13 @@ pub struct GetDepartmentReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDepartmentResp {
     #[serde(flatten)]
-    data: department::Model,
+    model: department::Model,
+}
+
+impl From<department::Model> for GetDepartmentResp {
+    fn from(model: department::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加部门 请求体
@@ -106,13 +119,6 @@ pub struct DeleteDepartmentReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DeleteDepartmentResp {}
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DepartmentTreeItem {
-    #[serde(flatten)]
-    pub data: department::Model,
-    pub children: Vec<DepartmentTreeItem>,
-}
-
 /// 部门树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetDepartmentTreeReq {}
@@ -120,5 +126,11 @@ pub struct GetDepartmentTreeReq {}
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDepartmentTreeResp {
     #[serde(flatten)]
-    pub data: DepartmentTreeItem,
+    pub data: Vec<GenericTree<department::Model>>,
+}
+
+impl From<Vec<GenericTree<department::Model>>> for GetDepartmentTreeResp {
+    fn from(data: Vec<GenericTree<department::Model>>) -> Self {
+        Self { data }
+    }
 }

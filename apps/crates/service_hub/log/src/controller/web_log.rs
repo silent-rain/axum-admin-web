@@ -24,7 +24,7 @@ impl WebLogController {
         let log_web_service: WebLogService = provider.provide();
         let (results, total) = log_web_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -36,7 +36,7 @@ impl WebLogController {
         let log_web_service: WebLogService = provider.provide();
         let result = log_web_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -48,7 +48,7 @@ impl WebLogController {
         let log_web_service: WebLogService = provider.provide();
         let _result = log_web_service.create(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

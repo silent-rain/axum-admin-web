@@ -32,6 +32,12 @@ pub struct GetScheduleJobsResp {
     pub total: u64,
 }
 
+impl From<(Vec<schedule_job::Model>, u64)> for GetScheduleJobsResp {
+    fn from((data_list, total): (Vec<schedule_job::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetScheduleJobReq {
@@ -42,7 +48,13 @@ pub struct GetScheduleJobReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleJobResp {
     #[serde(flatten)]
-    data: schedule_job::Model,
+    model: schedule_job::Model,
+}
+
+impl From<schedule_job::Model> for GetScheduleJobResp {
+    fn from(model: schedule_job::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加任务调度 请求体

@@ -31,6 +31,12 @@ pub struct GetWebLogsResp {
     pub total: u64,
 }
 
+impl From<(Vec<log_web::Model>, u64)> for GetWebLogsResp {
+    fn from((data_list, total): (Vec<log_web::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetWebLogReq {
@@ -41,7 +47,13 @@ pub struct GetWebLogReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetWebLogResp {
     #[serde(flatten)]
-    data: log_web::Model,
+    model: log_web::Model,
+}
+
+impl From<log_web::Model> for GetWebLogResp {
+    fn from(model: log_web::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加WEB日志信息 请求体

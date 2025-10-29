@@ -29,6 +29,12 @@ pub struct GetPhonesResp {
     pub total: u64,
 }
 
+impl From<(Vec<phone::Model>, u64)> for GetPhonesResp {
+    fn from((data_list, total): (Vec<phone::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询用户手机号信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetPhoneReq {
@@ -39,7 +45,13 @@ pub struct GetPhoneReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPhoneResp {
     #[serde(flatten)]
-    data: phone::Model,
+    model: phone::Model,
+}
+
+impl From<phone::Model> for GetPhoneResp {
+    fn from(model: phone::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加用户手机号 请求体

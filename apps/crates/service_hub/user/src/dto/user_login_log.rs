@@ -28,6 +28,12 @@ pub struct GetUserLoginLogsResp {
     pub total: u64,
 }
 
+impl From<(Vec<user_login_log::Model>, u64)> for GetUserLoginLogsResp {
+    fn from((data_list, total): (Vec<user_login_log::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询登陆日志信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetUserLoginLogReq {
@@ -38,7 +44,13 @@ pub struct GetUserLoginLogReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserLoginLogResp {
     #[serde(flatten)]
-    data: user_login_log::Model,
+    model: user_login_log::Model,
+}
+
+impl From<user_login_log::Model> for GetUserLoginLogResp {
+    fn from(model: user_login_log::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加登陆日志信息 请求体

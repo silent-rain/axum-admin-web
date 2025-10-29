@@ -1,30 +1,10 @@
 //! 文件资源管理
 
 use axum_typed_multipart::{FieldData, TryFromMultipart};
+use entity::system::file_resource;
 use serde::{Deserialize, Serialize};
 use tempfile::NamedTempFile;
 use validator::Validate;
-
-/// 文件资源
-#[derive(Debug, Default, Serialize, Deserialize, Validate)]
-pub struct FileResource {
-    /// 文件ID
-    pub id: i32,
-    /// 文件名称
-    pub file_name: String,
-    /// 文件HASH值
-    pub hash: String,
-    /// 文件文件扩展名, 如svg, png
-    pub extension: String,
-    /// 内容类型, text/html
-    pub content_type: String,
-    /// 文件大小
-    pub size: u16,
-    /// 描述信息
-    pub desc: Option<String>,
-    /// 创建时间
-    pub created_at: String,
-}
 
 /// 获取文件列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -43,8 +23,14 @@ pub struct GetFileResourcesReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetFileResourcesResp {
-    pub data_list: Vec<FileResource>,
+    pub data_list: Vec<file_resource::Model>,
     pub total: u64,
+}
+
+impl From<(Vec<file_resource::Model>, u64)> for GetFileResourcesResp {
+    fn from((data_list, total): (Vec<file_resource::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
 }
 
 /// 查询数据 请求体
@@ -57,7 +43,13 @@ pub struct GetFileResourceReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetFileResourceResp {
     #[serde(flatten)]
-    data: FileResource,
+    model: file_resource::Model,
+}
+
+impl From<file_resource::Model> for GetFileResourceResp {
+    fn from(model: file_resource::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 更新文件 请求体

@@ -28,6 +28,12 @@ pub struct GetBlockchainWalletsResp {
     pub total: u64,
 }
 
+impl From<(Vec<blockchain_wallet::Model>, u64)> for GetBlockchainWalletsResp {
+    fn from((data_list, total): (Vec<blockchain_wallet::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询用户区块链钱包信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetBlockchainWalletReq {
@@ -38,7 +44,13 @@ pub struct GetBlockchainWalletReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetBlockchainWalletResp {
     #[serde(flatten)]
-    data: blockchain_wallet::Model,
+    model: blockchain_wallet::Model,
+}
+
+impl From<blockchain_wallet::Model> for GetBlockchainWalletResp {
+    fn from(model: blockchain_wallet::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加用户区块链钱包 请求体

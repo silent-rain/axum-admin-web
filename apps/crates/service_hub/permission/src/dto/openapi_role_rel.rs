@@ -25,6 +25,12 @@ pub struct GetOpenapiRoleRelsResp {
     pub total: u64,
 }
 
+impl From<(Vec<openapi_role_rel::Model>, u64)> for GetOpenapiRoleRelsResp {
+    fn from((data_list, total): (Vec<openapi_role_rel::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 批量添加OpenApi接口角色关系
 #[derive(Serialize, Deserialize, Validate)]
 pub struct BatchCreateOpenapiRoleRelReq {

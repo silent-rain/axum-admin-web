@@ -24,6 +24,13 @@ pub struct GetDepartmentRoleRelsResp {
     pub data_list: Vec<department_role_rel::Model>,
     pub total: u64,
 }
+
+impl From<(Vec<department_role_rel::Model>, u64)> for GetDepartmentRoleRelsResp {
+    fn from((data_list, total): (Vec<department_role_rel::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 批量添加部门角色关系 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct BatchCreateDepartmentRoleRelReq {

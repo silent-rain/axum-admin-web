@@ -24,6 +24,12 @@ pub struct GetApiOperationsResp {
     pub total: u64,
 }
 
+impl From<(Vec<log_api_operation::Model>, u64)> for GetApiOperationsResp {
+    fn from((data_list, total): (Vec<log_api_operation::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetApiOperationReq {
@@ -34,7 +40,13 @@ pub struct GetApiOperationReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetApiOperationResp {
     #[serde(flatten)]
-    data: log_api_operation::Model,
+    model: log_api_operation::Model,
+}
+
+impl From<log_api_operation::Model> for GetApiOperationResp {
+    fn from(model: log_api_operation::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加API操作日志 请求体

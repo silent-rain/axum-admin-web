@@ -25,7 +25,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let result = comfyui_task_service.push_prompt(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -38,7 +38,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let result = comfyui_task_service.queue_remaining().await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -50,7 +50,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let (result, total) = comfyui_task_service.historys(req).await?;
 
-        let resp = Response::data_list(result, total).to_json()?;
+        let resp = Response::data((result, total).into());
         Ok(resp)
     }
 
@@ -62,7 +62,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let result = comfyui_task_service.history(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -71,7 +71,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let result = comfyui_task_service.queues().await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -80,7 +80,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let _result = comfyui_task_service.clear_queue().await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -92,7 +92,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let _result = comfyui_task_service.delete_queue(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -101,7 +101,7 @@ impl ComfyUITaskController {
         let comfyui_task_service: ComfyUITaskService = provider.provide();
         let _result = comfyui_task_service.interrupt().await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

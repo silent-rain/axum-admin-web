@@ -25,6 +25,12 @@ pub struct GetTokenRoleRelsResp {
     pub total: u64,
 }
 
+impl From<(Vec<token_role_rel::Model>, u64)> for GetTokenRoleRelsResp {
+    fn from((data_list, total): (Vec<token_role_rel::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 批量添加令牌角色关系
 #[derive(Serialize, Deserialize, Validate)]
 pub struct BatchCreateTokenRoleRelReq {

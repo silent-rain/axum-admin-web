@@ -25,6 +25,12 @@ pub struct GetUserRoleRelsResp {
     pub total: u64,
 }
 
+impl From<(Vec<user_role_rel::Model>, u64)> for GetUserRoleRelsResp {
+    fn from((data_list, total): (Vec<user_role_rel::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 批量添加用户角色关系
 #[derive(Serialize, Deserialize, Validate)]
 pub struct BatchCreateUserRoleRelReq {

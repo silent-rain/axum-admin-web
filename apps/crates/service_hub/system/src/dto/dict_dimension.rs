@@ -30,6 +30,12 @@ pub struct GetDictDimensionsResp {
     pub total: u64,
 }
 
+impl From<(Vec<dict_dimension::Model>, u64)> for GetDictDimensionsResp {
+    fn from((data_list, total): (Vec<dict_dimension::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetDictDimensionReq {
@@ -40,7 +46,13 @@ pub struct GetDictDimensionReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDimensionResp {
     #[serde(flatten)]
-    data: dict_dimension::Model,
+    model: dict_dimension::Model,
+}
+
+impl From<dict_dimension::Model> for GetDictDimensionResp {
+    fn from(model: dict_dimension::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加字典维度 请求体

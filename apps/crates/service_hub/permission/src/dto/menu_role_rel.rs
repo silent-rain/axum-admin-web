@@ -25,6 +25,12 @@ pub struct GetMenuRoleRelsResp {
     pub total: u64,
 }
 
+impl From<(Vec<menu_role_rel::Model>, u64)> for GetMenuRoleRelsResp {
+    fn from((data_list, total): (Vec<menu_role_rel::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 批量添加菜单角色关系 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct BatchCreateMenuRoleRelReq {

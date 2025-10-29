@@ -24,6 +24,12 @@ pub struct GetImageCaptchasResp {
     pub total: u64,
 }
 
+impl From<(Vec<image_captcha::Model>, u64)> for GetImageCaptchasResp {
+    fn from((data_list, total): (Vec<image_captcha::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetImageCaptchaReq {
@@ -34,7 +40,13 @@ pub struct GetImageCaptchaReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetImageCaptchaResp {
     #[serde(flatten)]
-    data: image_captcha::Model,
+    model: image_captcha::Model,
+}
+
+impl From<image_captcha::Model> for GetImageCaptchaResp {
+    fn from(model: image_captcha::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 查询数据 请求体
@@ -47,7 +59,13 @@ pub struct GetInfoByCaptchaIdReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetInfoByCaptchaIdResp {
     #[serde(flatten)]
-    data: image_captcha::Model,
+    model: image_captcha::Model,
+}
+
+impl From<image_captcha::Model> for GetInfoByCaptchaIdResp {
+    fn from(model: image_captcha::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加数据 请求体

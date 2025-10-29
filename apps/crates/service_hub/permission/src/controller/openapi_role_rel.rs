@@ -25,7 +25,7 @@ impl OpenapiRoleRelController {
         let openapi_role_rel_service: OpenapiRoleRelService = provider.provide();
         let (results, total) = openapi_role_rel_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl OpenapiRoleRelController {
         let openapi_role_rel_service: OpenapiRoleRelService = provider.provide();
         let _result = openapi_role_rel_service.batch_create(data).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -51,7 +51,7 @@ impl OpenapiRoleRelController {
             .batch_delete(data.ids.clone())
             .await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

@@ -11,11 +11,23 @@ pub struct EmbeddingsResp {
     pub total: u64,
 }
 
+impl From<(Vec<Embedding>, u64)> for EmbeddingsResp {
+    fn from((data_list, total): (Vec<Embedding>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 获取 Checkpoint 模型列表 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct CheckpointsResp {
     pub data_list: Vec<Model>,
     pub total: u64,
+}
+
+impl From<(Vec<Model>, u64)> for CheckpointsResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
 }
 
 /// 获取 lora 模型列表 响应体
@@ -25,11 +37,23 @@ pub struct LorasResp {
     pub total: u64,
 }
 
+impl From<(Vec<Model>, u64)> for LorasResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 获取 vae 模型列表 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct VaesResp {
     pub data_list: Vec<Model>,
     pub total: u64,
+}
+
+impl From<(Vec<Model>, u64)> for VaesResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
 }
 
 /// 获取 clip_vision 模型列表 响应体
@@ -39,11 +63,23 @@ pub struct ClipVisionsResp {
     pub total: u64,
 }
 
+impl From<(Vec<Model>, u64)> for ClipVisionsResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 获取 controlnet 模型列表 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct ControlnetsResp {
     pub data_list: Vec<Model>,
     pub total: u64,
+}
+
+impl From<(Vec<Model>, u64)> for ControlnetsResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
 }
 
 /// 获取 upscale_model 模型列表 响应体
@@ -53,6 +89,12 @@ pub struct UpscaleModelsResp {
     pub total: u64,
 }
 
+impl From<(Vec<Model>, u64)> for UpscaleModelsResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 获取 ipadapter 模型列表 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct IpadaptersResp {
@@ -60,9 +102,21 @@ pub struct IpadaptersResp {
     pub total: u64,
 }
 
+impl From<(Vec<Model>, u64)> for IpadaptersResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 获取 unet_gguf 模型列表 响应体
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct UnetGgufsResp {
     pub data_list: Vec<Model>,
     pub total: u64,
+}
+
+impl From<(Vec<Model>, u64)> for UnetGgufsResp {
+    fn from((data_list, total): (Vec<Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
 }

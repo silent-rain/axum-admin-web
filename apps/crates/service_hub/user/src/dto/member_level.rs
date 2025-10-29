@@ -28,6 +28,12 @@ pub struct GetMemberLevelsResp {
     pub total: u64,
 }
 
+impl From<(Vec<member_level::Model>, u64)> for GetMemberLevelsResp {
+    fn from((data_list, total): (Vec<member_level::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询会员等级信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetMemberLevelReq {
@@ -38,7 +44,13 @@ pub struct GetMemberLevelReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMemberLevelResp {
     #[serde(flatten)]
-    data: member_level::Model,
+    model: member_level::Model,
+}
+
+impl From<member_level::Model> for GetMemberLevelResp {
+    fn from(model: member_level::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加会员等级 请求体

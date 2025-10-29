@@ -28,6 +28,12 @@ pub struct GetRolesResp {
     pub total: u64,
 }
 
+impl From<(Vec<role::Model>, u64)> for GetRolesResp {
+    fn from((data_list, total): (Vec<role::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询角色信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetRoleReq {
@@ -38,7 +44,13 @@ pub struct GetRoleReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetRoleResp {
     #[serde(flatten)]
-    data: role::Model,
+    model: role::Model,
+}
+
+impl From<role::Model> for GetRoleResp {
+    fn from(model: role::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加角色 请求体

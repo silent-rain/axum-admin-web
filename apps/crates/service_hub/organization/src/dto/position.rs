@@ -28,6 +28,12 @@ pub struct GetPositionsResp {
     pub total: u64,
 }
 
+impl From<(Vec<position::Model>, u64)> for GetPositionsResp {
+    fn from((data_list, total): (Vec<position::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetPositionReq {
@@ -38,7 +44,13 @@ pub struct GetPositionReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPositionResp {
     #[serde(flatten)]
-    data: position::Model,
+    model: position::Model,
+}
+
+impl From<position::Model> for GetPositionResp {
+    fn from(model: position::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加岗位 请求体

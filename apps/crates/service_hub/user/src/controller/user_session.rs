@@ -27,7 +27,7 @@ impl UserSessionController {
         let user_session_service: UserSessionService = provider.provide();
         let (results, total) = user_session_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -39,7 +39,7 @@ impl UserSessionController {
         let user_session_service: UserSessionService = provider.provide();
         let result = user_session_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -51,7 +51,7 @@ impl UserSessionController {
         let user_session_service: UserSessionService = provider.provide();
         let _result = user_session_service.create(data).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -63,7 +63,7 @@ impl UserSessionController {
         let user_session_service: UserSessionService = provider.provide();
         let _result = user_session_service.update(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -75,7 +75,7 @@ impl UserSessionController {
         let user_session_service: UserSessionService = provider.provide();
         user_session_service.update_status(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -87,7 +87,7 @@ impl UserSessionController {
         let user_session_service: UserSessionService = provider.provide();
         let _result = user_session_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

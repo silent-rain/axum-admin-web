@@ -3,6 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+use database::utils::GenericTree;
 use entity::system::config;
 
 /// 查询配置列表 请求体
@@ -28,6 +29,12 @@ pub struct GetConfigsResp {
     pub total: u64,
 }
 
+impl From<(Vec<config::Model>, u64)> for GetConfigsResp {
+    fn from((data_list, total): (Vec<config::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetConfigReq {
@@ -38,7 +45,13 @@ pub struct GetConfigReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetConfigResp {
     #[serde(flatten)]
-    data: config::Model,
+    model: config::Model,
+}
+
+impl From<config::Model> for GetConfigResp {
+    fn from(model: config::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加配置 请求体
@@ -108,13 +121,6 @@ pub struct DeleteConfigReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DeleteConfigResp {}
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ConfigTreeItem {
-    #[serde(flatten)]
-    pub data: config::Model,
-    pub children: Vec<ConfigTreeItem>,
-}
-
 /// 配置树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetConfigTreeReq {}
@@ -122,5 +128,11 @@ pub struct GetConfigTreeReq {}
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetConfigTreeResp {
     #[serde(flatten)]
-    pub data: ConfigTreeItem,
+    pub data: Vec<GenericTree<config::Model>>,
+}
+
+impl From<Vec<GenericTree<config::Model>>> for GetConfigTreeResp {
+    fn from(data: Vec<GenericTree<config::Model>>) -> Self {
+        Self { data }
+    }
 }

@@ -30,6 +30,12 @@ pub struct GetTokensResp {
     pub total: u64,
 }
 
+impl From<(Vec<token::Model>, u64)> for GetTokensResp {
+    fn from((data_list, total): (Vec<token::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询令牌详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetTokenReq {
@@ -40,7 +46,13 @@ pub struct GetTokenReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTokenResp {
     #[serde(flatten)]
-    data: token::Model,
+    model: token::Model,
+}
+
+impl From<token::Model> for GetTokenResp {
+    fn from(model: token::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加令牌

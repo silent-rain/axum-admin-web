@@ -7,6 +7,7 @@ use axum_response::{Responder, Response, ResponseErr};
 use axum_typed_multipart::TypedMultipart;
 use inject::AInjectProvider;
 
+use crate::dto::image::UploadImageAndMaskResp;
 use crate::{
     dto::image::{
         ImageViewReq, UploadImageAndMaskReq, UploadImageReq, UploadImageResp, UploadMaskImageReq,
@@ -27,7 +28,7 @@ impl ComfyUIImageController {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
         let result = comfyui_image_service.upload_image(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -39,7 +40,7 @@ impl ComfyUIImageController {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
         let result = comfyui_image_service.upload_mask(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -47,11 +48,11 @@ impl ComfyUIImageController {
     pub async fn upload_image_and_mask(
         Extension(provider): Extension<AInjectProvider>,
         TypedMultipart(req): TypedMultipart<UploadImageAndMaskReq>,
-    ) -> Responder<UploadMaskImageResp> {
+    ) -> Responder<UploadImageAndMaskResp> {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
         let result = comfyui_image_service.upload_image_and_mask(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 

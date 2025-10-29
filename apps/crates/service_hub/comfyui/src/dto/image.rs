@@ -23,6 +23,12 @@ pub struct UploadImageResp {
     pub data: UploadImage,
 }
 
+impl From<UploadImage> for UploadImageResp {
+    fn from(data: UploadImage) -> Self {
+        Self { data }
+    }
+}
+
 /// 上传蒙版图片 请求体
 #[derive(TryFromMultipart)]
 pub struct UploadMaskImageReq {
@@ -32,6 +38,19 @@ pub struct UploadMaskImageReq {
     pub r#type: String,            // 上传图片的目标文件夹,  "input"
     pub subfolder: Option<String>, // 上传图片的目标子文件夹,  clipspace/pasted
     pub original_ref: String,      // 原图引用
+}
+
+/// 上传蒙版图片 响应体
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct UploadMaskImageResp {
+    #[serde(flatten)]
+    pub data: UploadMaskImage,
+}
+
+impl From<UploadMaskImage> for UploadMaskImageResp {
+    fn from(data: UploadMaskImage) -> Self {
+        Self { data }
+    }
 }
 
 /// 同时上传图片与图片对应的蒙版 请求体
@@ -44,6 +63,13 @@ pub struct UploadImageAndMaskReq {
     pub image_mask: FieldData<NamedTempFile>,
 }
 
+/// 同时上传图片与图片对应的蒙版 响应体
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct UploadImageAndMaskResp {
+    #[serde(flatten)]
+    pub data: UploadImageAndMask,
+}
+
 /// 同时上传图片与图片对应的蒙版
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct UploadImageAndMask {
@@ -51,9 +77,8 @@ pub struct UploadImageAndMask {
     pub image_mask: UploadMaskImage,
 }
 
-/// 上传蒙版图片 响应体
-#[derive(Debug, Default, Serialize, Deserialize)]
-pub struct UploadMaskImageResp {
-    #[serde(flatten)]
-    pub data: UploadImageAndMask,
+impl From<UploadImageAndMask> for UploadImageAndMaskResp {
+    fn from(data: UploadImageAndMask) -> Self {
+        Self { data }
+    }
 }

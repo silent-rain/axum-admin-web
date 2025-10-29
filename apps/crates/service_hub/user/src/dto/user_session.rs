@@ -27,6 +27,12 @@ pub struct GetUserSessionsResp {
     pub total: u64,
 }
 
+impl From<(Vec<user_session::Model>, u64)> for GetUserSessionsResp {
+    fn from((data_list, total): (Vec<user_session::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询用户session信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetUserSessionReq {
@@ -37,7 +43,13 @@ pub struct GetUserSessionReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserSessionResp {
     #[serde(flatten)]
-    data: user_session::Model,
+    model: user_session::Model,
+}
+
+impl From<user_session::Model> for GetUserSessionResp {
+    fn from(model: user_session::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加用户session 请求体

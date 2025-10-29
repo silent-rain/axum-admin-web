@@ -15,3 +15,9 @@ pub struct ExtensionsResp {
     pub data_list: Vec<String>,
     pub total: u64,
 }
+
+impl From<(Vec<String>, u64)> for ExtensionsResp {
+    fn from((data_list, total): (Vec<String>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}

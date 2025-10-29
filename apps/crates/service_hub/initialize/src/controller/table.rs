@@ -21,7 +21,7 @@ impl TableController {
         let table_service: TableService = provider.provide();
         let _result = table_service.table(req).await?;
 
-        let resp = Response::<()>::ok().with_msg("初始化成功").to_json()?;
+        let resp = Response::ok().with_msg("初始化成功");
         Ok(resp)
     }
 }

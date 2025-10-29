@@ -25,7 +25,7 @@ impl MenuRoleRelController {
         let menu_role_rel_service: MenuRoleRelService = provider.provide();
         let (results, total) = menu_role_rel_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl MenuRoleRelController {
         let menu_role_rel_service: MenuRoleRelService = provider.provide();
         let _result = menu_role_rel_service.batch_create(data).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -49,7 +49,7 @@ impl MenuRoleRelController {
         let menu_role_rel_service: MenuRoleRelService = provider.provide();
         let _result = menu_role_rel_service.batch_delete(data.ids.clone()).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

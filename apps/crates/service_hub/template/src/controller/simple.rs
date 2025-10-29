@@ -26,7 +26,7 @@ impl SimpleController {
         let result = SayHelloResp {
             msg: format!("say hello: {}", req.name),
         };
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result);
         Ok(resp)
     }
 
@@ -35,7 +35,7 @@ impl SimpleController {
         let result = SayHiResp {
             msg: format!("say hi: {}", req.name),
         };
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result);
         Ok(resp)
     }
 

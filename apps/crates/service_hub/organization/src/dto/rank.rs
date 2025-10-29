@@ -28,6 +28,12 @@ pub struct GetRanksResp {
     pub total: u64,
 }
 
+impl From<(Vec<rank::Model>, u64)> for GetRanksResp {
+    fn from((data_list, total): (Vec<rank::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetRankReq {
@@ -38,7 +44,13 @@ pub struct GetRankReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetRankResp {
     #[serde(flatten)]
-    data: rank::Model,
+    model: rank::Model,
+}
+
+impl From<rank::Model> for GetRankResp {
+    fn from(model: rank::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加职级 请求体

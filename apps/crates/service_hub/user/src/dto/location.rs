@@ -27,6 +27,12 @@ pub struct GetLocationsResp {
     pub total: u64,
 }
 
+impl From<(Vec<location::Model>, u64)> for GetLocationsResp {
+    fn from((data_list, total): (Vec<location::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询用户地理位置信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetLocationReq {
@@ -37,7 +43,13 @@ pub struct GetLocationReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetLocationResp {
     #[serde(flatten)]
-    data: location::Model,
+    model: location::Model,
+}
+
+impl From<location::Model> for GetLocationResp {
+    fn from(model: location::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加用户地理位置

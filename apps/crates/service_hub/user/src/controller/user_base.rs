@@ -29,7 +29,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         let (results, total) = user_base_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -41,7 +41,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         let result = user_base_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -53,7 +53,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         let _result = user_base_service.create(data).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -65,7 +65,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         user_base_service.update(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -77,7 +77,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         user_base_service.update_status(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -89,7 +89,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         let _result = user_base_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }
@@ -103,7 +103,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         user_base_service.check_username(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -120,7 +120,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         let result = user_base_service.profile(req.user_id).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result);
         Ok(resp)
     }
 
@@ -132,7 +132,7 @@ impl UserBaseController {
         let user_base_service: UserBaseService = provider.provide();
         let (results, total) = user_base_service.roles(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 }

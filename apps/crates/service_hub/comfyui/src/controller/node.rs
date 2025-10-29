@@ -23,7 +23,7 @@ impl ComfyUINodeController {
         let comfyui_node_service: ComfyUINodeService = provider.provide();
         let result = comfyui_node_service.object_info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result);
         Ok(resp)
     }
 
@@ -34,7 +34,7 @@ impl ComfyUINodeController {
         let comfyui_node_service: ComfyUINodeService = provider.provide();
         let (results, total) = comfyui_node_service.extensions().await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 }

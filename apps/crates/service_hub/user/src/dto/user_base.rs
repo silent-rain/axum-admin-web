@@ -28,6 +28,12 @@ pub struct GetUserBasesResp {
     pub total: u64,
 }
 
+impl From<(Vec<user_base::Model>, u64)> for GetUserBasesResp {
+    fn from((data_list, total): (Vec<user_base::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询用户信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetUserBaseReq {
@@ -38,7 +44,13 @@ pub struct GetUserBaseReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserBaseResp {
     #[serde(flatten)]
-    data: user_base::Model,
+    model: user_base::Model,
+}
+
+impl From<user_base::Model> for GetUserBaseResp {
+    fn from(model: user_base::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加用户 请求体
@@ -180,6 +192,12 @@ pub struct RolesReq {
 pub struct RolesResp {
     pub data_list: Vec<role::Model>,
     pub total: u64,
+}
+
+impl From<(Vec<role::Model>, u64)> for RolesResp {
+    fn from((data_list, total): (Vec<role::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
 }
 
 /// 用户接口权限权限

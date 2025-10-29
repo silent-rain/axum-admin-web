@@ -10,3 +10,9 @@ pub struct SystemStatsResp {
     #[serde(flatten)]
     pub data: SystemStats,
 }
+
+impl From<SystemStats> for SystemStatsResp {
+    fn from(data: SystemStats) -> Self {
+        Self { data }
+    }
+}

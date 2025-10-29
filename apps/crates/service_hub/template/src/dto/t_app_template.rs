@@ -28,6 +28,12 @@ pub struct GetTemplatesResp {
     pub total: u64,
 }
 
+impl From<(Vec<t_app_template::Model>, u64)> for GetTemplatesResp {
+    fn from((data_list, total): (Vec<t_app_template::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetTemplateReq {
@@ -38,7 +44,13 @@ pub struct GetTemplateReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTemplateResp {
     #[serde(flatten)]
-    data: t_app_template::Model,
+    model: t_app_template::Model,
+}
+
+impl From<t_app_template::Model> for GetTemplateResp {
+    fn from(model: t_app_template::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加数据 请求体

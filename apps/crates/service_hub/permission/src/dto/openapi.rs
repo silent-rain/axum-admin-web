@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::enums::openapi::Category;
+use database::utils::GenericTree;
 use entity::permission::openapi;
 
 /// 查询OpenApi接口列表 请求体
@@ -29,6 +30,12 @@ pub struct GetOpenapisResp {
     pub total: u64,
 }
 
+impl From<(Vec<openapi::Model>, u64)> for GetOpenapisResp {
+    fn from((data_list, total): (Vec<openapi::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetOpenapiReq {
@@ -39,7 +46,13 @@ pub struct GetOpenapiReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetOpenapiResp {
     #[serde(flatten)]
-    data: openapi::Model,
+    model: openapi::Model,
+}
+
+impl From<openapi::Model> for GetOpenapiResp {
+    fn from(model: openapi::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加OpenApi接口
@@ -125,13 +138,6 @@ pub struct RoleOpenapiPermission {
     pub path: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct OpenapiTreeItem {
-    #[serde(flatten)]
-    pub data: openapi::Model,
-    pub children: Vec<OpenapiTreeItem>,
-}
-
 /// 接口树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetOpenapiTreeReq {}
@@ -139,5 +145,11 @@ pub struct GetOpenapiTreeReq {}
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetOpenapiTreeResp {
     #[serde(flatten)]
-    pub data: OpenapiTreeItem,
+    pub data: Vec<GenericTree<openapi::Model>>,
+}
+
+impl From<Vec<GenericTree<openapi::Model>>> for GetOpenapiTreeResp {
+    fn from(data: Vec<GenericTree<openapi::Model>>) -> Self {
+        Self { data }
+    }
 }

@@ -25,7 +25,7 @@ impl DepartmentRoleRelController {
         let department_role_rel_service: DepartmentRoleRelService = provider.provide();
         let (results, total) = department_role_rel_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl DepartmentRoleRelController {
         let department_role_rel_service: DepartmentRoleRelService = provider.provide();
         let _result = department_role_rel_service.batch_create(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -51,7 +51,7 @@ impl DepartmentRoleRelController {
             .batch_delete(req.ids.clone())
             .await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }
