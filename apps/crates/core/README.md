@@ -2,7 +2,7 @@
 
 ## 组件列表
 
-- [错误类型](code)
+- [错误类型](err_code)
 - [缓存](cache)
 - [数据库](database)
 - [数据库表实体](entity)
