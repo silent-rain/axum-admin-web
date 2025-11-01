@@ -6,7 +6,7 @@ publish = false
 
 
 [dependencies]
-entity = { path = "../entity" }
+entity = { workspace = true }
 
 async-std = { workspace = true, features = ["attributes", "tokio1"] }
 sea-orm = { workspace = true }
@@ -23,7 +23,7 @@ sea-orm-migration = { workspace = true, features = [
 
 
 [dev-dependencies]
-database = { path = "../database" }
+database = { workspace = true }
 
 sqlx = { workspace = true }
 dotenv = { workspace = true }

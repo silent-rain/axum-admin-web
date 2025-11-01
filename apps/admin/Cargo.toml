@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 embed_asset = { path = "../crates/embed_asset" }
-inject = { path = "../crates/core/inject" }
 service_hub = { path = "../crates/service_hub" }
 app_state = { path = "../crates/app_state" }
 
@@ -13,6 +12,7 @@ err_code = { workspace = true }
 database = { workspace = true }
 logger = { workspace = true }
 utils = { workspace = true }
+inject = { workspace = true }
 axum_response = { workspace = true }
 axum_middleware = { workspace = true }
 axum_session = { workspace = true }

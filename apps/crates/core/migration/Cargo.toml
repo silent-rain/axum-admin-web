@@ -24,7 +24,7 @@ sea-orm-migration = { workspace = true, features = [
 
 
 [dev-dependencies]
-database = { path = "../database" }
+database = { workspace = true }
 
 sqlx = { workspace = true }
 dotenv = { workspace = true }

@@ -6,8 +6,8 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-entity = { path = "../entity" }
-database = { path = "../database" }
+entity = { workspace = true }
+database = { workspace = true }
 
 tokio-cron-scheduler = { workspace = true }
 sea-orm = { workspace = true }
