@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-# axum_response = { path = "../axum_response" }
-
 axum = { workspace = true }
 validator_derive = { workspace = true }
 validator = { workspace = true }
@@ -14,4 +12,4 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 serde_urlencoded = { workspace = true }
 thiserror = { workspace = true }
-tracing = { workspace = true }
+log = { workspace = true }

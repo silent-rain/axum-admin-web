@@ -745,12 +745,12 @@ name = "axum_validator"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "log 0.4.28",
  "mime",
  "serde",
  "serde_json",
  "serde_urlencoded",
  "thiserror 2.0.17",
- "tracing",
  "validator",
  "validator_derive",
 ]

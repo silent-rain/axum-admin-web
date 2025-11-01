@@ -5,9 +5,9 @@ use axum::{
     http::{Response, StatusCode},
     response::IntoResponse,
 };
+use log::error;
 use serde::Serialize;
 use serde_json::json;
-use tracing::error;
 
 /// 错误种类
 #[derive(Debug, thiserror::Error, Serialize)]
