@@ -48,7 +48,6 @@ where
 
     fn call(&mut self, mut req: Request) -> Self::Future {
         // Do something with `self.state`.
-
         let not_ready_inner = self.inner.clone();
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
 
