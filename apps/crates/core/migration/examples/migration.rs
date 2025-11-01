@@ -2,14 +2,14 @@
 //! cargo run --package migration --example migration
 use std::env;
 
-use database::Options;
-use migration::Migrator;
-
 use colored::Colorize;
 use dotenv::dotenv;
 use sea_orm_migration::MigratorTrait;
 use sqlx::{Executor, mysql::MySqlPoolOptions};
 use tracing::info;
+
+use database::Options;
+use migration::Migrator;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

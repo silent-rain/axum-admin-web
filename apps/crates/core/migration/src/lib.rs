@@ -1,11 +1,13 @@
 use sea_orm_migration::{MigrationTrait, MigratorTrait, async_trait};
 
-mod log;
-mod organization;
-mod permission;
-mod schedule;
-mod system;
-mod user;
+pub mod log;
+pub mod organization;
+pub mod permission;
+pub mod schedule;
+pub mod system;
+pub mod user;
+
+mod utils;
 
 pub mod template;
 
@@ -18,14 +20,14 @@ impl MigratorTrait for Migrator {
             // 应用模板表
             Box::new(template::app_template::Migration),
             // 用户管理
-            Box::new(user::user_base::Migration),
-            Box::new(user::phone::Migration),
-            Box::new(user::email::Migration),
-            Box::new(user::blockchain_wallet::Migration),
             Box::new(user::role::Migration),
-            Box::new(user::user_role_rel::Migration),
             Box::new(user::member_level::Migration),
             Box::new(user::location::Migration),
+            Box::new(user::user_base::Migration),
+            Box::new(user::user_phone::Migration),
+            Box::new(user::user_email::Migration),
+            Box::new(user::user_blockchain_wallet::Migration),
+            Box::new(user::user_role_rel::Migration),
             Box::new(user::user_login_log::Migration),
             Box::new(user::user_session::Migration),
             // 权限管理
@@ -41,11 +43,11 @@ impl MigratorTrait for Migrator {
             Box::new(organization::position::Migration),
             Box::new(organization::rank::Migration),
             // 系统管理
-            Box::new(system::sys_config::Migration),
-            Box::new(system::sys_dict_dimension::Migration),
-            Box::new(system::sys_dict_data::Migration),
-            Box::new(system::sys_image_captcha::Migration),
-            Box::new(system::sys_file_resource::Migration),
+            Box::new(system::config::Migration),
+            Box::new(system::dict_dimension::Migration),
+            Box::new(system::dict_data::Migration),
+            Box::new(system::image_captcha::Migration),
+            Box::new(system::file_resource::Migration),
             // 任务调度作业管理
             Box::new(schedule::schedule_job::Migration),
             Box::new(schedule::schedule_status_log::Migration),

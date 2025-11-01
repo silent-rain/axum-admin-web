@@ -170,8 +170,8 @@ mod tests {
 
     use database::mock::Mock;
     use err_code::ErrorMsg;
-    use orm_migration::template::app_template;
-    use orm_migration::user::user_base;
+    use migration::template::app_template;
+    use migration::user::user_base;
 
     #[tokio::test]
     async fn test_mock_add() -> Result<(), ErrorMsg> {

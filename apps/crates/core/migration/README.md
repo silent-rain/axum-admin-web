@@ -1,4 +1,4 @@
-# Running Migrator CLI
+# Orm Migration
 
 ## 示例
 
@@ -9,6 +9,8 @@ cargo run --package migration
 # example
 cargo run --package migration --example migration
 ```
+
+## Running Migrator CLI
 
 - Generate a new migration file
 

@@ -4,10 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-orm_migration = { path = "../../core/orm_migration" }
-
 database = { workspace = true }
 entity = { workspace = true }
+migration = { workspace = true }
 err_code = { workspace = true }
 inject = { workspace = true }
 utils = { workspace = true }
@@ -29,8 +28,6 @@ strum = { workspace = true }
 strum_macros = { workspace = true }
 
 [dev-dependencies]
-# orm_migration = { path = "../../core/orm_migration" }
-
 axum-test = { workspace = true }
 axum_mock = { path = "../../axum_mock" }
 tokio = { workspace = true, features = [

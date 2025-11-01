@@ -28,7 +28,7 @@ serde_repr = { workspace = true }
 
 
 [dev-dependencies]
-orm_migration = { path = "../../core/orm_migration" }
+migration = { workspace = true }
 
 axum-test = { workspace = true }
 axum_mock = { path = "../../axum_mock" }

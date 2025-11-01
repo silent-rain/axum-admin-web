@@ -137,8 +137,8 @@ mod tests {
     use super::*;
 
     use database::mock::Mock;
-    use orm_migration::template::app_template::Migration as MAppTemplate;
-    use orm_migration::user::user_base::Migration as MUserBase;
+    use migration::template::app_template::Migration as MAppTemplate;
+    use migration::user::user_base::Migration as MUserBase;
 
     use sea_orm::DbBackend;
 

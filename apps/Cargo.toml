@@ -5,9 +5,9 @@ members = [
     "crates/core/err_code",
     "crates/core/database",
     "crates/core/entity",
+    "crates/core/migration", # 当前不完善, 以migration为主
+    # "crates/core/migration_raw",
     "crates/core/inject",
-    "crates/core/orm_migration", # 当前不完善, 以migration为主
-    "crates/core/migration",
     "crates/core/scheduler",
     "crates/core/utils",
     "crates/core/logger",
@@ -45,6 +45,7 @@ axum_session = { path = "crates/axum_session" }
 err_code = { path = "crates/core/err_code" }
 database = { path = "crates/core/database" }
 entity = { path = "crates/core/entity" }
+migration = { path = "crates/core/migration" }
 inject = { path = "crates/core/inject" }
 utils = { path = "crates/core/utils" }
 logger = { path = "crates/core/logger" }

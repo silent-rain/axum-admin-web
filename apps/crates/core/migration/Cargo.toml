@@ -4,11 +4,10 @@ version = "0.1.0"
 edition = "2024"
 publish = false
 
-[lib]
-name = "migration"
-path = "src/lib.rs"
 
 [dependencies]
+entity = { workspace = true }
+
 async-std = { workspace = true, features = ["attributes", "tokio1"] }
 sea-orm = { workspace = true }
 sea-orm-migration = { workspace = true, features = [

@@ -1,7 +1,10 @@
 //! 职级表
 //! Entity: [`entity::organization::Rank`]
 
-use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
+use sea_orm::{
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
+};
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
@@ -10,83 +13,99 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        let db = manager.get_connection();
+        // Replace the sample below with your own migration scripts
 
-        match manager.get_database_backend() {
-            DatabaseBackend::MySql => {
-                db.execute_unprepared(
-                    "
-                    CREATE TABLE IF NOT EXISTS
-                    `t_org_rank` (
-                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '职级ID',
-                        `name` VARCHAR(20) UNIQUE NOT NULL COMMENT '职级名称',
-                        `level` SMALLINT UNIQUE NOT NULL COMMENT '职级等级',
-                        `sort` INT NULL DEFAULT 0 COMMENT '排序',
-                        `desc` VARCHAR(200) NULL DEFAULT '' COMMENT '职级描述',
-                        `status` BOOL NOT NULL DEFAULT true COMMENT '状态(false:停用,true:正常)',
-                        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                        PRIMARY KEY (`id`)
-                    ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '职级表';
-                    ",
-                )
-                .await?;
-            }
-            DatabaseBackend::Postgres => {
-                db.execute_unprepared(
-                    r#"
-                    CREATE TABLE IF NOT EXISTS "t_org_rank" (
-                        "id" SERIAL PRIMARY KEY,
-                        "name" VARCHAR(20) UNIQUE NOT NULL,
-                        "level" INTEGER UNIQUE NOT NULL,
-                        "sort" INTEGER DEFAULT 0,
-                        "desc" VARCHAR(200) DEFAULT '',
-                        "status" BOOL NOT NULL DEFAULT TRUE,
-                        "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        "updated_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-                    );
-
-                    COMMENT ON TABLE t_org_rank IS '职级表';
-                    COMMENT ON COLUMN t_org_rank.id IS '职级ID';
-                    COMMENT ON COLUMN t_org_rank.name IS '职级名称';
-                    COMMENT ON COLUMN t_org_rank.level IS '职级等级';
-                    COMMENT ON COLUMN t_org_rank.sort IS '排序';
-                    COMMENT ON COLUMN t_org_rank.desc IS '职级描述';
-                    COMMENT ON COLUMN t_org_rank.status IS '状态(false:停用,true:正常)';
-                    COMMENT ON COLUMN t_org_rank.created_at IS '创建时间';
-                    COMMENT ON COLUMN t_org_rank.updated_at IS '更新时间';
-                    "#,
-                )
-                .await?;
-            }
-            DatabaseBackend::Sqlite => {
-                db.execute_unprepared(
-                    "
-                    CREATE TABLE IF NOT EXISTS `t_org_rank` ( -- 职级表
-                        `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 职级ID
-                        `name` VARCHAR(20) UNIQUE NOT NULL, -- 职级名称
-                        `level` INTEGER UNIQUE NOT NULL, -- 职级等级
-                        `sort` INTEGER DEFAULT 0, -- 排序
-                        `desc` VARCHAR(200) DEFAULT '', -- 职级描述
-                        `status` BOOLEAN NOT NULL DEFAULT true, -- 状态(false:停用,true:正常)
-                        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 创建时间
-                        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 更新时间
-                    );
-                    ",
-                )
-                .await?;
-            }
-        }
+        manager
+            .create_table(
+                Table::create()
+                    .table(Rank::Table)
+                    .comment("职级表")
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(Rank::Id)
+                            .integer()
+                            .primary_key()
+                            .auto_increment()
+                            .not_null()
+                            .comment("职级ID"),
+                    )
+                    .col(
+                        ColumnDef::new(Rank::Name)
+                            .string()
+                            .string_len(20)
+                            .unique_key()
+                            .not_null()
+                            .comment("职级名称"),
+                    )
+                    .col(
+                        ColumnDef::new(Rank::Level)
+                            .small_integer()
+                            .unique_key()
+                            .not_null()
+                            .comment("职级等级"),
+                    )
+                    .col(
+                        ColumnDef::new(Rank::Sort)
+                            .integer()
+                            .null()
+                            .default(0)
+                            .comment("排序"),
+                    )
+                    .col(
+                        ColumnDef::new(Rank::Desc)
+                            .string()
+                            .string_len(200)
+                            .null()
+                            .default("")
+                            .comment("职级描述"),
+                    )
+                    .col(
+                        ColumnDef::new(Rank::Status)
+                            .boolean()
+                            .not_null()
+                            .default(true)
+                            .comment("状态(false:停用,true:正常)"),
+                    )
+                    .col(
+                        ColumnDef::new(Rank::CreatedAt)
+                            .date_time()
+                            .not_null()
+                            .default(Expr::current_timestamp())
+                            .comment("创建时间"),
+                    )
+                    .col(
+                        ColumnDef::new(Rank::UpdatedAt)
+                            .date_time()
+                            .not_null()
+                            .default(Expr::current_timestamp())
+                            .comment("更新时间"),
+                    )
+                    .to_owned(),
+            )
+            .await?;
 
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .get_connection()
-            .execute_unprepared("DROP TABLE `t_org_rank;`")
-            .await?;
+        // Replace the sample below with your own migration scripts
 
-        Ok(())
+        manager
+            .drop_table(Table::drop().table(Rank::Table).to_owned())
+            .await
     }
+}
+
+#[derive(DeriveIden)]
+pub enum Rank {
+    #[sea_orm(iden = "t_org_rank")]
+    Table,
+    Id,
+    Name,
+    Level,
+    Sort,
+    Desc,
+    Status,
+    CreatedAt,
+    UpdatedAt,
 }

@@ -1,7 +1,11 @@
 //! 令牌角色关系表
 //! Entity: [`entity::permission::TokenRoleRel`]
+use crate::{permission::token::Token, user::role::Role, utils::if_not_exists_create_unique_index};
 
-use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
+use sea_orm::{
+    DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
+};
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
@@ -10,73 +14,93 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        let db = manager.get_connection();
+        // Replace the sample below with your own migration scripts
+        manager
+            .create_table(
+                Table::create()
+                    .table(TokenRoleRel::Table)
+                    .comment("令牌角色关系表")
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(TokenRoleRel::Id)
+                            .integer()
+                            .primary_key()
+                            .auto_increment()
+                            .not_null()
+                            .comment("自增ID"),
+                    )
+                    .col(
+                        ColumnDef::new(TokenRoleRel::TokenId)
+                            .integer()
+                            .not_null()
+                            .comment("令牌ID"),
+                    )
+                    .col(
+                        ColumnDef::new(TokenRoleRel::RoleId)
+                            .integer()
+                            .not_null()
+                            .comment("角色ID"),
+                    )
+                    .col(
+                        ColumnDef::new(TokenRoleRel::CreatedAt)
+                            .date_time()
+                            .not_null()
+                            .default(Expr::current_timestamp())
+                            .comment("创建时间"),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                TokenRoleRel::Table.to_string(),
+                                TokenRoleRel::TokenId.to_string()
+                            ))
+                            .from_col(TokenRoleRel::TokenId)
+                            .to(Token::Table, Token::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                TokenRoleRel::Table.to_string(),
+                                TokenRoleRel::RoleId.to_string()
+                            ))
+                            .from_col(TokenRoleRel::RoleId)
+                            .to(Role::Table, Role::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
 
-        match manager.get_database_backend() {
-            DatabaseBackend::MySql => {
-                db.execute_unprepared(
-                    "
-                    CREATE TABLE IF NOT EXISTS
-                    `t_perm_token_role_rel` (
-                        `id` INT AUTO_INCREMENT NOT NULL COMMENT '自增ID',
-                        `token_id` INT NOT NULL COMMENT '令牌ID',
-                        `role_id` INT NOT NULL COMMENT '角色ID',
-                        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                        PRIMARY KEY (`id`)
-                    ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COMMENT '令牌角色关系表';
-
-                    CREATE UNIQUE INDEX uk_token_id_role_id ON t_perm_token_role_rel (`token_id`, `role_id`);
-                    ",
-                )
-                .await?;
-            }
-            DatabaseBackend::Postgres => {
-                db.execute_unprepared(
-                    r#"
-                    CREATE TABLE IF NOT EXISTS "t_perm_token_role_rel" (
-                        "id" SERIAL PRIMARY KEY,
-                        "token_id" INTEGER NOT NULL,
-                        "role_id" INTEGER NOT NULL,
-                        "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
-                    );
-
-                    CREATE UNIQUE INDEX uk_t_perm_token_role_rel_token_id_role_id ON t_perm_token_role_rel ("token_id", "role_id");
-
-                    COMMENT ON TABLE t_perm_token_role_rel IS '令牌角色关系表';
-                    COMMENT ON COLUMN t_perm_token_role_rel.id IS '自增ID';
-                    COMMENT ON COLUMN t_perm_token_role_rel.token_id IS '令牌ID';
-                    COMMENT ON COLUMN t_perm_token_role_rel.role_id IS '角色ID';
-                    COMMENT ON COLUMN t_perm_token_role_rel.created_at IS '创建时间';
-                    "#,
-                )
-                .await?;
-            }
-            DatabaseBackend::Sqlite => {
-                db.execute_unprepared(
-                    "
-                    CREATE TABLE IF NOT EXISTS `t_perm_token_role_rel` ( -- 令牌角色关系表
-                        `id` INTEGER PRIMARY KEY AUTOINCREMENT, -- 自增ID
-                        `token_id` INTEGER NOT NULL, -- 令牌ID
-                        `role_id` INTEGER NOT NULL, -- 角色ID
-                        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 创建时间
-                    );
-
-                    CREATE UNIQUE INDEX uk_t_perm_token_role_rel_token_id_role_id ON t_perm_token_role_rel (`token_id`, `role_id`);
-                    ",
-                )
-                .await?;
-            }
-        }
+        // create unique index
+        if_not_exists_create_unique_index(
+            manager,
+            TokenRoleRel::Table,
+            vec![TokenRoleRel::TokenId, TokenRoleRel::RoleId],
+        )
+        .await?;
 
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // Replace the sample below with your own migration scripts
         manager
-            .get_connection()
-            .execute_unprepared("DROP TABLE `t_perm_token_role_rel`")
-            .await?;
-
-        Ok(())
+            .drop_table(Table::drop().table(TokenRoleRel::Table).to_owned())
+            .await
     }
+}
+
+#[derive(DeriveIden)]
+pub enum TokenRoleRel {
+    #[sea_orm(iden = "t_perm_token_role_rel")]
+    Table,
+    Id,
+    TokenId,
+    RoleId,
+    CreatedAt,
 }
