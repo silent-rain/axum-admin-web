@@ -1,12 +1,13 @@
 //! Mock 测试
-
-mod common;
-use common::{Role, User};
+use std::env;
 
 use database::mock::Mock;
+use log::info;
 use sea_orm::{ConnectionTrait, DbBackend, DbErr, EntityTrait, Statement};
-use std::env;
-use tracing::info;
+
+mod common;
+
+use common::{Role, User};
 
 async fn mock_pool() -> Result<(), DbErr> {
     let pool = Mock::builder().await?.build();

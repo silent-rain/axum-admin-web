@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use colored::Colorize;
-use tracing::{error, info};
+use log::{error, info};
 
 use crate::PoolTrait;
 

@@ -1,11 +1,12 @@
 use std::env;
 
 mod common;
-use common::{User, schem::create_user_table, user};
 
 use database::{Curd, Options, Pagination, Pool, PoolTrait};
-
 use sea_orm::{DbErr, EntityTrait, Set};
+use tracing_subscriber::EnvFilter;
+
+use common::{User, schem::create_user_table, user};
 
 async fn testcase(db: &Pool) -> Result<(), DbErr> {
     let active_model = user::ActiveModel {
@@ -144,7 +145,7 @@ async fn main() -> Result<(), DbErr> {
 
     tracing_subscriber::fmt()
         .compact()
-        .with_max_level(tracing::Level::INFO)
+        .with_env_filter(EnvFilter::new("info")) // 设置过滤规则
         .with_level(true)
         .with_line_number(true)
         .init();
