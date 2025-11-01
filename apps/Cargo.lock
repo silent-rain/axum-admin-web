@@ -609,11 +609,11 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "futures",
+ "log 0.4.28",
  "serde",
  "serde_json",
  "thiserror 2.0.17",
  "tower",
- "tracing",
 ]
 
 [[package]]
