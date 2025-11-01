@@ -1,5 +1,5 @@
 //! 配置表
-//! Entity: [`entity::system::SysConfig`]
+//! Entity: [`entity::system::Config`]
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName,
@@ -99,6 +99,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, Config::Table, vec![Config::Name]).await?;
         if_not_exists_create_index(manager, Config::Table, vec![Config::Pid]).await?;
         if_not_exists_create_index(manager, Config::Table, vec![Config::Code]).await?;

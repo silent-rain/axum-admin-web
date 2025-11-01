@@ -1,5 +1,5 @@
 //! 用户手机号表
-//! Entity: [`entity::user::Phone`]
+//! Entity: [`entity::user::UserPhone`]
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName,
@@ -17,11 +17,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Phone::Table)
+                    .table(UserPhone::Table)
                     .comment("用户手机号表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Phone::Id)
+                        ColumnDef::new(UserPhone::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -29,14 +29,14 @@ impl MigrationTrait for Migration {
                             .comment("手机号ID"),
                     )
                     .col(
-                        ColumnDef::new(Phone::UserId)
+                        ColumnDef::new(UserPhone::UserId)
                             .integer()
                             .unique_key()
                             .not_null()
                             .comment("用户ID"),
                     )
                     .col(
-                        ColumnDef::new(Phone::Phone)
+                        ColumnDef::new(UserPhone::Phone)
                             .string()
                             .string_len(16)
                             .unique_key()
@@ -44,7 +44,7 @@ impl MigrationTrait for Migration {
                             .comment("手机号码"),
                     )
                     .col(
-                        ColumnDef::new(Phone::Desc)
+                        ColumnDef::new(UserPhone::Desc)
                             .string()
                             .string_len(200)
                             .null()
@@ -52,14 +52,14 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(Phone::CreatedAt)
+                        ColumnDef::new(UserPhone::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(Phone::UpdatedAt)
+                        ColumnDef::new(UserPhone::UpdatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -75,13 +75,13 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(Phone::Table).to_owned())
+            .drop_table(Table::drop().table(UserPhone::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum Phone {
+pub enum UserPhone {
     #[sea_orm(iden = "t_user_phone")]
     Table,
     Id,

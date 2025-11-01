@@ -2,10 +2,12 @@
 //! Entity: [`entity::organization::Department`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -91,35 +93,9 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        Department::Table.to_string(),
-                        Department::Pid.to_string()
-                    ))
-                    .table(Department::Table)
-                    .col(Department::Pid)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        Department::Table.to_string(),
-                        Department::Name.to_string()
-                    ))
-                    .table(Department::Table)
-                    .col(Department::Name)
-                    .to_owned(),
-            )
-            .await?;
+        // create index
+        if_not_exists_create_index(manager, Department::Table, vec![Department::Pid]).await?;
+        if_not_exists_create_index(manager, Department::Table, vec![Department::Name]).await?;
 
         Ok(())
     }

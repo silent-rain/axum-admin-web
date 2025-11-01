@@ -2,10 +2,12 @@
 //! Entity: [`entity::permission::Openapi`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -103,20 +105,8 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        Openapi::Table.to_string(),
-                        Openapi::Pid.to_string()
-                    ))
-                    .table(Openapi::Table)
-                    .col(Openapi::Pid)
-                    .to_owned(),
-            )
-            .await?;
+        // create index
+        if_not_exists_create_index(manager, Openapi::Table, vec![Openapi::Pid]).await?;
 
         Ok(())
     }

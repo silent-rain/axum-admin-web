@@ -1,5 +1,5 @@
 //! 用户区块链钱包表
-//! Entity: [`entity::user::BlockchainWallet`]
+//! Entity: [`entity::user::UserBlockchainWallet`]
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName,
@@ -18,11 +18,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(BlockchainWallet::Table)
+                    .table(UserBlockchainWallet::Table)
                     .comment("用户区块链钱包表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(BlockchainWallet::Id)
+                        ColumnDef::new(UserBlockchainWallet::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -30,14 +30,14 @@ impl MigrationTrait for Migration {
                             .comment("钱包ID"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::UserId)
+                        ColumnDef::new(UserBlockchainWallet::UserId)
                             .integer()
                             .unique_key()
                             .not_null()
                             .comment("用户ID"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::WalletAddress)
+                        ColumnDef::new(UserBlockchainWallet::WalletAddress)
                             .string()
                             .string_len(255)
                             .unique_key()
@@ -45,27 +45,27 @@ impl MigrationTrait for Migration {
                             .comment("钱包地址"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::Mnemonic)
+                        ColumnDef::new(UserBlockchainWallet::Mnemonic)
                             .string()
                             .string_len(255)
                             .null()
                             .comment("助记词"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::PrivateKey)
+                        ColumnDef::new(UserBlockchainWallet::PrivateKey)
                             .string()
                             .string_len(255)
                             .null()
                             .comment("私钥"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::ChainId)
+                        ColumnDef::new(UserBlockchainWallet::ChainId)
                             .integer()
                             .null()
                             .comment("区块链ID"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::Desc)
+                        ColumnDef::new(UserBlockchainWallet::Desc)
                             .string()
                             .string_len(200)
                             .null()
@@ -73,14 +73,14 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::CreatedAt)
+                        ColumnDef::new(UserBlockchainWallet::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(BlockchainWallet::UpdatedAt)
+                        ColumnDef::new(UserBlockchainWallet::UpdatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
@@ -97,13 +97,13 @@ impl MigrationTrait for Migration {
         // Replace the sample below with your own migration scripts
 
         manager
-            .drop_table(Table::drop().table(BlockchainWallet::Table).to_owned())
+            .drop_table(Table::drop().table(UserBlockchainWallet::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum BlockchainWallet {
+pub enum UserBlockchainWallet {
     #[sea_orm(iden = "t_user_blockchain_wallet")]
     Table,
     Id,

@@ -6,7 +6,7 @@ use crate::{
 };
 
 use sea_orm::{
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
@@ -51,61 +51,41 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                DepartmentRoleRel::Table.to_string(),
+                                DepartmentRoleRel::DepartmentId.to_string()
+                            ))
+                            .from_col(DepartmentRoleRel::DepartmentId)
+                            .to(Department::Table, Department::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                DepartmentRoleRel::Table.to_string(),
+                                DepartmentRoleRel::RoleId.to_string()
+                            ))
+                            .from_col(DepartmentRoleRel::RoleId)
+                            .to(Role::Table, Role::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await?;
 
+        // create unique index
         if_not_exists_create_unique_index(
             manager,
             DepartmentRoleRel::Table,
             vec![DepartmentRoleRel::DepartmentId, DepartmentRoleRel::RoleId],
         )
         .await?;
-
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(
-                DepartmentRoleRel::Table.to_string(),
-                "fk_org_department_role_rel_department_id",
-            )
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_org_department_role_rel_department_id")
-                        .from(DepartmentRoleRel::Table, DepartmentRoleRel::DepartmentId)
-                        .to(Department::Table, Department::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        if !manager
-            .has_index(
-                DepartmentRoleRel::Table.to_string(),
-                "fk_org_department_role_rel_role_id",
-            )
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_org_department_role_rel_role_id")
-                        .from(DepartmentRoleRel::Table, DepartmentRoleRel::RoleId)
-                        .to(Role::Table, Role::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
 
         Ok(())
     }

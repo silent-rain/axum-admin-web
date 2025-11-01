@@ -89,6 +89,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, AppTemplate::Table, vec![AppTemplate::UserId]).await?;
 
         Ok(())

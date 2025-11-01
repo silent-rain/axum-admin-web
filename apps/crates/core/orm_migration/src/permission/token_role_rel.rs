@@ -3,7 +3,7 @@
 use crate::{permission::token::Token, user::role::Role, utils::if_not_exists_create_unique_index};
 
 use sea_orm::{
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
@@ -48,61 +48,41 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                TokenRoleRel::Table.to_string(),
+                                TokenRoleRel::TokenId.to_string()
+                            ))
+                            .from_col(TokenRoleRel::TokenId)
+                            .to(Token::Table, Token::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                TokenRoleRel::Table.to_string(),
+                                TokenRoleRel::RoleId.to_string()
+                            ))
+                            .from_col(TokenRoleRel::RoleId)
+                            .to(Role::Table, Role::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await?;
 
+        // create unique index
         if_not_exists_create_unique_index(
             manager,
             TokenRoleRel::Table,
             vec![TokenRoleRel::TokenId, TokenRoleRel::RoleId],
         )
         .await?;
-
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(
-                TokenRoleRel::Table.to_string(),
-                "fk_perm_token_role_rel_token_id",
-            )
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_perm_token_role_rel_token_id")
-                        .from(TokenRoleRel::Table, TokenRoleRel::TokenId)
-                        .to(Token::Table, Token::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        if !manager
-            .has_index(
-                TokenRoleRel::Table.to_string(),
-                "fk_perm_token_role_rel_role_id",
-            )
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_perm_token_role_rel_role_id")
-                        .from(TokenRoleRel::Table, TokenRoleRel::RoleId)
-                        .to(Role::Table, Role::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
 
         Ok(())
     }

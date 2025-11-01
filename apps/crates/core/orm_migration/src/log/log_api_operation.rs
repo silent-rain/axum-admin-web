@@ -2,10 +2,12 @@
 //! Entity: [`entity::log::LogApiOperation`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -140,65 +142,32 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogApiOperation::Table.to_string(),
-                        LogApiOperation::UserId.to_string()
-                    ))
-                    .table(LogApiOperation::Table)
-                    .col(LogApiOperation::UserId)
-                    .to_owned(),
-            )
-            .await?;
+        // create index
+        if_not_exists_create_index(
+            manager,
+            LogApiOperation::Table,
+            vec![LogApiOperation::UserId],
+        )
+        .await?;
+        if_not_exists_create_index(
+            manager,
+            LogApiOperation::Table,
+            vec![LogApiOperation::Username],
+        )
+        .await?;
+        if_not_exists_create_index(
+            manager,
+            LogApiOperation::Table,
+            vec![LogApiOperation::RequestId],
+        )
+        .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogApiOperation::Table.to_string(),
-                        LogApiOperation::Username.to_string()
-                    ))
-                    .table(LogApiOperation::Table)
-                    .col(LogApiOperation::Username)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogApiOperation::Table.to_string(),
-                        LogApiOperation::RequestId.to_string()
-                    ))
-                    .table(LogApiOperation::Table)
-                    .col(LogApiOperation::RequestId)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogApiOperation::Table.to_string(),
-                        LogApiOperation::StatusCode.to_string()
-                    ))
-                    .table(LogApiOperation::Table)
-                    .col(LogApiOperation::StatusCode)
-                    .to_owned(),
-            )
-            .await?;
+        if_not_exists_create_index(
+            manager,
+            LogApiOperation::Table,
+            vec![LogApiOperation::StatusCode],
+        )
+        .await?;
 
         Ok(())
     }

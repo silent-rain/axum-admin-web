@@ -106,6 +106,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, ScheduleJob::Table, vec![ScheduleJob::SysCode]).await?;
 
         Ok(())

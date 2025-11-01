@@ -2,10 +2,12 @@
 //! Entity: [`entity::log::LogSystem`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -180,35 +182,9 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogSystem::Table.to_string(),
-                        LogSystem::UserId.to_string()
-                    ))
-                    .table(LogSystem::Table)
-                    .col(LogSystem::UserId)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogSystem::Table.to_string(),
-                        LogSystem::Username.to_string()
-                    ))
-                    .table(LogSystem::Table)
-                    .col(LogSystem::Username)
-                    .to_owned(),
-            )
-            .await?;
+        // create index
+        if_not_exists_create_index(manager, LogSystem::Table, vec![LogSystem::UserId]).await?;
+        if_not_exists_create_index(manager, LogSystem::Table, vec![LogSystem::Username]).await?;
 
         Ok(())
     }

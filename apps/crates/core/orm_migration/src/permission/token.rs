@@ -2,10 +2,12 @@
 //! Entity: [`entity::permission::Token`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -96,50 +98,10 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        Token::Table.to_string(),
-                        Token::UserId.to_string()
-                    ))
-                    .table(Token::Table)
-                    .col(Token::UserId)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        Token::Table.to_string(),
-                        Token::Token.to_string()
-                    ))
-                    .table(Token::Table)
-                    .col(Token::Token)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        Token::Table.to_string(),
-                        Token::Passphrase.to_string()
-                    ))
-                    .table(Token::Table)
-                    .col(Token::Passphrase)
-                    .to_owned(),
-            )
-            .await?;
+        // create index
+        if_not_exists_create_index(manager, Token::Table, vec![Token::UserId]).await?;
+        if_not_exists_create_index(manager, Token::Table, vec![Token::Token]).await?;
+        if_not_exists_create_index(manager, Token::Table, vec![Token::Passphrase]).await?;
 
         Ok(())
     }

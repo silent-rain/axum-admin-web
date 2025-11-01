@@ -86,6 +86,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, MemberLevel::Table, vec![MemberLevel::Name]).await?;
         if_not_exists_create_index(manager, MemberLevel::Table, vec![MemberLevel::Level]).await?;
 

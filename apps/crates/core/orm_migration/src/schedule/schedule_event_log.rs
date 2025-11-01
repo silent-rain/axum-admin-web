@@ -7,6 +7,8 @@ use sea_orm::{
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
+use crate::utils::if_not_exists_create_index;
+
 #[derive(DeriveMigrationName)]
 pub struct Migration;
 
@@ -73,20 +75,13 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        ScheduleEventLog::Table.to_string(),
-                        ScheduleEventLog::Uuid.to_string()
-                    ))
-                    .table(ScheduleEventLog::Table)
-                    .col(ScheduleEventLog::Uuid)
-                    .to_owned(),
-            )
-            .await?;
+        // create index
+        if_not_exists_create_index(
+            manager,
+            ScheduleEventLog::Table,
+            vec![ScheduleEventLog::Uuid],
+        )
+        .await?;
 
         Ok(())
     }

@@ -82,6 +82,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, ImageCaptcha::Table, vec![ImageCaptcha::CaptchaId])
             .await?;
         if_not_exists_create_index(manager, ImageCaptcha::Table, vec![ImageCaptcha::Status])

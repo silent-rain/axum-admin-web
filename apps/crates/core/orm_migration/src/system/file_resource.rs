@@ -90,6 +90,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, FileResource::Table, vec![FileResource::FileName])
             .await?;
         if_not_exists_create_index(manager, FileResource::Table, vec![FileResource::Hash]).await?;

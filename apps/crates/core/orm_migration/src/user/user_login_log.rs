@@ -123,6 +123,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, UserLoginLog::Table, vec![UserLoginLog::UserId])
             .await?;
         if_not_exists_create_index(manager, UserLoginLog::Table, vec![UserLoginLog::Username])

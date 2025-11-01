@@ -2,10 +2,12 @@
 //! Entity: [`entity::log::LogWeb`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -112,50 +114,10 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogWeb::Table.to_string(),
-                        LogWeb::UserId.to_string()
-                    ))
-                    .table(LogWeb::Table)
-                    .col(LogWeb::UserId)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogWeb::Table.to_string(),
-                        LogWeb::Username.to_string()
-                    ))
-                    .table(LogWeb::Table)
-                    .col(LogWeb::Username)
-                    .to_owned(),
-            )
-            .await?;
-
-        manager
-            .create_index(
-                Index::create()
-                    .if_not_exists()
-                    .name(format!(
-                        "idx_{}_{}",
-                        LogWeb::Table.to_string(),
-                        LogWeb::RequestId.to_string()
-                    ))
-                    .table(LogWeb::Table)
-                    .col(LogWeb::RequestId)
-                    .to_owned(),
-            )
-            .await?;
+        // create index
+        if_not_exists_create_index(manager, LogWeb::Table, vec![LogWeb::UserId]).await?;
+        if_not_exists_create_index(manager, LogWeb::Table, vec![LogWeb::Username]).await?;
+        if_not_exists_create_index(manager, LogWeb::Table, vec![LogWeb::RequestId]).await?;
 
         Ok(())
     }

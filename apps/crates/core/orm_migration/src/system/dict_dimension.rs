@@ -86,6 +86,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, DictDimension::Table, vec![DictDimension::Name])
             .await?;
         if_not_exists_create_index(manager, DictDimension::Table, vec![DictDimension::Code])

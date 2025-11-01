@@ -20,14 +20,14 @@ impl MigratorTrait for Migrator {
             // 应用模板表
             Box::new(template::app_template::Migration),
             // 用户管理
-            Box::new(user::user_base::Migration),
-            Box::new(user::phone::Migration),
-            Box::new(user::email::Migration),
-            Box::new(user::blockchain_wallet::Migration),
             Box::new(user::role::Migration),
-            Box::new(user::user_role_rel::Migration),
             Box::new(user::member_level::Migration),
             Box::new(user::location::Migration),
+            Box::new(user::user_base::Migration),
+            Box::new(user::user_phone::Migration),
+            Box::new(user::user_email::Migration),
+            Box::new(user::user_blockchain_wallet::Migration),
+            Box::new(user::user_role_rel::Migration),
             Box::new(user::user_login_log::Migration),
             Box::new(user::user_session::Migration),
             // 权限管理

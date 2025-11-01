@@ -2,7 +2,7 @@
 //! Entity: [`entity::user::UserRoleRel`]
 
 use sea_orm::{
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
@@ -51,55 +51,41 @@ impl MigrationTrait for Migration {
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                UserRoleRel::Table.to_string(),
+                                UserRoleRel::UserId.to_string()
+                            ))
+                            .from_col(UserRoleRel::UserId)
+                            .to(UserBase::Table, UserBase::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                UserRoleRel::Table.to_string(),
+                                UserRoleRel::RoleId.to_string()
+                            ))
+                            .from_col(UserRoleRel::RoleId)
+                            .to(Role::Table, Role::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await?;
 
+        // create unique index
         if_not_exists_create_unique_index(
             manager,
             UserRoleRel::Table,
             vec![UserRoleRel::UserId, UserRoleRel::RoleId],
         )
         .await?;
-
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(UserRoleRel::Table.to_string(), "fk_user_role_rel_user_id")
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_user_role_rel_user_id")
-                        .from(UserRoleRel::Table, UserRoleRel::UserId)
-                        .to(UserBase::Table, UserBase::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        if !manager
-            .has_index(UserRoleRel::Table.to_string(), "fk_user_role_rel_role_id")
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_user_role_rel_role_id")
-                        .from(UserRoleRel::Table, UserRoleRel::RoleId)
-                        .to(Role::Table, Role::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
 
         Ok(())
     }

@@ -74,6 +74,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
         if_not_exists_create_index(manager, UserSession::Table, vec![UserSession::Status]).await?;
         if_not_exists_create_index(manager, UserSession::Table, vec![UserSession::ExpiryDate])
             .await?;
