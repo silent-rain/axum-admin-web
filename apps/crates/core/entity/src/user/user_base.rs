@@ -74,12 +74,13 @@ pub mod enums {
     }
 
     /// 注册用户类型
-    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+    #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
     pub enum UserType {
         /// 用户名
         #[serde(rename = "base")]
         Base,
         /// 手机号码
+        #[default]
         #[serde(rename = "phone")]
         Phone,
         /// 邮箱
@@ -88,12 +89,6 @@ pub mod enums {
         /// 区块链钱包
         #[serde(rename = "blockchain_wallet")]
         BlockchainWallet,
-    }
-
-    impl Default for UserType {
-        fn default() -> Self {
-            Self::Phone
-        }
     }
 
     /// 实现FromStr trait来定义如何从字符串解析为RegisterType

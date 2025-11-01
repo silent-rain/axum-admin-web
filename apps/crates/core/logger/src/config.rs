@@ -112,7 +112,7 @@ impl Default for DbConfig {
 }
 
 /// 日志级别
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, PartialEq)]
 pub enum Level {
     #[serde(rename = "trace")]
     Trace,
@@ -120,16 +120,11 @@ pub enum Level {
     Debug,
     #[serde(rename = "info")]
     Info,
+    #[default]
     #[serde(rename = "warn")]
     Warn,
     #[serde(rename = "error")]
     Error,
-}
-
-impl Default for Level {
-    fn default() -> Self {
-        Self::Warn
-    }
 }
 
 // Level 别转换为 tracing::Level
