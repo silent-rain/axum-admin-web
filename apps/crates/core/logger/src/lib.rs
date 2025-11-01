@@ -141,6 +141,9 @@ impl<'a> Logger<'a> {
     }
 
     fn set_global_default(&mut self, layers: Vec<RegistryLayer>) -> Result<(), Error> {
+        // 初始化 LogTracer 以转发 log 事件到 tracing
+        tracing_log::LogTracer::init().expect("Failed to set logger");
+
         // 日志过滤器
         // let level_filter = EnvFilter::new(config.level);
         // let level_filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));

@@ -2988,6 +2988,7 @@ dependencies = [
  "tracing-appender",
  "tracing-bunyan-formatter",
  "tracing-error",
+ "tracing-log 0.2.0",
  "tracing-subscriber",
 ]
 

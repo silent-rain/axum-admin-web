@@ -10,17 +10,18 @@ name = "logger"
 path = "src/lib.rs"
 
 [dependencies]
-err_code = { path = "../err_code" }
-entity = { path = "../entity" }
-database = { path = "../database" }
+# 本地组件
+err_code = { workspace = true }
+entity = { workspace = true }
+database = { workspace = true }
 
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = [
     "env-filter",
     "time",
     "local-time",
-    "tracing-log",
 ] }
+tracing-log = { workspace = true }
 tracing-appender = { workspace = true }
 tracing-error = { workspace = true }
 tracing-bunyan-formatter = { workspace = true }

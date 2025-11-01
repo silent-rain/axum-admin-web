@@ -94,10 +94,11 @@ anyhow = "1.0"
 log = "0.4"
 tracing = "0.1"
 tracing-subscriber = "0.3"
-tracing-chrome = "0.7"
 tracing-appender = "0.2"
-tracing-bunyan-formatter = "0.3"
 tracing-error = "0.2"
+tracing-log = "0.2"
+tracing-bunyan-formatter = "0.3"
+tracing-chrome = "0.7"
 color-eyre = "0.6"
 
 
