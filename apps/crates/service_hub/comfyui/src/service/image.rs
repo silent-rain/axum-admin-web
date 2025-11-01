@@ -39,7 +39,10 @@ impl ComfyUIImageService {
             error!("请求参数异常, image is empty");
             Error::RequestError("请求参数异常, image is empty".to_string()).into_err()
         })?;
-        let extension = file_extension(file_name.clone()).map_err(|e| e.into_err())?;
+        let extension = file_extension(file_name.clone()).map_err(|e| {
+            error!("解析文件扩展名失败, err: {e:#?}");
+            Error::ParseFileExtension(e.to_string()).into_err()
+        })?;
 
         let mut buffer = vec![];
         image

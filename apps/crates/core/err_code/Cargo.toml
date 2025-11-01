@@ -4,9 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum_response = { path = "../../axum_response" }
+axum_response = { workspace = true }
 
 thiserror = { workspace = true }
+serde_json = { workspace = true }
 anyhow = { workspace = true }
 color-eyre = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

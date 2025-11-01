@@ -24,10 +24,10 @@ mod tests {
 
     #[test]
     fn test_generate_captcha() {
-        let (text, _base_img) = generate_captcha();
+        let (text, base_img) = generate_captcha();
         println!("text: {}", text);
         // println!("base_img: {}", base_img);
         assert_eq!(text.len(), 5);
-        // assert!(base_img.starts_with("data:image/jpeg;base64,"));
+        assert!(base_img.starts_with("data:image/jpeg;base64,"));
     }
 }

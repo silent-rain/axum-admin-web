@@ -54,13 +54,16 @@ pub enum Error {
     /// io error, no data available
     #[error("io error, no data available")]
     NoDataAvailable,
+    #[error("date time parse error, {0}")]
+    DateTimeParseError(String),
+
     #[error(transparent)]
     Io(io::Error),
     /// from utf8 error, from std::string::FromUtf8Error
     #[error(transparent)]
     FromUtf8(#[from] std::string::FromUtf8Error),
-    #[error("date time parse error, {0}")]
-    DateTimeParseError(String),
+    #[error(transparent)]
+    SerdeJsonError(#[from] serde_json::error::Error),
 
     // 数据库操作
     #[error("db initialized error, {0}")]

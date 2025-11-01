@@ -91,7 +91,8 @@ mod tests {
             "captcha_id":"captcha_id",
             "captcha": "captcha",
         });
-        let result: RegisterReq = struct_to_struct(&body)?;
+        let result: RegisterReq =
+            struct_to_struct(&body).map_err(|e| Error::ConvertType(e.to_string()))?;
         println!("expected: {:#?}", expected);
         println!("result: {:#?}", result);
         assert!(expected == result);
@@ -130,7 +131,8 @@ mod tests {
             "captcha_id":"captcha_id",
             "captcha": "captcha",
         });
-        let result: RegisterReq = struct_to_struct(&body)?;
+        let result: RegisterReq =
+            struct_to_struct(&body).map_err(|e| Error::ConvertType(e.to_string()))?;
 
         assert!(expected == result);
 
@@ -168,7 +170,8 @@ mod tests {
             // "captcha_id":"captcha_id",
             // "captcha": "captcha",
         });
-        let result: RegisterReq = struct_to_struct(&body)?;
+        let result: RegisterReq =
+            struct_to_struct(&body).map_err(|e| Error::ConvertType(e.to_string()))?;
         println!("expected: {:#?}", expected);
         println!("result: {:#?}", result);
         assert!(expected == result);

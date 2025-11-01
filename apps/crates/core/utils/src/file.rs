@@ -2,7 +2,7 @@
 
 use std::path::Path;
 
-use err_code::Error;
+use crate::error::Error;
 
 /// 获取文件扩展名
 pub fn file_extension(filename: String) -> Result<String, Error> {

@@ -90,7 +90,10 @@ impl FileResourceService {
             Error::RequestError("请求参数异常".to_string()).into_err()
         })?;
 
-        let extension = file_extension(file_name.clone()).map_err(|e| e.into_err())?;
+        let extension = file_extension(file_name.clone()).map_err(|e| {
+            error!("解析文件扩展名失败, err: {e:#?}");
+            Error::ParseFileExtension(e.to_string()).into_err()
+        })?;
 
         let mut buffer = vec![];
         req.file
@@ -141,7 +144,10 @@ impl FileResourceService {
                 Error::RequestError("请求参数异常".to_string()).into_err()
             })?;
 
-            let extension = file_extension(file_name.clone()).map_err(|e| e.into_err())?;
+            let extension = file_extension(file_name.clone()).map_err(|e| {
+                error!("解析文件扩展名失败, err: {e:#?}");
+                Error::ParseFileExtension(e.to_string()).into_err()
+            })?;
 
             let mut buffer = vec![];
             file.contents

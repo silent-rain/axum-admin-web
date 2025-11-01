@@ -15,7 +15,6 @@ use tracing::error;
 use crate::dao::UserSessionDao;
 use database::PoolTrait;
 use entity::user::user_session;
-use utils::json::{serialize_to_vec, vec_deserialize};
 
 /// A session store that lives only in memory.
 ///
@@ -78,10 +77,8 @@ impl SessionStore for DbStore {
             record.id = Id::default();
         }
 
-        let bytes = serialize_to_vec(&record).map_err(|err| {
-            error!("data serialize to bytes failed, err: {err}");
-            Error::Encode("data serialize to bytes failed".to_string())
-        })?;
+        let bytes: Vec<u8> =
+            serde_json::to_vec(&record).map_err(|err| Error::Encode(err.to_string()))?;
 
         let active_model = user_session::ActiveModel {
             session_id: Set(record.id.to_string()),
@@ -105,10 +102,8 @@ impl SessionStore for DbStore {
 
     async fn save(&self, record: &Record) -> session_store::Result<()> {
         let session_id = record.id.to_string();
-        let bytes = serialize_to_vec(&record).map_err(|err| {
-            error!("data serialize to bytes failed, err: {err}");
-            Error::Encode("data serialize to bytes failed".to_string())
-        })?;
+        let bytes: Vec<u8> =
+            serde_json::to_vec(&record).map_err(|err| Error::Encode(err.to_string()))?;
 
         let active_model = user_session::ActiveModel {
             session_id: Set(session_id.to_string()),
@@ -163,10 +158,8 @@ impl SessionStore for DbStore {
             ));
         }
 
-        let data: Record = vec_deserialize(&session_data.data).map_err(|err| {
-            error!("deserialize to record failedd, err: {err}");
-            Error::Backend("deserialize to record failed".to_string())
-        })?;
+        let data: Record = serde_json::from_slice(&session_data.data)
+            .map_err(|err| Error::Backend(err.to_string()))?;
 
         Ok(Some(data))
     }
