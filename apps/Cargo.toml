@@ -39,11 +39,15 @@ axum_validator = { path = "crates/axum_validator" }
 axum_jwt = { path = "crates/axum_jwt" }
 axum_context = { path = "crates/axum_context" }
 axum_response = { path = "crates/axum_response" }
+axum_middleware = { path = "crates/axum_middleware" }
+axum_session = { path = "crates/axum_session" }
 
 err_code = { path = "crates/core/err_code" }
 database = { path = "crates/core/database" }
 entity = { path = "crates/core/entity" }
 inject = { path = "crates/core/inject" }
+utils = { path = "crates/core/utils" }
+logger = { path = "crates/core/logger" }
 
 
 # 网络相关

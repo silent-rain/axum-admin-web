@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-utils = { path = "../../core/utils" }
-
 user = { path = "../user" }
 system = { path = "../system" }
 
@@ -13,6 +11,7 @@ database = { workspace = true }
 entity = { workspace = true }
 err_code = { workspace = true }
 inject = { workspace = true }
+utils = { workspace = true }
 axum_response = { workspace = true }
 axum_context = { workspace = true }
 axum_validator = { workspace = true }

@@ -4,11 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-utils = { path = "../core/utils" }
-
-
 database = { workspace = true }
 entity = { workspace = true }
+utils = { workspace = true }
 
 
 tower-sessions = { workspace = true }

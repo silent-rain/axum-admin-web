@@ -6,7 +6,6 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-utils = { path = "../../core/utils" }
 embed_asset = { path = "../../embed_asset" }
 
 user = { path = "../user" }
@@ -16,6 +15,7 @@ database = { workspace = true }
 entity = { workspace = true }
 err_code = { workspace = true }
 inject = { workspace = true }
+utils = { workspace = true }
 axum_response = { workspace = true }
 axum_validator = { workspace = true }
 

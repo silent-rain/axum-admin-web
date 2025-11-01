@@ -4,18 +4,19 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-err_code = { path = "../crates/core/err_code" }
-database = { path = "../crates/core/database" }
-logger = { path = "../crates/core/logger" }
-utils = { path = "../crates/core/utils" }
 embed_asset = { path = "../crates/embed_asset" }
 inject = { path = "../crates/core/inject" }
-axum_response = { path = "../crates/axum_response" }
-axum_middleware = { path = "../crates/axum_middleware" }
-axum_session = { path = "../crates/axum_session" }
-axum_context = { workspace = true }
 service_hub = { path = "../crates/service_hub" }
 app_state = { path = "../crates/app_state" }
+
+err_code = { workspace = true }
+database = { workspace = true }
+logger = { workspace = true }
+utils = { workspace = true }
+axum_response = { workspace = true }
+axum_middleware = { workspace = true }
+axum_session = { workspace = true }
+axum_context = { workspace = true }
 
 axum = { workspace = true }
 axum-extra = { workspace = true, features = ["cookie-private"] }
