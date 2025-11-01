@@ -2,9 +2,9 @@ use axum::{
     body::Body,
     http::{Response, StatusCode},
 };
+use log::error;
 use serde::{Serialize, Serializer};
 use serde_json::json;
-use tracing::error;
 
 #[derive(Debug, PartialEq, thiserror::Error)]
 #[repr(u16)]

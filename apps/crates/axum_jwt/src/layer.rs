@@ -4,8 +4,8 @@ use std::{boxed::Box, task::Poll};
 use axum::{body::Body, extract::Request, http::Response};
 use axum_context::{ApiAuthType, Context};
 use futures::future::BoxFuture;
+use log::error;
 use tower::{Layer, Service};
-use tracing::error;
 
 use crate::{Claims, Error};
 
