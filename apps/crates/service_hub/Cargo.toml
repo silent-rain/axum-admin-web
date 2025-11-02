@@ -10,8 +10,6 @@ crate-type = ["staticlib", "rlib"]
 
 
 [dependencies]
-embed_asset = { path = "../embed_asset" }
-
 public = { path = "public" }
 template = { path = "template" }
 template_grpc = { path = "template_grpc" }

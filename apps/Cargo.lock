@@ -4989,7 +4989,6 @@ version = "0.1.0"
 dependencies = [
  "auth",
  "comfyui",
- "embed_asset",
  "initialize",
  "inject",
  "log 0.1.0",
