@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum_response::ResponseErr;
 
 use crate::Error;
@@ -6,7 +8,7 @@ use crate::Error;
 pub struct ErrorMsg {
     code: u16,
     msg: String,
-    inner: Option<Error>,
+    inner: Option<Arc<Error>>,
 }
 
 impl ErrorMsg {
@@ -24,7 +26,7 @@ impl ErrorMsg {
         Self {
             code: err.code(),
             msg: err.msg(),
-            inner: Some(err),
+            inner: Some(err.into()),
         }
     }
 
@@ -57,8 +59,8 @@ impl ErrorMsg {
     }
 
     /// 返回内部错误信息
-    pub fn inner_err(&self) -> Option<&Error> {
-        self.inner.as_ref()
+    pub fn inner_err(&self) -> Option<Arc<Error>> {
+        self.inner.clone()
     }
 }
 
