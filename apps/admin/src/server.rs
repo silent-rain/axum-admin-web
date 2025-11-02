@@ -7,7 +7,7 @@ use std::{
 use app_state::AppState;
 use database::Mdb;
 use inject::InjectProvider;
-use service_hub::public::AdminWebSiteRouter;
+use public::AdminWebSiteRouter;
 
 use axum::{Extension, Router};
 use colored::Colorize;

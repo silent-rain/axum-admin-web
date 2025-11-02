@@ -10,7 +10,7 @@ crate-type = ["staticlib", "rlib"]
 
 
 [dependencies]
-public = { path = "public" }
+# public = { path = "public" }
 template = { path = "template" }
 template_grpc = { path = "template_grpc" }
 auth = { path = "auth" }

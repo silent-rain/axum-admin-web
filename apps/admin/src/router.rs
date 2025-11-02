@@ -24,10 +24,11 @@ use axum_middleware::{
     prometheus::prometheus_layer_metric_handle, session_auth::SessionAuthLayer,
 };
 use axum_session::session_layer;
+use public::HealthRouter;
 use service_hub::{
     auth::AuthRouter, comfyui::ComfyUIRouter, initialize::InitializeRouter, log::LogRouter,
-    organization::OrganizationRouter, permission::PermissionRouter, public::HealthRouter,
-    schedule::ScheduleRouter, system::SystemRouter, template::TemplateRouter, user::UserRouter,
+    organization::OrganizationRouter, permission::PermissionRouter, schedule::ScheduleRouter,
+    system::SystemRouter, template::TemplateRouter, user::UserRouter,
 };
 
 /// axum handler for any request that fails to match the router routes.
