@@ -8,6 +8,7 @@ embed_asset = { path = "../crates/embed_asset" }
 service_hub = { path = "../crates/service_hub" }
 app_state = { path = "../crates/app_state" }
 public = { path = "../crates/service_hub/public" }
+initialize = { path = "../crates/service_hub/initialize" }
 
 err_code = { workspace = true }
 database = { workspace = true }

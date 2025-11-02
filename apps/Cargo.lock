@@ -40,6 +40,7 @@ dependencies = [
  "dotenv",
  "embed_asset",
  "err_code",
+ "initialize",
  "inject",
  "listenfd",
  "logger",
@@ -4990,7 +4991,6 @@ version = "0.1.0"
 dependencies = [
  "auth",
  "comfyui",
- "initialize",
  "inject",
  "log 0.1.0",
  "organization",
