@@ -16,7 +16,7 @@ members = [
 
     # 组件
     "crates/app_state",
-    "crates/embed_asset",
+    # "crates/embed_asset", # 需要静态资源, 取消成员
     "crates/axum_response",
     "crates/axum_mock",
     "crates/axum_validator",
