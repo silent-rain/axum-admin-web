@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::organization::{DepartmentEntity, department};
+use entity::organization::{Department, department};
 
 use crate::dto::department::GetDepartmentsReq;
 
@@ -21,7 +21,7 @@ pub struct DepartmentDao {
 impl DepartmentDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<department::Model>, u64), DbErr> {
-        let results = DepartmentEntity::find()
+        let results = Department::find()
             .order_by_asc(department::Column::Id)
             .all(self.db.db())
             .await?;
@@ -36,7 +36,7 @@ impl DepartmentDao {
     ) -> Result<(Vec<department::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = DepartmentEntity::find()
+        let states = Department::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(department::Column::CreatedAt.gte(v))
             })
@@ -64,7 +64,7 @@ impl DepartmentDao {
 
     /// 获取父ID下的所有子列表
     pub async fn children(&self, pid: i32) -> Result<Vec<department::Model>, DbErr> {
-        DepartmentEntity::find()
+        Department::find()
             .filter(department::Column::Pid.eq(pid))
             .all(self.db.db())
             .await
@@ -72,12 +72,12 @@ impl DepartmentDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<department::Model>, DbErr> {
-        DepartmentEntity::find_by_id(id).one(self.db.db()).await
+        Department::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过名称获取详情信息
     pub async fn info_by_name(&self, name: String) -> Result<Option<department::Model>, DbErr> {
-        DepartmentEntity::find()
+        Department::find()
             .filter(department::Column::Name.eq(name))
             .one(self.db.db())
             .await
@@ -94,7 +94,7 @@ impl DepartmentDao {
     /// 更新数据
     pub async fn update(&self, active_model: department::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = DepartmentEntity::update_many()
+        let result = Department::update_many()
             .set(active_model)
             .filter(department::Column::Id.eq(id))
             .exec(self.db.db())
@@ -116,9 +116,7 @@ impl DepartmentDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = DepartmentEntity::delete_by_id(id)
-            .exec(self.db.db())
-            .await?;
+        let result = Department::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

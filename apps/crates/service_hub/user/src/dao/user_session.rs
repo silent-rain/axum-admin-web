@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::user::{UserSessionEntity, user_session};
+use entity::user::{UserSession, user_session};
 
 use crate::dto::user_session::GetUserSessionsReq;
 
@@ -26,7 +26,7 @@ impl UserSessionDao {
     ) -> Result<(Vec<user_session::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = UserSessionEntity::find()
+        let states = UserSession::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(user_session::Column::CreatedAt.gte(v))
             })
@@ -54,7 +54,7 @@ impl UserSessionDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<user_session::Model>, DbErr> {
-        UserSessionEntity::find_by_id(id).one(self.db.db()).await
+        UserSession::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加详情信息
@@ -68,7 +68,7 @@ impl UserSessionDao {
     /// 更新信息
     pub async fn update(&self, active_model: user_session::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = UserSessionEntity::update_many()
+        let result = UserSession::update_many()
             .set(active_model)
             .filter(user_session::Column::Id.eq(id))
             .exec(self.db.db())
@@ -90,9 +90,7 @@ impl UserSessionDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = UserSessionEntity::delete_by_id(id)
-            .exec(self.db.db())
-            .await?;
+        let result = UserSession::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }
@@ -103,7 +101,7 @@ impl UserSessionDao {
         &self,
         session_id: String,
     ) -> Result<Option<user_session::Model>, DbErr> {
-        UserSessionEntity::find()
+        UserSession::find()
             .filter(user_session::Column::SessionId.eq(session_id))
             .one(self.db.db())
             .await

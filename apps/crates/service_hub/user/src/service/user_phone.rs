@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use entity::user::phone;
+use entity::user::user_phone;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
-    dao::phone::PhoneDao,
-    dto::phone::{CreatePhoneReq, DeletePhoneReq, GetPhoneReq, GetPhonesReq, UpdatePhoneReq},
+    dao::user_phone::PhoneDao,
+    dto::user_phone::{CreatePhoneReq, DeletePhoneReq, GetPhoneReq, GetPhonesReq, UpdatePhoneReq},
 };
 
 /// 服务层
@@ -20,7 +20,7 @@ pub struct PhoneService {
 
 impl PhoneService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetPhonesReq) -> Result<(Vec<phone::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetPhonesReq) -> Result<(Vec<user_phone::Model>, u64), ErrorMsg> {
         let (results, total) = self.phone_dao.list(req).await.map_err(|err| {
             error!("查询用户手机号列表失败, err: {:#?}", err);
             Error::DbQueryError.into_err_with_msg("查询用户手机号列表失败")
@@ -30,7 +30,7 @@ impl PhoneService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, req: GetPhoneReq) -> Result<phone::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetPhoneReq) -> Result<user_phone::Model, ErrorMsg> {
         let result = self
             .phone_dao
             .info(req.id)
@@ -48,11 +48,11 @@ impl PhoneService {
     }
 
     /// 添加数据
-    pub async fn create(&self, req: CreatePhoneReq) -> Result<phone::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreatePhoneReq) -> Result<user_phone::Model, ErrorMsg> {
         // 检查用户手机号是否已存在
         self.check_phone_exist(req.phone.clone(), None).await?;
 
-        let model = phone::ActiveModel {
+        let model = user_phone::ActiveModel {
             user_id: Set(req.user_id),
             phone: Set(req.phone),
             desc: Set(req.desc),
@@ -72,7 +72,7 @@ impl PhoneService {
         self.check_phone_exist(req.phone.clone(), Some(req.id))
             .await?;
 
-        let model = phone::ActiveModel {
+        let model = user_phone::ActiveModel {
             id: Set(req.id),
             phone: Set(req.phone),
             desc: Set(req.desc),

@@ -6,7 +6,7 @@ use nject::injectable;
 use sea_orm::{ActiveModelTrait, DatabaseTransaction, DbErr, Set, TransactionTrait};
 
 use database::PoolTrait;
-use entity::user::{email, phone, user_base};
+use entity::user::{user_base, user_email, user_phone};
 
 use crate::dto::register::RegisterReq;
 
@@ -62,8 +62,8 @@ impl RegisterDao {
         txn: &DatabaseTransaction,
         user_id: i32,
         phone: String,
-    ) -> Result<phone::Model, DbErr> {
-        let active_model = phone::ActiveModel {
+    ) -> Result<user_phone::Model, DbErr> {
+        let active_model = user_phone::ActiveModel {
             user_id: Set(user_id),
             phone: Set(phone),
             ..Default::default()
@@ -77,8 +77,8 @@ impl RegisterDao {
         txn: &DatabaseTransaction,
         user_id: i32,
         email: String,
-    ) -> Result<email::Model, DbErr> {
-        let active_model = email::ActiveModel {
+    ) -> Result<user_email::Model, DbErr> {
+        let active_model = user_email::ActiveModel {
             user_id: Set(user_id),
             email: Set(email),
             ..Default::default()

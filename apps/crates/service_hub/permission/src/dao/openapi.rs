@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::permission::{OpenapiEntity, openapi, openapi_role_rel};
+use entity::permission::{Openapi, openapi, openapi_role_rel};
 
 use crate::dto::openapi::{GetOpenapisReq, RoleOpenapiPermission};
 
@@ -21,7 +21,7 @@ pub struct OpenapiDao {
 impl OpenapiDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<openapi::Model>, u64), DbErr> {
-        let results = OpenapiEntity::find()
+        let results = Openapi::find()
             .order_by_asc(openapi::Column::Id)
             .all(self.db.db())
             .await?;
@@ -33,7 +33,7 @@ impl OpenapiDao {
     pub async fn list(&self, req: GetOpenapisReq) -> Result<(Vec<openapi::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = OpenapiEntity::find()
+        let states = Openapi::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(openapi::Column::CreatedAt.gte(v))
             })
@@ -61,7 +61,7 @@ impl OpenapiDao {
 
     /// 获取父ID下的所有子列表
     pub async fn children(&self, pid: i32) -> Result<Vec<openapi::Model>, DbErr> {
-        OpenapiEntity::find()
+        Openapi::find()
             .filter(openapi::Column::Pid.eq(pid))
             .all(self.db.db())
             .await
@@ -69,7 +69,7 @@ impl OpenapiDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<openapi::Model>, DbErr> {
-        OpenapiEntity::find_by_id(id).one(self.db.db()).await
+        Openapi::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过资源路径和请求类型获取详情信息
@@ -78,7 +78,7 @@ impl OpenapiDao {
         path: String,
         method: String,
     ) -> Result<Option<openapi::Model>, DbErr> {
-        OpenapiEntity::find()
+        Openapi::find()
             .filter(openapi::Column::Path.eq(path))
             .filter(openapi::Column::Method.eq(method))
             .one(self.db.db())
@@ -96,7 +96,7 @@ impl OpenapiDao {
     /// 更新数据
     pub async fn update(&self, active_model: openapi::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = OpenapiEntity::update_many()
+        let result = Openapi::update_many()
             .set(active_model)
             .filter(openapi::Column::Id.eq(id))
             .exec(self.db.db())
@@ -118,7 +118,7 @@ impl OpenapiDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = OpenapiEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = Openapi::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }
@@ -126,7 +126,7 @@ impl OpenapiDao {
 impl OpenapiDao {
     /// 角色接口关系权限
     pub async fn role_openapi_permissions(&self) -> Result<Vec<RoleOpenapiPermission>, DbErr> {
-        let results = OpenapiEntity::find()
+        let results = Openapi::find()
             .select_only()
             .columns([openapi::Column::Path, openapi::Column::Method])
             .columns([openapi_role_rel::Column::RoleId])
@@ -153,7 +153,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_sys_user_permission() {
-        let results = OpenapiEntity::find()
+        let results = Openapi::find()
             .join_rev(
                 JoinType::InnerJoin,
                 openapi_role_rel::Entity::belongs_to(openapi::Entity)

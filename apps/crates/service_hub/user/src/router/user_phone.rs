@@ -2,7 +2,7 @@
 
 use axum::{Router, routing::get};
 
-use crate::controller::phone::PhoneController;
+use crate::controller::user_phone::PhoneController;
 
 /// 路由器
 pub struct PhoneRouter;

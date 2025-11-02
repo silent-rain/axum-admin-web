@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::system::{DictDataEntity, dict_data};
+use entity::system::{DictData, dict_data};
 
 use crate::dto::dict_data::GetDictDatasReq;
 
@@ -21,7 +21,7 @@ pub struct DictDataDao {
 impl DictDataDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<dict_data::Model>, u64), DbErr> {
-        let results = DictDataEntity::find()
+        let results = DictData::find()
             .order_by_asc(dict_data::Column::Id)
             .all(self.db.db())
             .await?;
@@ -33,7 +33,7 @@ impl DictDataDao {
     pub async fn list(&self, req: GetDictDatasReq) -> Result<(Vec<dict_data::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = DictDataEntity::find()
+        let states = DictData::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(dict_data::Column::CreatedAt.gte(v))
             })
@@ -64,7 +64,7 @@ impl DictDataDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<dict_data::Model>, DbErr> {
-        DictDataEntity::find_by_id(id).one(self.db.db()).await
+        DictData::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过字典标签获取详情信息, 同一个字典维度内的字典标签需要保持唯一
@@ -73,7 +73,7 @@ impl DictDataDao {
         dim_id: i32,
         lable: String,
     ) -> Result<Option<dict_data::Model>, DbErr> {
-        DictDataEntity::find()
+        DictData::find()
             .filter(dict_data::Column::DimId.eq(dim_id))
             .filter(dict_data::Column::Lable.eq(lable))
             .one(self.db.db())
@@ -91,7 +91,7 @@ impl DictDataDao {
     /// 更新数据
     pub async fn update(&self, active_model: dict_data::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = DictDataEntity::update_many()
+        let result = DictData::update_many()
             .set(active_model)
             .filter(dict_data::Column::Id.eq(id))
             .exec(self.db.db())
@@ -113,7 +113,7 @@ impl DictDataDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = DictDataEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = DictData::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

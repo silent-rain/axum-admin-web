@@ -39,7 +39,7 @@ mod tests {
     use axum_mock::MockRequest;
 
     use crate::dto::t_app_template::GetTemplatesResp;
-    use entity::template::AppTemplateEntity;
+    use entity::template::AppTemplate;
 
     use super::*;
 
@@ -47,7 +47,7 @@ mod tests {
     async fn test_router_all() -> Result<(), Error> {
         let mut request = MockRequest::new(TemplateRouter::register())
             .await?
-            .from_entity(vec![AppTemplateEntity])
+            .from_entity(vec![AppTemplate])
             .await?
             .enabled_log(true);
 

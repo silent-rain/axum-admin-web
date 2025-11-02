@@ -46,7 +46,7 @@ impl RegisterService {
                     return Err(Error::InvalidParameter("请输入邮箱".to_string()).into_err());
                 }
             }
-            UserType::BlockchainWallet => {
+            UserType::UserBlockchainWallet => {
                 if req.phone.is_none() {
                     error!("请输入钱包地址");
                     return Err(Error::InvalidParameter("请输入钱包地址".to_string()).into_err());
@@ -70,7 +70,7 @@ impl RegisterService {
             UserType::Base => self.check_username(req.username.clone()).await?,
             UserType::Phone => self.check_phone(req.clone()).await?,
             UserType::Email => self.check_email(req.clone()).await?,
-            UserType::BlockchainWallet => self.check_blockchain_wallet(req.clone()).await?,
+            UserType::UserBlockchainWallet => self.check_blockchain_wallet(req.clone()).await?,
         };
 
         let mut data = req.clone();

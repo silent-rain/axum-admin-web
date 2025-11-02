@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::template::{AppTemplateEntity, t_app_template};
+use entity::template::{AppTemplate, t_app_template};
 
 use crate::dto::t_app_template::GetTemplatesReq;
 
@@ -22,7 +22,7 @@ pub struct TemplateDao {
 impl TemplateDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<t_app_template::Model>, u64), DbErr> {
-        let results = AppTemplateEntity::find()
+        let results = AppTemplate::find()
             .order_by_asc(t_app_template::Column::Id)
             .all(self.db.db())
             .await?;
@@ -37,7 +37,7 @@ impl TemplateDao {
     ) -> Result<(Vec<t_app_template::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = AppTemplateEntity::find()
+        let states = AppTemplate::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(t_app_template::Column::CreatedAt.gte(v))
             })
@@ -69,7 +69,7 @@ impl TemplateDao {
 
     /// 获取详情数据
     pub async fn info(&self, id: i32) -> Result<Option<t_app_template::Model>, DbErr> {
-        AppTemplateEntity::find_by_id(id).one(self.db.db()).await
+        AppTemplate::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加数据
@@ -85,7 +85,7 @@ impl TemplateDao {
         &self,
         active_models: Vec<t_app_template::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = AppTemplateEntity::insert_many(active_models)
+        let result = AppTemplate::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -94,7 +94,7 @@ impl TemplateDao {
     /// 更新数据
     pub async fn update(&self, active_model: t_app_template::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = AppTemplateEntity::update_many()
+        let result = AppTemplate::update_many()
             .set(active_model)
             .filter(t_app_template::Column::Id.eq(id))
             .exec(self.db.db())
@@ -116,15 +116,13 @@ impl TemplateDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = AppTemplateEntity::delete_by_id(id)
-            .exec(self.db.db())
-            .await?;
+        let result = AppTemplate::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = AppTemplateEntity::delete_many()
+        let result = AppTemplate::delete_many()
             .filter(t_app_template::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;
@@ -144,7 +142,7 @@ mod tests {
 
     #[test]
     fn test_all() {
-        let result = AppTemplateEntity::find()
+        let result = AppTemplate::find()
             .order_by_asc(t_app_template::Column::Id)
             .build(DbBackend::MySql)
             .to_string();
@@ -159,7 +157,7 @@ mod tests {
 
     #[test]
     fn test_info() {
-        let result = AppTemplateEntity::find_by_id(1)
+        let result = AppTemplate::find_by_id(1)
             .build(DbBackend::MySql)
             .to_string();
 
@@ -176,7 +174,7 @@ mod tests {
             status: Set(true),
             ..Default::default()
         };
-        let result = AppTemplateEntity::insert(active_model)
+        let result = AppTemplate::insert(active_model)
             .build(DbBackend::MySql)
             .to_string();
 
@@ -201,7 +199,7 @@ mod tests {
             ..Default::default()
         };
         let models = [active_model1, active_model2];
-        let result = AppTemplateEntity::insert_many(models)
+        let result = AppTemplate::insert_many(models)
             .build(DbBackend::MySql)
             .to_string();
 
@@ -219,7 +217,7 @@ mod tests {
             ..Default::default()
         };
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = AppTemplateEntity::update_many()
+        let result = AppTemplate::update_many()
             .set(active_model)
             .filter(t_app_template::Column::Id.eq(id))
             .build(DbBackend::MySql)
@@ -237,7 +235,7 @@ mod tests {
             status: Set(false),
             ..Default::default()
         };
-        let result = AppTemplateEntity::update(active_model)
+        let result = AppTemplate::update(active_model)
             .build(DbBackend::MySql)
             .to_string();
 
@@ -248,7 +246,7 @@ mod tests {
 
     #[test]
     fn test_delete() {
-        let result = AppTemplateEntity::delete_by_id(1)
+        let result = AppTemplate::delete_by_id(1)
             .build(DbBackend::MySql)
             .to_string();
 
@@ -260,7 +258,7 @@ mod tests {
     #[test]
     fn test_batch_delete() {
         let ids = vec![1, 2, 3, 4];
-        let result = AppTemplateEntity::delete_many()
+        let result = AppTemplate::delete_many()
             .filter(t_app_template::Column::Id.is_in(ids))
             .build(DbBackend::MySql)
             .to_string();

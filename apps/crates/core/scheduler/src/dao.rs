@@ -1,11 +1,12 @@
 //! 数据库操作
+use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};
+
 use database::PoolTrait;
 use entity::schedule::{
-    ScheduleJobEntity, ScheduleStatusLogEntity, schedule_event_log, schedule_job,
-    schedule_status_log,
+    ScheduleJob, ScheduleStatusLog, schedule_event_log, schedule_job, schedule_status_log,
 };
 
-use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter, Set};
+use crate::enums;
 
 pub struct Dao<DB>
 where
@@ -48,12 +49,12 @@ where
 
     /// 获取任务调度列表
     pub async fn list(&self) -> Result<Vec<schedule_job::Model>, DbErr> {
-        ScheduleJobEntity::find().all(self.db.db()).await
+        ScheduleJob::find().all(self.db.db()).await
     }
 
     /// 获取任务调度详情
     pub async fn info(&self, id: i32) -> Result<Option<schedule_job::Model>, DbErr> {
-        ScheduleJobEntity::find_by_id(id).one(self.db.db()).await
+        ScheduleJob::find_by_id(id).one(self.db.db()).await
     }
 }
 
@@ -83,7 +84,7 @@ where
             job_id: Set(job_id),
             uuid: Set(uuid),
             cost: Set(0),
-            status: Set(schedule_status_log::enums::Status::Running as i8),
+            status: Set(enums::schedule_status_log::Status::Running as i8),
             ..Default::default()
         };
         active_model.insert(self.db.db()).await
@@ -95,7 +96,7 @@ where
         id: i32,
         cost: u64,
         error: Option<String>,
-        status: schedule_status_log::enums::Status,
+        status: enums::schedule_status_log::Status,
     ) -> Result<u64, DbErr> {
         let active_model = schedule_status_log::ActiveModel {
             id: Set(id),
@@ -104,7 +105,7 @@ where
             status: Set(status as i8),
             ..Default::default()
         };
-        let result = ScheduleStatusLogEntity::update_many()
+        let result = ScheduleStatusLog::update_many()
             .set(active_model)
             .filter(schedule_status_log::Column::Id.eq(id))
             .exec(self.db.db())
@@ -116,14 +117,14 @@ where
     pub async fn status(
         &self,
         id: i32,
-        status: schedule_status_log::enums::Status,
+        status: enums::schedule_status_log::Status,
     ) -> Result<u64, DbErr> {
         let active_model = schedule_status_log::ActiveModel {
             id: Set(id),
             status: Set(status as i8),
             ..Default::default()
         };
-        let result = ScheduleStatusLogEntity::update_many()
+        let result = ScheduleStatusLog::update_many()
             .set(active_model)
             .filter(schedule_status_log::Column::Id.eq(id))
             .exec(self.db.db())
@@ -153,7 +154,7 @@ where
         &self,
         job_id: i32,
         uuid: String,
-        status: schedule_event_log::enums::Status,
+        status: enums::schedule_event_log::Status,
     ) -> Result<schedule_event_log::Model, DbErr> {
         let active_model = schedule_event_log::ActiveModel {
             job_id: Set(job_id),

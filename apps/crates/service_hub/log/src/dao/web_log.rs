@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::log::{LogWebEntity, log_web};
+use entity::log::{LogWeb, log_web};
 
 use crate::dto::web_log::GetWebLogsReq;
 
@@ -24,7 +24,7 @@ impl WebLogDao {
     pub async fn list(&self, req: GetWebLogsReq) -> Result<(Vec<log_web::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = LogWebEntity::find()
+        let states = LogWeb::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(log_web::Column::CreatedAt.gte(v))
             })
@@ -55,7 +55,7 @@ impl WebLogDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<log_web::Model>, DbErr> {
-        LogWebEntity::find_by_id(id).one(self.db.db()).await
+        LogWeb::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加详情信息
@@ -69,7 +69,7 @@ impl WebLogDao {
     /// 更新数据
     pub async fn update(&self, active_model: log_web::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = LogWebEntity::update_many()
+        let result = LogWeb::update_many()
             .set(active_model)
             .filter(log_web::Column::Id.eq(id))
             .exec(self.db.db())

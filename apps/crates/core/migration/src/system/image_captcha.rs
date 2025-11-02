@@ -1,5 +1,5 @@
 //! 图片验证码表
-//! Entity: [`entity::system::SysImageCaptcha`]
+//! Entity: [`entity::system::ImageCaptcha`]
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName,

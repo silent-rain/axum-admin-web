@@ -1,12 +1,13 @@
 //! 字典数据表
-//! Entity: [`entity::system::SysDictData`]
-use crate::utils::if_not_exists_create_index;
+//! Entity: [`entity::system::DictData`]
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName,
     sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

@@ -119,7 +119,7 @@ impl LoginService {
             UserType::Base => self.get_user_base(data).await?,
             UserType::Phone => self.get_user_phone(data).await?,
             UserType::Email => self.get_user_email(data).await?,
-            UserType::BlockchainWallet => self.get_user_blockchain_wallet(data).await?,
+            UserType::UserBlockchainWallet => self.get_user_blockchain_wallet(data).await?,
         };
 
         // 查询用户

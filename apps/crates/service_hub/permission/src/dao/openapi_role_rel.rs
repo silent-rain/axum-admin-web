@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::permission::{OpenapiRoleRelEntity, openapi_role_rel};
+use entity::permission::{OpenapiRoleRel, openapi_role_rel};
 
 use crate::dto::openapi_role_rel::GetOpenapiRoleRelsReq;
 
@@ -27,7 +27,7 @@ impl OpenapiRoleRelDao {
     ) -> Result<(Vec<openapi_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = OpenapiRoleRelEntity::find()
+        let states = OpenapiRoleRel::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(openapi_role_rel::Column::CreatedAt.gte(v))
             })
@@ -66,7 +66,7 @@ impl OpenapiRoleRelDao {
         &self,
         active_models: Vec<openapi_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = OpenapiRoleRelEntity::insert_many(active_models)
+        let result = OpenapiRoleRel::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -74,7 +74,7 @@ impl OpenapiRoleRelDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = OpenapiRoleRelEntity::delete_many()
+        let result = OpenapiRoleRel::delete_many()
             .filter(openapi_role_rel::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
@@ -83,7 +83,7 @@ impl OpenapiRoleRelDao {
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = OpenapiRoleRelEntity::delete_many()
+        let result = OpenapiRoleRel::delete_many()
             .filter(openapi_role_rel::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

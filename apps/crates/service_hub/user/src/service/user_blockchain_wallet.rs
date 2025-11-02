@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use entity::user::blockchain_wallet;
+use entity::user::user_blockchain_wallet;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
-    dao::blockchain_wallet::BlockchainWalletDao,
-    dto::blockchain_wallet::{
+    dao::user_blockchain_wallet::BlockchainWalletDao,
+    dto::user_blockchain_wallet::{
         CreateBlockchainWalletReq, DeleteBlockchainWalletReq, GetBlockchainWalletReq,
         GetBlockchainWalletsReq, UpdateBlockchainWalletReq,
     },
@@ -26,7 +26,7 @@ impl BlockchainWalletService {
     pub async fn list(
         &self,
         req: GetBlockchainWalletsReq,
-    ) -> Result<(Vec<blockchain_wallet::Model>, u64), ErrorMsg> {
+    ) -> Result<(Vec<user_blockchain_wallet::Model>, u64), ErrorMsg> {
         let (mut results, total) = self.blockchain_wallet_dao.list(req).await.map_err(|err| {
             error!("查询用户区块链钱包列表失败, err: {:#?}", err);
             Error::DbQueryError.into_err_with_msg("查询用户区块链钱包列表失败")
@@ -45,7 +45,7 @@ impl BlockchainWalletService {
     pub async fn info(
         &self,
         req: GetBlockchainWalletReq,
-    ) -> Result<blockchain_wallet::Model, ErrorMsg> {
+    ) -> Result<user_blockchain_wallet::Model, ErrorMsg> {
         let mut result = self
             .blockchain_wallet_dao
             .info(req.id)
@@ -69,12 +69,12 @@ impl BlockchainWalletService {
     pub async fn create(
         &self,
         req: CreateBlockchainWalletReq,
-    ) -> Result<blockchain_wallet::Model, ErrorMsg> {
+    ) -> Result<user_blockchain_wallet::Model, ErrorMsg> {
         // 查询用户区块链钱包是否已存在
         self.check_wallet_address_exist(req.wallet_address.clone(), None)
             .await?;
 
-        let model = blockchain_wallet::ActiveModel {
+        let model = user_blockchain_wallet::ActiveModel {
             user_id: Set(req.user_id),
             wallet_address: Set(req.wallet_address),
             mnemonic: Set(req.mnemonic),
@@ -97,7 +97,7 @@ impl BlockchainWalletService {
 
     /// 更新用户区块链钱包
     pub async fn update(&self, req: UpdateBlockchainWalletReq) -> Result<u64, ErrorMsg> {
-        let model = blockchain_wallet::ActiveModel {
+        let model = user_blockchain_wallet::ActiveModel {
             id: Set(req.id),
             desc: Set(req.desc),
             ..Default::default()

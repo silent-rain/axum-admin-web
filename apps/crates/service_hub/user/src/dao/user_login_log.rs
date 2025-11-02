@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::user::{UserLoginLogEntity, user_login_log};
+use entity::user::{UserLoginLog, user_login_log};
 
 use crate::dto::user_login_log::GetUserLoginLogsReq;
 
@@ -31,7 +31,7 @@ impl UserLoginLogDao {
     ) -> Result<(Vec<user_login_log::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = UserLoginLogEntity::find()
+        let states = UserLoginLog::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(user_login_log::Column::CreatedAt.gte(v))
             })
@@ -62,7 +62,7 @@ impl UserLoginLogDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<user_login_log::Model>, DbErr> {
-        UserLoginLogEntity::find_by_id(id).one(self.db.db()).await
+        UserLoginLog::find_by_id(id).one(self.db.db()).await
     }
 
     /// 根据SessionId获取详情信息
@@ -70,7 +70,7 @@ impl UserLoginLogDao {
         &self,
         session_id: String,
     ) -> Result<Option<user_login_log::Model>, DbErr> {
-        UserLoginLogEntity::find()
+        UserLoginLog::find()
             .filter(user_login_log::Column::SessionId.eq(session_id))
             .order_by_desc(user_login_log::Column::Id)
             .one(self.db.db())
@@ -88,7 +88,7 @@ impl UserLoginLogDao {
     /// 更新数据
     pub async fn update(&self, active_model: user_login_log::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = UserLoginLogEntity::update_many()
+        let result = UserLoginLog::update_many()
             .set(active_model)
             .filter(user_login_log::Column::Id.eq(id))
             .exec(self.db.db())

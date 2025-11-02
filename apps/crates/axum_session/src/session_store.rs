@@ -186,14 +186,14 @@ mod tests {
     use time::Duration;
 
     use database::mock::Mock;
-    use entity::user::UserSessionEntity;
+    use entity::user::UserSession;
 
     use super::*;
 
     async fn setup() -> anyhow::Result<Arc<dyn PoolTrait>> {
         let pool = Mock::builder()
             .await?
-            .migration_entity(UserSessionEntity)
+            .migration_entity(UserSession)
             .await?
             .build();
 

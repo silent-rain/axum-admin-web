@@ -1,5 +1,5 @@
 //! 文件资源表
-//! Entity: [`entity::system::SysFileResource`]
+//! Entity: [`entity::system::FileResource`]
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName,

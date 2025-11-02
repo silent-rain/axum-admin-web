@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::system::{ImageCaptchaEntity, image_captcha};
+use entity::system::{ImageCaptcha, image_captcha};
 
 use crate::dto::image_captcha::GetImageCaptchasReq;
 
@@ -26,7 +26,7 @@ impl ImageCaptchaDao {
     ) -> Result<(Vec<image_captcha::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = ImageCaptchaEntity::find()
+        let states = ImageCaptcha::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(image_captcha::Column::CreatedAt.gte(v))
             })
@@ -50,7 +50,7 @@ impl ImageCaptchaDao {
     }
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<image_captcha::Model>, DbErr> {
-        ImageCaptchaEntity::find()
+        ImageCaptcha::find()
             .filter(image_captcha::Column::Id.eq(id))
             .one(self.db.db())
             .await
@@ -61,7 +61,7 @@ impl ImageCaptchaDao {
         &self,
         captcha_id: String,
     ) -> Result<Option<image_captcha::Model>, DbErr> {
-        ImageCaptchaEntity::find()
+        ImageCaptcha::find()
             .filter(image_captcha::Column::CaptchaId.eq(captcha_id))
             .one(self.db.db())
             .await
@@ -80,7 +80,7 @@ impl ImageCaptchaDao {
         // Into ActiveModel
         let pear: image_captcha::ActiveModel = data.clone().into();
 
-        let result = ImageCaptchaEntity::update_many()
+        let result = ImageCaptcha::update_many()
             .set(pear)
             .filter(image_captcha::Column::Id.eq(data.id))
             .exec(self.db.db())
@@ -102,15 +102,13 @@ impl ImageCaptchaDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = ImageCaptchaEntity::delete_by_id(id)
-            .exec(self.db.db())
-            .await?;
+        let result = ImageCaptcha::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 
     /// 按主键批量删除
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = ImageCaptchaEntity::delete_many()
+        let result = ImageCaptcha::delete_many()
             .filter(image_captcha::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

@@ -4,7 +4,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidationError};
 
-use entity::user::phone;
+use entity::user::user_phone;
 
 /// 查询用户手机号列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -25,12 +25,12 @@ pub struct GetPhonesReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPhonesResp {
-    pub data_list: Vec<phone::Model>,
+    pub data_list: Vec<user_phone::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<phone::Model>, u64)> for GetPhonesResp {
-    fn from((data_list, total): (Vec<phone::Model>, u64)) -> Self {
+impl From<(Vec<user_phone::Model>, u64)> for GetPhonesResp {
+    fn from((data_list, total): (Vec<user_phone::Model>, u64)) -> Self {
         Self { data_list, total }
     }
 }
@@ -45,11 +45,11 @@ pub struct GetPhoneReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPhoneResp {
     #[serde(flatten)]
-    model: phone::Model,
+    model: user_phone::Model,
 }
 
-impl From<phone::Model> for GetPhoneResp {
-    fn from(model: phone::Model) -> Self {
+impl From<user_phone::Model> for GetPhoneResp {
+    fn from(model: user_phone::Model) -> Self {
         Self { model }
     }
 }

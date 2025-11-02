@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::permission::{MenuRoleRelEntity, menu_role_rel};
+use entity::permission::{MenuRoleRel, menu_role_rel};
 
 use crate::dto::menu_role_rel::GetMenuRoleRelsReq;
 
@@ -27,7 +27,7 @@ impl MenuRoleRelDao {
     ) -> Result<(Vec<menu_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = MenuRoleRelEntity::find()
+        let states = MenuRoleRel::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(menu_role_rel::Column::CreatedAt.gte(v))
             })
@@ -66,7 +66,7 @@ impl MenuRoleRelDao {
         &self,
         active_models: Vec<menu_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = MenuRoleRelEntity::insert_many(active_models)
+        let result = MenuRoleRel::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -74,7 +74,7 @@ impl MenuRoleRelDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = MenuRoleRelEntity::delete_many()
+        let result = MenuRoleRel::delete_many()
             .filter(menu_role_rel::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
@@ -83,7 +83,7 @@ impl MenuRoleRelDao {
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = MenuRoleRelEntity::delete_many()
+        let result = MenuRoleRel::delete_many()
             .filter(menu_role_rel::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

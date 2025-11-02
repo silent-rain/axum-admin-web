@@ -2,7 +2,7 @@
 
 use axum::{Router, routing::get};
 
-use crate::controller::email::EmailController;
+use crate::controller::user_email::EmailController;
 
 /// 路由器
 pub struct EmailRouter;

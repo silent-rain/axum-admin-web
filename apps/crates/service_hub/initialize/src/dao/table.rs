@@ -10,13 +10,10 @@ use sea_orm::{
 
 use database::PoolTrait;
 use entity::permission::{
-    MenuEntity, MenuRoleRelEntity, OpenapiEntity, OpenapiRoleRelEntity, menu_role_rel,
-    openapi_role_rel,
+    Menu, MenuRoleRel, Openapi, OpenapiRoleRel, menu_role_rel, openapi_role_rel,
 };
-use entity::user::{
-    user_base::enums::Gender,
-    {RoleEntity, UserBaseEntity, email, phone, role, user_base, user_role_rel},
-};
+use entity::user::{Role, UserBase, role, user_base, user_email, user_phone, user_role_rel};
+use user::enums::user_base::Gender;
 
 use crate::dto::table::{CreateTableReq, TableDataSql};
 
@@ -29,7 +26,7 @@ pub struct TableDao {
 impl TableDao {
     /// 获取第一个用户即为管理员
     pub async fn admin_user(&self) -> Result<Option<user_base::Model>, DbErr> {
-        let result = UserBaseEntity::find()
+        let result = UserBase::find()
             .order_by_asc(user_base::Column::Id)
             .one(self.db.db())
             .await?;
@@ -116,8 +113,8 @@ impl TableDao {
         txn: &DatabaseTransaction,
         user_id: i32,
         phone: String,
-    ) -> Result<phone::Model, DbErr> {
-        let active_model = phone::ActiveModel {
+    ) -> Result<user_phone::Model, DbErr> {
+        let active_model = user_phone::ActiveModel {
             user_id: Set(user_id),
             phone: Set(phone),
             ..Default::default()
@@ -132,8 +129,8 @@ impl TableDao {
         txn: &DatabaseTransaction,
         user_id: i32,
         email: String,
-    ) -> Result<email::Model, DbErr> {
-        let active_model = email::ActiveModel {
+    ) -> Result<user_email::Model, DbErr> {
+        let active_model = user_email::ActiveModel {
             user_id: Set(user_id),
             email: Set(email),
             ..Default::default()
@@ -147,10 +144,7 @@ impl TableDao {
         &self,
         txn: &DatabaseTransaction,
     ) -> Result<Option<role::Model>, DbErr> {
-        let result = RoleEntity::find()
-            .order_by_asc(role::Column::Id)
-            .one(txn)
-            .await?;
+        let result = Role::find().order_by_asc(role::Column::Id).one(txn).await?;
 
         Ok(result)
     }
@@ -197,7 +191,7 @@ impl TableDao {
         txn: &DatabaseTransaction,
         role_id: i32,
     ) -> Result<i32, DbErr> {
-        let menus = MenuEntity::find().all(txn).await?;
+        let menus = Menu::find().all(txn).await?;
 
         let mut models = Vec::new();
         for menu in menus {
@@ -209,7 +203,7 @@ impl TableDao {
             models.push(model);
         }
 
-        let result = MenuRoleRelEntity::insert_many(models).exec(txn).await?;
+        let result = MenuRoleRel::insert_many(models).exec(txn).await?;
         Ok(result.last_insert_id)
     }
 
@@ -229,7 +223,7 @@ impl TableDao {
         txn: &DatabaseTransaction,
         role_id: i32,
     ) -> Result<i32, DbErr> {
-        let open_apis = OpenapiEntity::find().all(txn).await?;
+        let open_apis = Openapi::find().all(txn).await?;
 
         let mut models = Vec::new();
         for open_api in open_apis {
@@ -241,7 +235,7 @@ impl TableDao {
             models.push(model);
         }
 
-        let result = OpenapiRoleRelEntity::insert_many(models).exec(txn).await?;
+        let result = OpenapiRoleRel::insert_many(models).exec(txn).await?;
         Ok(result.last_insert_id)
     }
 

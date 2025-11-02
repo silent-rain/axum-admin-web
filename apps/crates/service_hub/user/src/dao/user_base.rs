@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::user::{RoleEntity, UserBaseEntity, UserRoleRelEntity, role, user_base, user_role_rel};
+use entity::user::{Role, UserBase, UserRoleRel, role, user_base, user_role_rel};
 
 use crate::dto::user_base::GetUserBasesReq;
 
@@ -21,7 +21,7 @@ pub struct UserBaseDao {
 impl UserBaseDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<user_base::Model>, u64), DbErr> {
-        let results = UserBaseEntity::find()
+        let results = UserBase::find()
             .order_by_asc(user_base::Column::Id)
             .all(self.db.db())
             .await?;
@@ -33,7 +33,7 @@ impl UserBaseDao {
     pub async fn list(&self, req: GetUserBasesReq) -> Result<(Vec<user_base::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = UserBaseEntity::find()
+        let states = UserBase::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(user_base::Column::CreatedAt.gte(v))
             })
@@ -61,7 +61,7 @@ impl UserBaseDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<user_base::Model>, DbErr> {
-        UserBaseEntity::find_by_id(id).one(self.db.db()).await
+        UserBase::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过用户名获取详情信息
@@ -69,7 +69,7 @@ impl UserBaseDao {
         &self,
         username: String,
     ) -> Result<Option<user_base::Model>, DbErr> {
-        UserBaseEntity::find()
+        UserBase::find()
             .filter(user_base::Column::Username.eq(username))
             .one(self.db.db())
             .await
@@ -86,7 +86,7 @@ impl UserBaseDao {
     /// 更新信息
     pub async fn update(&self, active_model: user_base::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = UserBaseEntity::update_many()
+        let result = UserBase::update_many()
             .set(active_model)
             .filter(user_base::Column::Id.eq(id))
             .exec(self.db.db())
@@ -100,7 +100,7 @@ impl UserBaseDao {
     //     &self,
     //     share_code: String,
     // ) -> Result<Option<user_base::Model>, DbErr> {
-    //     UserBaseEntity::find()
+    //     UserBase::find()
     //         .filter(user_base::Column::ShareCode.eq(share_code))
     //         .one(self.db.db())
     //         .await
@@ -130,7 +130,7 @@ impl UserBaseDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = UserBaseEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = UserBase::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }
@@ -201,7 +201,7 @@ impl UserBaseDao {
         active_model: user_base::ActiveModel,
     ) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = UserBaseEntity::update_many()
+        let result = UserBase::update_many()
             .set(active_model)
             .filter(user_base::Column::Id.eq(id))
             .exec(txn)
@@ -229,7 +229,7 @@ impl UserBaseDao {
             user_ids.push(model)
         }
 
-        let result = UserRoleRelEntity::insert_many(user_ids).exec(txn).await?;
+        let result = UserRoleRel::insert_many(user_ids).exec(txn).await?;
         Ok(result.last_insert_id)
     }
 
@@ -244,7 +244,7 @@ impl UserBaseDao {
             return Ok(0);
         }
 
-        let result = UserRoleRelEntity::delete_many()
+        let result = UserRoleRel::delete_many()
             .filter(user_role_rel::Column::UserId.eq(user_id))
             .filter(user_role_rel::Column::RoleId.is_in(role_ids))
             .exec(txn)
@@ -256,10 +256,10 @@ impl UserBaseDao {
 impl UserBaseDao {
     /// 通过用户ID获角色色列表
     pub async fn roles(&self, user_id: i32) -> Result<(Vec<role::Model>, u64), DbErr> {
-        let results = RoleEntity::find()
+        let results = Role::find()
             .join_rev(
                 JoinType::InnerJoin,
-                UserRoleRelEntity::belongs_to(RoleEntity)
+                UserRoleRel::belongs_to(Role)
                     .from(user_role_rel::Column::RoleId)
                     .to(role::Column::Id)
                     .into(),
@@ -282,12 +282,12 @@ mod tests {
 
     #[test]
     fn test_role_list() {
-        let result = RoleEntity::find()
+        let result = Role::find()
             .select_only()
             .columns([role::Column::Id])
             .join_rev(
                 JoinType::InnerJoin,
-                UserRoleRelEntity::belongs_to(RoleEntity)
+                UserRoleRel::belongs_to(Role)
                     .from(user_role_rel::Column::RoleId)
                     .to(role::Column::Id)
                     .into(),

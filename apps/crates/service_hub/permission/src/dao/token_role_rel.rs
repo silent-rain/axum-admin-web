@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::permission::{TokenRoleRelEntity, token_role_rel};
+use entity::permission::{TokenRoleRel, token_role_rel};
 
 use crate::dto::token_role_rel::GetTokenRoleRelsReq;
 
@@ -27,7 +27,7 @@ impl TokenRoleRelDao {
     ) -> Result<(Vec<token_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = TokenRoleRelEntity::find()
+        let states = TokenRoleRel::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(token_role_rel::Column::CreatedAt.gte(v))
             })
@@ -58,7 +58,7 @@ impl TokenRoleRelDao {
         &self,
         token_id: i32,
     ) -> Result<(Vec<token_role_rel::Model>, u64), DbErr> {
-        let results = TokenRoleRelEntity::find()
+        let results = TokenRoleRel::find()
             .filter(token_role_rel::Column::TokenId.eq(token_id))
             .all(self.db.db())
             .await?;
@@ -80,7 +80,7 @@ impl TokenRoleRelDao {
         &self,
         active_models: Vec<token_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = TokenRoleRelEntity::insert_many(active_models)
+        let result = TokenRoleRel::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -88,7 +88,7 @@ impl TokenRoleRelDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = TokenRoleRelEntity::delete_many()
+        let result = TokenRoleRel::delete_many()
             .filter(token_role_rel::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
@@ -97,7 +97,7 @@ impl TokenRoleRelDao {
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = TokenRoleRelEntity::delete_many()
+        let result = TokenRoleRel::delete_many()
             .filter(token_role_rel::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

@@ -6,11 +6,11 @@ use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 
 use crate::{
-    dto::email::{
+    dto::user_email::{
         CreateEmailReq, CreateEmailResp, DeleteEmailReq, DeleteEmailResp, GetEmailReq,
         GetEmailResp, GetEmailsReq, GetEmailsResp, UpdateEmailReq, UpdateEmailResp,
     },
-    service::email::EmailService,
+    service::user_email::EmailService,
 };
 
 /// 控制器

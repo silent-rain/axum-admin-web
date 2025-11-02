@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::organization::{PositionEntity, position};
+use entity::organization::{Position, position};
 
 use crate::dto::position::GetPositionsReq;
 
@@ -21,7 +21,7 @@ pub struct PositionDao {
 impl PositionDao {
     /// 获取所有数据
     pub async fn all(&self) -> Result<(Vec<position::Model>, u64), DbErr> {
-        let results = PositionEntity::find()
+        let results = Position::find()
             .order_by_asc(position::Column::Id)
             .all(self.db.db())
             .await?;
@@ -33,7 +33,7 @@ impl PositionDao {
     pub async fn list(&self, req: GetPositionsReq) -> Result<(Vec<position::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = PositionEntity::find()
+        let states = Position::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(position::Column::CreatedAt.gte(v))
             })
@@ -61,12 +61,12 @@ impl PositionDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<position::Model>, DbErr> {
-        PositionEntity::find_by_id(id).one(self.db.db()).await
+        Position::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过名称获取详情信息
     pub async fn info_by_name(&self, name: String) -> Result<Option<position::Model>, DbErr> {
-        PositionEntity::find()
+        Position::find()
             .filter(position::Column::Name.eq(name))
             .one(self.db.db())
             .await
@@ -83,7 +83,7 @@ impl PositionDao {
     /// 更新数据
     pub async fn update(&self, active_model: position::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = PositionEntity::update_many()
+        let result = Position::update_many()
             .set(active_model)
             .filter(position::Column::Id.eq(id))
             .exec(self.db.db())
@@ -105,7 +105,7 @@ impl PositionDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = PositionEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = Position::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

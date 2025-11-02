@@ -4,13 +4,13 @@
 
 use std::sync::Arc;
 
-use actix_web::{get, HttpResponse};
+use actix_web::{HttpResponse, get};
 use utoipa::{
-    openapi::{
-        security::{ApiKey, ApiKeyValue, SecurityScheme},
-        Components, ExternalDocs, Info, OpenApiBuilder, Paths,
-    },
     Modify, OpenApi, ToSchema,
+    openapi::{
+        Components, ExternalDocs, Info, OpenApiBuilder, Paths,
+        security::{ApiKey, ApiKeyValue, SecurityScheme},
+    },
 };
 use utoipa_swagger_ui::{Config, SwaggerUi};
 

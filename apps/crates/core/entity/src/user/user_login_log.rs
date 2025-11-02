@@ -7,7 +7,6 @@ use sea_orm::{
     prelude::{DateTime, async_trait::async_trait},
 };
 use serde::{Deserialize, Serialize};
-use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// 用户登录日志表
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -53,23 +52,5 @@ impl ActiveModelBehavior for ActiveModel {
     {
         self.updated_at = Set(Local::now().naive_local());
         Ok(self)
-    }
-}
-
-pub mod enums {
-    use super::*;
-
-    /// 用户登陆状态
-    #[derive(Debug, Clone, PartialEq, Serialize_repr, Deserialize_repr)]
-    #[repr(i8)]
-    pub enum LoginStatus {
-        /// 登陆成功
-        Success = 0,
-        /// 登陆失败
-        Failed = 1,
-        /// 已禁用
-        Disabled = 2,
-        /// 登出
-        Logout = 3,
     }
 }

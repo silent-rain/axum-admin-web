@@ -1,5 +1,5 @@
 //! 字典维度表
-//! Entity: [`entity::system::SysDictDimension`]
+//! Entity: [`entity::system::DictDimension`]
 use sea_orm::{
     DeriveIden, DeriveMigrationName,
     sea_query::{ColumnDef, Expr, Table},

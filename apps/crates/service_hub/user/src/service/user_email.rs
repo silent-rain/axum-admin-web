@@ -4,12 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::Set;
 
-use entity::user::email;
+use entity::user::user_email;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
-    dao::email::EmailDao,
-    dto::email::{CreateEmailReq, DeleteEmailReq, GetEmailReq, GetEmailsReq, UpdateEmailReq},
+    dao::user_email::EmailDao,
+    dto::user_email::{CreateEmailReq, DeleteEmailReq, GetEmailReq, GetEmailsReq, UpdateEmailReq},
 };
 
 /// 服务层
@@ -20,7 +20,7 @@ pub struct EmailService {
 
 impl EmailService {
     /// 获取列表数据
-    pub async fn list(&self, req: GetEmailsReq) -> Result<(Vec<email::Model>, u64), ErrorMsg> {
+    pub async fn list(&self, req: GetEmailsReq) -> Result<(Vec<user_email::Model>, u64), ErrorMsg> {
         let (results, total) = self.email_dao.list(req).await.map_err(|err| {
             error!("查询邮箱列表失败, err: {:#?}", err);
             Error::DbQueryError.into_err_with_msg("查询邮箱列表失败")
@@ -30,7 +30,7 @@ impl EmailService {
     }
 
     /// 获取详情数据
-    pub async fn info(&self, req: GetEmailReq) -> Result<email::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetEmailReq) -> Result<user_email::Model, ErrorMsg> {
         let result = self
             .email_dao
             .info(req.id)
@@ -48,7 +48,7 @@ impl EmailService {
     }
 
     /// 添加数据
-    pub async fn create(&self, req: CreateEmailReq) -> Result<email::Model, ErrorMsg> {
+    pub async fn create(&self, req: CreateEmailReq) -> Result<user_email::Model, ErrorMsg> {
         // 查询邮箱是否已存在
         let email = self
             .email_dao
@@ -66,7 +66,7 @@ impl EmailService {
         // 检查邮箱名称是否已存在
         self.check_email_exist(req.email.clone(), None).await?;
 
-        let model = email::ActiveModel {
+        let model = user_email::ActiveModel {
             user_id: Set(req.user_id),
             email: Set(req.email),
             desc: Set(req.desc),
@@ -86,7 +86,7 @@ impl EmailService {
         self.check_email_exist(req.email.clone(), Some(req.id))
             .await?;
 
-        let model = email::ActiveModel {
+        let model = user_email::ActiveModel {
             id: Set(req.id),
             email: Set(req.email),
             desc: Set(req.desc),

@@ -8,9 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::user::{EmailEntity, email};
+use entity::user::{UserEmail, user_email};
 
-use crate::dto::email::GetEmailsReq;
+use crate::dto::user_email::GetEmailsReq;
 
 /// 数据访问
 #[injectable]
@@ -20,21 +20,21 @@ pub struct EmailDao {
 
 impl EmailDao {
     /// 获取数据列表
-    pub async fn list(&self, req: GetEmailsReq) -> Result<(Vec<email::Model>, u64), DbErr> {
+    pub async fn list(&self, req: GetEmailsReq) -> Result<(Vec<user_email::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = EmailEntity::find()
+        let states = UserEmail::find()
             .apply_if(req.start_time, |query, v| {
-                query.filter(email::Column::CreatedAt.gte(v))
+                query.filter(user_email::Column::CreatedAt.gte(v))
             })
             .apply_if(req.end_time, |query, v| {
-                query.filter(email::Column::CreatedAt.lt(v))
+                query.filter(user_email::Column::CreatedAt.lt(v))
             })
             .apply_if(req.user_id, |query, v| {
-                query.filter(email::Column::UserId.eq(v))
+                query.filter(user_email::Column::UserId.eq(v))
             })
             .apply_if(req.email, |query, v| {
-                query.filter(email::Column::Email.like(format!("{v}%")))
+                query.filter(user_email::Column::Email.like(format!("{v}%")))
             });
 
         let total = states.clone().count(self.db.db()).await?;
@@ -43,7 +43,7 @@ impl EmailDao {
         }
 
         let results = states
-            .order_by_desc(email::Column::Id)
+            .order_by_desc(user_email::Column::Id)
             .offset(page.offset())
             .limit(page.page_size())
             .all(self.db.db())
@@ -53,29 +53,35 @@ impl EmailDao {
     }
 
     /// 获取详情信息
-    pub async fn info(&self, id: i32) -> Result<Option<email::Model>, DbErr> {
-        EmailEntity::find_by_id(id).one(self.db.db()).await
+    pub async fn info(&self, id: i32) -> Result<Option<user_email::Model>, DbErr> {
+        UserEmail::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过邮箱获取详情信息
-    pub async fn info_by_email(&self, email: String) -> Result<Option<email::Model>, DbErr> {
-        EmailEntity::find()
-            .filter(email::Column::Email.eq(email))
+    pub async fn info_by_email(
+        &self,
+        user_email: String,
+    ) -> Result<Option<user_email::Model>, DbErr> {
+        UserEmail::find()
+            .filter(user_email::Column::Email.eq(user_email))
             .one(self.db.db())
             .await
     }
 
     /// 添加详情信息
-    pub async fn create(&self, active_model: email::ActiveModel) -> Result<email::Model, DbErr> {
+    pub async fn create(
+        &self,
+        active_model: user_email::ActiveModel,
+    ) -> Result<user_email::Model, DbErr> {
         active_model.insert(self.db.db()).await
     }
 
     /// 更新信息
-    pub async fn update(&self, active_model: email::ActiveModel) -> Result<u64, DbErr> {
+    pub async fn update(&self, active_model: user_email::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = EmailEntity::update_many()
+        let result = UserEmail::update_many()
             .set(active_model)
-            .filter(email::Column::Id.eq(id))
+            .filter(user_email::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
 
@@ -84,7 +90,7 @@ impl EmailDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = EmailEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = UserEmail::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

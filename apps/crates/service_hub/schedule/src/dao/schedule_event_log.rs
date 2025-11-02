@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::schedule::{ScheduleEventLogEntity, schedule_event_log};
+use entity::schedule::{ScheduleEventLog, schedule_event_log};
 
 use crate::dto::schedule_event_log::GetScheduleEventLogsReq;
 
@@ -27,7 +27,7 @@ impl ScheduleEventLogDao {
     ) -> Result<(Vec<schedule_event_log::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = ScheduleEventLogEntity::find()
+        let states = ScheduleEventLog::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(schedule_event_log::Column::CreatedAt.gte(v))
             })
@@ -55,9 +55,7 @@ impl ScheduleEventLogDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<schedule_event_log::Model>, DbErr> {
-        ScheduleEventLogEntity::find_by_id(id)
-            .one(self.db.db())
-            .await
+        ScheduleEventLog::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加详情信息
@@ -70,7 +68,7 @@ impl ScheduleEventLogDao {
 
     /// 按主键删除
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = ScheduleEventLogEntity::delete_by_id(id)
+        let result = ScheduleEventLog::delete_by_id(id)
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)

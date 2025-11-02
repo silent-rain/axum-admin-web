@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::user::email;
+use entity::user::user_email;
 
 /// 查询用户列表
 #[derive(Default, Deserialize, Validate)]
@@ -24,12 +24,12 @@ pub struct GetEmailsReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetEmailsResp {
-    pub data_list: Vec<email::Model>,
+    pub data_list: Vec<user_email::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<email::Model>, u64)> for GetEmailsResp {
-    fn from((data_list, total): (Vec<email::Model>, u64)) -> Self {
+impl From<(Vec<user_email::Model>, u64)> for GetEmailsResp {
+    fn from((data_list, total): (Vec<user_email::Model>, u64)) -> Self {
         Self { data_list, total }
     }
 }
@@ -44,11 +44,11 @@ pub struct GetEmailReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetEmailResp {
     #[serde(flatten)]
-    model: email::Model,
+    model: user_email::Model,
 }
 
-impl From<email::Model> for GetEmailResp {
-    fn from(model: email::Model) -> Self {
+impl From<user_email::Model> for GetEmailResp {
+    fn from(model: user_email::Model) -> Self {
         Self { model }
     }
 }

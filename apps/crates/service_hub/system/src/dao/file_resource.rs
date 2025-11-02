@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::system::{FileResourceEntity, file_resource};
+use entity::system::{FileResource, file_resource};
 
 use crate::dto::file_resource::GetFileResourcesReq;
 
@@ -26,7 +26,7 @@ impl FileResourceDao {
     ) -> Result<(Vec<file_resource::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = FileResourceEntity::find()
+        let states = FileResource::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(file_resource::Column::CreatedAt.gte(v))
             })
@@ -54,7 +54,7 @@ impl FileResourceDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<file_resource::Model>, DbErr> {
-        FileResourceEntity::find()
+        FileResource::find()
             .filter(file_resource::Column::Id.eq(id))
             .one(self.db.db())
             .await
@@ -62,7 +62,7 @@ impl FileResourceDao {
 
     /// 通过hash值获取详情数据
     pub async fn info_by_hash(&self, hash: String) -> Result<Option<file_resource::Model>, DbErr> {
-        FileResourceEntity::find()
+        FileResource::find()
             .filter(file_resource::Column::Hash.eq(hash))
             .one(self.db.db())
             .await
@@ -81,7 +81,7 @@ impl FileResourceDao {
         &self,
         active_models: Vec<file_resource::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = FileResourceEntity::insert_many(active_models)
+        let result = FileResource::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -90,7 +90,7 @@ impl FileResourceDao {
     /// 更新信息
     pub async fn update(&self, active_model: file_resource::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = FileResourceEntity::update_many()
+        let result = FileResource::update_many()
             .set(active_model)
             .filter(file_resource::Column::Id.eq(id))
             .exec(self.db.db())
@@ -101,15 +101,13 @@ impl FileResourceDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = FileResourceEntity::delete_by_id(id)
-            .exec(self.db.db())
-            .await?;
+        let result = FileResource::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 
     /// 按主键批量删除
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = FileResourceEntity::delete_many()
+        let result = FileResource::delete_many()
             .filter(file_resource::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

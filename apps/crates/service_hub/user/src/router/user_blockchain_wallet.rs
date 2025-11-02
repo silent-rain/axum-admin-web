@@ -2,7 +2,7 @@
 
 use axum::{Router, routing::get};
 
-use crate::controller::blockchain_wallet::BlockchainWalletController;
+use crate::controller::user_blockchain_wallet::BlockchainWalletController;
 
 /// 路由器
 pub struct BlockchainWalletRouter;

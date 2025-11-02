@@ -6,13 +6,13 @@ use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 
 use crate::{
-    dto::blockchain_wallet::{
+    dto::user_blockchain_wallet::{
         CreateBlockchainWalletReq, CreateBlockchainWalletResp, DeleteBlockchainWalletReq,
         DeleteBlockchainWalletResp, GetBlockchainWalletReq, GetBlockchainWalletResp,
         GetBlockchainWalletsReq, GetBlockchainWalletsResp, UpdateBlockchainWalletReq,
         UpdateBlockchainWalletResp,
     },
-    service::blockchain_wallet::BlockchainWalletService,
+    service::user_blockchain_wallet::BlockchainWalletService,
 };
 
 /// 控制器

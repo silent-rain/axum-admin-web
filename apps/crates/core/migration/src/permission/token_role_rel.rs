@@ -1,12 +1,13 @@
 //! 令牌角色关系表
 //! Entity: [`entity::permission::TokenRoleRel`]
-use crate::{permission::token::Token, user::role::Role, utils::if_not_exists_create_unique_index};
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::{permission::token::Token, user::role::Role, utils::if_not_exists_create_unique_index};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

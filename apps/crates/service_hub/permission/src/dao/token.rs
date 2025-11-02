@@ -8,7 +8,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::permission::{TokenEntity, token};
+use entity::permission::{Token, token};
 
 use crate::dto::token::GetTokensReq;
 
@@ -23,7 +23,7 @@ impl TokenDao {
     pub async fn list(&self, req: GetTokensReq) -> Result<(Vec<token::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = TokenEntity::find()
+        let states = Token::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(token::Column::CreatedAt.gte(v))
             })
@@ -54,7 +54,7 @@ impl TokenDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<token::Model>, DbErr> {
-        TokenEntity::find_by_id(id).one(self.db.db()).await
+        Token::find_by_id(id).one(self.db.db()).await
     }
 
     /// 通过Token获取详情信息
@@ -63,7 +63,7 @@ impl TokenDao {
         token: String,
         passphrase: String,
     ) -> Result<Option<token::Model>, DbErr> {
-        TokenEntity::find()
+        Token::find()
             .filter(token::Column::Token.eq(token))
             .filter(token::Column::Passphrase.eq(passphrase))
             .one(self.db.db())
@@ -78,7 +78,7 @@ impl TokenDao {
     /// 更新数据
     pub async fn update(&self, active_model: token::ActiveModel) -> Result<u64, DbErr> {
         let id: i32 = *(active_model.id.clone().as_ref());
-        let result = TokenEntity::update_many()
+        let result = Token::update_many()
             .set(active_model)
             .filter(token::Column::Id.eq(id))
             .exec(self.db.db())
@@ -100,7 +100,7 @@ impl TokenDao {
 
     /// 按主键删除信息
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = TokenEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = Token::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::user::blockchain_wallet;
+use entity::user::user_blockchain_wallet;
 
 /// 查询用户区块链钱包列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -24,12 +24,12 @@ pub struct GetBlockchainWalletsReq {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetBlockchainWalletsResp {
-    pub data_list: Vec<blockchain_wallet::Model>,
+    pub data_list: Vec<user_blockchain_wallet::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<blockchain_wallet::Model>, u64)> for GetBlockchainWalletsResp {
-    fn from((data_list, total): (Vec<blockchain_wallet::Model>, u64)) -> Self {
+impl From<(Vec<user_blockchain_wallet::Model>, u64)> for GetBlockchainWalletsResp {
+    fn from((data_list, total): (Vec<user_blockchain_wallet::Model>, u64)) -> Self {
         Self { data_list, total }
     }
 }
@@ -44,11 +44,11 @@ pub struct GetBlockchainWalletReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetBlockchainWalletResp {
     #[serde(flatten)]
-    model: blockchain_wallet::Model,
+    model: user_blockchain_wallet::Model,
 }
 
-impl From<blockchain_wallet::Model> for GetBlockchainWalletResp {
-    fn from(model: blockchain_wallet::Model) -> Self {
+impl From<user_blockchain_wallet::Model> for GetBlockchainWalletResp {
+    fn from(model: user_blockchain_wallet::Model) -> Self {
         Self { model }
     }
 }

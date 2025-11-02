@@ -11,15 +11,14 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::{dao::Dao, error::Error};
-
-use database::PoolTrait;
-use entity::schedule::{schedule_event_log, schedule_job, schedule_status_log};
-
 use chrono::Local;
 use tokio_cron_scheduler::{Job as TokioJob, JobBuilder, JobScheduler};
 use tracing::{error, trace};
 use uuid::Uuid;
+
+use database::PoolTrait;
+
+use crate::{dao::Dao, enums, error::Error};
 
 #[derive(Clone)]
 pub struct Job<DB>
@@ -117,7 +116,7 @@ where
                         return;
                     }
                 };
-                if sys_model.status == schedule_job::enums::Status::Offline as i8 {
+                if sys_model.status == enums::schedule_job::Status::Offline as i8 {
                     return;
                 }
 
@@ -147,7 +146,7 @@ where
                             sys_status_id,
                             elapsed,
                             Some(err.to_string()),
-                            schedule_status_log::enums::Status::Failed,
+                            enums::schedule_status_log::Status::Failed,
                         )
                         .await
                     {
@@ -166,7 +165,7 @@ where
                         sys_status_id,
                         elapsed,
                         None,
-                        schedule_status_log::enums::Status::Completed,
+                        enums::schedule_status_log::Status::Completed,
                     )
                     .await
                 {
@@ -244,7 +243,7 @@ where
                             dao,
                             sys_id,
                             job_id,
-                            schedule_event_log::enums::Status::Start,
+                            enums::schedule_event_log::Status::Start,
                         )
                         .await;
                     })
@@ -277,7 +276,7 @@ where
                             dao,
                             sys_id,
                             job_id,
-                            schedule_event_log::enums::Status::Done,
+                            enums::schedule_event_log::Status::Done,
                         )
                         .await;
                     })
@@ -310,7 +309,7 @@ where
                             dao,
                             sys_id,
                             job_id,
-                            schedule_event_log::enums::Status::Stop,
+                            enums::schedule_event_log::Status::Stop,
                         )
                         .await;
                     })
@@ -342,7 +341,7 @@ where
                             dao,
                             sys_id,
                             job_id,
-                            schedule_event_log::enums::Status::Removed,
+                            enums::schedule_event_log::Status::Removed,
                         )
                         .await;
                     })
@@ -358,7 +357,7 @@ where
         dao: Arc<Dao<DB>>,
         sys_id: i32,
         uuid: Uuid,
-        status: schedule_event_log::enums::Status,
+        status: enums::schedule_event_log::Status,
     ) {
         let sys_model = match dao.schedule_job_dao.info(sys_id).await {
             Ok(model) => match model {
@@ -373,7 +372,7 @@ where
                 return;
             }
         };
-        if sys_model.status == schedule_job::enums::Status::Offline as i8 {
+        if sys_model.status == enums::schedule_job::Status::Offline as i8 {
             return;
         }
 

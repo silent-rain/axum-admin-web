@@ -1,5 +1,5 @@
 //! 用户区块链钱包表
-//! Entity: [`entity::user::BlockchainWallet`]
+//! Entity: [`entity::user::UserBlockchainWallet`]
 
 use sea_orm::{ConnectionTrait, DatabaseBackend, DeriveMigrationName};
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};

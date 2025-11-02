@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::organization::{DepartmentRoleRelEntity, department_role_rel};
+use entity::organization::{DepartmentRoleRel, department_role_rel};
 
 use crate::dto::department_role_rel::GetDepartmentRoleRelsReq;
 
@@ -30,7 +30,7 @@ impl DepartmentRoleRelDao {
     ) -> Result<(Vec<department_role_rel::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = DepartmentRoleRelEntity::find()
+        let states = DepartmentRoleRel::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(department_role_rel::Column::CreatedAt.gte(v))
             })
@@ -69,7 +69,7 @@ impl DepartmentRoleRelDao {
         &self,
         active_models: Vec<department_role_rel::ActiveModel>,
     ) -> Result<i32, DbErr> {
-        let result = DepartmentRoleRelEntity::insert_many(active_models)
+        let result = DepartmentRoleRel::insert_many(active_models)
             .exec(self.db.db())
             .await?;
         Ok(result.last_insert_id)
@@ -77,7 +77,7 @@ impl DepartmentRoleRelDao {
 
     /// 删除数据
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = DepartmentRoleRelEntity::delete_many()
+        let result = DepartmentRoleRel::delete_many()
             .filter(department_role_rel::Column::Id.eq(id))
             .exec(self.db.db())
             .await?;
@@ -86,7 +86,7 @@ impl DepartmentRoleRelDao {
 
     /// 批量删除数据
     pub async fn batch_delete(&self, ids: Vec<i32>) -> Result<u64, DbErr> {
-        let result = DepartmentRoleRelEntity::delete_many()
+        let result = DepartmentRoleRel::delete_many()
             .filter(department_role_rel::Column::Id.is_in(ids))
             .exec(self.db.db())
             .await?;

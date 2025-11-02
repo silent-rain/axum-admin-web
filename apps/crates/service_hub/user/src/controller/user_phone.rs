@@ -6,11 +6,11 @@ use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 
 use crate::{
-    dto::phone::{
+    dto::user_phone::{
         CreatePhoneReq, CreatePhoneResp, DeletePhoneReq, DeletePhoneResp, GetPhoneReq,
         GetPhoneResp, GetPhonesReq, GetPhonesResp, UpdatePhoneReq, UpdatePhoneResp,
     },
-    service::phone::PhoneService,
+    service::user_phone::PhoneService,
 };
 
 /// 控制器

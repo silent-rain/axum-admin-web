@@ -1,14 +1,15 @@
 //! OpenApi接口角色关系表
 //! Entity: [`entity::permission::OpenapiRoleRel`]
-use crate::{
-    permission::openapi::Openapi, user::role::Role, utils::if_not_exists_create_unique_index,
-};
 
 use sea_orm::{
     DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::{
+    permission::openapi::Openapi, user::role::Role, utils::if_not_exists_create_unique_index,
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

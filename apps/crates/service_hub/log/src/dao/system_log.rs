@@ -9,7 +9,7 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::log::{LogSystemEntity, log_system};
+use entity::log::{LogSystem, log_system};
 
 use crate::dto::system_log::GetSystemLogsReq;
 
@@ -27,7 +27,7 @@ impl SystemLogDao {
     ) -> Result<(Vec<log_system::Model>, u64), DbErr> {
         let page = Pagination::new(req.page, req.page_size);
 
-        let states = LogSystemEntity::find()
+        let states = LogSystem::find()
             .apply_if(req.start_time, |query, v| {
                 query.filter(log_system::Column::CreatedAt.gte(v))
             })
@@ -52,7 +52,7 @@ impl SystemLogDao {
 
     /// 获取详情信息
     pub async fn info(&self, id: i32) -> Result<Option<log_system::Model>, DbErr> {
-        LogSystemEntity::find_by_id(id).one(self.db.db()).await
+        LogSystem::find_by_id(id).one(self.db.db()).await
     }
 
     /// 添加详情信息
@@ -64,7 +64,7 @@ impl SystemLogDao {
 
     /// 按主键删除
     pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = LogSystemEntity::delete_by_id(id).exec(self.db.db()).await?;
+        let result = LogSystem::delete_by_id(id).exec(self.db.db()).await?;
         Ok(result.rows_affected)
     }
 }

@@ -79,7 +79,7 @@ impl MigrationTrait for Migration {
 
         // 预设数据
         // let db = manager.get_connection();
-        // RoleEntity::insert_many([
+        // Role::insert_many([
         //     role::ActiveModel {
         //         name: Set("管理员".to_string()),
         //         sort: Set(Some(1)),
