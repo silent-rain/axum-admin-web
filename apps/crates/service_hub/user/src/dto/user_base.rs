@@ -161,7 +161,7 @@ pub struct DeleteUserBaseResp {}
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct ProfileReq {
     /// 用户ID
-    pub user_id: i32,
+    pub id: i32,
 }
 
 /// 获取用户个人信息

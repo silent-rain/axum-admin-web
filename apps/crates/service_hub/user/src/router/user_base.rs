@@ -27,7 +27,7 @@ impl UserBaseRouter {
                         .delete(UserBaseController::delete),
                 )
                 .route("/{id}/status", put(UserBaseController::update_status))
-                .route("/{id}/profile", get(UserBaseController::profile))
+                .route("/profile", get(UserBaseController::profile))
                 .route("/{id}/roles", get(UserBaseController::roles))
                 .route("/check-username", get(UserBaseController::check_username)),
         )
