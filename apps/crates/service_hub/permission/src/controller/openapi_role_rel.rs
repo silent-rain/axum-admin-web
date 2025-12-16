@@ -7,8 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::openapi_role_rel::{
-        BatchCreateOpenapiRoleRelReq, BatchCreateOpenapiRoleRelResp, BatchDeleteOpenapiRoleRelReq,
-        BatchDeleteOpenapiRoleRelResp, GetOpenapiRoleRelsReq, GetOpenapiRoleRelsResp,
+        BatchCreateOpenapiRoleRelReq, BatchDeleteOpenapiRoleRelReq, GetOpenapiRoleRelsReq,
+        GetOpenapiRoleRelsResp,
     },
     service::openapi_role_rel::OpenapiRoleRelService,
 };
@@ -25,7 +25,7 @@ impl OpenapiRoleRelController {
         let openapi_role_rel_service: OpenapiRoleRelService = provider.provide();
         let (results, total) = openapi_role_rel_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -33,25 +33,23 @@ impl OpenapiRoleRelController {
     pub async fn batch_create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<BatchCreateOpenapiRoleRelReq>,
-    ) -> Responder<BatchCreateOpenapiRoleRelResp> {
+    ) -> Responder<()> {
         let openapi_role_rel_service: OpenapiRoleRelService = provider.provide();
         let _result = openapi_role_rel_service.batch_create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量删除OpenApi接口角色关系
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<BatchDeleteOpenapiRoleRelReq>,
-    ) -> Responder<BatchDeleteOpenapiRoleRelResp> {
+    ) -> Responder<()> {
         let openapi_role_rel_service: OpenapiRoleRelService = provider.provide();
         let _result = openapi_role_rel_service
             .batch_delete(data.ids.clone())
             .await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

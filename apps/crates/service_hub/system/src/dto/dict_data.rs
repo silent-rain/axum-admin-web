@@ -22,16 +22,11 @@ pub struct GetDictDatasReq {
     pub dim_id: Option<i32>,
 }
 
+/// 字典数据列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDatasResp {
     pub data_list: Vec<dict_data::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<dict_data::Model>, u64)> for GetDictDatasResp {
-    fn from((data_list, total): (Vec<dict_data::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询数据 请求体
@@ -41,16 +36,11 @@ pub struct GetDictDataReq {
     pub id: i32,
 }
 
+/// 查询数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDataResp {
     #[serde(flatten)]
     model: dict_data::Model,
-}
-
-impl From<dict_data::Model> for GetDictDataResp {
-    fn from(model: dict_data::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加字典数据 请求体
@@ -69,11 +59,8 @@ pub struct CreateDictDataReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateDictDataResp {}
-
 /// 更新数据 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDictDataReq {
     /// 字典数据ID
     pub id: i32,
@@ -90,11 +77,8 @@ pub struct UpdateDictDataReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateDictDataResp {}
-
 /// 更新字典数据状态 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDictDataStatusReq {
     /// 字典数据ID
     pub id: i32,
@@ -102,15 +86,9 @@ pub struct UpdateDictDataStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateDictDataStatusResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteDictDataReq {
     /// 字典数据ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteDictDataResp {}

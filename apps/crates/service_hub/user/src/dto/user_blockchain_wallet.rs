@@ -22,16 +22,11 @@ pub struct GetBlockchainWalletsReq {
     pub wallet_address: Option<String>,
 }
 
+/// 查询用户区块链钱包列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetBlockchainWalletsResp {
     pub data_list: Vec<user_blockchain_wallet::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<user_blockchain_wallet::Model>, u64)> for GetBlockchainWalletsResp {
-    fn from((data_list, total): (Vec<user_blockchain_wallet::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询用户区块链钱包信息 请求体
@@ -41,16 +36,11 @@ pub struct GetBlockchainWalletReq {
     pub id: i32,
 }
 
+/// 查询用户区块链钱包信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetBlockchainWalletResp {
     #[serde(flatten)]
     model: user_blockchain_wallet::Model,
-}
-
-impl From<user_blockchain_wallet::Model> for GetBlockchainWalletResp {
-    fn from(model: user_blockchain_wallet::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加用户区块链钱包 请求体
@@ -70,11 +60,8 @@ pub struct CreateBlockchainWalletReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateBlockchainWalletResp {}
-
 /// 更新用户区块链钱包数据 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateBlockchainWalletReq {
     /// 钱包ID
     pub id: i32,
@@ -84,15 +71,9 @@ pub struct UpdateBlockchainWalletReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateBlockchainWalletResp {}
-
 /// 删除用户区块链钱包 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteBlockchainWalletReq {
     /// 钱包ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteBlockchainWalletResp {}

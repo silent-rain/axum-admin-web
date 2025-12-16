@@ -21,35 +21,25 @@ pub struct GetFileResourcesReq {
     pub file_name: Option<String>,
 }
 
+/// 获取文件列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetFileResourcesResp {
     pub data_list: Vec<file_resource::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<file_resource::Model>, u64)> for GetFileResourcesResp {
-    fn from((data_list, total): (Vec<file_resource::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 文件数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetFileResourceReq {
     /// 文件ID
     pub id: i32,
 }
 
+/// 文件数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetFileResourceResp {
     #[serde(flatten)]
     model: file_resource::Model,
-}
-
-impl From<file_resource::Model> for GetFileResourceResp {
-    fn from(model: file_resource::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 更新文件 请求体
@@ -63,9 +53,6 @@ pub struct UpdateFileResourceReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateFileResourceResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteFileResourceReq {
@@ -73,18 +60,12 @@ pub struct DeleteFileResourceReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteFileResourceResp {}
-
 /// 批量删除文件 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct BatchDeleteFileResourceReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteFileResourceResp {}
 
 /// 单文件上传 请求体
 #[derive(TryFromMultipart)]
@@ -100,9 +81,6 @@ pub struct UploadFileReq {
     pub author: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UploadFileResp {}
-
 /// 多文件上传 请求体
 #[derive(TryFromMultipart)]
 pub struct UploadFilesReq {
@@ -110,9 +88,6 @@ pub struct UploadFilesReq {
     #[form_data(limit = "5MiB")]
     pub files: Vec<FieldData<NamedTempFile>>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UploadFilesResp {}
 
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]

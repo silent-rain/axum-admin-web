@@ -7,9 +7,7 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::role::{
-        CreateRoleReq, CreateRoleResp, DeleteRoleReq, DeleteRoleResp, GetRoleReq, GetRoleResp,
-        GetRolesReq, GetRolesResp, UpdateRoleReq, UpdateRoleResp, UpdateRoleStatusReq,
-        UpdateRoleStatusResp,
+        CreateRoleReq, DeleteRoleReq, GetRoleReq, GetRolesReq, UpdateRoleReq, UpdateRoleStatusReq,
     },
     service::role::RoleService,
 };
@@ -22,11 +20,11 @@ impl RoleController {
     pub async fn list(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetRolesReq>,
-    ) -> Responder<GetRolesResp> {
+    ) -> Responder<()> {
         let role_service: RoleService = provider.provide();
         let (results, total) = role_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -34,11 +32,11 @@ impl RoleController {
     pub async fn info(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetRoleReq>,
-    ) -> Responder<GetRoleResp> {
+    ) -> Responder<()> {
         let role_service: RoleService = provider.provide();
         let result = role_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -46,47 +44,43 @@ impl RoleController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<CreateRoleReq>,
-    ) -> Responder<CreateRoleResp> {
+    ) -> Responder<()> {
         let role_service: RoleService = provider.provide();
         let _result = role_service.create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新角色
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateRoleReq>,
-    ) -> Responder<UpdateRoleResp> {
+    ) -> Responder<()> {
         let role_service: RoleService = provider.provide();
         let _result = role_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新角色状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateRoleStatusReq>,
-    ) -> Responder<UpdateRoleStatusResp> {
+    ) -> Responder<()> {
         let role_service: RoleService = provider.provide();
         role_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除角色
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteRoleReq>,
-    ) -> Responder<DeleteRoleResp> {
+    ) -> Responder<()> {
         let role_service: RoleService = provider.provide();
         let _result = role_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

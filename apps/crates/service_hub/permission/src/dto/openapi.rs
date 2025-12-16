@@ -9,7 +9,7 @@ use database::utils::GenericTree;
 use entity::permission::openapi;
 
 /// 查询OpenApi接口列表 请求体
-#[derive(Clone, Deserialize, Validate)]
+#[derive(Deserialize, Validate)]
 pub struct GetOpenapisReq {
     /// 当前分页
     pub page: u64,
@@ -24,39 +24,30 @@ pub struct GetOpenapisReq {
     /// 返回所有数据
     pub all: Option<bool>,
 }
+
+/// 查询OpenApi接口列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetOpenapisResp {
     pub data_list: Vec<openapi::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<openapi::Model>, u64)> for GetOpenapisResp {
-    fn from((data_list, total): (Vec<openapi::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 查询OpenApi接口详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetOpenapiReq {
     /// 接口ID
     pub id: i32,
 }
 
+/// 查询OpenApi接口详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetOpenapiResp {
     #[serde(flatten)]
     model: openapi::Model,
 }
 
-impl From<openapi::Model> for GetOpenapiResp {
-    fn from(model: openapi::Model) -> Self {
-        Self { model }
-    }
-}
-
-/// 添加OpenApi接口
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 添加OpenApi接口 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct CreateOpenapiReq {
     /// 父ID
     pub pid: Option<i32>,
@@ -76,11 +67,8 @@ pub struct CreateOpenapiReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateOpenapiResp {}
-
-/// 更新数据
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 更新数据 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateOpenapiReq {
     /// 接口ID
     pub id: i32,
@@ -102,20 +90,14 @@ pub struct UpdateOpenapiReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateOpenapiResp {}
-
-/// 更新数据状态
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 更新数据状态 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateOpenapiStatusReq {
     /// 接口ID
     pub id: i32,
     /// 状态(false:停用,true:正常)
     pub status: bool,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateOpenapiStatusResp {}
 
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
@@ -124,11 +106,8 @@ pub struct DeleteOpenapiReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteOpenapiResp {}
-
-/// 角色接口关系权限
-#[derive(Clone, Serialize, Deserialize, Validate, FromQueryResult)]
+/// 角色接口关系权限 响应体
+#[derive(Serialize, Deserialize, Validate, FromQueryResult)]
 pub struct RoleOpenapiPermission {
     /// 角色ID
     pub role_id: i32,
@@ -142,14 +121,8 @@ pub struct RoleOpenapiPermission {
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetOpenapiTreeReq {}
 
+/// OpenApi接口树列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetOpenapiTreeResp {
-    #[serde(flatten)]
-    pub data: Vec<GenericTree<openapi::Model>>,
-}
-
-impl From<Vec<GenericTree<openapi::Model>>> for GetOpenapiTreeResp {
-    fn from(data: Vec<GenericTree<openapi::Model>>) -> Self {
-        Self { data }
-    }
+    data_list: Vec<GenericTree<openapi::Model>>,
 }

@@ -6,11 +6,9 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::schedule_status_log::{
-        CreateScheduleStatusLogReq, CreateScheduleStatusLogResp, DeleteScheduleStatusLogReq,
-        DeleteScheduleStatusLogResp, GetScheduleStatusLogReq, GetScheduleStatusLogResp,
-        GetScheduleStatusLogsReq, GetScheduleStatusLogsResp, UpdateScheduleStatusLogReq,
-        UpdateScheduleStatusLogResp, UpdateScheduleStatusLogSatausReq,
-        UpdateScheduleStatusLogSatausResp,
+        CreateScheduleStatusLogReq, DeleteScheduleStatusLogReq, GetScheduleStatusLogReq,
+        GetScheduleStatusLogResp, GetScheduleStatusLogsReq, GetScheduleStatusLogsResp,
+        UpdateScheduleStatusLogReq, UpdateScheduleStatusLogSatausReq,
     },
     service::schedule_status_log::ScheduleStatusLogService,
 };
@@ -27,7 +25,7 @@ impl ScheduleStatusLogController {
         let schedule_status_log_service: ScheduleStatusLogService = provider.provide();
         let (results, total) = schedule_status_log_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -39,7 +37,7 @@ impl ScheduleStatusLogController {
         let schedule_status_log_service: ScheduleStatusLogService = provider.provide();
         let result = schedule_status_log_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -47,47 +45,43 @@ impl ScheduleStatusLogController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateScheduleStatusLogReq>,
-    ) -> Responder<CreateScheduleStatusLogResp> {
+    ) -> Responder<()> {
         let schedule_status_log_service: ScheduleStatusLogService = provider.provide();
         let _result = schedule_status_log_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新字典数据
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateScheduleStatusLogReq>,
-    ) -> Responder<UpdateScheduleStatusLogResp> {
+    ) -> Responder<()> {
         let schedule_status_log_service: ScheduleStatusLogService = provider.provide();
         let _result = schedule_status_log_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新字典数据状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateScheduleStatusLogSatausReq>,
-    ) -> Responder<UpdateScheduleStatusLogSatausResp> {
+    ) -> Responder<()> {
         let schedule_status_log_service: ScheduleStatusLogService = provider.provide();
         schedule_status_log_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除字典数据
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteScheduleStatusLogReq>,
-    ) -> Responder<DeleteScheduleStatusLogResp> {
+    ) -> Responder<()> {
         let schedule_status_log_service: ScheduleStatusLogService = provider.provide();
         let _result = schedule_status_log_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

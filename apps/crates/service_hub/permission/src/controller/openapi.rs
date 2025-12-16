@@ -7,9 +7,9 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::openapi::{
-        CreateOpenapiReq, CreateOpenapiResp, DeleteOpenapiReq, DeleteOpenapiResp, GetOpenapiReq,
-        GetOpenapiResp, GetOpenapiTreeReq, GetOpenapiTreeResp, GetOpenapisReq, GetOpenapisResp,
-        UpdateOpenapiReq, UpdateOpenapiResp, UpdateOpenapiStatusReq, UpdateOpenapiStatusResp,
+        CreateOpenapiReq, DeleteOpenapiReq, GetOpenapiReq, GetOpenapiResp, GetOpenapiTreeReq,
+        GetOpenapiTreeResp, GetOpenapisReq, GetOpenapisResp, UpdateOpenapiReq,
+        UpdateOpenapiStatusReq,
     },
     service::openapi::OpenapiService,
 };
@@ -26,7 +26,7 @@ impl OpenapiController {
         let openapi_service: OpenapiService = provider.provide();
         let (results, total) = openapi_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -38,7 +38,7 @@ impl OpenapiController {
         let openapi_service: OpenapiService = provider.provide();
         let result = openapi_service.tree().await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -50,7 +50,7 @@ impl OpenapiController {
         let openapi_service: OpenapiService = provider.provide();
         let result = openapi_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -58,47 +58,43 @@ impl OpenapiController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<CreateOpenapiReq>,
-    ) -> Responder<CreateOpenapiResp> {
+    ) -> Responder<()> {
         let openapi_service: OpenapiService = provider.provide();
         let _result = openapi_service.create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新OpenApi接口
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateOpenapiReq>,
-    ) -> Responder<UpdateOpenapiResp> {
+    ) -> Responder<()> {
         let openapi_service: OpenapiService = provider.provide();
         let _result = openapi_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新OpenApi接口状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateOpenapiStatusReq>,
-    ) -> Responder<UpdateOpenapiStatusResp> {
+    ) -> Responder<()> {
         let openapi_service: OpenapiService = provider.provide();
         openapi_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除OpenApi接口
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteOpenapiReq>,
-    ) -> Responder<DeleteOpenapiResp> {
+    ) -> Responder<()> {
         let openapi_service: OpenapiService = provider.provide();
         let _result = openapi_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

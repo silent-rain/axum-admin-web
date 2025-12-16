@@ -15,12 +15,8 @@ pub struct Response<T: Serialize> {
     code: u16,
     /// 返回信息
     msg: String,
-
     /// 返回数据
     data: Option<T>,
-    /// 数据总数
-    #[serde(skip_serializing_if = "Option::is_none")]
-    total: Option<usize>,
 }
 
 impl<T: Serialize> Default for Response<T> {
@@ -29,7 +25,6 @@ impl<T: Serialize> Default for Response<T> {
             code: 0,
             msg: "ok".to_string(),
             data: None,
-            total: None,
         }
     }
 }
@@ -44,7 +39,6 @@ impl<T: Serialize> Response<T> {
     pub fn data(data: T) -> Self {
         Self {
             data: Some(data),
-            total: None,
             ..Default::default()
         }
     }
@@ -87,19 +81,30 @@ impl<T: Serialize> Response<T> {
     }
 }
 
-impl<T: Serialize> Response<Vec<T>> {
+impl<T: Serialize> Response<ListData<T>> {
     /// 设置返回的数据列表
     pub fn data_list<U>(data: Vec<T>, total: U) -> Self
     where
         U: TryInto<usize> + TryInto<u64>,
     {
-        let total_usize = total.try_into().unwrap_or_default(); // 转换为 usize
+        let total_u64 = total.try_into().unwrap_or_default(); // 转换为 u64
         Self {
-            data: Some(data),
-            total: Some(total_usize),
+            data: Some(ListData {
+                data_list: data,
+                total: total_u64,
+            }),
             ..Default::default()
         }
     }
+}
+
+/// 列表数据响应结构体
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ListData<T> {
+    /// 数据列表
+    pub data_list: Vec<T>,
+    /// 总数
+    pub total: u64,
 }
 
 /// 打印 Response
@@ -203,8 +208,7 @@ mod tests {
         struct TemplatesResp {
             code: u16,
             msg: String,
-            pub data: Vec<Book>,
-            pub total: u64,
+            pub data: ListData<Book>,
         }
 
         let total = books.len();

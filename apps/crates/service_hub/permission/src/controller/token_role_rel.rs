@@ -7,8 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::token_role_rel::{
-        BatchCreateTokenRoleRelReq, BatchCreateTokenRoleRelResp, BatchDeleteTokenRoleRelReq,
-        BatchDeleteTokenRoleRelResp, GetTokenRoleRelsReq, GetTokenRoleRelsResp,
+        BatchCreateTokenRoleRelReq, BatchDeleteTokenRoleRelReq, GetTokenRoleRelsReq,
+        GetTokenRoleRelsResp,
     },
     service::token_role_rel::TokenRoleRelService,
 };
@@ -25,7 +25,7 @@ impl TokenRoleRelController {
         let token_role_rel_service: TokenRoleRelService = provider.provide();
         let (results, total) = token_role_rel_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -33,25 +33,23 @@ impl TokenRoleRelController {
     pub async fn batch_create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<BatchCreateTokenRoleRelReq>,
-    ) -> Responder<BatchCreateTokenRoleRelResp> {
+    ) -> Responder<()> {
         let token_role_rel_service: TokenRoleRelService = provider.provide();
         let _result = token_role_rel_service.batch_create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量删除令牌角色关系
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<BatchDeleteTokenRoleRelReq>,
-    ) -> Responder<BatchDeleteTokenRoleRelResp> {
+    ) -> Responder<()> {
         let token_role_rel_service: TokenRoleRelService = provider.provide();
         let _result = token_role_rel_service
             .batch_delete(data.ids.clone())
             .await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

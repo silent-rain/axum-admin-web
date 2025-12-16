@@ -4,19 +4,13 @@ use std::net::SocketAddr;
 
 use axum::{extract::ConnectInfo, http::HeaderMap};
 use axum_context::Context;
-use axum_validator::{Extension, Json};
+use axum_validator::Extension;
 use tower_sessions::Session;
 
 use axum_response::{Responder, Response};
 use inject::AInjectProvider;
 
-use crate::{
-    dto::{
-        login::BrowserInfo,
-        logout::{LogoutReq, LogoutResp},
-    },
-    service::logout::Logoutervice,
-};
+use crate::{dto::login::BrowserInfo, service::logout::Logoutervice};
 
 /// 控制器
 pub struct LogoutController;
@@ -29,8 +23,7 @@ impl LogoutController {
         ConnectInfo(addr): ConnectInfo<SocketAddr>,
         headers: HeaderMap,
         ctx: Context,
-        Json(_req): Json<LogoutReq>,
-    ) -> Responder<LogoutResp> {
+    ) -> Responder<()> {
         let remote_addr = addr.ip().to_string();
         // Get the user agent from the request headers
         let user_agent = headers
@@ -44,7 +37,6 @@ impl LogoutController {
         let login_service: Logoutervice = provider.provide();
         login_service.logout(ctx, browser_info, session).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

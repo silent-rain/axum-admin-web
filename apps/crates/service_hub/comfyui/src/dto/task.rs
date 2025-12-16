@@ -51,12 +51,6 @@ pub struct HistorysResp {
     pub total: u64,
 }
 
-impl From<(Vec<History>, u64)> for HistorysResp {
-    fn from((data_list, total): (Vec<History>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
 /// 获取指定历史任务数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct HistoryReq {

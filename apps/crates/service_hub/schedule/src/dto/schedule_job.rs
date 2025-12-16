@@ -26,16 +26,11 @@ pub struct GetScheduleJobsReq {
     pub status: Option<i8>,
 }
 
+/// 查询任务调度列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleJobsResp {
     pub data_list: Vec<schedule_job::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<schedule_job::Model>, u64)> for GetScheduleJobsResp {
-    fn from((data_list, total): (Vec<schedule_job::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询数据 请求体
@@ -45,16 +40,11 @@ pub struct GetScheduleJobReq {
     pub id: i32,
 }
 
+/// 查询数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleJobResp {
     #[serde(flatten)]
     model: schedule_job::Model,
-}
-
-impl From<schedule_job::Model> for GetScheduleJobResp {
-    fn from(model: schedule_job::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加任务调度 请求体
@@ -76,11 +66,8 @@ pub struct CreateScheduleJobReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateScheduleJobResp {}
-
 /// 更新数据 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateScheduleJobReq {
     /// 任务调度ID
     pub id: i32,
@@ -94,11 +81,8 @@ pub struct UpdateScheduleJobReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateScheduleJobResp {}
-
 /// 更新数据状态 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateScheduleJobStatusReq {
     /// 任务调度ID
     pub id: i32,
@@ -106,15 +90,9 @@ pub struct UpdateScheduleJobStatusReq {
     pub status: Status,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateScheduleJobStatusResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteScheduleJobReq {
     /// 任务调度ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteScheduleJobResp {}

@@ -19,16 +19,11 @@ pub struct GetDepartmentRoleRelsReq {
     pub department_id: Option<i32>,
 }
 
+/// 查询部门角色关系列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDepartmentRoleRelsResp {
     pub data_list: Vec<department_role_rel::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<department_role_rel::Model>, u64)> for GetDepartmentRoleRelsResp {
-    fn from((data_list, total): (Vec<department_role_rel::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 批量添加部门角色关系 请求体
@@ -40,15 +35,9 @@ pub struct BatchCreateDepartmentRoleRelReq {
     pub role_ids: Vec<i32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchCreateDepartmentRoleRelResp {}
-
 /// 批量删除部门角色关系 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct BatchDeleteDepartmentRoleRelReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteDepartmentRoleRelResp {}

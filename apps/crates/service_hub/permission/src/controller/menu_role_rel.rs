@@ -7,8 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::menu_role_rel::{
-        BatchCreateMenuRoleRelReq, BatchCreateMenuRoleRelResp, BatchDeleteMenuRoleRelReq,
-        BatchDeleteMenuRoleRelResp, GetMenuRoleRelsReq, GetMenuRoleRelsResp,
+        BatchCreateMenuRoleRelReq, BatchDeleteMenuRoleRelReq, GetMenuRoleRelsReq,
+        GetMenuRoleRelsResp,
     },
     service::menu_role_rel::MenuRoleRelService,
 };
@@ -25,7 +25,7 @@ impl MenuRoleRelController {
         let menu_role_rel_service: MenuRoleRelService = provider.provide();
         let (results, total) = menu_role_rel_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -33,23 +33,21 @@ impl MenuRoleRelController {
     pub async fn batch_create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<BatchCreateMenuRoleRelReq>,
-    ) -> Responder<BatchCreateMenuRoleRelResp> {
+    ) -> Responder<()> {
         let menu_role_rel_service: MenuRoleRelService = provider.provide();
         let _result = menu_role_rel_service.batch_create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量删除菜单角色关系
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<BatchDeleteMenuRoleRelReq>,
-    ) -> Responder<BatchDeleteMenuRoleRelResp> {
+    ) -> Responder<()> {
         let menu_role_rel_service: MenuRoleRelService = provider.provide();
         let _result = menu_role_rel_service.batch_delete(data.ids.clone()).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

@@ -4,7 +4,7 @@ use validator::Validate;
 
 use entity::permission::openapi_role_rel;
 
-/// 查询OpenApi接口角色关系列表
+/// 查询OpenApi接口角色关系列表 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct GetOpenapiRoleRelsReq {
     /// 当前分页
@@ -19,19 +19,14 @@ pub struct GetOpenapiRoleRelsReq {
     pub openapi_id: Option<i32>,
 }
 
+/// 查询OpenApi接口角色关系列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetOpenapiRoleRelsResp {
     pub data_list: Vec<openapi_role_rel::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<openapi_role_rel::Model>, u64)> for GetOpenapiRoleRelsResp {
-    fn from((data_list, total): (Vec<openapi_role_rel::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 批量添加OpenApi接口角色关系
+/// 批量添加OpenApi接口角色关系 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct BatchCreateOpenapiRoleRelReq {
     /// 接口ID
@@ -40,15 +35,9 @@ pub struct BatchCreateOpenapiRoleRelReq {
     pub role_ids: Vec<i32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchCreateOpenapiRoleRelResp {}
-
-/// 批量删除OpenApi接口角色关系
+/// 批量删除OpenApi接口角色关系 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct BatchDeleteOpenapiRoleRelReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteOpenapiRoleRelResp {}

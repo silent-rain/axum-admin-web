@@ -22,16 +22,11 @@ pub struct GetMemberLevelsReq {
     pub all: Option<bool>,
 }
 
+/// 查询会员等级列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMemberLevelsResp {
     pub data_list: Vec<member_level::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<member_level::Model>, u64)> for GetMemberLevelsResp {
-    fn from((data_list, total): (Vec<member_level::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询会员等级信息 请求体
@@ -41,16 +36,11 @@ pub struct GetMemberLevelReq {
     pub id: i32,
 }
 
+/// 查询会员等级信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMemberLevelResp {
     #[serde(flatten)]
     model: member_level::Model,
-}
-
-impl From<member_level::Model> for GetMemberLevelResp {
-    fn from(model: member_level::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加会员等级 请求体
@@ -69,11 +59,8 @@ pub struct CreateMemberLevelReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateMemberLevelResp {}
-
 /// 更新会员等级信息 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateMemberLevelReq {
     /// 会员等级ID
     pub id: i32,
@@ -90,11 +77,8 @@ pub struct UpdateMemberLevelReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateMemberLevelResp {}
-
 /// 更新会员等级状态 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateMemberLevelStatusReq {
     /// 会员等级ID
     pub id: i32,
@@ -102,15 +86,9 @@ pub struct UpdateMemberLevelStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateMemberLevelStatusResp {}
-
 /// 删除会员等级 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteMemberLevelReq {
     /// 钱包ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteMemberLevelResp {}

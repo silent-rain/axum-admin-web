@@ -9,10 +9,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::user_base::{
-        CreateUserBaseReq, CreateUserBaseResp, DeleteUserBaseReq, DeleteUserBaseResp,
-        GetCheckUsernameReq, GetCheckUsernameResp, GetUserBaseReq, GetUserBaseResp,
-        GetUserBasesReq, GetUserBasesResp, ProfileResp, RolesReq, RolesResp, UpdateUserBaseReq,
-        UpdateUserBaseResp, UpdateUserBaseStatusReq, UpdateUserBaseStatusResp,
+        CreateUserBaseReq, DeleteUserBaseReq, GetCheckUsernameReq, GetUserBaseReq, GetUserBasesReq,
+        ProfileResp, RolesReq, UpdateUserBaseReq, UpdateUserBaseStatusReq,
     },
     service::user_base::UserBaseService,
 };
@@ -25,11 +23,11 @@ impl UserBaseController {
     pub async fn list(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetUserBasesReq>,
-    ) -> Responder<GetUserBasesResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         let (results, total) = user_base_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -37,11 +35,11 @@ impl UserBaseController {
     pub async fn info(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetUserBaseReq>,
-    ) -> Responder<GetUserBaseResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         let result = user_base_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -49,48 +47,44 @@ impl UserBaseController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<CreateUserBaseReq>,
-    ) -> Responder<CreateUserBaseResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         let _result = user_base_service.create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新用户
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateUserBaseReq>,
-    ) -> Responder<UpdateUserBaseResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         user_base_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新用户信息状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateUserBaseStatusReq>,
-    ) -> Responder<UpdateUserBaseStatusResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         user_base_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除用户
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteUserBaseReq>,
-    ) -> Responder<DeleteUserBaseResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         let _result = user_base_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }
 
@@ -99,12 +93,11 @@ impl UserBaseController {
     pub async fn check_username(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetCheckUsernameReq>,
-    ) -> Responder<GetCheckUsernameResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         user_base_service.check_username(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 获取用户信息个人信息
@@ -127,11 +120,11 @@ impl UserBaseController {
     pub async fn roles(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<RolesReq>,
-    ) -> Responder<RolesResp> {
+    ) -> Responder<()> {
         let user_base_service: UserBaseService = provider.provide();
         let (results, total) = user_base_service.roles(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 }

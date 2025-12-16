@@ -6,9 +6,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::schedule_event_log::{
-        CreateScheduleEventLogReq, CreateScheduleEventLogResp, DeleteScheduleEventLogReq,
-        DeleteScheduleEventLogResp, GetScheduleEventLogReq, GetScheduleEventLogResp,
-        GetScheduleEventLogsReq, GetScheduleEventLogsResp,
+        CreateScheduleEventLogReq, DeleteScheduleEventLogReq, GetScheduleEventLogReq,
+        GetScheduleEventLogResp, GetScheduleEventLogsReq, GetScheduleEventLogsResp,
     },
     service::schedule_event_log::ScheduleEventLogService,
 };
@@ -24,7 +23,7 @@ impl ScheduleEventLogController {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
         let (results, total) = schedule_event_log_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -36,7 +35,7 @@ impl ScheduleEventLogController {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
         let result = schedule_event_log_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -44,23 +43,21 @@ impl ScheduleEventLogController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateScheduleEventLogReq>,
-    ) -> Responder<CreateScheduleEventLogResp> {
+    ) -> Responder<()> {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
         let _result = schedule_event_log_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除任务调度事件日志
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteScheduleEventLogReq>,
-    ) -> Responder<DeleteScheduleEventLogResp> {
+    ) -> Responder<()> {
         let schedule_event_log_service: ScheduleEventLogService = provider.provide();
         let _result = schedule_event_log_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

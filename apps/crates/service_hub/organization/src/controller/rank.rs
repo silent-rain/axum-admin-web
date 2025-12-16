@@ -6,9 +6,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::rank::{
-        CreateRankReq, CreateRankResp, DeleteRankReq, DeleteRankResp, GetRankReq, GetRankResp,
-        GetRanksReq, GetRanksResp, UpdateRankReq, UpdateRankResp, UpdateRankStatusReq,
-        UpdateRankStatusResp,
+        CreateRankReq, DeleteRankReq, GetRankReq, GetRankResp, GetRanksReq, GetRanksResp,
+        UpdateRankReq, UpdateRankStatusReq,
     },
     service::rank::RankService,
 };
@@ -25,7 +24,7 @@ impl RankController {
         let rank_service: RankService = provider.provide();
         let (results, total) = rank_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -34,10 +33,10 @@ impl RankController {
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetRankReq>,
     ) -> Responder<GetRankResp> {
-        let department_service: RankService = provider.provide();
-        let result = department_service.info(req).await?;
+        let rank_service: RankService = provider.provide();
+        let result = rank_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -45,47 +44,43 @@ impl RankController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateRankReq>,
-    ) -> Responder<CreateRankResp> {
-        let department_service: RankService = provider.provide();
-        let _result = department_service.create(req).await?;
+    ) -> Responder<()> {
+        let rank_service: RankService = provider.provide();
+        let _result = rank_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新职级
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateRankReq>,
-    ) -> Responder<UpdateRankResp> {
-        let department_service: RankService = provider.provide();
-        let _result = department_service.update(req).await?;
+    ) -> Responder<()> {
+        let rank_service: RankService = provider.provide();
+        let _result = rank_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新职级状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateRankStatusReq>,
-    ) -> Responder<UpdateRankStatusResp> {
-        let department_service: RankService = provider.provide();
-        department_service.update_status(req).await?;
+    ) -> Responder<()> {
+        let rank_service: RankService = provider.provide();
+        rank_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除职级
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteRankReq>,
-    ) -> Responder<DeleteRankResp> {
-        let department_service: RankService = provider.provide();
-        let _result = department_service.delete(req).await?;
+    ) -> Responder<()> {
+        let rank_service: RankService = provider.provide();
+        let _result = rank_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

@@ -7,7 +7,7 @@ use entity::schedule::schedule_status_log;
 
 use crate::enums::schedule_job::Status;
 
-/// 查询任务调度状态日志列表
+/// 查询任务调度状态日志列表 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct GetScheduleStatusLogsReq {
     /// 当前分页
@@ -23,16 +23,12 @@ pub struct GetScheduleStatusLogsReq {
     /// 任务状态
     pub status: Option<i8>,
 }
+
+/// 查询任务调度状态日志列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleStatusLogsResp {
     pub data_list: Vec<schedule_status_log::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<schedule_status_log::Model>, u64)> for GetScheduleStatusLogsResp {
-    fn from((data_list, total): (Vec<schedule_status_log::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询数据 请求体
@@ -42,20 +38,15 @@ pub struct GetScheduleStatusLogReq {
     pub id: i32,
 }
 
+/// 查询数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleStatusLogResp {
     #[serde(flatten)]
     model: schedule_status_log::Model,
 }
 
-impl From<schedule_status_log::Model> for GetScheduleStatusLogResp {
-    fn from(model: schedule_status_log::Model) -> Self {
-        Self { model }
-    }
-}
-
-/// 添加任务调度状态日志
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 添加任务调度状态日志 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct CreateScheduleStatusLogReq {
     /// 任务ID
     pub job_id: i32,
@@ -63,11 +54,8 @@ pub struct CreateScheduleStatusLogReq {
     pub uuid: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateScheduleStatusLogResp {}
-
-/// 更新任务调度状态日志
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 更新任务调度状态日志 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateScheduleStatusLogReq {
     /// 状态日志ID
     pub id: i32,
@@ -83,10 +71,7 @@ pub struct UpdateScheduleStatusLogReq {
     pub status: Status,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateScheduleStatusLogResp {}
-
-/// 更新数据状态
+/// 更新数据状态 请求体
 #[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateScheduleStatusLogSatausReq {
     /// 状态日志ID
@@ -95,15 +80,9 @@ pub struct UpdateScheduleStatusLogSatausReq {
     pub status: Status,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateScheduleStatusLogSatausResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteScheduleStatusLogReq {
     /// 状态日志ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteScheduleStatusLogResp {}

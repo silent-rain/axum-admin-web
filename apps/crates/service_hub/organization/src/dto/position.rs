@@ -22,35 +22,25 @@ pub struct GetPositionsReq {
     pub all: Option<bool>,
 }
 
+/// 查询岗位列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPositionsResp {
     pub data_list: Vec<position::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<position::Model>, u64)> for GetPositionsResp {
-    fn from((data_list, total): (Vec<position::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 查询岗位详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetPositionReq {
     /// 岗位ID
     pub id: i32,
 }
 
+/// 查询岗位详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPositionResp {
     #[serde(flatten)]
     model: position::Model,
-}
-
-impl From<position::Model> for GetPositionResp {
-    fn from(model: position::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加岗位 请求体
@@ -69,11 +59,8 @@ pub struct CreatePositionReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreatePositionResp {}
-
 /// 更新数据 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdatePositionReq {
     /// 岗位ID
     pub id: i32,
@@ -90,11 +77,8 @@ pub struct UpdatePositionReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdatePositionResp {}
-
 /// 更新数据状态 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdatePositionStatusReq {
     /// 岗位ID
     pub id: i32,
@@ -102,15 +86,9 @@ pub struct UpdatePositionStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdatePositionStatusResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeletePositionReq {
     /// 岗位ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeletePositionResp {}

@@ -2,7 +2,7 @@
 
 use std::{sync::Arc, time::Duration};
 
-use axum::{Router, extract::DefaultBodyLimit, routing::get};
+use axum::{Router, extract::DefaultBodyLimit, http::StatusCode, routing::get};
 use database::PoolTrait;
 use tokio::signal;
 use tower::ServiceBuilder;
@@ -122,7 +122,10 @@ pub fn register(db_pool: Arc<dyn PoolTrait>) -> Router {
         .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(CompressionLayer::new()) // 自动压缩响应
         .layer(governor_layer) // 速率限制
-        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
+        .layer(TimeoutLayer::with_status_code(
+            StatusCode::REQUEST_TIMEOUT,
+            Duration::from_secs(30),
+        )) // Timeout requests after 30 seconds
         .layer(session_layer(db_pool)) // session layer
         .layer(my_layers)
         .layer(DefaultBodyLimit::disable()) // Disable the default limit

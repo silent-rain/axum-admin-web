@@ -22,16 +22,11 @@ pub struct GetUserBasesReq {
     pub username: Option<String>,
 }
 
+/// 查询用户列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserBasesResp {
     pub data_list: Vec<user_base::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<user_base::Model>, u64)> for GetUserBasesResp {
-    fn from((data_list, total): (Vec<user_base::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询用户信息 请求体
@@ -41,20 +36,15 @@ pub struct GetUserBaseReq {
     pub id: i32,
 }
 
+/// 查询用户信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserBaseResp {
     #[serde(flatten)]
     model: user_base::Model,
 }
 
-impl From<user_base::Model> for GetUserBaseResp {
-    fn from(model: user_base::Model) -> Self {
-        Self { model }
-    }
-}
-
 /// 添加用户 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct CreateUserBaseReq {
     /// 用户名称
     pub username: String,
@@ -92,11 +82,8 @@ pub struct CreateUserBaseReq {
     pub role_ids: Vec<i32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateUserBaseResp {}
-
 /// 更新用户 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateUserBaseReq {
     /// 用户ID
     pub id: i32,
@@ -132,20 +119,14 @@ pub struct UpdateUserBaseReq {
     pub role_ids: Vec<i32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateUserBaseResp {}
-
 /// 更新用户状态 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateUserBaseStatusReq {
     /// 用户ID
     pub id: i32,
     /// 用户状态
     pub status: bool,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateUserBaseStatusResp {}
 
 /// 删除用户 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
@@ -154,9 +135,6 @@ pub struct DeleteUserBaseReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteUserBaseResp {}
-
 /// 更新用户分享码 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct ProfileReq {
@@ -164,8 +142,8 @@ pub struct ProfileReq {
     pub id: i32,
 }
 
-/// 获取用户个人信息
-#[derive(Clone, Serialize, Deserialize)]
+/// 获取用户个人信息 响应体
+#[derive(Serialize, Deserialize)]
 pub struct ProfileResp {
     /// 用户ID
     pub id: i32,
@@ -188,20 +166,15 @@ pub struct RolesReq {
     pub user_id: i32,
 }
 
+/// 通过用户信息ID获角色色列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RolesResp {
     pub data_list: Vec<role::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<role::Model>, u64)> for RolesResp {
-    fn from((data_list, total): (Vec<role::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
 /// 用户接口权限权限
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct UserPermission {
     pub user_id: i32,
     pub username: String,
@@ -213,6 +186,3 @@ pub struct UserPermission {
 pub struct GetCheckUsernameReq {
     pub username: String,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GetCheckUsernameResp {}

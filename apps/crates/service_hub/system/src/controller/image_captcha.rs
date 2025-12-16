@@ -12,10 +12,9 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::image_captcha::{
-        BatchDeleteImageCaptchaReq, BatchDeleteImageCaptchaResp, CreateImageCaptchaReq,
-        CreateImageCaptchaResp, DeleteImageCaptchaReq, DeleteImageCaptchaResp, GetImageCaptchaReq,
-        GetImageCaptchaResp, GetImageCaptchasReq, GetImageCaptchasResp, GetInfoByCaptchaIdReq,
-        GetInfoByCaptchaIdResp, ShowCaptchaImageReq,
+        BatchDeleteImageCaptchaReq, CreateImageCaptchaReq, CreateImageCaptchaResp,
+        DeleteImageCaptchaReq, GetImageCaptchaReq, GetImageCaptchaResp, GetImageCaptchasReq,
+        GetImageCaptchasResp, GetInfoByCaptchaIdReq, GetInfoByCaptchaIdResp, ShowCaptchaImageReq,
     },
     service::image_captcha::ImageCaptchaService,
 };
@@ -32,7 +31,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let (results, total) = image_captcha_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -44,7 +43,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let result = image_captcha_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -64,24 +63,22 @@ impl ImageCaptchaController {
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteImageCaptchaReq>,
-    ) -> Responder<DeleteImageCaptchaResp> {
+    ) -> Responder<()> {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let _result = image_captcha_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量删除验证码
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<BatchDeleteImageCaptchaReq>,
-    ) -> Responder<BatchDeleteImageCaptchaResp> {
+    ) -> Responder<()> {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let _result = image_captcha_service.batch_delete(req.ids.clone()).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }
 
@@ -94,7 +91,7 @@ impl ImageCaptchaController {
         let image_captcha_service: ImageCaptchaService = provider.provide();
         let result = image_captcha_service.info_by_captcha_id(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 

@@ -23,7 +23,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.embeddings().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -34,7 +34,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.checkpoints().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -43,7 +43,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.loras().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -52,7 +52,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.vaes().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -63,7 +63,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.clip_visions().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -74,7 +74,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.controlnets().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -85,7 +85,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.upscale_models().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -96,7 +96,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.ipadapters().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -107,7 +107,7 @@ impl ComfyUIModelController {
         let comfyui_model_service: ComfyUIModelService = provider.provide();
         let (results, total) = comfyui_model_service.unet_ggufs().await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 }

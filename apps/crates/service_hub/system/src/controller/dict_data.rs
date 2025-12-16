@@ -7,9 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::dict_data::{
-        CreateDictDataReq, CreateDictDataResp, DeleteDictDataReq, DeleteDictDataResp,
-        GetDictDataReq, GetDictDataResp, GetDictDatasReq, GetDictDatasResp, UpdateDictDataReq,
-        UpdateDictDataResp, UpdateDictDataStatusReq, UpdateDictDataStatusResp,
+        CreateDictDataReq, DeleteDictDataReq, GetDictDataReq, GetDictDataResp, GetDictDatasReq,
+        GetDictDatasResp, UpdateDictDataReq, UpdateDictDataStatusReq,
     },
     service::dict_data::DictDataService,
 };
@@ -26,7 +25,7 @@ impl DictDataController {
         let dict_data_service: DictDataService = provider.provide();
         let (results, total) = dict_data_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -38,7 +37,7 @@ impl DictDataController {
         let dict_data_service: DictDataService = provider.provide();
         let result = dict_data_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -46,47 +45,43 @@ impl DictDataController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateDictDataReq>,
-    ) -> Responder<CreateDictDataResp> {
+    ) -> Responder<()> {
         let dict_data_service: DictDataService = provider.provide();
         let _result = dict_data_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新字典数据
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateDictDataReq>,
-    ) -> Responder<UpdateDictDataResp> {
+    ) -> Responder<()> {
         let dict_data_service: DictDataService = provider.provide();
         let _result = dict_data_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新字典数据状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateDictDataStatusReq>,
-    ) -> Responder<UpdateDictDataStatusResp> {
+    ) -> Responder<()> {
         let dict_data_service: DictDataService = provider.provide();
         dict_data_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除字典数据
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteDictDataReq>,
-    ) -> Responder<DeleteDictDataResp> {
+    ) -> Responder<()> {
         let dict_data_service: DictDataService = provider.provide();
         let _result = dict_data_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

@@ -7,9 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::location::{
-        CreateLocationReq, CreateLocationResp, DeleteLocationReq, DeleteLocationResp,
-        GetLocationReq, GetLocationResp, GetLocationsReq, GetLocationsResp, UpdateLocationReq,
-        UpdateLocationResp,
+        CreateLocationReq, DeleteLocationReq, GetLocationReq, GetLocationResp, GetLocationsReq,
+        GetLocationsResp, UpdateLocationReq,
     },
     service::location::LocationService,
 };
@@ -26,7 +25,7 @@ impl LocationController {
         let location_service: LocationService = provider.provide();
         let (results, total) = location_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -38,7 +37,7 @@ impl LocationController {
         let location_service: LocationService = provider.provide();
         let result = location_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -46,35 +45,32 @@ impl LocationController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateLocationReq>,
-    ) -> Responder<CreateLocationResp> {
+    ) -> Responder<()> {
         let location_service: LocationService = provider.provide();
         let _result = location_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新用户地理位置
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateLocationReq>,
-    ) -> Responder<UpdateLocationResp> {
+    ) -> Responder<()> {
         let location_service: LocationService = provider.provide();
         let _result = location_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除用户地理位置
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteLocationReq>,
-    ) -> Responder<DeleteLocationResp> {
+    ) -> Responder<()> {
         let location_service: LocationService = provider.provide();
         let _result = location_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

@@ -5,10 +5,7 @@ use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 
 use crate::{
-    dto::web_log::{
-        CreateWebLogReq, CreateWebLogResp, GetWebLogReq, GetWebLogResp, GetWebLogsReq,
-        GetWebLogsResp,
-    },
+    dto::web_log::{CreateWebLogReq, GetWebLogReq, GetWebLogResp, GetWebLogsReq, GetWebLogsResp},
     service::web_log::WebLogService,
 };
 
@@ -24,7 +21,7 @@ impl WebLogController {
         let log_web_service: WebLogService = provider.provide();
         let (results, total) = log_web_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -36,7 +33,7 @@ impl WebLogController {
         let log_web_service: WebLogService = provider.provide();
         let result = log_web_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -44,11 +41,10 @@ impl WebLogController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateWebLogReq>,
-    ) -> Responder<CreateWebLogResp> {
+    ) -> Responder<()> {
         let log_web_service: WebLogService = provider.provide();
         let _result = log_web_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

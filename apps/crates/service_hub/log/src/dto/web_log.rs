@@ -24,39 +24,29 @@ pub struct GetWebLogsReq {
     pub username: Option<String>,
 }
 
+/// 查询WEB日志列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetWebLogsResp {
     pub data_list: Vec<log_web::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<log_web::Model>, u64)> for GetWebLogsResp {
-    fn from((data_list, total): (Vec<log_web::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 查询WEB日志详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetWebLogReq {
     /// 日志ID
     pub id: i32,
 }
 
+/// 查询WEB日志详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetWebLogResp {
     #[serde(flatten)]
     model: log_web::Model,
 }
 
-impl From<log_web::Model> for GetWebLogResp {
-    fn from(model: log_web::Model) -> Self {
-        Self { model }
-    }
-}
-
 /// 添加WEB日志信息 请求体
-#[derive(Debug, Clone, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct CreateWebLogReq {
     /// 用户ID
     pub user_id: Option<i32>,
@@ -81,6 +71,3 @@ pub struct CreateWebLogReq {
     /// 描述信息
     pub desc: Option<String>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateWebLogResp {}

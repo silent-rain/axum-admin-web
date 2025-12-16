@@ -7,8 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::user_phone::{
-        CreatePhoneReq, CreatePhoneResp, DeletePhoneReq, DeletePhoneResp, GetPhoneReq,
-        GetPhoneResp, GetPhonesReq, GetPhonesResp, UpdatePhoneReq, UpdatePhoneResp,
+        CreatePhoneReq, DeletePhoneReq, GetPhoneReq, GetPhoneResp, GetPhonesReq, GetPhonesResp,
+        UpdatePhoneReq,
     },
     service::user_phone::PhoneService,
 };
@@ -25,7 +25,7 @@ impl PhoneController {
         let phone_service: PhoneService = provider.provide();
         let (results, total) = phone_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl PhoneController {
         let phone_service: PhoneService = provider.provide();
         let result = phone_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -45,35 +45,32 @@ impl PhoneController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<CreatePhoneReq>,
-    ) -> Responder<CreatePhoneResp> {
+    ) -> Responder<()> {
         let phone_service: PhoneService = provider.provide();
         let _result = phone_service.create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新用户手机号
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdatePhoneReq>,
-    ) -> Responder<UpdatePhoneResp> {
+    ) -> Responder<()> {
         let phone_service: PhoneService = provider.provide();
         let _result = phone_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除用户手机号
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeletePhoneReq>,
-    ) -> Responder<DeletePhoneResp> {
+    ) -> Responder<()> {
         let phone_service: PhoneService = provider.provide();
         let _result = phone_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

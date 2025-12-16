@@ -6,9 +6,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::department_role_rel::{
-        BatchCreateDepartmentRoleRelReq, BatchCreateDepartmentRoleRelResp,
-        BatchDeleteDepartmentRoleRelReq, BatchDeleteDepartmentRoleRelResp,
-        GetDepartmentRoleRelsReq, GetDepartmentRoleRelsResp,
+        BatchCreateDepartmentRoleRelReq, BatchDeleteDepartmentRoleRelReq, GetDepartmentRoleRelsReq,
+        GetDepartmentRoleRelsResp,
     },
     service::department_role_rel::DepartmentRoleRelService,
 };
@@ -25,7 +24,7 @@ impl DepartmentRoleRelController {
         let department_role_rel_service: DepartmentRoleRelService = provider.provide();
         let (results, total) = department_role_rel_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -33,25 +32,23 @@ impl DepartmentRoleRelController {
     pub async fn batch_create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<BatchCreateDepartmentRoleRelReq>,
-    ) -> Responder<BatchCreateDepartmentRoleRelResp> {
+    ) -> Responder<()> {
         let department_role_rel_service: DepartmentRoleRelService = provider.provide();
         let _result = department_role_rel_service.batch_create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量删除部门角色关系
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<BatchDeleteDepartmentRoleRelReq>,
-    ) -> Responder<BatchDeleteDepartmentRoleRelResp> {
+    ) -> Responder<()> {
         let department_role_rel_service: DepartmentRoleRelService = provider.provide();
         let _result = department_role_rel_service
             .batch_delete(req.ids.clone())
             .await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

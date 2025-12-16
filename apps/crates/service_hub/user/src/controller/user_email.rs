@@ -7,8 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::user_email::{
-        CreateEmailReq, CreateEmailResp, DeleteEmailReq, DeleteEmailResp, GetEmailReq,
-        GetEmailResp, GetEmailsReq, GetEmailsResp, UpdateEmailReq, UpdateEmailResp,
+        CreateEmailReq, DeleteEmailReq, GetEmailReq, GetEmailResp, GetEmailsReq, GetEmailsResp,
+        UpdateEmailReq,
     },
     service::user_email::EmailService,
 };
@@ -25,7 +25,7 @@ impl EmailController {
         let email_service: EmailService = provider.provide();
         let (results, total) = email_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -37,7 +37,7 @@ impl EmailController {
         let email_service: EmailService = provider.provide();
         let result = email_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -45,35 +45,32 @@ impl EmailController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<CreateEmailReq>,
-    ) -> Responder<CreateEmailResp> {
+    ) -> Responder<()> {
         let email_service: EmailService = provider.provide();
         let _result = email_service.create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新用户邮箱
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateEmailReq>,
-    ) -> Responder<UpdateEmailResp> {
+    ) -> Responder<()> {
         let email_service: EmailService = provider.provide();
         let _result = email_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除用户邮箱
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteEmailReq>,
-    ) -> Responder<DeleteEmailResp> {
+    ) -> Responder<()> {
         let email_service: EmailService = provider.provide();
         let _result = email_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

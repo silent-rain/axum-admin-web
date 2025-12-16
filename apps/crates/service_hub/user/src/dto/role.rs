@@ -22,16 +22,11 @@ pub struct GetRolesReq {
     pub all: Option<bool>,
 }
 
+/// 查询角色列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetRolesResp {
     pub data_list: Vec<role::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<role::Model>, u64)> for GetRolesResp {
-    fn from((data_list, total): (Vec<role::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询角色信息 请求体
@@ -41,16 +36,11 @@ pub struct GetRoleReq {
     pub id: i32,
 }
 
+/// 查询角色信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetRoleResp {
     #[serde(flatten)]
     model: role::Model,
-}
-
-impl From<role::Model> for GetRoleResp {
-    fn from(model: role::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加角色 请求体
@@ -67,11 +57,8 @@ pub struct CreateRoleReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateRoleResp {}
-
 /// 更新角色信息 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateRoleReq {
     /// 角色ID
     pub id: i32,
@@ -85,11 +72,8 @@ pub struct UpdateRoleReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateRoleResp {}
-
 /// 更新角色状态 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateRoleStatusReq {
     /// 角色ID
     pub id: i32,
@@ -97,18 +81,12 @@ pub struct UpdateRoleStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateRoleStatusResp {}
-
 /// 删除角色 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteRoleReq {
     /// 角色ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteRoleResp {}
 
 #[cfg(test)]
 mod tests {

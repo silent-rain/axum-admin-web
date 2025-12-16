@@ -20,35 +20,25 @@ pub struct GetApiOperationsReq {
     pub end_time: Option<String>,
 }
 
+/// 查询API操作日志列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetApiOperationsResp {
     pub data_list: Vec<log_api_operation::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<log_api_operation::Model>, u64)> for GetApiOperationsResp {
-    fn from((data_list, total): (Vec<log_api_operation::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 查询API操作日志详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetApiOperationReq {
     /// 字典数据ID
     pub id: i32,
 }
 
+/// 查询API操作日志详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetApiOperationResp {
     #[serde(flatten)]
     model: log_api_operation::Model,
-}
-
-impl From<log_api_operation::Model> for GetApiOperationResp {
-    fn from(model: log_api_operation::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加API操作日志 请求体
@@ -84,15 +74,9 @@ pub struct CreateApiOperationReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateApiOperationResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteApiOperationReq {
     /// 字典数据ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteApiOperationResp {}

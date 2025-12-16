@@ -6,8 +6,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::system_log::{
-        CreateSystemLogReq, CreateSystemLogResp, DeleteSystemLogReq, DeleteSystemLogResp,
-        GetSystemLogReq, GetSystemLogResp, GetSystemLogsReq, GetSystemLogsResp,
+        CreateSystemLogReq, DeleteSystemLogReq, GetSystemLogReq, GetSystemLogResp,
+        GetSystemLogsReq, GetSystemLogsResp,
     },
     service::system_log::SystemLogService,
 };
@@ -24,7 +24,7 @@ impl SystemLogController {
         let system_service: SystemLogService = provider.provide();
         let (results, total) = system_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -36,7 +36,7 @@ impl SystemLogController {
         let system_service: SystemLogService = provider.provide();
         let result = system_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -44,23 +44,21 @@ impl SystemLogController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateSystemLogReq>,
-    ) -> Responder<CreateSystemLogResp> {
+    ) -> Responder<()> {
         let system_service: SystemLogService = provider.provide();
         let _result = system_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除系统日志
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteSystemLogReq>,
-    ) -> Responder<DeleteSystemLogResp> {
+    ) -> Responder<()> {
         let system_service: SystemLogService = provider.provide();
         let _result = system_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

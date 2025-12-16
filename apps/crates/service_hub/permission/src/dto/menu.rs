@@ -8,7 +8,7 @@ use entity::permission::menu;
 
 use crate::enums::menu::{LinkTarget, MenuType, OpenMethod};
 
-/// 查询菜单列表
+/// 查询菜单列表 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct GetMenusReq {
     /// 当前分页
@@ -25,16 +25,11 @@ pub struct GetMenusReq {
     pub all: Option<bool>,
 }
 
+/// 查询菜单列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMenusResp {
     pub data_list: Vec<menu::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<menu::Model>, u64)> for GetMenusResp {
-    fn from((data_list, total): (Vec<menu::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询菜单详情 请求体
@@ -44,19 +39,14 @@ pub struct GetMenuReq {
     pub id: i32,
 }
 
+/// 查询菜单详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMenuResp {
     #[serde(flatten)]
     model: menu::Model,
 }
 
-impl From<menu::Model> for GetMenuResp {
-    fn from(model: menu::Model) -> Self {
-        Self { model }
-    }
-}
-
-/// 添加菜单
+/// 添加菜单 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct CreateMenuReq {
     /// 父菜单ID
@@ -94,11 +84,8 @@ pub struct CreateMenuReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateMenuResp {}
-
-/// 更新数据
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 更新数据 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateMenuReq {
     /// 菜单ID
     pub id: i32,
@@ -137,19 +124,14 @@ pub struct UpdateMenuReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateMenuResp {}
-
-/// 更新数据状态
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 更新数据状态 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateMenuStatusReq {
     /// 菜单ID
     pub id: i32,
     /// 状态(false:停用,true:正常)
     pub status: bool,
 }
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateMenuStatusResp {}
 
 /// 删除菜单 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
@@ -158,9 +140,6 @@ pub struct DeleteMenuReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteMenuResp {}
-
 /// 获取子菜单列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetMenuChildrenReq {
@@ -168,30 +147,19 @@ pub struct GetMenuChildrenReq {
     pub pid: i32,
 }
 
+/// 获取子菜单列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMenuChildrenResp {
     pub data_list: Vec<menu::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<menu::Model>, u64)> for GetMenuChildrenResp {
-    fn from((data_list, total): (Vec<menu::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
 /// 菜单树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetMenuTreeReq {}
 
+/// 菜单树列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetMenuTreeResp {
-    #[serde(flatten)]
-    pub data: Vec<GenericTree<menu::Model>>,
-}
-
-impl From<Vec<GenericTree<menu::Model>>> for GetMenuTreeResp {
-    fn from(data: Vec<GenericTree<menu::Model>>) -> Self {
-        Self { data }
-    }
+    data_list: Vec<GenericTree<menu::Model>>,
 }

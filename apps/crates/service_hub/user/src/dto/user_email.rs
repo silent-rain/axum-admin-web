@@ -22,16 +22,11 @@ pub struct GetEmailsReq {
     pub email: Option<String>,
 }
 
+/// 查询用户列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetEmailsResp {
     pub data_list: Vec<user_email::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<user_email::Model>, u64)> for GetEmailsResp {
-    fn from((data_list, total): (Vec<user_email::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询邮箱信息 请求体
@@ -41,16 +36,11 @@ pub struct GetEmailReq {
     pub id: i32,
 }
 
+/// 查询邮箱信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetEmailResp {
     #[serde(flatten)]
     model: user_email::Model,
-}
-
-impl From<user_email::Model> for GetEmailResp {
-    fn from(model: user_email::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加邮箱 请求体
@@ -65,11 +55,8 @@ pub struct CreateEmailReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateEmailResp {}
-
 /// 更新邮箱 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateEmailReq {
     /// 邮箱ID
     pub id: i32,
@@ -80,15 +67,9 @@ pub struct UpdateEmailReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateEmailResp {}
-
 /// 删除邮箱 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteEmailReq {
     /// 邮箱ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteEmailResp {}

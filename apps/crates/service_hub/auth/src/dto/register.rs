@@ -49,9 +49,6 @@ pub struct RegisterReq {
     pub captcha: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct RegisterResp {}
-
 #[cfg(test)]
 mod tests {
     use super::*;

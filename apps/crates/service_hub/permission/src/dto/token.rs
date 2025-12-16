@@ -7,7 +7,7 @@ use validator::Validate;
 use entity::permission::token;
 use utils::time::{default_naive_date_time, str_to_naive_date_time};
 
-/// 查询令牌列表
+/// 查询令牌列表 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct GetTokensReq {
     /// 当前分页
@@ -24,16 +24,11 @@ pub struct GetTokensReq {
     pub token: Option<String>,
 }
 
+/// 查询令牌列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTokensResp {
     pub data_list: Vec<token::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<token::Model>, u64)> for GetTokensResp {
-    fn from((data_list, total): (Vec<token::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询令牌详情 请求体
@@ -43,19 +38,14 @@ pub struct GetTokenReq {
     pub id: i32,
 }
 
+/// 查询令牌详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTokenResp {
     #[serde(flatten)]
     model: token::Model,
 }
 
-impl From<token::Model> for GetTokenResp {
-    fn from(model: token::Model) -> Self {
-        Self { model }
-    }
-}
-
-/// 添加令牌
+/// 添加令牌 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct CreateTokenReq {
     /// 用户ID
@@ -76,11 +66,8 @@ pub struct CreateTokenReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateTokenResp {}
-
-/// 更新数据
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 更新数据 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateTokenReq {
     /// 令牌ID
     pub id: i32,
@@ -102,11 +89,8 @@ pub struct UpdateTokenReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateTokenResp {}
-
-/// 更新令牌状态
-#[derive(Clone, Serialize, Deserialize, Validate)]
+/// 更新令牌状态 请求体
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateTokenStatusReq {
     /// 令牌ID
     pub id: i32,
@@ -114,15 +98,9 @@ pub struct UpdateTokenStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateTokenStatusResp {}
-
 /// 删除令牌 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteTokenReq {
     /// 令牌ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteTokenResp {}

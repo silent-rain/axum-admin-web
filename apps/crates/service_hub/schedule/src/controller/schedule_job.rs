@@ -6,10 +6,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::schedule_job::{
-        CreateScheduleJobReq, CreateScheduleJobResp, DeleteScheduleJobReq, DeleteScheduleJobResp,
-        GetScheduleJobReq, GetScheduleJobResp, GetScheduleJobsReq, GetScheduleJobsResp,
-        UpdateScheduleJobReq, UpdateScheduleJobResp, UpdateScheduleJobStatusReq,
-        UpdateScheduleJobStatusResp,
+        CreateScheduleJobReq, DeleteScheduleJobReq, GetScheduleJobReq, GetScheduleJobsReq,
+        UpdateScheduleJobReq, UpdateScheduleJobStatusReq,
     },
     service::schedule_job::ScheduleJobService,
 };
@@ -22,11 +20,11 @@ impl ScheduleJobController {
     pub async fn list(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetScheduleJobsReq>,
-    ) -> Responder<GetScheduleJobsResp> {
+    ) -> Responder<()> {
         let schedule_job_service: ScheduleJobService = provider.provide();
         let (results, total) = schedule_job_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -34,11 +32,11 @@ impl ScheduleJobController {
     pub async fn info(
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetScheduleJobReq>,
-    ) -> Responder<GetScheduleJobResp> {
+    ) -> Responder<()> {
         let schedule_job_service: ScheduleJobService = provider.provide();
         let result = schedule_job_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -46,46 +44,42 @@ impl ScheduleJobController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateScheduleJobReq>,
-    ) -> Responder<CreateScheduleJobResp> {
+    ) -> Responder<()> {
         let schedule_job_service: ScheduleJobService = provider.provide();
         let _result = schedule_job_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新任务调度
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateScheduleJobReq>,
-    ) -> Responder<UpdateScheduleJobResp> {
+    ) -> Responder<()> {
         let schedule_job_service: ScheduleJobService = provider.provide();
         let _result = schedule_job_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
     /// 更新任务调度状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateScheduleJobStatusReq>,
-    ) -> Responder<UpdateScheduleJobStatusResp> {
+    ) -> Responder<()> {
         let schedule_job_service: ScheduleJobService = provider.provide();
         schedule_job_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除任务调度
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteScheduleJobReq>,
-    ) -> Responder<DeleteScheduleJobResp> {
+    ) -> Responder<()> {
         let schedule_job_service: ScheduleJobService = provider.provide();
         let _result = schedule_job_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

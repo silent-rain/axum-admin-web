@@ -6,9 +6,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::api_operation::{
-        CreateApiOperationReq, CreateApiOperationResp, DeleteApiOperationReq,
-        DeleteApiOperationResp, GetApiOperationReq, GetApiOperationResp, GetApiOperationsReq,
-        GetApiOperationsResp,
+        CreateApiOperationReq, DeleteApiOperationReq, GetApiOperationReq, GetApiOperationResp,
+        GetApiOperationsReq, GetApiOperationsResp,
     },
     service::api_operation::ApiOperationService,
 };
@@ -25,7 +24,7 @@ impl ApiOperationController {
         let api_operation_service: ApiOperationService = provider.provide();
         let (results, total) = api_operation_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -37,7 +36,7 @@ impl ApiOperationController {
         let api_operation_service: ApiOperationService = provider.provide();
         let result = api_operation_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -45,23 +44,21 @@ impl ApiOperationController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateApiOperationReq>,
-    ) -> Responder<CreateApiOperationResp> {
+    ) -> Responder<()> {
         let api_operation_service: ApiOperationService = provider.provide();
         let _result = api_operation_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除API操作日志
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteApiOperationReq>,
-    ) -> Responder<DeleteApiOperationResp> {
+    ) -> Responder<()> {
         let api_operation_service: ApiOperationService = provider.provide();
         let _result = api_operation_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

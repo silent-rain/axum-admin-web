@@ -16,9 +16,6 @@ pub struct CreateTableReq {
     pub password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateTableResp {}
-
 /// 库表数据
 #[derive(Serialize, Clone, Deserialize)]
 pub struct TableDataSql {

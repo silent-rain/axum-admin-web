@@ -22,35 +22,25 @@ pub struct GetRanksReq {
     pub all: Option<bool>,
 }
 
+/// 查询职级列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetRanksResp {
     pub data_list: Vec<rank::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<rank::Model>, u64)> for GetRanksResp {
-    fn from((data_list, total): (Vec<rank::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 查询岗位详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetRankReq {
     /// 职级ID
     pub id: i32,
 }
 
+/// 查询职级详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetRankResp {
     #[serde(flatten)]
     model: rank::Model,
-}
-
-impl From<rank::Model> for GetRankResp {
-    fn from(model: rank::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加职级 请求体
@@ -69,11 +59,8 @@ pub struct CreateRankReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateRankResp {}
-
 /// 更新数据 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateRankReq {
     /// 职级ID
     pub id: i32,
@@ -90,11 +77,8 @@ pub struct UpdateRankReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateRankResp {}
-
 /// 更新数据状态 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateRankStatusReq {
     /// 职级ID
     pub id: i32,
@@ -102,15 +86,9 @@ pub struct UpdateRankStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateRankStatusResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteRankReq {
     /// 职级ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteRankResp {}

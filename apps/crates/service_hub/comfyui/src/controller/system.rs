@@ -17,7 +17,7 @@ impl ComfyUISystemController {
         let comfyui_system_service: ComfyUISystemService = provider.provide();
         let result = comfyui_system_service.system_stats().await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 }

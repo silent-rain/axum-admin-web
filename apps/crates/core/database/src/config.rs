@@ -91,7 +91,7 @@ impl Config {
                 // In memory: sqlite::memory:
                 self.sqlite_path
                     .clone()
-                    .map_or_else(|| "data.dat?mode=rwc".to_string(), |v| v)
+                    .unwrap_or_else(|| "data.dat?mode=rwc".to_string())
             }
         }
     }

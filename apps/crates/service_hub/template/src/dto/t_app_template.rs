@@ -22,16 +22,11 @@ pub struct GetTemplatesReq {
     pub is_all: bool,
 }
 
+/// 验证码数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTemplatesResp {
     pub data_list: Vec<t_app_template::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<t_app_template::Model>, u64)> for GetTemplatesResp {
-    fn from((data_list, total): (Vec<t_app_template::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询数据 请求体
@@ -41,16 +36,11 @@ pub struct GetTemplateReq {
     pub id: i32,
 }
 
+/// 查询数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTemplateResp {
     #[serde(flatten)]
     model: t_app_template::Model,
-}
-
-impl From<t_app_template::Model> for GetTemplateResp {
-    fn from(model: t_app_template::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加数据 请求体
@@ -61,9 +51,6 @@ pub struct CreateTemplateReq {
     /// 描述信息
     pub desc: Option<String>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateTemplateResp {}
 
 /// 批量添加数据结点
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -83,9 +70,6 @@ pub struct BatchCreateTemplateReq {
     pub data: Vec<BatchCreateTemplateItem>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchCreateTemplateResp {}
-
 /// 更新数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UpdateTemplateReq {
@@ -99,9 +83,6 @@ pub struct UpdateTemplateReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateTemplateResp {}
-
 /// 更新数据状态 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UpdateTemplateStatusReq {
@@ -111,9 +92,6 @@ pub struct UpdateTemplateStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateTemplateStatusResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteTemplateReq {
@@ -121,15 +99,9 @@ pub struct DeleteTemplateReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteTemplateResp {}
-
 /// 批量删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct BatchDeleteTemplateReq {
     /// 模板ID列表
     pub ids: Vec<i32>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteTemplateResp {}

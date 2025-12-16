@@ -5,10 +5,7 @@ use axum_validator::{Extension, Json};
 
 use inject::AInjectProvider;
 
-use crate::{
-    RegisterService,
-    dto::register::{RegisterReq, RegisterResp},
-};
+use crate::{RegisterService, dto::register::RegisterReq};
 
 /// 控制器
 pub struct RegisterController;
@@ -18,7 +15,7 @@ impl RegisterController {
     pub async fn register(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<RegisterReq>,
-    ) -> Responder<RegisterResp> {
+    ) -> Responder<()> {
         let register_service: RegisterService = provider.provide();
         register_service.register(req).await?;
 

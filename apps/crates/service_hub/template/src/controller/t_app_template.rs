@@ -2,10 +2,9 @@
 
 use crate::{
     dto::t_app_template::{
-        BatchCreateTemplateReq, BatchCreateTemplateResp, BatchDeleteTemplateReq,
-        BatchDeleteTemplateResp, CreateTemplateReq, CreateTemplateResp, DeleteTemplateReq,
-        DeleteTemplateResp, GetTemplateReq, GetTemplateResp, GetTemplatesReq, GetTemplatesResp,
-        UpdateTemplateReq, UpdateTemplateResp, UpdateTemplateStatusReq, UpdateTemplateStatusResp,
+        BatchCreateTemplateReq, BatchDeleteTemplateReq, CreateTemplateReq, DeleteTemplateReq,
+        GetTemplateReq, GetTemplateResp, GetTemplatesReq, GetTemplatesResp, UpdateTemplateReq,
+        UpdateTemplateStatusReq,
     },
     service::t_app_template::TemplateService,
 };
@@ -26,7 +25,7 @@ impl TemplateController {
         let app_template_service: TemplateService = provider.provide();
         let (results, total) = app_template_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -38,7 +37,7 @@ impl TemplateController {
         let app_template_service: TemplateService = provider.provide();
         let result = app_template_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -46,71 +45,65 @@ impl TemplateController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateTemplateReq>,
-    ) -> Responder<CreateTemplateResp> {
+    ) -> Responder<()> {
         let app_template_service: TemplateService = provider.provide();
         let _result = app_template_service.create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量添加{{InterfaceName}}
     pub async fn batch_create(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<BatchCreateTemplateReq>,
-    ) -> Responder<BatchCreateTemplateResp> {
+    ) -> Responder<()> {
         let app_template_service: TemplateService = provider.provide();
         let _result = app_template_service.batch_create(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新{{InterfaceName}}
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateTemplateReq>,
-    ) -> Responder<UpdateTemplateResp> {
+    ) -> Responder<()> {
         let app_template_service: TemplateService = provider.provide();
         let _result = app_template_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新{{InterfaceName}}状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateTemplateStatusReq>,
-    ) -> Responder<UpdateTemplateStatusResp> {
+    ) -> Responder<()> {
         let app_template_service: TemplateService = provider.provide();
         let _result = app_template_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除{{InterfaceName}}
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteTemplateReq>,
-    ) -> Responder<DeleteTemplateResp> {
+    ) -> Responder<()> {
         let app_template_service: TemplateService = provider.provide();
         let _result = app_template_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量删除{{InterfaceName}}
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<BatchDeleteTemplateReq>,
-    ) -> Responder<BatchDeleteTemplateResp> {
+    ) -> Responder<()> {
         let app_template_service: TemplateService = provider.provide();
         let _result = app_template_service.batch_delete(req.ids.clone()).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

@@ -23,16 +23,11 @@ pub struct GetPhonesReq {
     pub phone: Option<String>,
 }
 
+/// 查询用户手机号列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPhonesResp {
     pub data_list: Vec<user_phone::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<user_phone::Model>, u64)> for GetPhonesResp {
-    fn from((data_list, total): (Vec<user_phone::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询用户手机号信息 请求体
@@ -42,16 +37,11 @@ pub struct GetPhoneReq {
     pub id: i32,
 }
 
+/// 查询用户手机号信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetPhoneResp {
     #[serde(flatten)]
     model: user_phone::Model,
-}
-
-impl From<user_phone::Model> for GetPhoneResp {
-    fn from(model: user_phone::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加用户手机号 请求体
@@ -66,11 +56,8 @@ pub struct CreatePhoneReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreatePhoneResp {}
-
 /// 更新用户手机号 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdatePhoneReq {
     /// 手机号ID
     pub id: i32,
@@ -80,9 +67,6 @@ pub struct UpdatePhoneReq {
     /// 描述信息
     pub desc: Option<String>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdatePhoneResp {}
 
 // 自定义电话号码验证函数
 fn validate_phone(phone: &str) -> Result<(), ValidationError> {
@@ -101,6 +85,3 @@ pub struct DeletePhoneReq {
     /// 手机号ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeletePhoneResp {}

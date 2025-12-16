@@ -23,35 +23,25 @@ pub struct GetDepartmentsReq {
     pub all: Option<bool>,
 }
 
+/// 查询部门列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDepartmentsResp {
     pub data_list: Vec<department::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<department::Model>, u64)> for GetDepartmentsResp {
-    fn from((data_list, total): (Vec<department::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 查询部门列表 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetDepartmentReq {
     /// 模板ID
     pub id: i32,
 }
 
+/// 查询部门详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDepartmentResp {
     #[serde(flatten)]
     model: department::Model,
-}
-
-impl From<department::Model> for GetDepartmentResp {
-    fn from(model: department::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加部门 请求体
@@ -72,11 +62,8 @@ pub struct CreateDepartmentReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateDepartmentResp {}
-
 /// 更新数据 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateDepartmentReq {
     /// 部门ID
     pub id: i32,
@@ -94,20 +81,14 @@ pub struct UpdateDepartmentReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateDepartmentResp {}
-
 /// 更新数据状态 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateDepartmentStatusReq {
     /// 部门ID
     pub id: i32,
     /// 状态(false:停用,true:正常)
     pub status: bool,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateDepartmentStatusResp {}
 
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
@@ -116,21 +97,12 @@ pub struct DeleteDepartmentReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteDepartmentResp {}
-
 /// 部门树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetDepartmentTreeReq {}
 
+/// 部门树列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDepartmentTreeResp {
-    #[serde(flatten)]
-    pub data: Vec<GenericTree<department::Model>>,
-}
-
-impl From<Vec<GenericTree<department::Model>>> for GetDepartmentTreeResp {
-    fn from(data: Vec<GenericTree<department::Model>>) -> Self {
-        Self { data }
-    }
+    data_list: Vec<GenericTree<department::Model>>,
 }

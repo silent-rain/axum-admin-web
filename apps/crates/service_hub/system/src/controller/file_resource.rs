@@ -13,10 +13,9 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::file_resource::{
-        BatchDeleteFileResourceReq, BatchDeleteFileResourceResp, DeleteFileResourceReq,
-        DeleteFileResourceResp, GetFileResourceReq, GetFileResourceResp, GetFileResourcesReq,
-        GetFileResourcesResp, ShowImageReq, UpdateFileResourceReq, UpdateFileResourceResp,
-        UploadFileReq, UploadFileResp, UploadFilesReq, UploadFilesResp,
+        BatchDeleteFileResourceReq, DeleteFileResourceReq, GetFileResourceReq, GetFileResourceResp,
+        GetFileResourcesReq, GetFileResourcesResp, ShowImageReq, UpdateFileResourceReq,
+        UploadFileReq, UploadFilesReq,
     },
     service::file_resource::FileResourceService,
 };
@@ -33,7 +32,7 @@ impl FileResourceController {
         let file_resource_service: FileResourceService = provider.provide();
         let (results, total) = file_resource_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -45,7 +44,7 @@ impl FileResourceController {
         let file_resource_service: FileResourceService = provider.provide();
         let result = file_resource_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -53,36 +52,33 @@ impl FileResourceController {
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateFileResourceReq>,
-    ) -> Responder<UpdateFileResourceResp> {
+    ) -> Responder<()> {
         let file_resource_service: FileResourceService = provider.provide();
         let _result = file_resource_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除文件
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteFileResourceReq>,
-    ) -> Responder<DeleteFileResourceResp> {
+    ) -> Responder<()> {
         let file_resource_service: FileResourceService = provider.provide();
         let _result = file_resource_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量删除文件
     pub async fn batch_delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<BatchDeleteFileResourceReq>,
-    ) -> Responder<BatchDeleteFileResourceResp> {
+    ) -> Responder<()> {
         let file_resource_service: FileResourceService = provider.provide();
         let _result = file_resource_service.batch_delete(req.ids.clone()).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }
 
@@ -91,24 +87,22 @@ impl FileResourceController {
     pub async fn upload_file(
         Extension(provider): Extension<AInjectProvider>,
         TypedMultipart(req): TypedMultipart<UploadFileReq>,
-    ) -> Responder<UploadFileResp> {
+    ) -> Responder<()> {
         let file_resource_service: FileResourceService = provider.provide();
         let _result = file_resource_service.upload_file(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 批量上传文件
     pub async fn upload_files(
         Extension(provider): Extension<AInjectProvider>,
         TypedMultipart(req): TypedMultipart<UploadFilesReq>,
-    ) -> Responder<UploadFilesResp> {
+    ) -> Responder<()> {
         let file_resource_service: FileResourceService = provider.provide();
         let _result = file_resource_service.upload_files(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 下载文件

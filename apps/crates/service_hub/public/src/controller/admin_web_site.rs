@@ -22,8 +22,8 @@ impl AdminWebSiteController {
         info!("req filename: {filename}");
 
         let r = AssetAdminWebDist;
-        let asset = r.data(&filename).map_or_else(Vec::new, |v| v);
-        let mimetype = r.mimetype(&filename).map_or_else(|| "".to_string(), |v| v);
+        let asset = r.data(&filename).unwrap_or_default();
+        let mimetype = r.mimetype(&filename).unwrap_or_default();
         let content_type = format!("{mimetype}; charset=utf-8");
 
         Response::builder()
@@ -57,7 +57,7 @@ impl AdminWebSiteController {
             }
         };
 
-        let mimetype = r.mimetype(&filename).map_or_else(|| "".to_string(), |v| v);
+        let mimetype = r.mimetype(&filename).unwrap_or_default();
         let content_type = format!("{mimetype}; charset=utf-8");
 
         Response::builder()

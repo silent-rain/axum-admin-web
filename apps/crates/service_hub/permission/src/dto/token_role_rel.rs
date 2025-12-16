@@ -4,7 +4,7 @@ use validator::Validate;
 
 use entity::permission::token_role_rel;
 
-/// 查询令牌角色关系列表
+/// 查询令牌角色关系列表 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct GetTokenRoleRelsReq {
     /// 当前分页
@@ -19,19 +19,14 @@ pub struct GetTokenRoleRelsReq {
     pub token_id: Option<i32>,
 }
 
+/// 查询令牌角色关系列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetTokenRoleRelsResp {
     pub data_list: Vec<token_role_rel::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<token_role_rel::Model>, u64)> for GetTokenRoleRelsResp {
-    fn from((data_list, total): (Vec<token_role_rel::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 批量添加令牌角色关系
+/// 批量添加令牌角色关系 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct BatchCreateTokenRoleRelReq {
     /// 令牌ID
@@ -40,15 +35,9 @@ pub struct BatchCreateTokenRoleRelReq {
     pub role_ids: Vec<i32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchCreateTokenRoleRelResp {}
-
-/// 批量删除令牌角色关系
+/// 批量删除令牌角色关系 请求体
 #[derive(Default, Deserialize, Validate)]
 pub struct BatchDeleteTokenRoleRelReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteTokenRoleRelResp {}

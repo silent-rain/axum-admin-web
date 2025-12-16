@@ -21,16 +21,11 @@ pub struct GetUserSessionsReq {
     pub session_id: Option<String>,
 }
 
+/// 查询用户session列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserSessionsResp {
     pub data_list: Vec<user_session::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<user_session::Model>, u64)> for GetUserSessionsResp {
-    fn from((data_list, total): (Vec<user_session::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询用户session信息 请求体
@@ -40,16 +35,11 @@ pub struct GetUserSessionReq {
     pub id: i32,
 }
 
+/// 查询用户session信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserSessionResp {
     #[serde(flatten)]
     model: user_session::Model,
-}
-
-impl From<user_session::Model> for GetUserSessionResp {
-    fn from(model: user_session::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加用户session 请求体
@@ -63,11 +53,8 @@ pub struct CreateUserSessionReq {
     pub data: Vec<u8>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateUserSessionResp {}
-
 /// 更新用户session 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateUserSessionReq {
     /// session ID
     pub id: i32,
@@ -79,11 +66,8 @@ pub struct UpdateUserSessionReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateUserSessionResp {}
-
 /// 更新用户session状态 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct UpdateUserSessionStatusReq {
     /// 用户ID
     pub id: i32,
@@ -91,15 +75,9 @@ pub struct UpdateUserSessionStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateUserSessionStatusResp {}
-
 /// 删除用户session 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteUserSessionReq {
     /// session ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteUserSessionResp {}

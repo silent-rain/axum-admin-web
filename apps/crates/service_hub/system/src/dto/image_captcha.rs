@@ -18,54 +18,39 @@ pub struct GetImageCaptchasReq {
     pub end_time: Option<String>,
 }
 
+/// 获取验证码列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetImageCaptchasResp {
     pub data_list: Vec<image_captcha::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<image_captcha::Model>, u64)> for GetImageCaptchasResp {
-    fn from((data_list, total): (Vec<image_captcha::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 验证码数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetImageCaptchaReq {
     /// 验证码ID
     pub id: i32,
 }
 
+/// 验证码数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetImageCaptchaResp {
     #[serde(flatten)]
     model: image_captcha::Model,
 }
 
-impl From<image_captcha::Model> for GetImageCaptchaResp {
-    fn from(model: image_captcha::Model) -> Self {
-        Self { model }
-    }
-}
-
-/// 查询数据 请求体
+/// 验证码数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetInfoByCaptchaIdReq {
     /// 验证码ID
     pub captcha_id: String,
 }
 
+/// 验证码数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetInfoByCaptchaIdResp {
     #[serde(flatten)]
     model: image_captcha::Model,
-}
-
-impl From<image_captcha::Model> for GetInfoByCaptchaIdResp {
-    fn from(model: image_captcha::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加数据 请求体
@@ -90,18 +75,12 @@ pub struct DeleteImageCaptchaReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteImageCaptchaResp {}
-
 /// 批量删除验证码
 #[derive(Default, Deserialize, Validate)]
 pub struct BatchDeleteImageCaptchaReq {
     /// ID列表
     pub ids: Vec<i32>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteImageCaptchaResp {}
 
 /// 获取图片 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]

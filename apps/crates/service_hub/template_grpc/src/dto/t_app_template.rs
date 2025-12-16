@@ -22,6 +22,7 @@ pub struct GetAppTemplatesReq {
     pub is_all: bool,
 }
 
+/// 查询列表数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetAppTemplatesResp {
     pub data_list: Vec<t_app_template::Model>,
@@ -35,10 +36,11 @@ pub struct GetAppTemplateReq {
     pub id: i32,
 }
 
+/// 查询数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetAppTemplateResp {
     #[serde(flatten)]
-    data: t_app_template::Model,
+    model: t_app_template::Model,
 }
 
 /// 添加数据 请求体
@@ -49,9 +51,6 @@ pub struct CreateAppTemplateReq {
     /// 描述信息
     pub desc: Option<String>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateAppTemplateResp {}
 
 /// 批量添加数据结点
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -71,9 +70,6 @@ pub struct BatchCreateAppTemplateReq {
     pub data: Vec<BatchCreateAppTemplateItem>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchCreateAppTemplateResp {}
-
 /// 更新数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UpdateAppTemplateReq {
@@ -87,9 +83,6 @@ pub struct UpdateAppTemplateReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateAppTemplateResp {}
-
 /// 更新数据状态 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct UpdateAppTemplateStatusReq {
@@ -99,9 +92,6 @@ pub struct UpdateAppTemplateStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateAppTemplateStatusResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteAppTemplateReq {
@@ -109,15 +99,9 @@ pub struct DeleteAppTemplateReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteAppTemplateResp {}
-
 /// 批量删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct BatchDeleteAppTemplateReq {
     /// 模板ID列表
     pub ids: Vec<i32>,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct BatchDeleteAppTemplateResp {}

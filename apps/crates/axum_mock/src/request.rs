@@ -10,7 +10,6 @@ use axum_test::TestServer;
 use sea_orm::{ConnectionTrait, EntityTrait, Schema};
 use sea_orm_migration::{MigrationTrait, SchemaManager, migrator::MigratorTrait};
 use serde::Serialize;
-use tracing::error;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {

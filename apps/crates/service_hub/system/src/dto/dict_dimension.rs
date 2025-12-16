@@ -24,16 +24,11 @@ pub struct GetDictDimensionsReq {
     pub all: Option<bool>,
 }
 
+/// 字典维度列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDimensionsResp {
     pub data_list: Vec<dict_dimension::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<dict_dimension::Model>, u64)> for GetDictDimensionsResp {
-    fn from((data_list, total): (Vec<dict_dimension::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询数据 请求体
@@ -43,16 +38,11 @@ pub struct GetDictDimensionReq {
     pub id: i32,
 }
 
+/// 字典维度数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDictDimensionResp {
     #[serde(flatten)]
     model: dict_dimension::Model,
-}
-
-impl From<dict_dimension::Model> for GetDictDimensionResp {
-    fn from(model: dict_dimension::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加字典维度 请求体
@@ -70,11 +60,8 @@ pub struct CreateDictDimensionReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateDictDimensionResp {}
-
 /// 更新字典维度 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDictDimensionReq {
     /// 字典维度ID
     pub id: i32,
@@ -92,11 +79,8 @@ pub struct UpdateDictDimensionReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateDictDimensionResp {}
-
 /// 更新字典维度状态 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDictDimensionStatusReq {
     /// 字典维度ID
     pub id: i32,
@@ -104,15 +88,9 @@ pub struct UpdateDictDimensionStatusReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateDictDimensionStatusResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteDictDimensionReq {
     /// 字典维度ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteDictDimensionResp {}

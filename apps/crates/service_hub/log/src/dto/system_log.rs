@@ -18,35 +18,25 @@ pub struct GetSystemLogsReq {
     pub end_time: Option<String>,
 }
 
+/// 查询API操作日志详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetSystemLogsResp {
     pub data_list: Vec<log_system::Model>,
     pub total: u64,
 }
 
-impl From<(Vec<log_system::Model>, u64)> for GetSystemLogsResp {
-    fn from((data_list, total): (Vec<log_system::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
-}
-
-/// 查询数据 请求体
+/// 查询系统日志详情 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetSystemLogReq {
     /// 日志ID
     pub id: i32,
 }
 
+/// 查询系统日志详情 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetSystemLogResp {
     #[serde(flatten)]
     model: log_system::Model,
-}
-
-impl From<log_system::Model> for GetSystemLogResp {
-    fn from(model: log_system::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加系统日志 请求体
@@ -106,15 +96,9 @@ pub struct CreateSystemLogReq {
     pub stack: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateSystemLogResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteSystemLogReq {
     /// 日志ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteSystemLogResp {}

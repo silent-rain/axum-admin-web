@@ -28,7 +28,7 @@ impl ComfyUIImageController {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
         let result = comfyui_image_service.upload_image(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -40,7 +40,7 @@ impl ComfyUIImageController {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
         let result = comfyui_image_service.upload_mask(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -52,7 +52,7 @@ impl ComfyUIImageController {
         let comfyui_image_service: ComfyUIImageService = provider.provide();
         let result = comfyui_image_service.upload_image_and_mask(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 

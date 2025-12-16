@@ -22,16 +22,11 @@ pub struct GetScheduleEventLogsReq {
     pub job_id: Option<i32>,
 }
 
+/// 查询任务调度事件日志列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleEventLogsResp {
     pub data_list: Vec<schedule_event_log::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<schedule_event_log::Model>, u64)> for GetScheduleEventLogsResp {
-    fn from((data_list, total): (Vec<schedule_event_log::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询数据 请求体
@@ -41,20 +36,15 @@ pub struct GetScheduleEventLogReq {
     pub id: i32,
 }
 
+/// 查询数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetScheduleEventLogResp {
     #[serde(flatten)]
     model: schedule_event_log::Model,
 }
 
-impl From<schedule_event_log::Model> for GetScheduleEventLogResp {
-    fn from(model: schedule_event_log::Model) -> Self {
-        Self { model }
-    }
-}
-
 /// 添加任务调度事件日志 请求体
-#[derive(Clone, Serialize, Deserialize, Validate)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct CreateScheduleEventLogReq {
     /// 任务ID
     pub job_id: i32,
@@ -64,15 +54,9 @@ pub struct CreateScheduleEventLogReq {
     pub status: Status,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateScheduleEventLogResp {}
-
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteScheduleEventLogReq {
     /// 事件日志ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteScheduleEventLogResp {}

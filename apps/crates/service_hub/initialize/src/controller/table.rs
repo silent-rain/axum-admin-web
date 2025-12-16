@@ -1,9 +1,6 @@
 //! 库表初始化
 
-use crate::{
-    dto::table::{CreateTableReq, CreateTableResp},
-    service::table::TableService,
-};
+use crate::{dto::table::CreateTableReq, service::table::TableService};
 
 use axum_response::{Responder, Response};
 use axum_validator::{Extension, Json};
@@ -17,7 +14,7 @@ impl TableController {
     pub async fn table(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateTableReq>,
-    ) -> Responder<CreateTableResp> {
+    ) -> Responder<()> {
         let table_service: TableService = provider.provide();
         let _result = table_service.table(req).await?;
 

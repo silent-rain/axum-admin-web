@@ -21,16 +21,11 @@ pub struct GetLocationsReq {
     pub user_id: Option<i32>,
 }
 
+/// 查询用户地理位置列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetLocationsResp {
     pub data_list: Vec<location::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<location::Model>, u64)> for GetLocationsResp {
-    fn from((data_list, total): (Vec<location::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询用户地理位置信息 请求体
@@ -40,16 +35,11 @@ pub struct GetLocationReq {
     pub id: i32,
 }
 
+/// 查询用户地理位置信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetLocationResp {
     #[serde(flatten)]
     model: location::Model,
-}
-
-impl From<location::Model> for GetLocationResp {
-    fn from(model: location::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加用户地理位置
@@ -75,11 +65,8 @@ pub struct CreateLocationReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateLocationResp {}
-
 /// 更新数据 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateLocationReq {
     /// 位置ID
     pub id: i32,
@@ -101,15 +88,9 @@ pub struct UpdateLocationReq {
     pub desc: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateLocationResp {}
-
 /// 删除用户地理位置 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteLocationReq {
     /// 位置ID
     pub id: i32,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteLocationResp {}

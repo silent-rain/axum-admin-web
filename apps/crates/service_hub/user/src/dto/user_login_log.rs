@@ -24,16 +24,11 @@ pub struct GetUserLoginLogsReq {
     pub username: Option<String>,
 }
 
+/// 查询登陆日志列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserLoginLogsResp {
     pub data_list: Vec<user_login_log::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<user_login_log::Model>, u64)> for GetUserLoginLogsResp {
-    fn from((data_list, total): (Vec<user_login_log::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询登陆日志信息 请求体
@@ -43,16 +38,11 @@ pub struct GetUserLoginLogReq {
     pub id: i32,
 }
 
+/// 查询登陆日志信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUserLoginLogResp {
     #[serde(flatten)]
     model: user_login_log::Model,
-}
-
-impl From<user_login_log::Model> for GetUserLoginLogResp {
-    fn from(model: user_login_log::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加登陆日志信息 请求体
@@ -73,6 +63,3 @@ pub struct CreateUserLoginLogReq {
     /// 登录状态
     pub login_status: LoginStatus,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateUserLoginLogResp {}

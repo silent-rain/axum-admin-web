@@ -7,9 +7,8 @@ use inject::AInjectProvider;
 
 use crate::{
     dto::token::{
-        CreateTokenReq, CreateTokenResp, DeleteTokenReq, DeleteTokenResp, GetTokenReq,
-        GetTokenResp, GetTokensReq, GetTokensResp, UpdateTokenReq, UpdateTokenResp,
-        UpdateTokenStatusReq, UpdateTokenStatusResp,
+        CreateTokenReq, DeleteTokenReq, GetTokenReq, GetTokenResp, GetTokensReq, GetTokensResp,
+        UpdateTokenReq, UpdateTokenStatusReq,
     },
     service::token::TokenService,
 };
@@ -26,7 +25,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         let (results, total) = token_service.list(req).await?;
 
-        let resp = Response::data((results, total).into());
+        let resp = Response::data_list(results, total).to_json()?;
         Ok(resp)
     }
 
@@ -38,7 +37,7 @@ impl TokenController {
         let token_service: TokenService = provider.provide();
         let result = token_service.info(req).await?;
 
-        let resp = Response::data(result.into());
+        let resp = Response::data(result).to_json()?;
         Ok(resp)
     }
 
@@ -46,47 +45,43 @@ impl TokenController {
     pub async fn create(
         Extension(provider): Extension<AInjectProvider>,
         Json(data): Json<CreateTokenReq>,
-    ) -> Responder<CreateTokenResp> {
+    ) -> Responder<()> {
         let token_service: TokenService = provider.provide();
         let _result = token_service.create(data).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新令牌
     pub async fn update(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateTokenReq>,
-    ) -> Responder<UpdateTokenResp> {
+    ) -> Responder<()> {
         let token_service: TokenService = provider.provide();
         let _result = token_service.update(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 更新令牌状态
     pub async fn update_status(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateTokenStatusReq>,
-    ) -> Responder<UpdateTokenStatusResp> {
+    ) -> Responder<()> {
         let token_service: TokenService = provider.provide();
         token_service.update_status(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 
     /// 删除令牌
     pub async fn delete(
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<DeleteTokenReq>,
-    ) -> Responder<DeleteTokenResp> {
+    ) -> Responder<()> {
         let token_service: TokenService = provider.provide();
         let _result = token_service.delete(req).await?;
 
-        let resp = Response::ok();
-        Ok(resp)
+        Ok(Response::ok())
     }
 }

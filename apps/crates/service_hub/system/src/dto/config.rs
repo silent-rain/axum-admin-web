@@ -23,16 +23,11 @@ pub struct GetConfigsReq {
     pub all: Option<bool>,
 }
 
+/// 查询配置列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetConfigsResp {
     pub data_list: Vec<config::Model>,
     pub total: u64,
-}
-
-impl From<(Vec<config::Model>, u64)> for GetConfigsResp {
-    fn from((data_list, total): (Vec<config::Model>, u64)) -> Self {
-        Self { data_list, total }
-    }
 }
 
 /// 查询数据 请求体
@@ -42,16 +37,11 @@ pub struct GetConfigReq {
     pub id: i32,
 }
 
+/// 配置数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetConfigResp {
     #[serde(flatten)]
     model: config::Model,
-}
-
-impl From<config::Model> for GetConfigResp {
-    fn from(model: config::Model) -> Self {
-        Self { model }
-    }
 }
 
 /// 添加配置 请求体
@@ -73,11 +63,8 @@ pub struct CreateConfigReq {
     pub status: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CreateConfigResp {}
-
 /// 更新数据 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateConfigReq {
     /// 配置ID
     pub id: i32,
@@ -96,20 +83,15 @@ pub struct UpdateConfigReq {
     /// 状态(false:停用,true:正常)
     pub status: bool,
 }
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateConfigResp {}
 
 /// 更新数据状态 请求体
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateConfigStatusReq {
     /// 配置ID
     pub id: i32,
     /// 状态(false:停用,true:正常)
     pub status: bool,
 }
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UpdateConfigStatusResp {}
 
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
@@ -118,21 +100,11 @@ pub struct DeleteConfigReq {
     pub id: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct DeleteConfigResp {}
-
 /// 配置树列表 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct GetConfigTreeReq {}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetConfigTreeResp {
-    #[serde(flatten)]
-    pub data: Vec<GenericTree<config::Model>>,
-}
-
-impl From<Vec<GenericTree<config::Model>>> for GetConfigTreeResp {
-    fn from(data: Vec<GenericTree<config::Model>>) -> Self {
-        Self { data }
-    }
+    data_list: Vec<GenericTree<config::Model>>,
 }
