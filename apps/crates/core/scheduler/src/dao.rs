@@ -84,7 +84,7 @@ where
             job_id: Set(job_id),
             uuid: Set(uuid),
             cost: Set(0),
-            status: Set(enums::schedule_status_log::Status::Running as i8),
+            status: Set(enums::schedule_status_log::Status::Running as i16),
             ..Default::default()
         };
         active_model.insert(self.db.db()).await
@@ -102,7 +102,7 @@ where
             id: Set(id),
             error: Set(error),
             cost: Set(cost),
-            status: Set(status as i8),
+            status: Set(status as i16),
             ..Default::default()
         };
         let result = ScheduleStatusLog::update_many()
@@ -121,7 +121,7 @@ where
     ) -> Result<u64, DbErr> {
         let active_model = schedule_status_log::ActiveModel {
             id: Set(id),
-            status: Set(status as i8),
+            status: Set(status as i16),
             ..Default::default()
         };
         let result = ScheduleStatusLog::update_many()
@@ -159,7 +159,7 @@ where
         let active_model = schedule_event_log::ActiveModel {
             job_id: Set(job_id),
             uuid: Set(uuid),
-            status: Set(status as i8),
+            status: Set(status as i16),
             ..Default::default()
         };
         active_model.insert(self.db.db()).await

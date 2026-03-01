@@ -100,7 +100,7 @@ impl ScheduleStatusLogDao {
     }
 
     /// 更新状态
-    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i16) -> Result<(), DbErr> {
         let active_model = schedule_status_log::ActiveModel {
             id: Set(id),
             status: Set(status),

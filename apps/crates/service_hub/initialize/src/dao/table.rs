@@ -98,7 +98,7 @@ impl TableDao {
     ) -> Result<user_base::Model, DbErr> {
         let active_model = user_base::ActiveModel {
             username: Set(req.username),
-            gender: Set(Gender::Undisclosed as i8),
+            gender: Set(Gender::Undisclosed as i16),
             password: Set(req.password),
             status: Set(true),
             ..Default::default()

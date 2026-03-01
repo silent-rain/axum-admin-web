@@ -24,9 +24,9 @@ pub struct Model {
     /// Icon图标类
     pub icon_class: Option<String>,
     /// 菜单类型(0:菜单,1:按钮)
-    pub menu_type: i8,
+    pub menu_type: i16,
     /// 打开方式(0:组件,1:内链,2:外链)
-    pub open_method: i8,
+    pub open_method: i16,
     /// 路由地址
     pub path: Option<String>,
     /// 组件路径

@@ -34,7 +34,7 @@ pub struct Model {
     /// 描述信息
     pub desc: Option<String>,
     /// 登录状态
-    pub login_status: i8,
+    pub login_status: i16,
     /// 创建时间
     pub created_at: DateTime,
     /// 更新时间

@@ -41,7 +41,7 @@ pub fn add_login_log(
             session_id: Set(session_id.clone()),
             remote_addr: Set(browser_info.remote_addr),
             user_agent: Set(browser_info.user_agent),
-            login_status: Set(login_status as i8),
+            login_status: Set(login_status as i16),
             device: Set(Some(device)),
             system: Set(Some(system)),
             browser: Set(Some(browser)),

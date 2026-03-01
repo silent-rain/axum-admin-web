@@ -20,9 +20,9 @@ pub struct Model {
     /// 请求ID
     pub request_id: Option<String>,
     /// 终端类型
-    pub os_type: i8,
+    pub os_type: i16,
     /// 错误类型
-    pub error_type: i8,
+    pub error_type: i16,
     /// 日志级别
     pub level: String,
     /// 日发生位置

@@ -24,7 +24,7 @@ pub struct Model {
     /// 耗时,毫秒
     pub cost: u64,
     /// 任务状态
-    pub status: i8,
+    pub status: i16,
     /// 创建时间
     pub created_at: DateTime,
     /// 更新时间

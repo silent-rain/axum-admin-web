@@ -68,8 +68,8 @@ impl ScheduleJobService {
 
         let model = schedule_job::ActiveModel {
             name: Set(req.name),
-            source: Set(req.source as i8),
-            job_type: Set(req.job_type as i8),
+            source: Set(req.source as i16),
+            job_type: Set(req.job_type as i16),
             sys_code: Set(req.sys_code),
             expression: Set(req.expression),
             interval: Set(req.interval),
@@ -137,7 +137,7 @@ impl ScheduleJobService {
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateScheduleJobStatusReq) -> Result<(), ErrorMsg> {
         self.schedule_job_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status as i16)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {
@@ -176,7 +176,7 @@ impl ScheduleJobService {
     /// 删除数据
     pub async fn delete(&self, req: DeleteScheduleJobReq) -> Result<u64, ErrorMsg> {
         let job = self.info(GetScheduleJobReq { id: req.id }).await?;
-        if job.source == Source::System as i8 {
+        if job.source == Source::System as i16 {
             error!("系统任务不允许删除");
             return Err(Error::DbDeleteError.into_err_with_msg("系统任务不允许删除"));
         }

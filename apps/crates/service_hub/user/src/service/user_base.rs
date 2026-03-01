@@ -104,7 +104,7 @@ impl UserBaseService {
         let model = user_base::ActiveModel {
             username: Set(req.username),
             real_name: Set(req.real_name),
-            gender: Set(req.gender as i8),
+            gender: Set(req.gender as i16),
             password: Set(password),
             status: Set(req.status),
             age: Set(req.age),
@@ -144,7 +144,7 @@ impl UserBaseService {
         let model = user_base::ActiveModel {
             id: Set(req.id),
             real_name: Set(req.real_name),
-            gender: Set(req.gender as i8),
+            gender: Set(req.gender as i16),
             status: Set(req.status),
             age: Set(req.age),
             date_birth: Set(req.date_birth),
@@ -232,7 +232,7 @@ impl UserBaseService {
         let result = ProfileResp {
             id,
             username: user.username,
-            gender: user.gender as i8,
+            gender: user.gender,
             age: user.age,
             date_birth: user.date_birth,
             avatar: user.avatar,

@@ -150,7 +150,7 @@ pub struct ProfileResp {
     /// 用户名称
     pub username: String,
     /// 性别
-    pub gender: i8,
+    pub gender: i16,
     /// 年龄
     pub age: Option<i32>,
     /// 出生日期

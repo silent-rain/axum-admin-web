@@ -92,7 +92,7 @@ impl ScheduleJobDao {
     }
 
     /// 更新状态
-    pub async fn update_status(&self, id: i32, status: i8) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, status: i16) -> Result<(), DbErr> {
         let active_model = schedule_job::ActiveModel {
             id: Set(id),
             status: Set(status),

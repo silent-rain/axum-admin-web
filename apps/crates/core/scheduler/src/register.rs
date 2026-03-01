@@ -70,14 +70,14 @@ where
                 None => continue,
             };
             // 判读配置是否为系统任务
-            if job_model.source != enums::schedule_job::Source::System as i8 {
+            if job_model.source != enums::schedule_job::Source::System as i16 {
                 continue;
             }
 
-            let sys_job = if job_model.job_type == enums::schedule_job::JobType::Interval as i8 {
+            let sys_job = if job_model.job_type == enums::schedule_job::JobType::Interval as i16 {
                 let interval = job_model.interval.ok_or(Error::NotIntervalError)?;
                 task.task_interval(job_model.id, interval)?
-            } else if job_model.job_type == enums::schedule_job::JobType::Timer as i8 {
+            } else if job_model.job_type == enums::schedule_job::JobType::Timer as i16 {
                 let expression = job_model
                     .expression
                     .clone()
@@ -128,7 +128,7 @@ where
             .await
             .map_err(|err| Error::ScheduleJobListError(err.to_string()))?
             .into_iter()
-            .filter(|v| v.source == enums::schedule_job::Source::System as i8)
+            .filter(|v| v.source == enums::schedule_job::Source::System as i16)
             .collect::<Vec<schedule_job::Model>>();
         Ok(job_list)
     }
@@ -159,7 +159,7 @@ where
         let job_list = self.user_job_list().await?;
 
         for job_model in job_list.iter() {
-            let user_job = if job_model.job_type == enums::schedule_job::JobType::Interval as i8 {
+            let user_job = if job_model.job_type == enums::schedule_job::JobType::Interval as i16 {
                 self.init_interval_task(job_model)?
             } else {
                 self.init_cron_task(job_model)?
@@ -239,7 +239,7 @@ where
             .await
             .map_err(|err| Error::ScheduleJobListError(err.to_string()))?
             .into_iter()
-            .filter(|v| v.source == enums::schedule_job::Source::User as i8)
+            .filter(|v| v.source == enums::schedule_job::Source::User as i16)
             .collect::<Vec<schedule_job::Model>>();
 
         Ok(job_list)

@@ -18,7 +18,7 @@ pub struct Model {
     /// 任务调度ID
     pub uuid: String,
     /// 任务状态(0:开始,1:完成,2:停止,3:移除)
-    pub status: i8,
+    pub status: i16,
     /// 创建时间
     pub created_at: DateTime,
 }

@@ -89,7 +89,7 @@ impl ScheduleStatusLogService {
             job_id: Set(req.job_id),
             error: Set(req.error),
             cost: Set(req.cost),
-            status: Set(req.status as i8),
+            status: Set(req.status as i16),
             ..Default::default()
         };
 
@@ -111,7 +111,7 @@ impl ScheduleStatusLogService {
         req: UpdateScheduleStatusLogSatausReq,
     ) -> Result<(), ErrorMsg> {
         self.schedule_status_log_dao
-            .update_status(req.id, req.status as i8)
+            .update_status(req.id, req.status as i16)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {

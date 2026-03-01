@@ -4,7 +4,7 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 
 /// 性别
 #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize_repr, Deserialize_repr)]
-#[repr(i8)]
+#[repr(i16)]
 pub enum Gender {
     /// 保密
     Undisclosed = 0,

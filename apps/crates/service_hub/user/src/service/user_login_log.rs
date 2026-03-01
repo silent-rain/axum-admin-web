@@ -100,7 +100,7 @@ impl UserLoginLogService {
             system: Set(Some(system)),
             browser: Set(Some(browser)),
             desc: Set(req.desc),
-            login_status: Set(req.login_status as i8),
+            login_status: Set(req.login_status as i16),
             ..Default::default()
         };
         let result = self.user_login_dao.create(model).await.map_err(|err| {

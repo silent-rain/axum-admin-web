@@ -91,7 +91,7 @@ impl OpenapiService {
 
         let model = openapi::ActiveModel {
             pid: Set(req.pid),
-            category: Set(req.category as i8),
+            category: Set(req.category as i16),
             name: Set(req.name),
             method: Set(req.method),
             path: Set(req.path),
@@ -117,7 +117,7 @@ impl OpenapiService {
         let model = openapi::ActiveModel {
             id: Set(req.id),
             pid: Set(req.pid),
-            category: Set(req.category as i8),
+            category: Set(req.category as i16),
             name: Set(req.name),
             method: Set(req.method),
             path: Set(req.path),

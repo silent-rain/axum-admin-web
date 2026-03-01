@@ -116,7 +116,7 @@ where
                         return;
                     }
                 };
-                if sys_model.status == enums::schedule_job::Status::Offline as i8 {
+                if sys_model.status == enums::schedule_job::Status::Offline as i16 {
                     return;
                 }
 
@@ -372,7 +372,7 @@ where
                 return;
             }
         };
-        if sys_model.status == enums::schedule_job::Status::Offline as i8 {
+        if sys_model.status == enums::schedule_job::Status::Offline as i16 {
             return;
         }
 

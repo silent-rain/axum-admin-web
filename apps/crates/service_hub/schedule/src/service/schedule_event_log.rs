@@ -64,7 +64,7 @@ impl ScheduleEventLogService {
         let data = schedule_event_log::ActiveModel {
             job_id: Set(req.job_id),
             uuid: Set(req.uuid),
-            status: Set(req.status as i8),
+            status: Set(req.status as i16),
             ..Default::default()
         };
         let result = self

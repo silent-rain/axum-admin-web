@@ -118,7 +118,7 @@ impl<S> SessionAuthService<S> {
             .info_by_session_id(session_id.clone())
             .await?;
 
-        if user.login_status == LoginStatus::Disabled as i8 {
+        if user.login_status == LoginStatus::Disabled as i16 {
             error!(
                 "user_id: {} session_id: {}, 当前登陆已被禁用",
                 user.id, session_id
@@ -127,7 +127,7 @@ impl<S> SessionAuthService<S> {
                 Error::LoginStatusDisabled.into_err_with_msg("当前登陆已被禁用, 请重新登陆")
             );
         }
-        if user.login_status == LoginStatus::Failed as i8 {
+        if user.login_status == LoginStatus::Failed as i16 {
             error!(
                 "user_id: {} session_id: {}, 无效鉴权",
                 user.id,
@@ -135,7 +135,7 @@ impl<S> SessionAuthService<S> {
             );
             return Err(Error::LoginStatusDisabled.into_err_with_msg("登陆失败, 请重新登陆"));
         }
-        if user.login_status == LoginStatus::Logout as i8 {
+        if user.login_status == LoginStatus::Logout as i16 {
             error!("user_id: {} session_id: {}, 已登出", user.id, session_id);
             return Err(Error::LoginStatusDisabled.into_err_with_msg("已登出, 请重新登陆"));
         }

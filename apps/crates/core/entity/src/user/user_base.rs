@@ -20,7 +20,7 @@ pub struct Model {
     /// 真实姓名
     pub real_name: Option<String>,
     /// 性别(0:保密,1:女,2:男)
-    pub gender: i8,
+    pub gender: i16,
     /// 密码
     pub password: String,
     /// 状态(false:停用,true:正常)

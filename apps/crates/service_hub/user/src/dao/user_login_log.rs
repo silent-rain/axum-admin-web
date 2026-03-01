@@ -101,7 +101,7 @@ impl UserLoginLogDao {
     pub async fn update_status(&self, id: i32, login_status: i8) -> Result<(), DbErr> {
         let active_model = user_login_log::ActiveModel {
             id: Set(id),
-            login_status: Set(login_status),
+            login_status: Set(login_status.into()),
             ..Default::default()
         };
         let _ = active_model.update(self.db.db()).await?;

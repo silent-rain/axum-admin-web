@@ -20,7 +20,7 @@ pub struct Model {
     /// 父ID
     pub pid: Option<i32>,
     /// 类别,0:目录,1:接口
-    pub category: i8,
+    pub category: i16,
     /// 接口名称
     pub name: String,
     /// 请求类型

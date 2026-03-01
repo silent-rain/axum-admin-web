@@ -19,9 +19,9 @@ pub struct Model {
     #[sea_orm(unique)]
     pub name: String,
     /// 任务来源(0:用户定义,1:系统内部)
-    pub source: i8,
+    pub source: i16,
     /// 任务类型(0:定时任务,1:即时任务)
-    pub job_type: i8,
+    pub job_type: i16,
     /// 系统任务编码
     pub sys_code: Option<String>,
     /// cron表达式
@@ -31,7 +31,7 @@ pub struct Model {
     /// 描述信息
     pub desc: Option<String>,
     /// 任务状态(0:下线,1:上线)
-    pub status: i8,
+    pub status: i16,
     /// 创建时间
     pub created_at: DateTime,
     /// 更新时间
