@@ -1,8 +1,10 @@
 //! 角色表
 //! Entity: [`entity::user::Role`]
 
+use entity::user::role;
 use sea_orm::{
-    ConnectionTrait, DeriveIden, DeriveMigrationName,
+    ActiveValue::Set,
+    DeriveIden, DeriveMigrationName, EntityTrait,
     sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
@@ -78,40 +80,40 @@ impl MigrationTrait for Migration {
             .await?;
 
         // 预设数据
-        // let db = manager.get_connection();
-        // Role::insert_many([
-        //     role::ActiveModel {
-        //         name: Set("管理员".to_string()),
-        //         sort: Set(Some(1)),
-        //         status: Set(true),
-        //         ..Default::default()
-        //     },
-        //     role::ActiveModel {
-        //         name: Set("普通用户".to_string()),
-        //         sort: Set(Some(1)),
-        //         status: Set(true),
-        //         ..Default::default()
-        //     },
-        // ])
-        // .exec(db)
-        // .await?;
+        let db = manager.get_connection();
+        role::Entity::insert_many([
+            role::ActiveModel {
+                name: Set("管理员".to_string()),
+                sort: Set(Some(1)),
+                status: Set(true),
+                ..Default::default()
+            },
+            role::ActiveModel {
+                name: Set("普通用户".to_string()),
+                sort: Set(Some(1)),
+                status: Set(true),
+                ..Default::default()
+            },
+        ])
+        .exec(db)
+        .await?;
 
         // 预设数据
-        {
-            let db = manager.get_connection();
+        // {
+        //     let db = manager.get_connection();
 
-            // Use `execute_unprepared` if the SQL statement doesn't have value bindings
-            db.execute_unprepared(
-                r#"INSERT INTO `t_user_role` (`name`, `sort`, `status`) VALUES
-                    ('管理员', 1, true),
-                    ('普通用户', 1, true),
-                    ('开发工程师', 1, true),
-                    ('设计师', 1, true),
-                    ('客服人员', 1, true)
-                "#,
-            )
-            .await?;
-        }
+        //     // Use `execute_unprepared` if the SQL statement doesn't have value bindings
+        //     db.execute_unprepared(
+        //         r#"INSERT INTO `t_user_role` (`name`, `sort`, `status`) VALUES
+        //             ('管理员', 1, true),
+        //             ('普通用户', 1, true),
+        //             ('开发工程师', 1, true),
+        //             ('设计师', 1, true),
+        //             ('客服人员', 1, true)
+        //         "#,
+        //     )
+        //     .await?;
+        // }
 
         Ok(())
     }

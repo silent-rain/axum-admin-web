@@ -2,10 +2,13 @@
 //! Entity: [`entity::user::UserBase`]
 
 use sea_orm::{
-    ConnectionTrait, DeriveIden, DeriveMigrationName,
+    ActiveValue::Set,
+    DeriveIden, DeriveMigrationName, EntityTrait,
     sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use entity::user::user_base;
 
 use crate::utils::if_not_exists_create_index;
 
@@ -182,15 +185,34 @@ impl MigrationTrait for Migration {
         if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::ShareCode]).await?;
 
         // 预设数据
+        // {
+        //     let db = manager.get_connection();
+
+        //     // Use `execute_unprepared` if the SQL statement doesn't have value bindings
+        //     db.execute_unprepared(
+        //         r#"INSERT INTO `t_user_base` (`username`, `password`, `status`) VALUES
+        //             ('SR', 'da023f7090dd831097f8a534475b1c4fba2a9a6419968e52be7459e2533ac819', true)
+        //         "#,
+        //     )
+        //     .await?;
+        // }
+
+        // 预设数据
         {
             let db = manager.get_connection();
 
-            // Use `execute_unprepared` if the SQL statement doesn't have value bindings
-            db.execute_unprepared(
-                r#"INSERT INTO `t_user_base` (`username`, `password`, `status`) VALUES
-                    ('SR', 'da023f7090dd831097f8a534475b1c4fba2a9a6419968e52be7459e2533ac819', true)
-                "#,
-            )
+            // 使用 SeaORM 插入数据
+            // password: 123456
+            user_base::Entity::insert_many([user_base::ActiveModel {
+                username: Set("SR".to_string()),
+                password: Set(
+                    "da023f7090dd831097f8a534475b1c4fba2a9a6419968e52be7459e2533ac819".to_string(),
+                ),
+                status: Set(true),
+                date_birth: Set(None),
+                ..Default::default()
+            }])
+            .exec(db)
             .await?;
         }
         Ok(())
