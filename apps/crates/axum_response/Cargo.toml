@@ -8,6 +8,4 @@ axum = { workspace = true }
 tonic = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-
-[dev-dependencies]
 anyhow = { workspace = true }

@@ -60,6 +60,12 @@ impl From<serde_json::Error> for ResponseErr {
     }
 }
 
+impl From<anyhow::Error> for ResponseErr {
+    fn from(err: anyhow::Error) -> ResponseErr {
+        ResponseErr::new(500, &err.to_string())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
