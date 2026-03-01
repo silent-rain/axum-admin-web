@@ -44,7 +44,7 @@ impl MockRequest {
         let app = Router::new().merge(routes).layer(Extension(provider));
 
         // Run the application for testing.
-        let server = TestServer::new(app).map_err(|err| Error::InitTestServer(err.to_string()))?;
+        let server = TestServer::new(app);
 
         Ok(MockRequest {
             pool: db_pool.main_db.clone(),
